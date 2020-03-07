@@ -37,7 +37,7 @@ extension NCViewerImageViewControllerDataSource {
 
 // MARK: - NCViewerImageViewControllerDelegate protocol
 
-public protocol NCViewerImageViewControllerDelegate: class {
+protocol NCViewerImageViewControllerDelegate: class {
 
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
     
@@ -48,7 +48,7 @@ public protocol NCViewerImageViewControllerDelegate: class {
 
 extension NCViewerImageViewControllerDelegate {
 
-    public func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
 }
 
 public class NCViewerImageViewController: UIViewController {
@@ -82,7 +82,7 @@ public class NCViewerImageViewController: UIViewController {
     // MARK: - Exposed variables
 
     weak var dataSource: NCViewerImageViewControllerDataSource?
-    public weak var delegate: NCViewerImageViewControllerDelegate?
+    weak var delegate: NCViewerImageViewControllerDelegate?
 
     // Gesture direction. Default is `horizontal`.
     public var gestureDirection: GestureDirection = .horizontal
@@ -102,7 +102,6 @@ public class NCViewerImageViewController: UIViewController {
         }
     }
     public var browserStyle: BrowserStyle = .carousel
-    
     // Gap between consecutive media items. Default is `50.0`.
     public var gapBetweenMediaViews: CGFloat = Constants.gapBetweenContents {
         didSet {
