@@ -205,9 +205,9 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
-                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
+                if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
                     
-                    if metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                    if errorCode == 0 && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
                         viewerImageViewController?.reloadContentViews()
                     }
                     
