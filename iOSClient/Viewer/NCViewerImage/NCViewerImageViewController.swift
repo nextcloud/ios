@@ -84,26 +84,28 @@ public class NCViewerImageViewController: UIViewController {
     weak var dataSource: NCViewerImageViewControllerDataSource?
     weak var delegate: NCViewerImageViewControllerDelegate?
 
-    // Gesture direction. Default is `horizontal`.
-    public var gestureDirection: GestureDirection = .horizontal
-    // Content transformer closure. Default is `horizontalMoveInOut`.
-    public var contentTransformer: NCViewerImageContentTransformer = NCViewerImageDefaultContentTransformers.horizontalMoveInOut {
+    var gestureDirection: GestureDirection = .horizontal
+
+    var contentTransformer: NCViewerImageContentTransformer = NCViewerImageDefaultContentTransformers.horizontalMoveInOut {
         didSet {
 
             NCViewerImageContentView.contentTransformer = contentTransformer
             contentViews.forEach({ $0.updateTransform() })
         }
     }
-    public var drawOrder: ContentDrawOrder = .previousToNext {
+    
+    var drawOrder: ContentDrawOrder = .previousToNext {
         didSet {
             if oldValue != drawOrder {
                 mediaContainerView.exchangeSubview(at: 0, withSubviewAt: 2)
             }
         }
     }
-    public var browserStyle: BrowserStyle = .carousel
+    
+    var browserStyle: BrowserStyle = .carousel
     // Gap between consecutive media items. Default is `50.0`.
-    public var gapBetweenMediaViews: CGFloat = Constants.gapBetweenContents {
+    
+    var gapBetweenMediaViews: CGFloat = Constants.gapBetweenContents {
         didSet {
             NCViewerImageContentView.interItemSpacing = gapBetweenMediaViews
             contentViews.forEach({ $0.updateTransform() })
@@ -111,10 +113,10 @@ public class NCViewerImageViewController: UIViewController {
     }
     
     // Enable or disable interactive dismissal. Default is enabled.
-    public var enableInteractiveDismissal: Bool = true
+    var enableInteractiveDismissal: Bool = true
+    
     // Item index of the current item. In range `0..<numMediaItems`
-    public var currentItemIndex: Int {
-
+    var currentItemIndex: Int {
         return sanitizeIndex(index)
     }
         
