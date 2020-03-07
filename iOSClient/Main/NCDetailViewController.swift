@@ -540,6 +540,18 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     @objc func downloadImage() {
+        guard let metadata = self.metadata else {return }
         
+        metadata.session = k_download_session
+        metadata.sessionError = ""
+        metadata.sessionSelector = ""
+        metadata.status = Int(k_metadataStatusWaitDownload)
+        
+        self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
+        
+        // Reload datasource
+        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+            self.metadatas = metadatas
+        }
     }
 }
