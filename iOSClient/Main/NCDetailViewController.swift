@@ -516,7 +516,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController) {
+    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         guard let navigationController = self.navigationController else { return }
         
         if navigationController.isNavigationBarHidden {

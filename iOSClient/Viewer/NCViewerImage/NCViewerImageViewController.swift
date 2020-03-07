@@ -41,7 +41,7 @@ protocol NCViewerImageViewControllerDelegate: class {
 
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
     
-    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController)
+    func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
 
     func viewerImageViewControllerDismiss()
 }
@@ -414,15 +414,12 @@ extension NCViewerImageViewController {
 
     @objc private func tapGestureEvent(_ recognizer: UITapGestureRecognizer) {
 
-        guard !dismissController.interactionInProgress else {
-            return
-        }
+        guard !dismissController.interactionInProgress else { return }
+        guard let mediaView = self.mediaView(at: 1) else { return }
         
-        if let mediaView = self.mediaView(at: 1) {
-            mediaView.zoomScaleOne()
-        }
-
-        self.delegate?.viewerImageViewControllerTap(self)
+        mediaView.zoomScaleOne()
+        
+        self.delegate?.viewerImageViewControllerTap(self, metadata: mediaView.metadata)
     }
 }
 
