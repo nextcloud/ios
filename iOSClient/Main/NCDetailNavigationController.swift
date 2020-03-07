@@ -109,7 +109,7 @@ class NCDetailNavigationController: UINavigationController {
         progressView = UIProgressView.init(progressViewStyle: .bar)
         progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
         progressView!.setProgress(0, animated: false)
-        progressView!.tintColor = NCBrandColor.sharedInstance.textView
+        progressView!.tintColor = NCBrandColor.sharedInstance.graySoft
         progressView!.trackTintColor = .clear
         navigationBar.addSubview(progressView!)
         
@@ -118,7 +118,6 @@ class NCDetailNavigationController: UINavigationController {
     
     @objc func progress(_ progress: Float) {
         guard let progressView = self.progressView else { return }
-        
         progressView.progress = progress
     }
     
