@@ -116,7 +116,13 @@ class NCDetailViewController: UIViewController {
                         
         progressView.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height-progressHeight, width: navigationController.navigationBar.frame.width, height: progressHeight)
         progressView.setProgress(0, animated: false)
-        progressView.tintColor = NCBrandColor.sharedInstance.icon
+        
+        if NCBrandColor.sharedInstance.brand.isLight() {
+            progressView.tintColor = NCBrandColor.sharedInstance.brand.darker(by: 10)
+        } else {
+            progressView.tintColor = NCBrandColor.sharedInstance.brand.lighter(by: 20)
+        }
+        
         progressView.trackTintColor = .clear
         progressView.transform = CGAffineTransform(scaleX: 1, y: progressHeight)
         
