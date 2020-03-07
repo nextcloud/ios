@@ -84,9 +84,9 @@ public class NCViewerImageViewController: UIViewController {
     weak var dataSource: NCViewerImageViewControllerDataSource?
     public weak var delegate: NCViewerImageViewControllerDelegate?
 
-    /// Gesture direction. Default is `horizontal`.
+    // Gesture direction. Default is `horizontal`.
     public var gestureDirection: GestureDirection = .horizontal
-    /// Content transformer closure. Default is `horizontalMoveInOut`.
+    // Content transformer closure. Default is `horizontalMoveInOut`.
     public var contentTransformer: NCViewerImageContentTransformer = NCViewerImageDefaultContentTransformers.horizontalMoveInOut {
         didSet {
 
@@ -94,7 +94,6 @@ public class NCViewerImageViewController: UIViewController {
             contentViews.forEach({ $0.updateTransform() })
         }
     }
-    /// Content draw order. Default is `previousToNext`.
     public var drawOrder: ContentDrawOrder = .previousToNext {
         didSet {
             if oldValue != drawOrder {
@@ -102,9 +101,9 @@ public class NCViewerImageViewController: UIViewController {
             }
         }
     }
-    /// Browser style. Default is carousel.
     public var browserStyle: BrowserStyle = .carousel
-    /// Gap between consecutive media items. Default is `50.0`.
+    
+    // Gap between consecutive media items. Default is `50.0`.
     public var gapBetweenMediaViews: CGFloat = Constants.gapBetweenContents {
         didSet {
             NCViewerImageContentView.interItemSpacing = gapBetweenMediaViews
@@ -112,9 +111,9 @@ public class NCViewerImageViewController: UIViewController {
         }
     }
     
-    /// Enable or disable interactive dismissal. Default is enabled.
+    // Enable or disable interactive dismissal. Default is enabled.
     public var enableInteractiveDismissal: Bool = true
-    /// Item index of the current item. In range `0..<numMediaItems`
+    // Item index of the current item. In range `0..<numMediaItems`
     public var currentItemIndex: Int {
 
         return sanitizeIndex(index)
@@ -196,7 +195,6 @@ public class NCViewerImageViewController: UIViewController {
 
     // MARK: - Public methods
 
-    /// Invoking this method reloads the contents media browser.
     public func reloadContentViews() {
 
         numMediaItems = dataSource?.numberOfItems(in: self) ?? 0
