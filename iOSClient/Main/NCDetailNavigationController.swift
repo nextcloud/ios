@@ -35,6 +35,7 @@ class NCDetailNavigationController: UINavigationController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.downloadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFile), object: nil)
                 
         changeTheming()
     }
@@ -64,10 +65,28 @@ class NCDetailNavigationController: UINavigationController {
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
+        guard let metadata = appDelegate.activeDetail.metadata else {
+            setProgressBar()
+            return
+        }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float, let status = userInfo["status"] as? Int {
-                
-                self.progress(progress)
+            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float {
+                if account == metadata.account && serverUrl == metadata.serverUrl {
+                    self.progress(progress)
+                }
+            }
+        }
+    }
+    
+    @objc func downloadFile(_ notification: NSNotification) {
+        guard let metadataDetail = appDelegate.activeDetail.metadata else { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadataDetail.account == metadata.account && metadataDetail.serverUrl == metadata.serverUrl {
+                    setProgressBar()
+                }
             }
         }
     }
