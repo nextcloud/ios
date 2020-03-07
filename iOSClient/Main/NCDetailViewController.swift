@@ -40,7 +40,6 @@ class NCDetailViewController: UIViewController {
     
     private var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
-    private var viewerImageViewControllerIndexStart = 0
         
     //MARK: -
 
@@ -56,6 +55,7 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(self.downloadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
@@ -155,11 +155,26 @@ class NCDetailViewController: UIViewController {
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
     }
     
+    @objc func downloadFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
+                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                    
+                    viewerImageViewController?.reloadContentViews()
+                }
+            }
+        }
+    }
+    
     @objc func moveFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode != 0 || metadata.serverUrl != self.metadata?.serverUrl { return }
-                self.deleteFile(notification)
+                
+                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
+                
+                    self.deleteFile(notification)
+                }
             }
         }
     }
@@ -167,6 +182,7 @@ class NCDetailViewController: UIViewController {
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
                 if errorCode != 0 { return }
                 
                 // IMAGE
@@ -197,10 +213,12 @@ class NCDetailViewController: UIViewController {
     @objc func uploadFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
                 if errorCode != 0 { return }
                 
                 // IMAGE
                 if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                    
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
@@ -214,10 +232,12 @@ class NCDetailViewController: UIViewController {
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
                 if errorCode != 0 { return }
                 
                 // IMAGE
                 if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                    
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
@@ -394,14 +414,14 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             
-            var counter = 0
+            var counter = 0, index = 0
             for metadata in metadatas {
-                if metadata.ocId == self.metadata!.ocId { viewerImageViewControllerIndexStart = counter }
+                if metadata.ocId == self.metadata!.ocId { index = counter }
                 counter += 1
             }
             self.metadatas = metadatas
             
-            viewerImageViewController = NCViewerImageViewController(index: viewerImageViewControllerIndexStart, dataSource: self, delegate: self)
+            viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
             if viewerImageViewController != nil {
                            
                 self.backgroundView.image = nil
@@ -441,8 +461,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
         }
         
-        // Original only for the first
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewControllerIndexStart {
+        // Original only for actual
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewController.index {
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
