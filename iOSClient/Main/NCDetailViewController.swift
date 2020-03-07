@@ -41,7 +41,7 @@ class NCDetailViewController: UIViewController {
     @objc  var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
     private var progressView: UIProgressView?
-    private let progressHeight: CGFloat = 1
+    private let progressHeight: CGFloat = 1.5
         
     //MARK: -
 
@@ -114,7 +114,7 @@ class NCDetailViewController: UIViewController {
         guard let navigationController = splitViewController?.viewControllers.last as? UINavigationController else { return }
         guard let progressView = self.progressView else { return }
                         
-        progressView.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height-progressHeight, width: navigationController.navigationBar.frame.width, height: progressHeight)
+        progressView.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height - (progressHeight*2), width: navigationController.navigationBar.frame.width, height: progressHeight)
         progressView.setProgress(0, animated: false)
         
         if NCBrandColor.sharedInstance.brand.isLight() {
