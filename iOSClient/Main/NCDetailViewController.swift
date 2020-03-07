@@ -193,6 +193,8 @@ class NCDetailViewController: UIViewController {
     @objc func changeDisplayMode() {
        
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
+        
+        self.setProgressBar()
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
