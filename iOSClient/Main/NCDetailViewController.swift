@@ -194,7 +194,9 @@ class NCDetailViewController: UIViewController {
        
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
         
-        self.setProgressBar()
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+            self.setProgressBar()
+        }
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
