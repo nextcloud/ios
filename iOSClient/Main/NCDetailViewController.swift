@@ -540,6 +540,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     @objc func downloadImage() {
+        
         guard let metadata = self.metadata else {return }
         
         metadata.session = k_download_session
