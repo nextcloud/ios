@@ -22,24 +22,10 @@
 //
 
 protocol NCViewerImageViewControllerDataSource: class {
-
-    /**
-     Completion block for passing requested media image with details.
-     - parameter index: Index of the requested media.
-     - parameter image: Image to be passed back to media browser.
-     - parameter zoomScale: Zoom scale to be applied to the image including min and max levels.
-     - parameter error: Error received while fetching the media image.
-
-     - note:
-        Remember to pass the index received in the datasource method back.
-        This index is used to set the image to the correct image view.
-     */
-    typealias CompletionBlock = (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void
-
    
     func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int
 
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping CompletionBlock)
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void)
 
     func targetFrameForDismissal(_ viewerImageViewController: NCViewerImageViewController) -> CGRect?
 }
@@ -69,62 +55,33 @@ public class NCViewerImageViewController: UIViewController {
 
     // MARK: - Exposed Enumerations
 
-    /**
-     Enum to hold supported gesture directions.
-
-     ```
-     case horizontal
-     case vertical
-     ```
-    */
     public enum GestureDirection {
 
-        /// Horizontal (left - right) gestures.
+        // Horizontal (left - right) gestures.
         case horizontal
-        /// Vertical (up - down) gestures.
+        // Vertical (up - down) gestures.
         case vertical
     }
 
-    /**
-     Enum to hold supported browser styles.
-
-     ```
-     case linear
-     case carousel
-     ```
-     */
     public enum BrowserStyle {
 
-        /// Linear browser with *0* as first index and *numItems-1* as last index.
+        // Linear browser with *0* as first index and *numItems-1* as last index.
         case linear
-        /// Carousel browser. The media items are repeated in a circular fashion.
+        // Carousel browser. The media items are repeated in a circular fashion.
         case carousel
     }
 
-    /**
-     Enum to hold supported content draw orders.
-
-     ```
-     case previousToNext
-     case nextToPrevious
-     ```
-     - note:
-        Remember that this is draw order, not positioning. This order decides which item will
-     be above or below other items, when they overlap.
-     */
     public enum ContentDrawOrder {
 
-        /// In this mode, media items are rendered in [previous]-[current]-[next] order.
+        // In this mode, media items are rendered in [previous]-[current]-[next] order.
         case previousToNext
-        /// In this mode, media items are rendered in [next]-[current]-[previous] order.
+        // In this mode, media items are rendered in [next]-[current]-[previous] order.
         case nextToPrevious
     }
 
     // MARK: - Exposed variables
 
-    /// Data-source object to supply media browser contents.
     weak var dataSource: NCViewerImageViewControllerDataSource?
-    /// Delegate object to get callbacks on media browser events.
     public weak var delegate: NCViewerImageViewControllerDelegate?
 
     /// Gesture direction. Default is `horizontal`.
