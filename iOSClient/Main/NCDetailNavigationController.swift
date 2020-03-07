@@ -34,6 +34,8 @@ class NCDetailNavigationController: UINavigationController {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+                
         changeTheming()
     }
     
@@ -49,9 +51,11 @@ class NCDetailNavigationController: UINavigationController {
                 topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
             }
         }
+        
+        setProgressBar()
     }
     
-    
+    //MARK: - NotificationCenter
     
     @objc func changeTheming() {
         navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
@@ -59,12 +63,25 @@ class NCDetailNavigationController: UINavigationController {
         navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.brandText]
     }
     
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float, let status = userInfo["status"] as? Int {
+                
+                self.progress(progress)
+            }
+        }
+    }
+    
+    //MARK: - Button
+
     @objc func openMenuMore() {
         if let metadata = appDelegate.activeDetail?.metadata {
             self.toggleMoreMenu(viewController: self, metadata: metadata)
         }
     }
     
+    //MARK: - ProgressBar
+
     @objc func setProgressBar() {
         progressView = UIProgressView.init(frame: CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight))
         progressView!.setProgress(0, animated: false)
