@@ -489,6 +489,7 @@ class tableTag: Object {
 class tableTrash: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var contentType = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var fileId = ""
