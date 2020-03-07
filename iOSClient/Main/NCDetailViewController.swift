@@ -38,7 +38,7 @@ class NCDetailViewController: UIViewController {
     @objc var mediaFilterImage: Bool = false
     @objc var offlineFilterImage: Bool = false
     
-    private var viewerImageViewController: NCViewerImageViewController?
+    @objc  var viewerImageViewController: NCViewerImageViewController?
     private var metadatas = [tableMetadata]()
         
     //MARK: -
