@@ -81,8 +81,7 @@ public class NCViewerImageContentView: UIScrollView {
         }
     }
     
-    var metadata: tableMetadata?
-    
+    var metadata = tableMetadata()
 
     // MARK: - Private enumerations
 

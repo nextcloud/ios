@@ -450,7 +450,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         return metadatas.count
     }
 
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void) {
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata, _ zoomScale: ZoomScale?, _ error: Error?) -> Void) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
@@ -502,7 +502,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]

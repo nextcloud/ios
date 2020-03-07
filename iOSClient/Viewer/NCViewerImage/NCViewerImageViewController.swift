@@ -25,7 +25,7 @@ protocol NCViewerImageViewControllerDataSource: class {
    
     func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int
 
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void)
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, imageAt index: Int, completion: @escaping (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata, _ zoomScale: ZoomScale?, _ error: Error?) -> Void)
 
     func targetFrameForDismissal(_ viewerImageViewController: NCViewerImageViewController) -> CGRect?
 }
@@ -39,7 +39,7 @@ extension NCViewerImageViewControllerDataSource {
 
 protocol NCViewerImageViewControllerDelegate: class {
 
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView)
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController)
 
@@ -48,7 +48,7 @@ protocol NCViewerImageViewControllerDelegate: class {
 
 extension NCViewerImageViewControllerDelegate {
 
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView) {}
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {}
 }
 
 public class NCViewerImageViewController: UIViewController {
@@ -514,7 +514,7 @@ extension NCViewerImageViewController {
                 mediaContainerView.sendSubviewToBack(previousView)
             }
 
-            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: nextView)
+            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: nextView, metadata: nextView.metadata)
 
         } else if middleView.position > (1 + normalizedGap - normalizedCenter) {
 
@@ -535,7 +535,7 @@ extension NCViewerImageViewController {
                 mediaContainerView.bringSubviewToFront(nextView)
             }
 
-            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: previousView)
+            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: previousView, metadata: previousView.metadata)
         }
     }
 
