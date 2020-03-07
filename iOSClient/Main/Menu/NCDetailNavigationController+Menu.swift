@@ -72,7 +72,7 @@ extension NCDetailNavigationController {
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        
+                        self.appDelegate.activeDetail.downloadImage()
                     }
                 )
             )

@@ -538,4 +538,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
 
         return image!
     }
+    
+    @objc func downloadImage() {
+        
+    }
 }
