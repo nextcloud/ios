@@ -28,7 +28,7 @@ class NCDetailNavigationController: UINavigationController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     var progressView: UIProgressView?
-    let progressHeight: CGFloat = 10
+    let progressHeight: CGFloat = 1
 
     override func viewDidLoad() {
         super.viewDidLoad()
