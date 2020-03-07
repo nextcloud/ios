@@ -466,19 +466,19 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    completion(index, image, ZoomScale.default, nil)
+                    completion(index, image, metadata, ZoomScale.default, nil)
                 }
             } else {
-                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
             }
                 
         // Preview
         } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 
             if let image = NCViewerImageCommon.shared.getThumbnailImage(metadata: metadata) {
-                completion(index, image, ZoomScale.default, nil)
+                completion(index, image, metadata, ZoomScale.default, nil)
             } else {
-                completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
             }
     
         } else {
@@ -491,12 +491,12 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     do {
                         let url = URL.init(fileURLWithPath: fileNameLocalPath)
                         try data!.write(to: url, options: .atomic)
-                        completion(index, UIImage.init(data: data!), ZoomScale.default, nil)
+                        completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                     } catch {
-                        completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                        completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
                     }
                 } else {
-                    completion(index, self.getImageOffOutline(), ZoomScale.default, nil)
+                    completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
                 }
             }
         }

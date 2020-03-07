@@ -80,6 +80,9 @@ public class NCViewerImageContentView: UIScrollView {
             maximumZoomScale = zoomLevels?.maximumZoomScale ?? ZoomScale.default.maximumZoomScale
         }
     }
+    
+    var metadata: tableMetadata?
+    
 
     // MARK: - Private enumerations
 

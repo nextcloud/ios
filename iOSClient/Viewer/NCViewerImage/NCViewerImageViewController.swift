@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-public protocol NCViewerImageViewControllerDataSource: class {
+protocol NCViewerImageViewControllerDataSource: class {
 
     /**
      Completion block for passing requested media image with details.
@@ -34,7 +34,7 @@ public protocol NCViewerImageViewControllerDataSource: class {
         Remember to pass the index received in the datasource method back.
         This index is used to set the image to the correct image view.
      */
-    typealias CompletionBlock = (_ index: Int, _ image: UIImage?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void
+    typealias CompletionBlock = (_ index: Int, _ image: UIImage?, _ metadata: tableMetadata?, _ zoomScale: ZoomScale?, _ error: Error?) -> Void
 
    
     func numberOfItems(in viewerImageViewController: NCViewerImageViewController) -> Int
@@ -123,7 +123,7 @@ public class NCViewerImageViewController: UIViewController {
     // MARK: - Exposed variables
 
     /// Data-source object to supply media browser contents.
-    public weak var dataSource: NCViewerImageViewControllerDataSource?
+    weak var dataSource: NCViewerImageViewControllerDataSource?
     /// Delegate object to get callbacks on media browser events.
     public weak var delegate: NCViewerImageViewControllerDelegate?
 
@@ -252,7 +252,7 @@ public class NCViewerImageViewController: UIViewController {
 
     // MARK: - Initializers
 
-    public init(
+    init(
         index: Int = 0,
         dataSource: NCViewerImageViewControllerDataSource,
         delegate: NCViewerImageViewControllerDelegate? = nil
@@ -617,7 +617,7 @@ extension NCViewerImageViewController {
         dataSource?.viewerImageViewController(
             self,
             imageAt: convertedIndex,
-            completion: { [weak self] (index, image, zoom, _) in
+            completion: { [weak self] (index, image, metadata, zoom, _) in
 
                 guard let strongSelf = self else {
                     return
@@ -626,6 +626,7 @@ extension NCViewerImageViewController {
                 if index == strongSelf.sanitizeIndex(contentView.index) {
                     if image != nil {
                         contentView.image = image
+                        contentView.metadata = metadata
                         contentView.zoomLevels = zoom
                     }
                     contentView.isLoading = false
