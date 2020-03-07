@@ -109,7 +109,7 @@ class NCDetailNavigationController: UINavigationController {
         progressView = UIProgressView.init(progressViewStyle: .bar)
         progressView!.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
         progressView!.setProgress(0, animated: false)
-        progressView!.tintColor = NCBrandColor.sharedInstance.graySoft
+        progressView!.tintColor = NCBrandColor.sharedInstance.icon
         progressView!.trackTintColor = .clear
         navigationBar.addSubview(progressView!)
         
