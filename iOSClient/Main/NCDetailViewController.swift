@@ -98,7 +98,7 @@ class NCDetailViewController: UIViewController {
             
             if let progressView = self.progressView, let navigationBar = self.navigationController?.navigationBar {
                 progressView.frame = CGRect(x: 0, y: navigationBar.frame.height-self.progressHeight, width: navigationBar.frame.width, height: self.progressHeight)
-                progressView.transform = CGAffineTransform(scaleX: 1, y: progressHeight)
+                progressView.transform = CGAffineTransform(scaleX: 1, y: self.progressHeight)
             }
         }
     }
