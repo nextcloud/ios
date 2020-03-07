@@ -100,12 +100,7 @@ class NCDetailViewController: UIViewController {
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
-            
-            if let progressView = self.progressView, let navigationController = self.splitViewController?.viewControllers.last as? UINavigationController {
-                
-                progressView.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height-self.progressHeight, width: navigationController.navigationBar.frame.width, height: self.progressHeight)
-                progressView.transform = CGAffineTransform(scaleX: 1, y: self.progressHeight)
-            }
+            self.setProgressBar()
         }
     }
     
@@ -113,17 +108,19 @@ class NCDetailViewController: UIViewController {
 
     @objc func setProgressBar() {
         
-        if progressView != nil { progressView?.removeFromSuperview() }
+        if self.progressView != nil { progressView?.removeFromSuperview() }
+        self.progressView = UIProgressView.init(progressViewStyle: .bar)
+
         guard let navigationController = splitViewController?.viewControllers.last as? UINavigationController else { return }
-                                    
-        progressView = UIProgressView.init(progressViewStyle: .bar)
-        progressView!.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height-progressHeight, width: navigationController.navigationBar.frame.width, height: progressHeight)
-        progressView!.setProgress(0, animated: false)
-        progressView!.tintColor = NCBrandColor.sharedInstance.icon
-        progressView!.trackTintColor = .clear
-        progressView!.transform = CGAffineTransform(scaleX: 1, y: progressHeight)
+        guard let progressView = self.progressView else { return }
+                        
+        progressView.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height-progressHeight, width: navigationController.navigationBar.frame.width, height: progressHeight)
+        progressView.setProgress(0, animated: false)
+        progressView.tintColor = NCBrandColor.sharedInstance.icon
+        progressView.trackTintColor = .clear
+        progressView.transform = CGAffineTransform(scaleX: 1, y: progressHeight)
         
-        navigationController.navigationBar.addSubview(progressView!)
+        navigationController.navigationBar.addSubview(progressView)
     }
     
     @objc func progress(_ progress: Float) {
