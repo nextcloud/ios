@@ -26,6 +26,9 @@ import Foundation
 class NCDetailNavigationController: UINavigationController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    var progressView: UIProgressView?
+    let progressHeight: CGFloat = 2
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +51,8 @@ class NCDetailNavigationController: UINavigationController {
         }
     }
     
+    
+    
     @objc func changeTheming() {
         navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
@@ -58,5 +63,27 @@ class NCDetailNavigationController: UINavigationController {
         if let metadata = appDelegate.activeDetail?.metadata {
             self.toggleMoreMenu(viewController: self, metadata: metadata)
         }
+    }
+    
+    @objc func setProgressBar() {
+        progressView = UIProgressView.init(frame: CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight))
+        progressView!.setProgress(0, animated: false)
+        progressView!.tintColor = NCBrandColor.sharedInstance.textView
+        progressView!.trackTintColor = .clear
+        navigationBar.addSubview(progressView!)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    @objc func progress(_ progress: Float) {
+        guard let progressView = self.progressView else { return }
+        
+        progressView.progress = progress
+    }
+    
+    @objc func orientationDidChange() {
+        guard let progressView = self.progressView else { return }
+        
+        progressView.frame = CGRect(x: 0, y: navigationBar.frame.height-progressHeight, width: navigationBar.frame.width, height: progressHeight)
     }
 }
