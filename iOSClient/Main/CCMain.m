@@ -1546,7 +1546,7 @@
                             [[NCManageDatabase sharedInstance] renameMediaWithFileNameTo:fileNameNew ocId:metadata.ocId];
                             
                             if (metadataNew) {
-                                NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
+                                NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": @""};
                                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_renameFile object:nil userInfo:userInfo];
                             }
                             

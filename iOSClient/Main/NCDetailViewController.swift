@@ -237,6 +237,16 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                 }
+                
+                if type == "rename" {
+                    if viewerImageViewController != nil && self.mediaFilterImage {
+                        if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
+                            self.metadatas = metadatas
+                        }
+                        
+                        viewerImageViewController?.reloadContentViews()
+                    }
+                }
             }
         }
     }
