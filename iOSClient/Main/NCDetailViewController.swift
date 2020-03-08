@@ -233,6 +233,9 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                 }
+                
+                if type == "rename" {
+                }
             }
         }
     }
@@ -268,7 +271,28 @@ class NCDetailViewController: UIViewController {
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 && metadata.ocId == self.metadata?.ocId && viewerImageViewController == nil {
+                
+                if errorCode != 0 { return }
+                
+                // IMAGE (NOT MEDIA)
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && self.mediaFilterImage == false {
+                        
+                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+                                
+                        var index = viewerImageViewController!.index - 1
+                        if index < 0 { index = 0}
+                        self.metadata = metadatas[index]
+                        
+                        viewImage()
+                                                
+                    } else {
+                     
+                        viewUnload()
+                    }
+                    
+                // OTHER SINGLE FILE TYPE
+                } else if metadata.ocId == self.metadata?.ocId {
+                    
                     viewUnload()
                 }
             }
@@ -281,8 +305,8 @@ class NCDetailViewController: UIViewController {
                 
                 if errorCode != 0 { return }
                 
-                // IMAGE
-                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                // IMAGE (NOT MEDIA)
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && mediaFilterImage == false {
                     
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
@@ -300,8 +324,8 @@ class NCDetailViewController: UIViewController {
                 
                 if errorCode != 0 { return }
                 
-                // IMAGE
-                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
+                // IMAGE (NOT MEDIA)
+                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && mediaFilterImage == false {
                     
                     if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
