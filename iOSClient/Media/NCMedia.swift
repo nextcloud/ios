@@ -103,6 +103,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
         
         // changeTheming
         changeTheming()
@@ -180,6 +182,38 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     self.reloadDataSource(loadNetworkDatasource: false) {
                     
                         let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
+                    }
+                }
+            }
+        }
+    }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
+                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                    
+                    self.reloadDataSource(loadNetworkDatasource: false) {
+                    
+                        let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "rename"]
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
+                    }
+                }
+            }
+        }
+    }
+    
+    @objc func uploadFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
+                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                    
+                    self.reloadDataSource(loadNetworkDatasource: false) {
+                    
+                        let userInfo: [String : Any] = ["metadata": metadata, "type": "upload"]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                     }
                 }
