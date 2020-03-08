@@ -563,7 +563,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     completion(index, image, metadata, ZoomScale.default, nil)
                 }
             } else {
-                completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
+                completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
                 
         // Preview
@@ -572,7 +572,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             if let image = NCViewerImageCommon.shared.getThumbnailImage(metadata: metadata) {
                 completion(index, image, metadata, ZoomScale.default, nil)
             } else {
-                completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
+                completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
     
         } else {
@@ -587,10 +587,10 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                         try data!.write(to: url, options: .atomic)
                         completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                     } catch {
-                        completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
+                        completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                     }
                 } else {
-                    completion(index, self.getImageOffOutline(), metadata, ZoomScale.default, nil)
+                    completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
             }
         }
@@ -624,13 +624,6 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewerImageViewControllerDismiss() {
         viewUnload()
-    }
-    
-    func getImageOffOutline() -> UIImage {
-        
-        let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: self.view.frame.width, height: self.view.frame.width, color: NCBrandColor.sharedInstance.brand)
-
-        return image!
     }
     
     @objc func downloadImage() {

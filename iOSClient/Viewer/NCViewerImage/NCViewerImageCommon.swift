@@ -106,4 +106,16 @@ class NCViewerImageCommon: NSObject {
         }
     }
 
+    func getImageOffOutline(frame: CGRect, type: String) -> UIImage {
+        
+        if type == k_metadataTypeFile_video {
+            let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "video"), width: frame.width, height: frame.width, color: NCBrandColor.sharedInstance.brand)
+            
+            return image!
+        }
+        
+        let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "imageOffOutline"), width: frame.width, height: frame.width, color: NCBrandColor.sharedInstance.brand)
+
+        return image!
+    }
 }
