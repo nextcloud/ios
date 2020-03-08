@@ -218,32 +218,23 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let type = userInfo["type"] as? String {
                 
-                if type == "delete" {
-                    if viewerImageViewController != nil && self.mediaFilterImage {
-                        if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
-                            self.metadatas = metadatas
-                        }
-                        
+                if viewerImageViewController != nil && self.mediaFilterImage {
+                    if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
+                        self.metadatas = metadatas
+                    }
+                    
+                    if type == "delete" {
                         if metadatas.count > 0 {
-                            
                             var index = viewerImageViewController!.index - 1
                             if index < 0 { index = 0}
                             self.metadata = metadatas[index]
                             viewImage()
-
                         } else {
-                            
                             viewUnload()
                         }
                     }
-                }
-                
-                if type == "rename" {
-                    if viewerImageViewController != nil && self.mediaFilterImage {
-                        if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
-                            self.metadatas = metadatas
-                        }
-                        
+                    
+                    if type == "rename" ||  type == "upload"   {
                         viewerImageViewController?.reloadContentViews()
                     }
                 }
@@ -255,12 +246,6 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
-                /*
-                if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
-                
-                    self.deleteFile(notification)
-                }
-                */
             }
         }
     }

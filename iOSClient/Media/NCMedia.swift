@@ -211,6 +211,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
+                    _ = NCManageDatabase.sharedInstance.createTableMedia([metadata], lteDate: metadata.date as Date, gteDate: metadata.date as Date, account: metadata.account)
+                    
                     self.reloadDataSource(loadNetworkDatasource: false) {
                     
                         let userInfo: [String : Any] = ["metadata": metadata, "type": "upload"]
