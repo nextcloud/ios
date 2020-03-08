@@ -556,7 +556,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
         
         // Original only for actual
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewController.index {
+        if metadata.typeFile == k_metadataTypeFile_image && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewController.index {
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {

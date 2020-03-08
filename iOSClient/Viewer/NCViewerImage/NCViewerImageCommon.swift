@@ -32,7 +32,7 @@ class NCViewerImageCommon: NSObject {
     func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata],favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
         guard let metadata = metadata else { return nil }
         if favoriteDatasorce {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND (typeFile == %@ || typeFile == %@)", metadata.account, k_metadataTypeFile_image, k_metadataTypeFile_video), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
             if metadatas == nil {
                 return [metadata]
             }
@@ -47,10 +47,10 @@ class NCViewerImageCommon: NSObject {
                 for file: tableLocalFile in files {
                     ocIds.append(file.ocId)
                 }
-                return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", metadata.account, ocIds), sorted: datasourceSorted, ascending: datasourceAscending)
+                return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND (typeFile == %@ || typeFile == %@)", metadata.account, ocIds, k_metadataTypeFile_image, k_metadataTypeFile_video), sorted: datasourceSorted, ascending: datasourceAscending)
             }
         } else {
-            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND typeFile == %@", metadata.account, metadata.serverUrl, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            return NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         }
         
         return nil
@@ -70,7 +70,7 @@ class NCViewerImageCommon: NSObject {
         
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
            
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let ext = CCUtility.getExtension(metadata.fileNameView)
