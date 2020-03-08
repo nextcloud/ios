@@ -2538,6 +2538,24 @@ class NCManageDatabase: NSObject {
         return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
     }
     
+    @objc func renameMedia(fileNameTo: String, ocId: String) {
+        
+        var result: tableMedia?
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                result = realm.objects(tableMedia.self).filter("ocId == %@", ocId).first
+                if result != nil {
+                    result!.fileName = fileNameTo
+                    result!.fileNameView = fileNameTo
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     

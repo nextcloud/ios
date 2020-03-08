@@ -1542,6 +1542,8 @@
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             // Rename metadata
                             tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:fileNameNew ocId:metadata.ocId];
+                            // Rename media
+                            [[NCManageDatabase sharedInstance] renameMediaWithFileNameTo:fileNameNew ocId:metadata.ocId];
                             
                             if (metadataNew) {
                                 NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
