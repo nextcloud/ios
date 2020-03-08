@@ -61,9 +61,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.init(coder: aDecoder)
 
         appDelegate.activeMedia = self
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
     override func viewDidLoad() {
@@ -102,6 +99,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             registerForPreviewing(with: self, sourceView: view)
         }
         
+        // Notification
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        
         // changeTheming
         changeTheming()
     }
@@ -125,7 +127,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         configFastScroll()
 
         // Reload Data Source
-        self.reloadDataSource(loadNetworkDatasource: true)
+        self.reloadDataSource(loadNetworkDatasource: true) { }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -160,10 +162,21 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 if errorCode != 0 { return }
 
                 self.selectocId.removeAll { $0 == metadata.ocId }
-                self.reloadDataSource(loadNetworkDatasource: false)
+                self.reloadDataSource(loadNetworkDatasource: false) {
                 
-                let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
+                    let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
+                }
+            }
+        }
+    }
+    
+    @objc func moveFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
+                if errorCode != 0 { return }
+               
             }
         }
     }
@@ -279,10 +292,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 selectStartDirectoryPhotosTab()
             case 2:
                 filterTypeFileImage = !filterTypeFileImage
-                reloadDataSource(loadNetworkDatasource: false)
+                reloadDataSource(loadNetworkDatasource: false) { }
             case 3:
                 filterTypeFileVideo = !filterTypeFileVideo
-                reloadDataSource(loadNetworkDatasource: false)
+                reloadDataSource(loadNetworkDatasource: false) { }
             default: ()
             }
         }
@@ -503,7 +516,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    public func reloadDataSource(loadNetworkDatasource: Bool) {
+    public func reloadDataSource(loadNetworkDatasource: Bool, completion: @escaping ()->()) {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -525,6 +538,8 @@ extension NCMedia {
                 self.collectionView?.reloadDataThenPerform {
                     self.downloadThumbnail()
                 }
+                
+                completion()
             }
         }
     }
@@ -597,7 +612,7 @@ extension NCMedia {
                 print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
                 
                 if isDifferent {
-                    self.reloadDataSource(loadNetworkDatasource: false)
+                    self.reloadDataSource(loadNetworkDatasource: false) { }
                 }
                 
                 if (isDifferent == false || newInsert+insertPrevius < 100) && addPast && setDistantPast == false {
@@ -631,7 +646,7 @@ extension NCMedia {
                 
                 self.loadingSearch = false
                 
-                self.reloadDataSource(loadNetworkDatasource: false)
+                self.reloadDataSource(loadNetworkDatasource: false) { }
             }
         })
     }
