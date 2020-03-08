@@ -119,28 +119,28 @@
         
         if ([listProgressMetadata objectForKey:metadata.ocId] && [groupByField isEqualToString:@"session"]) {
             
-            [ sectionDataSource.metadatas insertObject:metadata atIndex:0];
+            [sectionDataSource.metadatas insertObject:metadata atIndex:0];
             
         } else {
             
             if (metadata.directory && directoryOnTop) {
                 if (metadata.favorite) {
-                    [ sectionDataSource.metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
+                    [sectionDataSource.metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
                     numDirectory++;
                 } else {
-                    [ sectionDataSource.metadatas insertObject:metadata atIndex:numDirectory++];
+                    [sectionDataSource.metadatas insertObject:metadata atIndex:numDirectory++];
                 }
             } else {
                 if (metadata.favorite && directoryOnTop) {
                     [metadataFilesFavorite addObject:metadata];
                 } else {
-                    [ sectionDataSource.metadatas addObject:metadata];
+                    [sectionDataSource.metadatas addObject:metadata];
                 }
             }
         }
     }
     if (directoryOnTop && metadataFilesFavorite.count > 0)
-        [ sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
+        [sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
     
     /*
      sectionArrayRow
