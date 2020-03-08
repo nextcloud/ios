@@ -229,6 +229,7 @@ class NCDetailViewController: UIViewController {
                             viewImage()
 
                         } else {
+                            
                             viewUnload()
                         }
                     }
