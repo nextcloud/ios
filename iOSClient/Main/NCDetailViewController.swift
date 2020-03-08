@@ -38,8 +38,9 @@ class NCDetailViewController: UIViewController {
     @objc var mediaFilterImage: Bool = false
     @objc var offlineFilterImage: Bool = false
     
-    @objc  var viewerImageViewController: NCViewerImageViewController?
-    private var metadatas = [tableMetadata]()
+    @objc var viewerImageViewController: NCViewerImageViewController?
+    @objc var metadatas = [tableMetadata]()
+    
     private var progressView: UIProgressView?
     private let progressHeight: CGFloat = 1.5
         

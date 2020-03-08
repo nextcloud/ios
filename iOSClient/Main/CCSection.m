@@ -36,6 +36,7 @@
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
     _ocIdIndexPath = [[NSMutableDictionary alloc] init];
+    _metadatas = [NSMutableArray new];
     
     _image = 0;
     _video = 0;
@@ -55,7 +56,8 @@
     [sectionDataSourceMetadata setSections: self.sections];
     [sectionDataSourceMetadata setSectionArrayRow: self.sectionArrayRow];
     [sectionDataSourceMetadata setOcIdIndexPath: self.ocIdIndexPath];
-    
+    [sectionDataSourceMetadata setMetadatas: self.metadatas];
+
     [sectionDataSourceMetadata setVideo: self.video];
     [sectionDataSourceMetadata setImage: self.image];
     
@@ -78,7 +80,6 @@
 {
     id dataSection;
     
-    NSMutableArray *metadatas = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -118,34 +119,34 @@
         
         if ([listProgressMetadata objectForKey:metadata.ocId] && [groupByField isEqualToString:@"session"]) {
             
-            [metadatas insertObject:metadata atIndex:0];
+            [ sectionDataSource.metadatas insertObject:metadata atIndex:0];
             
         } else {
             
             if (metadata.directory && directoryOnTop) {
                 if (metadata.favorite) {
-                    [metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
+                    [ sectionDataSource.metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
                     numDirectory++;
                 } else {
-                    [metadatas insertObject:metadata atIndex:numDirectory++];
+                    [ sectionDataSource.metadatas insertObject:metadata atIndex:numDirectory++];
                 }
             } else {
                 if (metadata.favorite && directoryOnTop) {
                     [metadataFilesFavorite addObject:metadata];
                 } else {
-                    [metadatas addObject:metadata];
+                    [ sectionDataSource.metadatas addObject:metadata];
                 }
             }
         }
     }
     if (directoryOnTop && metadataFilesFavorite.count > 0)
-        [metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
+        [ sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
     
     /*
      sectionArrayRow
     */
     
-    for (tableMetadata *metadata in metadatas) {
+    for (tableMetadata *metadata in  sectionDataSource.metadatas) {
         
         if ([metadata.session length] > 0 && [groupByField isEqualToString:@"session"]) {
             

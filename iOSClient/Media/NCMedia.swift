@@ -351,6 +351,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
                 segueViewController.metadata = metadataPush
+                segueViewController.metadatas = sectionDatasource.metadatas as! [tableMetadata]
                 segueViewController.mediaFilterImage = true
             }
         }

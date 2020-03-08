@@ -30,6 +30,7 @@
 @property (nonatomic, strong) NSMutableArray *sections;
 @property (nonatomic, strong) NSMutableDictionary *sectionArrayRow;
 @property (nonatomic, strong) NSMutableDictionary *ocIdIndexPath;
+@property (nonatomic, strong) NSMutableArray *metadatas;
 
 @property NSInteger video;
 @property NSInteger image;
