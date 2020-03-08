@@ -245,10 +245,12 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
+                /*
                 if errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
                 
                     self.deleteFile(notification)
                 }
+                */
             }
         }
     }
@@ -260,7 +262,7 @@ class NCDetailViewController: UIViewController {
                 if errorCode != 0 { return }
                 
                 // IMAGE (NOT MEDIA)
-                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && self.mediaFilterImage == false {
+                if viewerImageViewController != nil && !self.mediaFilterImage && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                         
                     if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                                 
@@ -333,7 +335,8 @@ class NCDetailViewController: UIViewController {
                 
                 if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
                     
-                    if errorCode == 0 && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                    if errorCode == 0 && viewerImageViewController != nil && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                        
                         viewerImageViewController?.reloadContentViews()
                     }
                     
