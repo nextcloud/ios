@@ -210,8 +210,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    
-                    _ = NCManageDatabase.sharedInstance.createTableMedia([metadata], lteDate: metadata.date as Date, gteDate: metadata.date as Date, account: metadata.account)
+
+                    NCManageDatabase.sharedInstance.addMedia(metadata)
                     
                     self.reloadDataSource(loadNetworkDatasource: false) {
                     

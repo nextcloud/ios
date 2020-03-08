@@ -2452,6 +2452,21 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func addMedia(_ metadata: tableMetadata) {
+            
+        let realm = try! Realm()
+        let media = tableMedia.init(value: metadata)
+
+        do {
+            try realm.write {
+                realm.add(media, update: .all)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
+        }
+    }
+    
     func createTableMedia(_ metadatasSource: [tableMetadata], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
