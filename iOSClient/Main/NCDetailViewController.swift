@@ -542,6 +542,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if viewerImageViewController.index < metadatas.count {
             self.metadata = metadatas[viewerImageViewController.index]
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
+            
+        }
+        
+        // Preview for Video
+        if metadata.typeFile == k_metadataTypeFile_video && !CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: (metadata.fileNameView as NSString).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
         
         // Original only for actual
