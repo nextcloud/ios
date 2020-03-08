@@ -249,7 +249,7 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                         
-                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                                 
                         var index = viewerImageViewController!.index - 1
                         if index < 0 { index = 0}
@@ -280,7 +280,7 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
-                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
+                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
                         viewUnload()
@@ -299,7 +299,7 @@ class NCDetailViewController: UIViewController {
                 // IMAGE
                 if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
                     
-                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
+                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
                         viewImage()
                     } else {
                         viewUnload()
@@ -473,7 +473,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         for view in backgroundView.subviews { view.removeFromSuperview() }
         
-        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             
             var counter = 0, index = 0
             for metadata in metadatas {
@@ -612,7 +612,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
         
         // Reload datasource
-        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
             self.metadatas = metadatas
         }
     }

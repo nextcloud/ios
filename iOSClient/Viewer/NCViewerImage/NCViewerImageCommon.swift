@@ -29,7 +29,7 @@ class NCViewerImageCommon: NSObject {
         return instance
     }()
     
-    func getMetadatasDatasource(metadata: tableMetadata?, favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
+    func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata],favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
         guard let metadata = metadata else { return nil }
         if favoriteDatasorce {
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND typeFile == %@", metadata.account, k_metadataTypeFile_image), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
@@ -37,7 +37,7 @@ class NCViewerImageCommon: NSObject {
                 return [metadata]
             }
         } else if mediaDatasorce {
-            return NCManageDatabase.sharedInstance.getMedias(account: metadata.account, predicate: NSPredicate(format: "account == %@ AND typeFile == %@", metadata.account, k_metadataTypeFile_image))
+            return metadatas
         } else if offLineDatasource {
             var datasourceSorted = ""
             var datasourceAscending = true
