@@ -240,22 +240,6 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func downloadFile(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
-                    
-                    if errorCode == 0 && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
-                        viewerImageViewController?.reloadContentViews()
-                    }
-                    
-                    setProgressBar()
-                }
-            }
-        }
-    }
-    
     @objc func moveFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
@@ -313,6 +297,22 @@ class NCDetailViewController: UIViewController {
                     } else {
                         viewUnload()
                     }
+                }
+            }
+        }
+    }
+    
+    @objc func downloadFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                
+                if metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl {
+                    
+                    if errorCode == 0 && metadata.typeFile == k_metadataTypeFile_image && viewerImageViewController != nil {
+                        viewerImageViewController?.reloadContentViews()
+                    }
+                    
+                    setProgressBar()
                 }
             }
         }
