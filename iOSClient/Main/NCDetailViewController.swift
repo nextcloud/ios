@@ -475,11 +475,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             
-            var counter = 0, index = 0
-            for metadata in metadatas {
-                if metadata.ocId == self.metadata!.ocId { index = counter }
-                counter += 1
-            }
+            var index = 0
+            if let indexFound = metadatas.firstIndex(where: { $0.ocId == self.metadata?.ocId }) { index = indexFound }
             self.metadatas = metadatas
             
             viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
