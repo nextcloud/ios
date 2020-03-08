@@ -215,7 +215,26 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func synchronizationMedia(_ notification: NSNotification) {
-        viewImage()
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let type = userInfo["type"] as? String {
+                
+                if type == "delete" {
+                    if viewerImageViewController != nil && self.mediaFilterImage {
+                        if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata]  {
+                            
+                            self.metadatas = metadatas
+                            var index = viewerImageViewController!.index - 1
+                            if index < 0 { index = 0}
+                            self.metadata = metadatas[index]
+                            viewImage()
+
+                        } else {
+                            viewUnload()
+                        }
+                    }
+                }
+            }
+        }
     }
     
     @objc func downloadFile(_ notification: NSNotification) {
@@ -249,28 +268,7 @@ class NCDetailViewController: UIViewController {
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                if errorCode != 0 { return }
-                
-                // IMAGE
-                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image {
-                        
-                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
-                                
-                        var index = viewerImageViewController!.index - 1
-                        if index < 0 { index = 0}
-                        self.metadata = metadatas[index]
-                        
-                        viewImage()
-                                                
-                    } else {
-                     
-                        viewUnload()
-                    }
-                    
-                // OTHER SINGLE FILE TYPE
-                } else if metadata.ocId == self.metadata?.ocId {
-                    
+                if errorCode == 0 && metadata.ocId == self.metadata?.ocId && viewerImageViewController == nil {
                     viewUnload()
                 }
             }

@@ -31,16 +31,15 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-   
+    var sectionDatasource = CCSectionDataSourceMetadata()
+
     private var metadataPush: tableMetadata?
     private var isEditMode = false
     private var selectocId = [String]()
     
     private var filterTypeFileImage = false;
     private var filterTypeFileVideo = false;
-    
-    private var sectionDatasource = CCSectionDataSourceMetadata()
-    
+        
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     
@@ -163,7 +162,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 self.selectocId.removeAll { $0 == metadata.ocId }
                 self.reloadDataSource(loadNetworkDatasource: false)
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo as? [AnyHashable : Any])
+                let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
             }
         }
     }
