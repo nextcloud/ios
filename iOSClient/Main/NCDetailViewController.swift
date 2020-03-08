@@ -233,9 +233,6 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                 }
-                
-                if type == "rename" {
-                }
             }
         }
     }
