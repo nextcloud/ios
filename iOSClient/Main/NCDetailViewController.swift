@@ -562,10 +562,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
-        
-        if index >= metadatas.count { return }
-        let metadata = metadatas[index]
-        
+                
         if metadata.typeFile == k_metadataTypeFile_image {
             DispatchQueue.global().async {
                 if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
@@ -578,6 +575,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+        
         guard let navigationController = self.navigationController else { return }
         
         if metadata.typeFile == k_metadataTypeFile_image {
