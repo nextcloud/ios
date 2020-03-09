@@ -42,13 +42,14 @@ class NCViewerImageVideo: UIViewController {
         
         view.backgroundColor = .black
         closeView.layer.cornerRadius = 5
-        closeButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: .lightGray), for: .normal)
+        closeButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: .white), for: .normal)
         
         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
         NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
     }
     
     @IBAction func touchUpInsidecloseButton(_ sender: Any) {
+        
         if appDelegate.player != nil && appDelegate.player.rate != 0 {
             appDelegate.player.pause()
         }
@@ -58,6 +59,6 @@ class NCViewerImageVideo: UIViewController {
             NCViewerMedia.sharedInstance.removeObserver()
         }
 
-        dismiss(animated: true) { }
+        dismiss(animated: false) { }
     }
 }

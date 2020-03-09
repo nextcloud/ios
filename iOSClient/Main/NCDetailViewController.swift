@@ -594,7 +594,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
                 viewerImageVideo.metadata = metadata
-                present(viewerImageVideo, animated: true) { }
+                present(viewerImageVideo, animated: false) { }
             }
         }
     }
