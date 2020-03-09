@@ -87,10 +87,11 @@ class NCViewerMedia: NSObject {
             player.seek(to: CMTime.zero)
         }
         
-        appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-        appDelegate.isMediaObserver = true
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            
+            self.appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            self.appDelegate.isMediaObserver = true
+            
             self.appDelegate.player.play()
         }
     }
