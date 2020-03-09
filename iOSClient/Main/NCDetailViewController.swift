@@ -542,7 +542,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
     
-        } else {
+        } else if metadata.hasPreview {
                 
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -560,6 +560,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
             }
+        } else {
+            completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
         }
     }
     
@@ -568,10 +570,12 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
         
-        DispatchQueue.global().async {
-            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                    view.image = image
+        if metadata.typeFile == k_metadataTypeFile_image {
+            DispatchQueue.global().async {
+                if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                        view.image = image
+                    }
                 }
             }
         }
