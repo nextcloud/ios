@@ -41,8 +41,9 @@ class NCViewerImageVideo: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .black
-        closeView.layer.cornerRadius = 5
-        closeButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: .white), for: .normal)
+        closeView.layer.cornerRadius = 7
+        let image = CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: .white)
+        closeButton.setImage(image, for: .normal)
         
         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
         NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
