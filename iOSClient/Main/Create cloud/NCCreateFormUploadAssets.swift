@@ -433,6 +433,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
             photoEditor.clearButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorClear")!, multiplier:2, color: .white)
             photoEditor.continueButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDone")!, multiplier:2, color: .white)
             
+            photoEditor.modalPresentationStyle = .fullScreen
+            
             self.present(photoEditor, animated: true, completion: nil)
         })
     }
