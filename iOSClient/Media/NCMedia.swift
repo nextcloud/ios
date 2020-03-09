@@ -205,26 +205,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         }
     }
     
-    @objc func uploadFile(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-
-                    /*
-                    NCManageDatabase.sharedInstance.addMedia(metadata)
-                    
-                    self.reloadDataSource(loadNetworkDatasource: false) {
-                    
-                        let userInfo: [String : Any] = ["metadata": metadata, "type": "upload"]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
-                    }
-                    */
-                }
-            }
-        }
-    }
-    
     // MARK: DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
