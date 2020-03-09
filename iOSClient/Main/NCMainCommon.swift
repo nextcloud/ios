@@ -1067,6 +1067,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         photoEditor.continueButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDone")!, multiplier:2, color: .white)
         
         photoEditor.modalPresentationStyle = .fullScreen
+        
         viewController.present(photoEditor, animated: true, completion: nil)
     }
     
