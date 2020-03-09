@@ -1640,8 +1640,10 @@
             
                 NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                 NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
+                NSString *ocId = metadata.ocId;
+                NSString *serverUrl = metadata.serverUrl;
+                tableMetadata *sourceMetadata = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
             
-                
                 [[NCCommunication sharedInstance] moveFileOrFolderWithServerUrlFileNameSource:fileNamePath serverUrlFileNameDestination:fileNameToPath account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
                     
                     [_hud hideHud];
@@ -1652,19 +1654,19 @@
                             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] account:account];
                         }
                         
-                        tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] moveMetadataWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
-                        [[NCManageDatabase sharedInstance] moveMediaWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
+                        tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] moveMetadataWithOcId:ocId serverUrlTo:serverUrlTo];
+                        [[NCManageDatabase sharedInstance] moveMediaWithOcId:ocId serverUrlTo:serverUrlTo];
                         
-                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
+                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:account];
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];
                         
                         if (metadataNew) {
-                            NSDictionary* userInfo = @{@"metadata": metadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
+                            NSDictionary* userInfo = @{@"metadata": sourceMetadata, @"metadataNew": metadataNew, @"errorCode": @(errorCode), @"errorDescription": errorDescription};
                             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_moveFile object:nil userInfo:userInfo];
                         }
                         
                         // next
-                        [_selectedocIdsMetadatas removeObjectForKey:metadata.ocId];
+                        [_selectedocIdsMetadatas removeObjectForKey:ocId];
                         
                         if ([_selectedocIdsMetadatas count] > 0) {
                             
