@@ -319,8 +319,6 @@ class NCDetailViewController: UIViewController {
         self.backgroundView.image = nil
         for view in backgroundView.subviews { view.removeFromSuperview() }
 
-        self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
-        
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: (metadata.fileNameView as NSString).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
@@ -389,6 +387,7 @@ class NCDetailViewController: UIViewController {
                         
                         if editor == k_editor_onlyoffice {
                             customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+                            self.navigationController?.navigationBar.topItem?.title = ""
                         }
                         
                         NCCommunication.sharedInstance.NCTextOpenFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
