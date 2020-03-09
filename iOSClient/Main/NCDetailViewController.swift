@@ -310,7 +310,7 @@ class NCDetailViewController: UIViewController {
         return (errorCode == 0 && viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio))
     }
     
-    //MARK: -
+    //MARK: - View File
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
                 
@@ -580,13 +580,23 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         guard let navigationController = self.navigationController else { return }
         
-        if navigationController.isNavigationBarHidden {
-            navigateControllerBarHidden(false)
-        } else {
-            navigateControllerBarHidden(true)
-        }
+        if metadata.typeFile == k_metadataTypeFile_image {
         
-        NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
+            if navigationController.isNavigationBarHidden {
+                navigateControllerBarHidden(false)
+            } else {
+                navigateControllerBarHidden(true)
+            }
+            
+            NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
+            
+        } else {
+            
+            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
+                viewerImageVideo.metadata = metadata
+                present(viewerImageVideo, animated: true) { }
+            }
+        }
     }
     
     func viewerImageViewControllerDismiss() {
