@@ -211,6 +211,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
 
+                    /*
                     NCManageDatabase.sharedInstance.addMedia(metadata)
                     
                     self.reloadDataSource(loadNetworkDatasource: false) {
@@ -218,6 +219,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         let userInfo: [String : Any] = ["metadata": metadata, "type": "upload"]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                     }
+                    */
                 }
             }
         }

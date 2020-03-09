@@ -234,7 +234,7 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                     
-                    if type == "rename" ||  type == "upload"   {
+                    if type == "rename" || type == "upload" || type == "move"   {
                         viewerImageViewController?.reloadContentViews()
                     }
                 }
@@ -303,27 +303,6 @@ class NCDetailViewController: UIViewController {
                     
                     self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                 }
-            }
-        }
-    }
-    
-    @objc func uploadFile(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                if errorCode != 0 { return }
-                
-                /*
-                // IMAGE (NOT MEDIA)
-                if viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && metadata.typeFile == k_metadataTypeFile_image && mediaFilterImage == false {
-                    
-                    if NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) != nil {
-                        viewImage()
-                    } else {
-                        viewUnload()
-                    }
-                }
-                */
             }
         }
     }
