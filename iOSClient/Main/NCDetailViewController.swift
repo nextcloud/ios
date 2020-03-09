@@ -243,17 +243,12 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func moveFile(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-            }
-        }
+        deleteFile(notification)
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
                 if errorCode != 0 { return }
                 
                 // IMAGE
