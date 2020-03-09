@@ -508,6 +508,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
+        let isPreview = CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
+        let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
         
         // Refresh self metadata && title
         if viewerImageViewController.index < metadatas.count {
@@ -517,13 +519,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
         
         // Preview for Video
-        if metadata.typeFile == k_metadataTypeFile_video && !CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
             
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: (metadata.fileNameView as NSString).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
         
         // Original only for actual
-        if metadata.typeFile == k_metadataTypeFile_image && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && index == viewerImageViewController.index {
+        if metadata.typeFile == k_metadataTypeFile_image && isImage && index == viewerImageViewController.index {
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -534,7 +536,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             }
                 
         // Preview
-        } else if CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        } else if isPreview {
                 
             if let image = NCViewerImageCommon.shared.getThumbnailImage(metadata: metadata) {
                 completion(index, image, metadata, ZoomScale.default, nil)

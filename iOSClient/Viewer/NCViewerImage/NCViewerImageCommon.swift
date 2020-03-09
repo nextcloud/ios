@@ -29,6 +29,10 @@ class NCViewerImageCommon: NSObject {
         return instance
     }()
     
+    static let offOutlineAudio = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height, color: NCBrandColor.sharedInstance.brand)
+    static let offOutlineVideo = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height, color: NCBrandColor.sharedInstance.brand)
+    static let offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height, color: NCBrandColor.sharedInstance.brand)
+
     func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata],favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
         guard let metadata = metadata else { return nil }
         if favoriteDatasorce {
@@ -109,19 +113,13 @@ class NCViewerImageCommon: NSObject {
     func getImageOffOutline(frame: CGRect, type: String) -> UIImage {
         
         if type == k_metadataTypeFile_video {
-            let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: frame.width, height: frame.width, color: NCBrandColor.sharedInstance.brand)
-            
-            return image!
+            return NCViewerImageCommon.offOutlineVideo!
         }
         
         if type == k_metadataTypeFile_audio {
-            let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: frame.width, height: frame.width, color: NCBrandColor.sharedInstance.brand)
-            
-            return image!
+            return NCViewerImageCommon.offOutlineAudio!
         }
         
-        let image = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: frame.width, height: frame.width, color: NCBrandColor.sharedInstance.brand)
-
-        return image!
+        return NCViewerImageCommon.offOutlineImage!
     }
 }
