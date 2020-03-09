@@ -121,6 +121,7 @@
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
 "_download_image_max_"      = "Download the image in full resolution";
 
+
 // App
 
 "_network_available_"       = "Network available";
