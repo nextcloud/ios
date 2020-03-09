@@ -1653,6 +1653,7 @@
                         }
                         
                         tableMetadata *metadataNew = [[NCManageDatabase sharedInstance] moveMetadataWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
+                        [[NCManageDatabase sharedInstance] moveMediaWithOcId:metadata.ocId serverUrlTo:serverUrlTo];
                         
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:account];
                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrlTo account:account];

@@ -2425,18 +2425,12 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func deleteMedia(predicate: NSPredicate) {
-        
-        var directoryToClearDate = [String:String]()
-        
+                
         let realm = try! Realm()
 
         realm.beginWrite()
 
         let results = realm.objects(tableMedia.self).filter(predicate)
-        
-        for result in results {
-            directoryToClearDate[result.serverUrl] = result.account
-        }
         
         realm.delete(results)
         
@@ -2444,26 +2438,22 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return
-        }
-        
-        for (serverUrl, account) in directoryToClearDate {
-            self.setDateReadDirectory(serverUrl: serverUrl, account: account)
         }
     }
     
-    @objc func addMedia(_ metadata: tableMetadata) {
-            
+    @objc func moveMedia(ocId: String, serverUrlTo: String) {
+        
         let realm = try! Realm()
-        let media = tableMedia.init(value: metadata)
 
         do {
             try realm.write {
-                realm.add(media, update: .all)
+                let result = realm.objects(tableMedia.self).filter("ocId == %@", ocId).first
+                if result != nil {
+                    result!.serverUrl = serverUrlTo
+                }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
         }
     }
     
