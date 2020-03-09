@@ -67,7 +67,7 @@ extension NCDetailNavigationController {
             )
         )
         
-        if appDelegate.activeDetail.viewerImageViewController != nil && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" {
+        if appDelegate.activeDetail.viewerImageViewController != nil && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
