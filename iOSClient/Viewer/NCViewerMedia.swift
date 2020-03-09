@@ -89,7 +89,10 @@ class NCViewerMedia: NSObject {
         
         appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         appDelegate.isMediaObserver = true
-        appDelegate.player.play()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.appDelegate.player.play()
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
