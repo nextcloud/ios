@@ -24,18 +24,26 @@
 import Foundation
 import WebKit
 
-class NCViewerDocumentWeb: NSObject {
+class NCViewerDocumentWeb: WKWebView {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
     var mimeType: String?
     
-    @objc static let sharedInstance: NCViewerDocumentWeb = {
-        let instance = NCViewerDocumentWeb()
-        return instance
-    }()
+    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frame, configuration: configuration)
+        
+        autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        navigationDelegate = self
+        backgroundColor = .white
+        isOpaque = false
+    }
     
-    @objc func viewDocumentWebAt(_ metadata: tableMetadata, view: UIView, frame: CGRect) {
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    @objc func viewDocumentWebAt(_ metadata: tableMetadata, view: UIView) {
         
         if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) { return }
         
@@ -51,8 +59,6 @@ class NCViewerDocumentWeb: NSObject {
         let url = URL.init(fileURLWithPath: fileNamePath)
 
         let preferences = WKPreferences()
-        let configuration = WKWebViewConfiguration()
-
         preferences.javaScriptEnabled = false
 
         // Detect file xls, xlss for enable javascript
@@ -65,25 +71,17 @@ class NCViewerDocumentWeb: NSObject {
                 fileHandle.closeFile()
             }
         }
-        
         configuration.preferences = preferences
-        
-        let webView = WKWebView(frame: frame)
-        webView.navigationDelegate = self
-        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        webView.backgroundColor = .white
-        
-        webView.isOpaque = false
-        
+                
         if fileNameExtension == "CSS" || fileNameExtension == "PY" || fileNameExtension == "XML" || fileNameExtension == "JS" {
             
             do {
                 let dataFile = try String(contentsOf: url, encoding: String.Encoding(rawValue: String.Encoding.ascii.rawValue))
                 
                 if UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone {
-                    webView.loadHTMLString("<div style='font-size:40;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
+                    loadHTMLString("<div style='font-size:40;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
                 } else {
-                    webView.loadHTMLString("<div style='font-size:20;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
+                    loadHTMLString("<div style='font-size:20;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
                 }
                 
             } catch {
@@ -111,7 +109,7 @@ class NCViewerDocumentWeb: NSObject {
                         return
                     }
                     self.mimeType = response.mimeType
-                    webView.load(data, mimeType: response.mimeType!, characterEncodingName: encodingName, baseURL: url)
+                    self.load(data, mimeType: response.mimeType!, characterEncodingName: encodingName, baseURL: url)
                 }
             }
             
@@ -119,10 +117,10 @@ class NCViewerDocumentWeb: NSObject {
             
         } else {
             
-            webView.load(URLRequest(url: url))
+            load(URLRequest(url: url))
         }
         
-        view.addSubview(webView)
+        view.addSubview(self)
     }
 }
 
