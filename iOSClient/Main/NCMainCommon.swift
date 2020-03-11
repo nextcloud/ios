@@ -1348,6 +1348,12 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
                     
                     return
                 }
+#else
+                if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                    NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
+                    
+                    return
+                }
 #endif
                 
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
