@@ -106,7 +106,7 @@ class NCDetailViewController: UIViewController {
 
     @objc func setProgressBar() {
         
-        if self.progressView != nil { progressView?.removeFromSuperview() }
+        progressView?.removeFromSuperview()
         self.progressView = UIProgressView.init(progressViewStyle: .bar)
 
         guard let navigationController = splitViewController?.viewControllers.last as? UINavigationController else { return }
@@ -166,6 +166,7 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func navigateControllerBarHidden(_ state: Bool) {
+        
         if state  {
             view.backgroundColor = .black
         } else {
@@ -179,6 +180,7 @@ class NCDetailViewController: UIViewController {
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
+        
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
         }
@@ -198,6 +200,7 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
+        
         guard let metadata = self.metadata else { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
