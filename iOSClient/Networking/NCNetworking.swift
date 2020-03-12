@@ -247,7 +247,20 @@ import NCCommunication
     
     //MARK: - WebDav
     
-    @objc func deleteMetadata(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            if directory.e2eEncrypted {
+                self.deleteMetadataE2EE(metadata, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+            } else {
+                self.deleteMetadataPlain(metadata, completion: completion)
+            }
+        } else {
+            completion(Int(k_CCErrorInternalError), "Internal Error")
+        }
+    }
+    
+    @objc func deleteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
@@ -286,8 +299,30 @@ import NCCommunication
         }
     }
     
-    @objc func deleteMetadataE2EE(_ metadata: tableMetadata, directory: tableDirectory, user: String, userID: String, password: String, url: String,completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadataE2EE(_ metadata: tableMetadata, directory: tableDirectory, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                         
-        let error = NCNetworkingEndToEnd.sharedManager()?.lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url)
+        DispatchQueue.global().async {
+            if let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url) {
+                DispatchQueue.main.async {
+                    NCContentPresenter.shared.messageNotification("_delete_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    completion(Int(k_CCErrorInternalError), error.localizedDescription)
+                    return
+                }
+            }
+        }
+        
+        self.deleteMetadataPlain(metadata) { (errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, directory.serverUrl, metadata.fileName))
+            }
+            
+            DispatchQueue.global().async {
+                NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: directory.serverUrl, account: self.account, user: user, userID: userID, password: password, url: url)
+                DispatchQueue.main.async {
+                    completion(errorCode, errorDescription)
+                }
+            }
+        }
     }
 }

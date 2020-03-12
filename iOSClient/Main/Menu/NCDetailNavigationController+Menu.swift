@@ -57,7 +57,7 @@ extension NCDetailNavigationController {
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCNetworking.sharedInstance.deleteMetadata(metadata) { (errorCode, errorDescription) in }
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     })
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })

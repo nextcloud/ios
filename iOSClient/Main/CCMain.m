@@ -1447,7 +1447,7 @@
     _dateReadDataSource = nil;
     
     for (tableMetadata *metadata in metadatas) {
-        [[NCNetworking sharedInstance] deleteMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking sharedInstance] deleteMetadata:metadata user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 
     // End Select Table View

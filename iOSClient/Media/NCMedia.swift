@@ -577,7 +577,7 @@ extension NCMedia {
                 
         for ocId in selectocId {
             if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                NCNetworking.sharedInstance.deleteMetadata(metadata) { (errorCode, errorDescription) in }
+                NCNetworking.sharedInstance.deleteMetadata(metadata, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
             }
         }
     }

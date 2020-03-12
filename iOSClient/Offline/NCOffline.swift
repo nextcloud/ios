@@ -774,7 +774,7 @@ extension NCOffline {
         
         actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
             if item is DestructiveButton  {
-                NCNetworking.sharedInstance.deleteMetadata(metadata) { (errorCode, errorDescription) in }
+                NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
             }
             if item is CancelButton { print("Cancel buttons has the value `true`") }
         })
