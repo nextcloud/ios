@@ -321,7 +321,7 @@ extension CCMain {
             if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                        title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             DispatchQueue.global(qos: .userInitiated).async {
