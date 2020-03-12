@@ -29,6 +29,7 @@
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "NCEndToEndEncryption.h"
+#import "NCNetworkingEndToEnd.h"
 #import "OCActivity.h"
 #import "OCUserProfile.h"
 #import "OCCapabilities.h"

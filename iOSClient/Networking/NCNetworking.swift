@@ -285,4 +285,9 @@ import NCCommunication
             completion(errorCode, description)
         }
     }
+    
+    @objc func deleteMetadataE2EE(_ metadata: tableMetadata, directory: tableDirectory, user: String, userID: String, password: String, url: String,completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+                        
+        let error = NCNetworkingEndToEnd.sharedManager()?.lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url)
+    }
 }

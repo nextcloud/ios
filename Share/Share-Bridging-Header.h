@@ -5,6 +5,7 @@
 #import "CCHud.h"
 #import "ShareViewController.h"
 #import "NCEndToEndEncryption.h"
+#import "NCNetworkingEndToEnd.h"
 #import "OCActivity.h"
 #import "OCUserProfile.h"
 #import "OCCapabilities.h"
