@@ -165,7 +165,6 @@ class NCBrandColor: NSObject {
         return instance
     }()
 
-    @objc public let directEditing: Bool = true
-    @objc public let iOSHelper: Bool = false
+    @objc public let iOSHelper: Bool = true
 }
 
