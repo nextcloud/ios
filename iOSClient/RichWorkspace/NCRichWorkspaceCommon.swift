@@ -36,10 +36,12 @@ import NCCommunication
             return;
         }
         
+        guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.activeAccount))?.first else { return }
+        
         NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
-        NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: "text", creatorId: "" ,templateId: "", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+        NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
             
             NCUtility.sharedInstance.stopActivityIndicator()
             
