@@ -1148,6 +1148,19 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
+    
     @objc func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
         
         let realm = try! Realm()
