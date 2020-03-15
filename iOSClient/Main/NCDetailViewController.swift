@@ -531,16 +531,18 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             }
                 
         // HEIC
-        } else if metadata.contentType == "image/heic" {
+        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
             
             _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
-                
-                
+                                
+                self.progress(Float(progress.fractionCompleted))
                 
             }) { (account, etag, date, length, errorCode, errorDescription) in
+                
+                self.progress(0)
                 
                 if errorCode == 0 && account == metadata.account {
                     
