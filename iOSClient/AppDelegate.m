@@ -116,6 +116,9 @@
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     [UINavigationBar appearance].translucent = NO;
     
+    // ProgressView Detail
+    self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
+    
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
     

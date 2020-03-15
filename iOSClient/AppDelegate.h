@@ -84,6 +84,9 @@
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
 
+// ProgressView Detail
+@property (nonatomic, strong) UIProgressView *progressViewDetail;
+
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;
