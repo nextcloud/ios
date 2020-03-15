@@ -531,7 +531,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             }
                 
         // HEIC
-        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && metadata.hasPreview == false {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
