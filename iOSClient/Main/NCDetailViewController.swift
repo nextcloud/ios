@@ -616,5 +616,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
             metadatas[index] = self.metadata!
         }
+        
+        appDelegate.startLoadAutoDownloadUpload()
     }
 }
