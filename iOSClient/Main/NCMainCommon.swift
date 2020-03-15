@@ -1092,7 +1092,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             } catch { return }
         }
         // write icon
-        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: filetype, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
 
         // upload
         metadata.session = k_upload_session

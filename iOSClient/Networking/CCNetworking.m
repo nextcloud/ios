@@ -589,7 +589,7 @@
         
         // Icon
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
-            [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
+            [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
         if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
@@ -909,7 +909,7 @@
 
     // Create Image for Upload (gray scale)
 #ifndef EXTENSION
-    [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:YES typeFile:metadata.typeFile writeImage:YES];
+    [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId filterGrayScale:YES typeFile:metadata.typeFile writeImage:YES];
 #endif
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
@@ -1184,7 +1184,7 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Create preview
-        [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
+        [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
 
         // Copy photo or video in the photo album for auto upload
         if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {

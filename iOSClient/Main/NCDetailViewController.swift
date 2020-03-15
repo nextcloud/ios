@@ -314,7 +314,7 @@ class NCDetailViewController: UIViewController {
         for view in backgroundView.subviews { view.removeFromSuperview() }
 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: (metadata.fileNameView as NSString).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
         
         if appDelegate.isMediaObserver {
@@ -518,7 +518,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         // Preview for Video
         if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
             
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, extension: (metadata.fileNameView as NSString).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
         
         // Original only for actual
@@ -530,6 +530,38 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
                 
+        // HEIC
+        } else if metadata.contentType == "image/heic" {
+            
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+            
+            _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
+                
+                
+                
+            }) { (account, etag, date, length, errorCode, errorDescription) in
+                
+                if errorCode == 0 && account == metadata.account {
+                    
+                    metadata.status = Int(k_metadataStatusNormal)
+                    guard let metadataDownloaded = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
+                    _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDownloaded)
+                    
+                    if let image = UIImage.init(contentsOfFile: fileNameLocalPath) {
+                        
+                        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+                        
+                        completion(index, image, metadataDownloaded, ZoomScale.default, nil)
+                    } else {
+                        completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
+                    }
+                    
+                } else if errorCode != 0 {
+                    completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
+                }
+            }
+        
         // Preview
         } else if isPreview {
                 

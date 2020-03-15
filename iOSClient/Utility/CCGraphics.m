@@ -115,7 +115,7 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
