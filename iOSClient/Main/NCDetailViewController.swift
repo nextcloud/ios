@@ -525,9 +525,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if metadata.typeFile == k_metadataTypeFile_image && isImage && index == viewerImageViewController.index {
                 
             if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    completion(index, image, metadata, ZoomScale.default, nil)
-                }
+                completion(index, image, metadata, ZoomScale.default, nil)
             } else {
                 completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
