@@ -248,15 +248,13 @@ import NCCommunication
     //MARK: - WebDav
     
     @objc func deleteMetadata(_ metadata: tableMetadata, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
-        
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-            if directory.e2eEncrypted {
-                self.deleteMetadataE2EE(metadata, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
-            } else {
-                self.deleteMetadataPlain(metadata, completion: completion)
-            }
+                
+        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
+            
+        if directory != nil && directory?.e2eEncrypted == true {
+            self.deleteMetadataE2EE(metadata, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
-            completion(Int(k_CCErrorInternalError), "Internal Error")
+            self.deleteMetadataPlain(metadata, completion: completion)
         }
     }
     
