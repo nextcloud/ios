@@ -546,19 +546,16 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 
                 if errorCode == 0 && account == metadata.account {
                     
-                    metadata.status = Int(k_metadataStatusNormal)
-                    guard let metadataDownloaded = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-                    _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDownloaded)
+                    _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
                     if let image = UIImage.init(contentsOfFile: fileNameLocalPath) {
                         
                         CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
-                        completion(index, image, metadataDownloaded, ZoomScale.default, nil)
+                        completion(index, image, metadata, ZoomScale.default, nil)
                     } else {
                         completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                     }
-                    
                 } else if errorCode != 0 {
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
