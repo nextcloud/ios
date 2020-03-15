@@ -108,22 +108,6 @@ class NCUtility: NSObject {
         return 0
     }
     
-    @objc func getScreenWidthForPreview() -> CGFloat {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width * 0.75
-        
-        return screenWidth
-    }
-    
-    @objc func getScreenHeightForPreview() -> CGFloat {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.height * 0.75
-        
-        return screenWidth
-    }
-    
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width

@@ -494,11 +494,11 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             
                         } else {
                             
-                            OCNetworking.sharedManager()?.downloadPreview(withAccount: appDelegate.activeAccount, serverPath: activityPreview.source, fileNamePath: fileNamePath, completion: { (account, image, message, errorCode) in
-                                if errorCode == 0 {
-                                    cell.imageView.image = image
+                            NCCommunication.sharedInstance.downloadPreview(serverUrlPath: activityPreview.source, fileNameLocalPath: fileNamePath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                                if errorCode == 0 && data != nil {
+                                    cell.imageView.image = UIImage.init(data: data!)
                                 }
-                            })
+                            }
                         }
                     }
                 }

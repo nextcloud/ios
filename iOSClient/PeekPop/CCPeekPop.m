@@ -101,12 +101,13 @@
 
 - (void)downloadThumbnail
 {
-    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
-    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl activeUrl:appDelegate.activeUrl];
+    NSString *fileNameLocalPath = [CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
     
-    [[OCNetworking sharedManager] downloadPreviewWithAccount:appDelegate.activeAccount metadata:self.metadata withWidth:width andHeight:height completion:^(NSString *account, UIImage *image, NSString *message, NSInteger errorCode) {
-     
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+    [[NCCommunication sharedInstance] downloadPreviewWithServerUrl:appDelegate.activeUrl fileNamePath:fileNamePath fileNameLocalPath:fileNameLocalPath width:k_sizePreview height:k_sizePreview account:self.metadata.account completionHandler:^(NSString *account, NSData *data, NSInteger errorCode, NSString *errorDescription) {
+
+        if (errorCode == 0) {
+            UIImage *image = [UIImage imageWithData:data];
             self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
             self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + highLabelFileName);
         }

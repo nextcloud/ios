@@ -779,10 +779,12 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        OCNetworking.sharedManager().downloadPreviewTrash(withAccount: appDelegate.activeAccount, fileId: tableTrash.fileId, size: "128", fileName: tableTrash.fileName, completion: { (account, image, message, errorCode) in
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
+        
+        NCCommunication.sharedInstance.downloadPreviewTrash(serverUrl: appDelegate.activeUrl, fileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                if let cell = self.collectionView.cellForItem(at: indexPath) {
+            if errorCode == 0 && data != nil && account == self.appDelegate.activeAccount {
+                if let cell = self.collectionView.cellForItem(at: indexPath), let image = UIImage.init(data: data!) {
                     if cell is NCTrashListCell {
                         (cell as! NCTrashListCell).imageItem.image = image
                     } else if cell is NCGridCell {
@@ -790,6 +792,6 @@ extension NCTrash {
                     }
                 }
             }
-        })
+        }
     }
 }

@@ -80,6 +80,8 @@
 
 #define k_maxErrorAutoUploadAll                         100
 
+#define k_sizePreview                                   1024
+
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
 #define k_databaseSchemaVersion                         88

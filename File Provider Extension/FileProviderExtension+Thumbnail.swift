@@ -42,14 +42,11 @@ extension FileProviderExtension {
             
             if (metadata.hasPreview) {
                 
-                let width = NCUtility.sharedInstance.getScreenWidthForPreview()
-                let height = NCUtility.sharedInstance.getScreenHeightForPreview()
-                
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 let serverUrl = fileProviderData.sharedInstance.accountUrl
                     
-                NCCommunication.sharedInstance.downloadPreview(serverUrl: serverUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath ,width: width, height: height, account: fileProviderData.sharedInstance.account) { (account, data, errorCode, errorDescription) in
+                NCCommunication.sharedInstance.downloadPreview(serverUrl: serverUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath ,width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: fileProviderData.sharedInstance.account) { (account, data, errorCode, errorDescription) in
                     if errorCode == 0 && data != nil {
                         perThumbnailCompletionHandler(itemIdentifier, data, nil)
                     } else {

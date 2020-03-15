@@ -544,15 +544,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: NCUtility.sharedInstance.getScreenWidthForPreview(), height: NCUtility.sharedInstance.getScreenHeightForPreview(), account: metadata.account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: metadata.account) { (account, data, errorCode, errorMessage) in
                 if errorCode == 0 && data != nil {
-                    do {
-                        let url = URL.init(fileURLWithPath: fileNameLocalPath)
-                        try data!.write(to: url, options: .atomic)
-                        completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
-                    } catch {
-                        completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
-                    }
+                    completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                 } else {
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }

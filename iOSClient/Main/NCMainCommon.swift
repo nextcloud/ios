@@ -1482,41 +1482,41 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
     func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
         
         if !metadata.isInvalidated && metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
-            
-            let width = NCUtility.sharedInstance.getScreenWidthForPreview()
-            let height = NCUtility.sharedInstance.getScreenHeightForPreview()
-            
-            OCNetworking.sharedManager().downloadPreview(withAccount: metadata.account, metadata: metadata, withWidth: width, andHeight: height, completion: { (account, image, message, errorCode) in
-                
-                if errorCode == 0 && account == self.appDelegate.activeAccount && !metadata.isInvalidated && CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) {
+                        
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-                    if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                        if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
-                            if cell is NCListCell {
-                                (cell as! NCListCell).imageItem.image = image
-                            } else if cell is NCGridCell {
-                                (cell as! NCGridCell).imageItem.image = image
-                            } else if cell is NCGridMediaCell {
-                                (cell as! NCGridMediaCell).imageItem.image = image
+            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: metadata.account) { (account, data, errorCode, errorMessage) in
+                
+                if errorCode == 0 && data != nil  {
+                    if let image = UIImage.init(data: data!) {
+                        
+                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
+                                if cell is NCListCell {
+                                    (cell as! NCListCell).imageItem.image = image
+                                } else if cell is NCGridCell {
+                                    (cell as! NCGridCell).imageItem.image = image
+                                } else if cell is NCGridMediaCell {
+                                    (cell as! NCGridMediaCell).imageItem.image = image
+                                }
                             }
                         }
-                    }
-                    
-                    if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                        if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                            if cell is CCCellMainTransfer {
-                                (cell as! CCCellMainTransfer).file.image = image
-                            } else if cell is CCCellMain {
-                                (cell as! CCCellMain).file.image = image
+                        
+                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
+                                if cell is CCCellMainTransfer {
+                                    (cell as! CCCellMainTransfer).file.image = image
+                                } else if cell is CCCellMain {
+                                    (cell as! CCCellMain).file.image = image
+                                }
                             }
                         }
                     }
                 }
-                
                 return closure()
-            })
+            }
         }
-        
         return closure()
     }
 }
