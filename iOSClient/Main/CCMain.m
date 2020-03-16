@@ -1150,7 +1150,7 @@
                 metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                 
                 // Prepare file and directory
-                [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
+                [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
                 
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
             }
