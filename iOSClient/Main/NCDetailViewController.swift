@@ -697,6 +697,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
+        
         if hasMOV(metadata: metadata) != nil {
             viewerImageViewController.statusView.image = UIImage.init(named: "livePhoto")
         } else {
@@ -705,6 +706,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+        
         if !viewerImageViewControllerLongPressInProgress { return }
         
         appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
@@ -720,8 +722,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     func hasMOV(metadata: tableMetadata) -> tableMetadata? {
         
         if metadata.typeFile != k_metadataTypeFile_image { return nil }
+        
         let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
-        return metadata
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
     }
 }
