@@ -45,6 +45,8 @@ public struct ZoomScale {
 public class NCViewerImageContentView: UIScrollView {
 
     // MARK: - Exposed variables
+    
+    var metadata = tableMetadata()
     internal static var interItemSpacing: CGFloat = 0.0
     internal var index: Int {
         didSet {
@@ -73,6 +75,16 @@ public class NCViewerImageContentView: UIScrollView {
             }
         }
     }
+    internal var isStatusView: Bool = false {
+        didSet {
+            statusView.isHidden = !isStatusView
+            if isStatusView {
+                //
+            } else {
+                //
+            }
+        }
+    }
     internal var zoomLevels: ZoomScale? {
         didSet {
             zoomScale = ZoomScale.default.minimumZoomScale
@@ -81,13 +93,12 @@ public class NCViewerImageContentView: UIScrollView {
         }
     }
     
-    var metadata = tableMetadata()
-
     // MARK: - Private enumerations
 
     private enum Constants {
 
         static let indicatorViewSize: CGFloat = 60.0
+        static let statusViewSize: CGFloat = 60.0
     }
 
     // MARK: - Private variables
@@ -115,6 +126,14 @@ public class NCViewerImageContentView: UIScrollView {
         return container
     }()
 
+    private lazy var statusView: UIImageView = {
+        let statusView = UIImageView()
+        statusView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        statusView.contentMode = .scaleAspectFit
+        statusView.clipsToBounds = true
+        return statusView
+    }()
+    
     private lazy var doubleTapGestureRecognizer: UITapGestureRecognizer = { [unowned self] in
         let gesture = UITapGestureRecognizer(target: self, action: #selector(didDoubleTap(_:)))
         gesture.numberOfTapsRequired = 2
@@ -149,6 +168,8 @@ extension NCViewerImageContentView {
 
         setupIndicatorView()
 
+        setupStatusView()
+        
         configureScrollView()
 
         addGestureRecognizer(doubleTapGestureRecognizer)
@@ -200,6 +221,23 @@ extension NCViewerImageContentView {
         indicatorContainer.layoutIfNeeded()
 
         indicatorContainer.isHidden = true
+    }
+    
+    private func setupStatusView() {
+
+        addSubview(statusView)
+        statusView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            statusView.widthAnchor.constraint(equalToConstant: Constants.statusViewSize),
+            statusView.heightAnchor.constraint(equalToConstant: Constants.statusViewSize),
+            statusView.topAnchor.constraint(equalTo: superview!.topAnchor),
+            statusView.leftAnchor.constraint(equalTo: superview!.leftAnchor)
+        ])
+
+        statusView.setNeedsLayout()
+        statusView.layoutIfNeeded()
+
+        statusView.isHidden = true
     }
 
     internal func updateTransform() {
