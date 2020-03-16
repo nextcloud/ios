@@ -249,9 +249,27 @@
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.sharedInstance.brandElement];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
+        NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
+
+        // CONVERSION -->
+        
+        if ([fileName.pathExtension.uppercaseString isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
+            UIImage *image = [UIImage imageWithContentsOfFile:fileNameLocal];
+            if (image != nil) {
+                fileName = fileName.stringByDeletingPathExtension;
+                fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
+                [self.filesName replaceObjectAtIndex:0 withObject:fileName];
+                fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
+                [UIImageJPEGRepresentation(image, 1.0) writeToFile:fileNameLocal atomically:YES];
+                
+                [self.shareTable reloadData];
+            }
+        }
+        
+        // <--
+        
         NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
-        NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
         (void)[[NCCommunication sharedInstance] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil account:self.activeAccount progressHandler:^(NSProgress * progress) {
             [self.hud progress:progress.fractionCompleted];
