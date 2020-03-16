@@ -43,6 +43,7 @@ class NCDetailViewController: UIViewController {
     
     private let progressHeight: CGFloat = 1.5
     private var videoLayer: AVPlayerLayer?
+    private var viewerImageViewControllerLongPressInProgress = false
         
     //MARK: -
 
@@ -626,6 +627,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
+        viewerImageViewControllerLongPressInProgress = true
+        
         let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
             
@@ -658,6 +661,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
+        viewerImageViewControllerLongPressInProgress = false
+        
         appDelegate.player?.pause()
         videoLayer?.removeFromSuperlayer()
     }
@@ -685,6 +690,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     }
     
     func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+        if !viewerImageViewControllerLongPressInProgress { return }
         
         appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
         videoLayer = AVPlayerLayer(player: appDelegate.player)
