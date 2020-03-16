@@ -168,7 +168,7 @@ extension NCViewerImageContentView {
 
         setupIndicatorView()
 
-        //setupStatusView()
+        setupStatusView()
         
         configureScrollView()
 
@@ -230,8 +230,8 @@ extension NCViewerImageContentView {
         NSLayoutConstraint.activate([
             statusView.widthAnchor.constraint(equalToConstant: Constants.statusViewSize),
             statusView.heightAnchor.constraint(equalToConstant: Constants.statusViewSize),
-            statusView.topAnchor.constraint(equalTo: superview!.topAnchor),
-            statusView.leftAnchor.constraint(equalTo: superview!.leftAnchor)
+            statusView.topAnchor.constraint(equalTo: imageView.topAnchor),
+            statusView.leftAnchor.constraint(equalTo: imageView.leftAnchor)
         ])
 
         statusView.setNeedsLayout()
