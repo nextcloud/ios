@@ -687,6 +687,26 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getMOVLivePhoto
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"movLivePhoto" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setFormatCompatibility:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
+}
+
++ (void)setMOVLivePhoto:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"movLivePhoto" service:k_serviceShareKeyChain];
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

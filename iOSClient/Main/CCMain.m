@@ -1129,6 +1129,30 @@
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
+            // Add Medtadata for upload
+            if (asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive && CCUtility.getMOVLivePhoto) {
+                
+                NSUInteger index = [assets indexOfObject:asset];
+                NSURL *url = [urls objectAtIndex:index];
+                tableMetadata *metadataMOVForUpload = [tableMetadata new];
+                NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameWithoutExtension];
+                unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
+
+                metadataMOVForUpload.account = appDelegate.activeAccount;
+                metadataMOVForUpload.date = [NSDate new];
+                metadataMOVForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
+                metadataMOVForUpload.fileName = fileName;
+                metadataMOVForUpload.fileNameView = fileName;
+                metadataMOVForUpload.serverUrl = serverUrl;
+                metadataMOVForUpload.session = session;
+                metadataMOVForUpload.sessionSelector = selectorUploadFile;
+                metadataMOVForUpload.size = fileSize;
+                metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+                metadataMOVForUpload.url = url.path;
+                
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+            }
+                        
             [appDelegate startLoadAutoDownloadUpload];
         }
     }
