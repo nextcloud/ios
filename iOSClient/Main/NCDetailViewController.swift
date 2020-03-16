@@ -631,13 +631,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
                 
-                viewMOV(metadata: metadata, index: viewerImageViewController.currentItemIndex)
+                viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
                 
             } else {
                 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-                
+                                
                 _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
                                     
                     self.progress(Float(progress.fractionCompleted))
@@ -649,7 +649,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     if errorCode == 0 && account == metadata.account {
                         
                         _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                        self.viewMOV(metadata: metadata, index: viewerImageViewController.currentItemIndex)
+                        self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
                     }
                 }
             }
@@ -684,9 +684,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         appDelegate.startLoadAutoDownloadUpload()
     }
     
-    func viewMOV(metadata: tableMetadata, index: Int) {
-        guard let viewerImageViewController = self.viewerImageViewController else { return }
-        if viewerImageViewController.currentItemIndex != index { return }
+    func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
         appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
         videoLayer = AVPlayerLayer(player: appDelegate.player)
