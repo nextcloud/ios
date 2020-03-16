@@ -2274,6 +2274,44 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results: Results<tableMetadata>
+        var finals = [tableMetadata]()
+        var prevFileName = String()
+                    
+        if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
+            results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        } else {
+            results = realm.objects(tableMetadata.self).filter(predicate)
+        }
+        
+        for result in results {
+            
+            let ext = (result.fileNameView as NSString).pathExtension.uppercased()
+            let fileName = (result.fileNameView as NSString).deletingPathExtension
+            
+            if !(prevFileName == fileName && ext == "MOV") {
+                finals.append(result)
+            } else {
+                print("Live")
+            }
+            
+            if result.typeFile == k_metadataTypeFile_image {
+                prevFileName = fileName
+            }
+        }
+        
+        if (finals.count > 0) {
+            return Array(finals.map { tableMetadata.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
+    
     @objc func getMetadatas(predicate: NSPredicate, page: Int, limit: Int, sorted: String, ascending: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
