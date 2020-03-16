@@ -702,6 +702,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if hasMOV(metadata: metadata) != nil {
             viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
+        } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "audioPlay"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
         } else {
             viewerImageViewController.statusView.image = nil
         }
