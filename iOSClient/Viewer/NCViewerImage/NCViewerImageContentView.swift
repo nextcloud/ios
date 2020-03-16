@@ -92,7 +92,7 @@ public class NCViewerImageContentView: UIScrollView {
 
     // MARK: - Private variables
 
-    public lazy var imageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageView.contentMode = .scaleAspectFit

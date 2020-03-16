@@ -635,7 +635,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 videoLayer = AVPlayerLayer(player: appDelegate.player)
                 if  videoLayer != nil {
                     videoLayer!.frame = viewerImageViewController.view.frame
-                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
                     viewerImageViewController.view.layer.addSublayer(videoLayer!)
                     appDelegate.player?.play()
                 }
