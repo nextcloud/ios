@@ -42,7 +42,8 @@ protocol NCViewerImageViewControllerDelegate: class {
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
-
+    func viewerImageViewControllerLongPress(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
+    
     func viewerImageViewControllerDismiss()
 }
 
@@ -156,6 +157,14 @@ public class NCViewerImageViewController: UIViewController {
         gesture.addTarget(self, action: #selector(tapGestureEvent(_:)))
         return gesture
     }()
+    
+    lazy private var longtapGestureRecognizer: UILongPressGestureRecognizer = { [unowned self] in
+        let gesture = UILongPressGestureRecognizer()
+        gesture.delaysTouchesBegan = true
+        gesture.delegate = self
+        gesture.addTarget(self, action: #selector(longpressGestureEvent(_:)))
+        return gesture
+    }()
 
     private var previousTranslation: CGPoint = .zero
 
@@ -263,6 +272,7 @@ extension NCViewerImageViewController {
 
         view.addGestureRecognizer(panGestureRecognizer)
         view.addGestureRecognizer(tapGestureRecognizer)
+        view.addGestureRecognizer(longtapGestureRecognizer)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -420,6 +430,17 @@ extension NCViewerImageViewController {
         mediaView.zoomScaleOne()
         
         self.delegate?.viewerImageViewControllerTap(self, metadata: mediaView.metadata)
+    }
+    
+    @objc private func longpressGestureEvent(_ recognizer: UITapGestureRecognizer) {
+        if recognizer.state == UIGestureRecognizer.State.ended {
+            guard !dismissController.interactionInProgress else { return }
+            guard let mediaView = self.mediaView(at: 1) else { return }
+            
+            mediaView.zoomScaleOne()
+            
+            self.delegate?.viewerImageViewControllerLongPress(self, metadata: mediaView.metadata)
+        }
     }
 }
 
