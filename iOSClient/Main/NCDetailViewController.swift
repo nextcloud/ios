@@ -627,17 +627,30 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
         let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-        if let metadataMOV = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
             
-            if CCUtility.fileProviderStorageSize(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) > 0 {
-
-                appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)!))
-                videoLayer = AVPlayerLayer(player: appDelegate.player)
-                if  videoLayer != nil {
-                    videoLayer!.frame = viewerImageViewController.view.frame
-                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
-                    viewerImageViewController.view.layer.addSublayer(videoLayer!)
-                    appDelegate.player?.play()
+            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                
+                viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+                
+            } else {
+                
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+                
+                _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
+                                    
+                    self.progress(Float(progress.fractionCompleted))
+                    
+                }) { (account, etag, date, length, errorCode, errorDescription) in
+                    
+                    self.progress(0)
+                    
+                    if errorCode == 0 && account == metadata.account {
+                        
+                        _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+                    }
                 }
             }
         }
@@ -669,5 +682,17 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
         
         appDelegate.startLoadAutoDownloadUpload()
+    }
+    
+    func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+        
+        appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
+        videoLayer = AVPlayerLayer(player: appDelegate.player)
+        if  videoLayer != nil {
+            videoLayer!.frame = viewerImageViewController.view.frame
+            videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
+            viewerImageViewController.view.layer.addSublayer(videoLayer!)
+            appDelegate.player?.play()
+        }
     }
 }
