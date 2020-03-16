@@ -54,7 +54,7 @@
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [section addFormRow:row];
     
-    // Format Compatibility
+    // Format Compatibility + Live Photo
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
@@ -63,6 +63,14 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     if ([CCUtility getFormatCompatibility]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    [section addFormRow:row];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"livePhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_mov_livephoto_", nil)];
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+    if ([CCUtility getMOVLivePhoto]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -186,6 +194,11 @@
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
         
         [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"livePhoto"]) {
+        
+        [CCUtility setMOVLivePhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {
