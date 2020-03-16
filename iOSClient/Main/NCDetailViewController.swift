@@ -517,6 +517,11 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
         }
         
+        // Status Current
+        if index == viewerImageViewController.currentItemIndex {
+            statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
+        }
+        
         // Preview for Video
         if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
             
@@ -600,6 +605,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 }
             }
         }
+        
+        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
     }
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
@@ -689,6 +696,14 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         appDelegate.startLoadAutoDownloadUpload()
     }
     
+    func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
+        if hasMOV(metadata: metadata) != nil {
+            viewerImageViewController.statusView.image = UIImage.init(named: "livePhoto")
+        } else {
+            viewerImageViewController.statusView.image = nil
+        }
+    }
+    
     func viewMOV(viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         if !viewerImageViewControllerLongPressInProgress { return }
         
@@ -700,5 +715,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             viewerImageViewController.view.layer.addSublayer(videoLayer!)
             appDelegate.player?.play()
         }
+    }
+    
+    func hasMOV(metadata: tableMetadata) -> tableMetadata? {
+        
+        if metadata.typeFile != k_metadataTypeFile_image { return nil }
+        let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
+        return metadata
     }
 }

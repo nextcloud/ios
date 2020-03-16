@@ -186,6 +186,14 @@ public class NCViewerImageViewController: UIViewController {
         container.backgroundColor = .clear
         return container
     }()
+    
+    lazy var statusView: UIImageView = {
+        let statusView = UIImageView()
+        statusView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        statusView.contentMode = .scaleAspectFit
+        statusView.clipsToBounds = true
+        return statusView
+    }()
 
     lazy private var pageControl: UIPageControl = { [unowned self] in
         let pageControl = UIPageControl()
@@ -310,6 +318,18 @@ extension NCViewerImageViewController {
             mediaContainerView.topAnchor.constraint(equalTo: view.topAnchor),
             mediaContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        view.addSubview(statusView)
+        statusView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            statusView.widthAnchor.constraint(equalToConstant: 30),
+            statusView.heightAnchor.constraint(equalToConstant: 30),
+            statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 2),
+            statusView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 2)
+        ])
+
+        statusView.setNeedsLayout()
+        statusView.layoutIfNeeded()
 
         NCViewerImageContentView.interItemSpacing = gapBetweenMediaViews
         NCViewerImageContentView.contentTransformer = contentTransformer
