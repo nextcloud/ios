@@ -37,9 +37,10 @@ class NCPhotosPickerViewController: NSObject {
         self.singleSelectedMode = singleSelectedMode
     }
     
-    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?) -> ()) {
+    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?, [URL]?) -> ()) {
         
         var selectedPhAssets = [PHAsset]()
+        var selectedUrls = [URL]()
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -55,15 +56,21 @@ class NCPhotosPickerViewController: NSObject {
             
             for asset: TLPHAsset in assets {
                 if asset.phAsset != nil {
-                    selectedPhAssets.append(asset.phAsset!)
+                    asset.tempCopyMediaFile(videoRequestOptions: nil, imageRequestOptions: nil, livePhotoRequestOptions: nil, exportPreset: AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: false, progressBlock: { (progress) in }) { (url, contentType) in
+                        
+                        selectedPhAssets.append(asset.phAsset!)
+                        selectedUrls.append(url)
+                        
+                        if asset == assets.last {
+                            phAssets(selectedPhAssets, selectedUrls)
+                        }
+                    }
                 }
             }
             
-            phAssets(selectedPhAssets)
-            
         }) {
             
-            phAssets(nil)
+            phAssets(nil,nil)
         }
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
