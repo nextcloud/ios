@@ -623,7 +623,11 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func viewerImageViewControllerLongPress(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+    func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+        
+    }
+    
+    func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
     }
     

@@ -446,6 +446,7 @@
 		F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B3240962C7007C9B6D /* NCViewerImageContentView.swift */; };
 		F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B4240962C7007C9B6D /* NCViewerImageViewController.swift */; };
 		F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B5240962C7007C9B6D /* NCViewerImageContentTransformers.swift */; };
+		F796187C241FA4DD0005D819 /* NCGifFromVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = F796187A241FA4DD0005D819 /* NCGifFromVideo.m */; };
 		F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerMedia.swift */; };
 		F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */; };
 		F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */; };
@@ -1112,6 +1113,8 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
+		F796187A241FA4DD0005D819 /* NCGifFromVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCGifFromVideo.m; sourceTree = "<group>"; };
+		F796187B241FA4DD0005D819 /* NCGifFromVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCGifFromVideo.h; sourceTree = "<group>"; };
 		F79630ED215527D40015EEA5 /* NCViewerMedia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerMedia.swift; sourceTree = "<group>"; };
 		F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkFolderMenuView.xib; sourceTree = "<group>"; };
 		F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareUserFolderMenuView.xib; sourceTree = "<group>"; };
@@ -2288,13 +2291,15 @@
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
 				F78E7064219F096B006F23E4 /* NCAvatar.swift */,
 				F765608E23BF813500765969 /* NCContentPresenter.swift */,
+				F796187B241FA4DD0005D819 /* NCGifFromVideo.h */,
+				F796187A241FA4DD0005D819 /* NCGifFromVideo.m */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
-				F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
 				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
 				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
+				F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */,
 				F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */,
 			);
 			path = Utility;
@@ -3221,6 +3226,7 @@
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
+				F796187C241FA4DD0005D819 /* NCGifFromVideo.m in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,

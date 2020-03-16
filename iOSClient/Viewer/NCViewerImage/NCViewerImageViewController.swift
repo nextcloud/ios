@@ -42,8 +42,9 @@ protocol NCViewerImageViewControllerDelegate: class {
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
-    func viewerImageViewControllerLongPress(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
-    
+    func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
+    func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
+
     func viewerImageViewControllerDismiss()
 }
 
@@ -433,13 +434,17 @@ extension NCViewerImageViewController {
     }
     
     @objc private func longpressGestureEvent(_ recognizer: UITapGestureRecognizer) {
-        if recognizer.state == UIGestureRecognizer.State.ended {
-            guard !dismissController.interactionInProgress else { return }
-            guard let mediaView = self.mediaView(at: 1) else { return }
-            
+        
+        guard !dismissController.interactionInProgress else { return }
+        guard let mediaView = self.mediaView(at: 1) else { return }
+        
+        if recognizer.state == UIGestureRecognizer.State.began {
             mediaView.zoomScaleOne()
-            
-            self.delegate?.viewerImageViewControllerLongPress(self, metadata: mediaView.metadata)
+            self.delegate?.viewerImageViewControllerLongPressBegan(self, metadata: mediaView.metadata)
+        }
+        
+        if recognizer.state == UIGestureRecognizer.State.ended {
+            self.delegate?.viewerImageViewControllerLongPressEnded(self, metadata: mediaView.metadata)
         }
     }
 }
