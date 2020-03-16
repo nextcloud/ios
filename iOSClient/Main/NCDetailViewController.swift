@@ -701,7 +701,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
         
         if hasMOV(metadata: metadata) != nil {
-            viewerImageViewController.statusView.image = UIImage.init(named: "livePhoto")
+            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
         } else {
             viewerImageViewController.statusView.image = nil
         }
