@@ -1130,7 +1130,7 @@
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
             // Add Medtadata MOV LIVE PHOTO for upload
-            if (asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive && CCUtility.getMOVLivePhoto) {
+            if (asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive && CCUtility.getMOVLivePhoto && urls.count == assets.count) {
                 
                 NSUInteger index = [assets indexOfObject:asset];
                 NSURL *url = [urls objectAtIndex:index];
