@@ -2281,7 +2281,6 @@ class NCManageDatabase: NSObject {
         
         let results: Results<tableMetadata>
         var finals = [tableMetadata]()
-        var prevFileName = String()
                     
         if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
             results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -2289,19 +2288,21 @@ class NCManageDatabase: NSObject {
             results = realm.objects(tableMetadata.self).filter(predicate)
         }
         
+        // For Live Photo
+        var fileNameImages = [String]()
+        let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
+        filtered.forEach { print($0)
+            let fileName = ($0.fileNameView as NSString).deletingPathExtension
+            fileNameImages.append(fileName)
+        }
+        
         for result in results {
             
             let ext = (result.fileNameView as NSString).pathExtension.uppercased()
             let fileName = (result.fileNameView as NSString).deletingPathExtension
             
-            if !(prevFileName == fileName && ext == "MOV") {
+            if !(ext == "MOV" && fileNameImages.contains(fileName)) {
                 finals.append(result)
-            } else {
-                print("Live")
-            }
-            
-            if result.typeFile == k_metadataTypeFile_image {
-                prevFileName = fileName
             }
         }
         
@@ -2451,7 +2452,15 @@ class NCManageDatabase: NSObject {
         var metadatas = [tableMetadata]()
         var oldServerUrl = ""
         var isValidMetadata = true
-
+        
+        // For Live Photo
+        var fileNameImages = [String]()
+        let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
+        filtered.forEach { print($0)
+            let fileName = ($0.fileNameView as NSString).deletingPathExtension
+            fileNameImages.append(fileName)
+        }
+                
         for result in results {
             let metadata = tableMetadata.init(value: result)
         
@@ -2468,7 +2477,12 @@ class NCManageDatabase: NSObject {
                 isValidMetadata = !foundLock
             }
             if isValidMetadata {
-                metadatas.append(tableMetadata.init(value: metadata))
+                let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
+                let fileName = (metadata.fileNameView as NSString).deletingPathExtension
+
+                if !(ext == "MOV" && fileNameImages.contains(fileName)) {
+                    metadatas.append(tableMetadata.init(value: metadata))
+                }
             }
         }
       

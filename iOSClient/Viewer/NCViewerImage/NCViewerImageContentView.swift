@@ -168,7 +168,7 @@ extension NCViewerImageContentView {
 
         setupIndicatorView()
 
-        setupStatusView()
+        //setupStatusView()
         
         configureScrollView()
 
