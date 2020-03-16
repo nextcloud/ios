@@ -617,8 +617,10 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
             if navigationController.isNavigationBarHidden {
                 navigateControllerBarHidden(false)
+                viewerImageViewController.statusView.isHidden = false
             } else {
                 navigateControllerBarHidden(true)
+                viewerImageViewController.statusView.isHidden = true
             }
             
             NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
