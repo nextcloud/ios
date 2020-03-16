@@ -625,6 +625,16 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
+        let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+        if let metadataMOV = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
+            
+            if CCUtility.fileProviderStorageSize(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) > 0 {
+                
+                let videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)!)
+                
+                
+            }
+        }
     }
     
     func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
