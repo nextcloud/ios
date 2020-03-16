@@ -42,6 +42,7 @@ class NCDetailViewController: UIViewController {
     @objc var metadatas = [tableMetadata]()
     
     private let progressHeight: CGFloat = 1.5
+    private var videoLayer: AVPlayerLayer?
         
     //MARK: -
 
@@ -629,16 +630,23 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if let metadataMOV = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
             
             if CCUtility.fileProviderStorageSize(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView) > 0 {
-                
-                let videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)!)
-                
-                
+
+                appDelegate.player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)!))
+                videoLayer = AVPlayerLayer(player: appDelegate.player)
+                if  videoLayer != nil {
+                    videoLayer!.frame = viewerImageViewController.view.frame
+                    videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                    viewerImageViewController.view.layer.addSublayer(videoLayer!)
+                    appDelegate.player?.play()
+                }
             }
         }
     }
     
     func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
+        appDelegate.player?.pause()
+        videoLayer?.removeFromSuperlayer()
     }
     
     func viewerImageViewControllerDismiss() {
