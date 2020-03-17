@@ -632,6 +632,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 present(viewerImageVideo, animated: false) { }
             }
         }
+        
+        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
     }
     
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
@@ -700,10 +702,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
         
+        var colorStatus: UIColor = UIColor.white.withAlphaComponent(0.8)
+        if view.backgroundColor?.isLight() ?? true { colorStatus = UIColor.black.withAlphaComponent(0.8) }
+                
         if hasMOV(metadata: metadata) != nil {
-            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
+            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: colorStatus)
         } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
+            viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: colorStatus)
         } else {
             viewerImageViewController.statusView.image = nil
         }
