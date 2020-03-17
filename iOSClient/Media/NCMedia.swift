@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
 import FastScroll
 
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
@@ -44,9 +43,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var autoUploadDirectory = ""
     
     private var gridLayout: NCGridMediaLayout!
-    
-    private var actionSheet: ActionSheet?
-    
+        
     private let sectionHeaderHeight: CGFloat = 50
     private let footerHeight: CGFloat = 50
     
@@ -146,7 +143,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             self.collectionView?.reloadDataThenPerform {
                 self.downloadThumbnail()
             }
-            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
@@ -273,7 +269,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
@@ -283,29 +279,29 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     }
                 )
             )
-            
+
             actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            self.filterTypeFileImage = !self.filterTypeFileImage
-                            self.reloadDataSource(loadNetworkDatasource: false) { }
-                        }
-                    )
+                NCMenuAction(
+                    title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.filterTypeFileImage = !self.filterTypeFileImage
+                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                    }
+                )
             )
-            
+
             actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            self.filterTypeFileVideo = !self.filterTypeFileVideo
-                            self.reloadDataSource(loadNetworkDatasource: false) { }
-                        }
-                    )
+                NCMenuAction(
+                    title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.filterTypeFileVideo = !self.filterTypeFileVideo
+                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                    }
+                )
             )
-            
+
         } else {
             actions.append(
                 NCMenuAction(
@@ -320,7 +316,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     }
                 )
             )
-            
+
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
@@ -331,7 +327,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 )
             )
         }
-        
+
         mainMenuViewController.actions = actions
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = self
