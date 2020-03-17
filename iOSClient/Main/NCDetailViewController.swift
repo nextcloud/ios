@@ -700,6 +700,27 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         appDelegate.startLoadAutoDownloadUpload()
     }
     
+    func saveLivePhoto(metadata: tableMetadata, metadataMov: tableMetadata) {
+        
+        let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+        let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+        
+        NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+            self.progress(Float(progress))
+        }, completion: { livePhoto, resources in
+            self.progress(0)
+            if resources != nil {
+                NCLivePhoto.saveToLibrary(resources!) { (result) in
+                    if !result {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "errorMessage", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    }
+                }
+            } else {
+                NCContentPresenter.shared.messageNotification("_error_", description: "errorMessage", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            }
+        })
+    }
+    
     func statusViewImage(metadata: tableMetadata, viewerImageViewController: NCViewerImageViewController) {
         
         var colorStatus: UIColor = UIColor.white.withAlphaComponent(0.8)

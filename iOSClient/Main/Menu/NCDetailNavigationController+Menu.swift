@@ -78,15 +78,21 @@ extension NCDetailNavigationController {
             )
         }
         
-        actions.append(
-            NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    self.appDelegate.activeDetail.viewUnload()
+        if appDelegate.activeDetail.viewerImageViewController != nil {
+            if let metadataMov = appDelegate.activeDetail.hasMOV(metadata: metadata) {
+                if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataMov.ocId, fileNameView: metadataMov.fileNameView) > 0 {
+                    actions.append(
+                        NCMenuAction(title: NSLocalizedString("_xxxxxxx_", comment: ""),
+                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                            action: { menuAction in
+                                self.appDelegate.activeDetail.saveLivePhoto(metadata: metadata, metadataMov: metadataMov)
+                            }
+                        )
+                    )
                 }
-            )
-        )
-        
+            }
+        }
+                
         if CCUtility.isDocumentModifiableExtension(fileNameExtension) && (directEditingCreators == nil || !appDelegate.reachability.isReachable()) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_internal_modify_", comment: ""),
@@ -104,6 +110,15 @@ extension NCDetailNavigationController {
                 )
             )
         }
+        
+        actions.append(
+            NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    self.appDelegate.activeDetail.viewUnload()
+                }
+            )
+        )
         
         return actions
     }
