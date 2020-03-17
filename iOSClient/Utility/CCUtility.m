@@ -689,15 +689,7 @@
 
 + (BOOL)getMOVLivePhoto
 {
-    NSString *valueString = [UICKeyChainStore stringForKey:@"movLivePhoto" service:k_serviceShareKeyChain];
-    
-    // Default TRUE
-    if (valueString == nil) {
-        [self setFormatCompatibility:YES];
-        return true;
-    }
-    
-    return [valueString boolValue];
+    return [[UICKeyChainStore stringForKey:@"movLivePhoto" service:k_serviceShareKeyChain] boolValue];
 }
 
 + (void)setMOVLivePhoto:(BOOL)set
