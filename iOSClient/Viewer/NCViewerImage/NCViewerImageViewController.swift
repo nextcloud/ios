@@ -162,6 +162,7 @@ public class NCViewerImageViewController: UIViewController {
     lazy private var longtapGestureRecognizer: UILongPressGestureRecognizer = { [unowned self] in
         let gesture = UILongPressGestureRecognizer()
         gesture.delaysTouchesBegan = true
+        gesture.minimumPressDuration = 0.3
         gesture.delegate = self
         gesture.addTarget(self, action: #selector(longpressGestureEvent(_:)))
         return gesture
