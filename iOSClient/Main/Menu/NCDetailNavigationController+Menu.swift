@@ -57,6 +57,14 @@ extension NCDetailNavigationController {
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        
+                        // Live Data ? remove MOV
+                        if self.appDelegate.activeDetail.viewerImageViewController != nil {
+                            if let metadataMov = self.appDelegate.activeDetail.hasMOV(metadata: metadata) {
+                                NCNetworking.sharedInstance.deleteMetadata(metadataMov, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                            }
+                        }
+                        
                         NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     })
                     
