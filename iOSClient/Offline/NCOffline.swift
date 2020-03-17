@@ -137,7 +137,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
