@@ -82,7 +82,7 @@ extension NCDetailNavigationController {
             if let metadataMov = appDelegate.activeDetail.hasMOV(metadata: metadata) {
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataMov.ocId, fileNameView: metadataMov.fileNameView) > 0 {
                     actions.append(
-                        NCMenuAction(title: NSLocalizedString("_xxxxxxx_", comment: ""),
+                        NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
                                 self.appDelegate.activeDetail.saveLivePhoto(metadata: metadata, metadataMov: metadataMov)

@@ -712,11 +712,11 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             if resources != nil {
                 NCLivePhoto.saveToLibrary(resources!) { (result) in
                     if !result {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "errorMessage", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     }
                 }
             } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: "errorMessage", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
             }
         })
     }
