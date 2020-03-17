@@ -274,6 +274,8 @@
 "_privacy_footer_"              = "Nextcloud iOS uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
+"_upload_mov_livephoto_"        = "Live Photo";
+"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, Live Photo video";
 
 // Login
 
