@@ -500,5 +500,13 @@ class NCUtility: NSObject {
             return "Mozilla/5.0 (iPhone) Mobile Nextcloud-iOS/\(appVersion)"
         }
     }
+    
+    @objc func hasMOV(metadata: tableMetadata) -> tableMetadata? {
+        
+        if metadata.typeFile != k_metadataTypeFile_image { return nil }
+        
+        let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
+    }
 }
 

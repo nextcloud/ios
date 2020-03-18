@@ -293,11 +293,10 @@ class NCDetailViewController: UIViewController {
     @objc func downloadFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
                 // IMAGE
-                if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+                if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio && errorCode != 0  {
 
                     viewerImageViewController?.reloadContentViews()
                 }
@@ -719,7 +718,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         var colorStatus: UIColor = UIColor.white.withAlphaComponent(0.8)
         if view.backgroundColor?.isLight() ?? true { colorStatus = UIColor.black.withAlphaComponent(0.8) }
                 
-        if hasMOV(metadata: metadata) != nil {
+        if NCUtility.sharedInstance.hasMOV(metadata: metadata) != nil {
             viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: colorStatus)
         } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: colorStatus)
@@ -740,13 +739,5 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             viewerImageViewController.view.layer.addSublayer(videoLayer!)
             appDelegate.player?.play()
         }
-    }
-    
-    func hasMOV(metadata: tableMetadata) -> tableMetadata? {
-        
-        if metadata.typeFile != k_metadataTypeFile_image { return nil }
-        
-        let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
     }
 }

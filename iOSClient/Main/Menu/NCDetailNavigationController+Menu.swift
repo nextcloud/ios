@@ -61,7 +61,7 @@ extension NCDetailNavigationController {
                         // Live Data ? remove MOV
                         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
                         
-                            if let metadataMov = self.appDelegate.activeDetail.hasMOV(metadata: metadata) {
+                            if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
                                 NCNetworking.sharedInstance.deleteMetadata(metadataMov, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                             }
                         }
@@ -88,7 +88,7 @@ extension NCDetailNavigationController {
         }
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            if let metadataMov = appDelegate.activeDetail.hasMOV(metadata: metadata) {
+            if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataMov.ocId, fileNameView: metadataMov.fileNameView) > 0 {
                     actions.append(
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
