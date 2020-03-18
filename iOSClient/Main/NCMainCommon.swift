@@ -64,6 +64,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         static var cellFolderExternalImage = UIImage()
         static var cellFolderAutomaticUploadImage = UIImage()
         static var cellFolderImage = UIImage()
+        
+        static var cellPlayImage = UIImage()
     }
     
     @objc func createImagesThemingColor() {
@@ -81,6 +83,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         NCMainCommonImages.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCMainCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCMainCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        
+        NCMainCommonImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
     }
     
     //MARK: -
@@ -492,6 +496,11 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 } else {
                     cell.imageItem.image = UIImage.init(named: "file")
                 }
+            }
+            
+            // image status
+            if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+                cell.imageStatus.image = NCMainCommonImages.cellPlayImage
             }
             
             // image Local
