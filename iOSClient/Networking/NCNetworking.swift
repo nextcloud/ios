@@ -311,25 +311,27 @@ import NCCommunication
     @objc func deleteMetadataE2EE(_ metadata: tableMetadata, directory: tableDirectory, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                         
         DispatchQueue.global().async {
-            if let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url) {
-                DispatchQueue.main.async {
-                    NCContentPresenter.shared.messageNotification("_delete_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                    completion(Int(k_CCErrorInternalError), error.localizedDescription)
-                    return
-                }
-            }
-        }
-        
-        self.deleteMetadataPlain(metadata) { (errorCode, errorDescription) in
+            // LOCK FOLDER
+            let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url)
             
-            if errorCode == 0 {
-                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, directory.serverUrl, metadata.fileName))
-            }
-            
-            DispatchQueue.global().async {
-                NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: directory.serverUrl, account: self.account, user: user, userID: userID, password: password, url: url)
-                DispatchQueue.main.async {
-                    completion(errorCode, errorDescription)
+            DispatchQueue.main.async {
+                if error == nil {
+                    self.deleteMetadataPlain(metadata) { (errorCode, errorDescription) in
+                        
+                        if errorCode == 0 {
+                            NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, directory.serverUrl, metadata.fileName))
+                        }
+                        
+                        DispatchQueue.global().async {
+                            NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: directory.serverUrl, account: self.account, user: user, userID: userID, password: password, url: url)
+                            DispatchQueue.main.async {
+                                completion(errorCode, errorDescription)
+                            }
+                        }
+                    }
+                } else {
+                    NCContentPresenter.shared.messageNotification("_delete_", description: error!.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    completion(Int(k_CCErrorInternalError), error!.localizedDescription)
                 }
             }
         }
