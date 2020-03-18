@@ -214,7 +214,8 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let type = userInfo["type"] as? String {
                 
-                if viewerImageViewController != nil && self.mediaFilterImage {
+                if (self.metadata?.typeFile == k_metadataTypeFile_image || self.metadata?.typeFile == k_metadataTypeFile_video || self.metadata?.typeFile == k_metadataTypeFile_audio) && self.mediaFilterImage {
+                    
                     if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
                         self.metadatas = metadatas
                     }
@@ -259,7 +260,7 @@ class NCDetailViewController: UIViewController {
                     }
                 }
                 
-                if viewerImageViewController == nil && metadata.ocId == self.metadata?.ocId {
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     viewUnload()
                 }
             }
@@ -281,7 +282,7 @@ class NCDetailViewController: UIViewController {
                     }
                 }
                 
-                if viewerImageViewController == nil && metadata.ocId == self.metadata?.ocId {
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {                
                     self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                 }
             }
@@ -303,7 +304,7 @@ class NCDetailViewController: UIViewController {
     }
     
     func isImage(metadata: tableMetadata, errorCode: Int) -> Bool {
-        return (errorCode == 0 && viewerImageViewController != nil && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio))
+        return (errorCode == 0 && metadata.account == self.metadata?.account && metadata.serverUrl == self.metadata?.serverUrl && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio))
     }
     
     //MARK: - View File
@@ -325,12 +326,13 @@ class NCDetailViewController: UIViewController {
         }
         
         // IMAGE
-        if metadata.typeFile == k_metadataTypeFile_image {
+        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
             viewImage()
             return
         }
         
+        /*
         // AUDIO VIDEO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
@@ -338,6 +340,7 @@ class NCDetailViewController: UIViewController {
             NCViewerMedia.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
             return
         }
+        */
         
         // DOCUMENT - INTERNAL VIEWER
         if metadata.typeFile == k_metadataTypeFile_document && selector != nil && selector == selectorLoadFileInternalView {

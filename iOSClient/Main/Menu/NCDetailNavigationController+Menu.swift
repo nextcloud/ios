@@ -59,7 +59,8 @@ extension NCDetailNavigationController {
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
                         // Live Data ? remove MOV
-                        if self.appDelegate.activeDetail.viewerImageViewController != nil {
+                        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+                        
                             if let metadataMov = self.appDelegate.activeDetail.hasMOV(metadata: metadata) {
                                 NCNetworking.sharedInstance.deleteMetadata(metadataMov, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                             }
@@ -75,7 +76,7 @@ extension NCDetailNavigationController {
             )
         )
         
-        if appDelegate.activeDetail.viewerImageViewController != nil && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
+        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -86,7 +87,7 @@ extension NCDetailNavigationController {
             )
         }
         
-        if appDelegate.activeDetail.viewerImageViewController != nil {
+        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             if let metadataMov = appDelegate.activeDetail.hasMOV(metadata: metadata) {
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataMov.ocId, fileNameView: metadataMov.fileNameView) > 0 {
                     actions.append(
