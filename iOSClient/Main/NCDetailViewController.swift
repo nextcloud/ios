@@ -301,7 +301,7 @@ class NCDetailViewController: UIViewController {
                     viewerImageViewController?.reloadContentViews()
                 }
                 
-                setProgressBar()
+                progress(0)
             }
         }
     }

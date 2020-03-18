@@ -254,7 +254,18 @@ import NCCommunication
         if directory != nil && directory?.e2eEncrypted == true {
             self.deleteMetadataE2EE(metadata, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
-            self.deleteMetadataPlain(metadata, completion: completion)
+            // Verify Live Photo
+            if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
+                self.deleteMetadataPlain(metadataMov) { (errorCode, errorDescription) in
+                    if errorCode == 0 {
+                        self.deleteMetadataPlain(metadata, completion: completion)
+                    } else {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+            } else {
+                self.deleteMetadataPlain(metadata, completion: completion)
+            }
         }
     }
     
