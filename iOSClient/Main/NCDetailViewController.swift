@@ -261,7 +261,7 @@ class NCDetailViewController: UIViewController {
                     }
                 }
                 
-                else if metadata.ocId == self.metadata?.ocId {
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     viewUnload()
                 }
             }
@@ -283,7 +283,7 @@ class NCDetailViewController: UIViewController {
                     }
                 }
                 
-                else if  metadata.ocId == self.metadata?.ocId {
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                 }
             }
