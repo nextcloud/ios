@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
 import FastScroll
 
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
@@ -44,9 +43,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var autoUploadDirectory = ""
     
     private var gridLayout: NCGridMediaLayout!
-    
-    private var actionSheet: ActionSheet?
-    
+        
     private let sectionHeaderHeight: CGFloat = 50
     private let footerHeight: CGFloat = 50
     
@@ -146,7 +143,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             self.collectionView?.reloadDataThenPerform {
                 self.downloadThumbnail()
             }
-            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
@@ -260,82 +256,86 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     }
     
     @objc func touchUpInsideMenuButtonMore(_ sender: Any) {
-        
-        var menu: DropdownMenu?
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        var actions = [NCMenuAction]()
 
         if !isEditMode {
-            
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_media_folder_", comment: ""))
-            var item2: DropdownItem
-            if filterTypeFileImage {
-                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageno"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_show_", comment: ""))
-            } else {
-                item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewimage_hide_", comment: ""))
-            }
-            var item3: DropdownItem
-            if filterTypeFileVideo {
-                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videono"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_show_", comment: ""))
-            } else {
-                item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_media_viewvideo_hide_", comment: ""))
-            }
-            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0,item1,item2,item3], selectedRow: -1)
-            menu?.token = "menuButtonMore"
-            
-        } else {
-            
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_delete_", comment: ""))
-            
-            menu = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1], selectedRow: -1)
-            menu?.token = "menuButtonMoreSelect"
-        }
-        
-        menu?.delegate = self
-        menu?.rowHeight = 45
-        menu?.highlightColor = NCBrandColor.sharedInstance.brand
-        menu?.tableView.alwaysBounceVertical = false
-        menu?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
-        menu?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        menu?.cellBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        menu?.textColor = NCBrandColor.sharedInstance.textView
-        
-        menu?.showMenu()
-    }
-    
-    // MARK: DROP-DOWN-MENU
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_select_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.isEditMode = true
+                    }
+                )
+            )
 
-    func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
-        
-        if dropdownMenu.token == "menuButtonMore" {
-            switch indexPath.row {
-            case 0:
-                isEditMode = true
-            case 1:
-                selectStartDirectoryPhotosTab()
-            case 2:
-                filterTypeFileImage = !filterTypeFileImage
-                reloadDataSource(loadNetworkDatasource: false) { }
-            case 3:
-                filterTypeFileVideo = !filterTypeFileVideo
-                reloadDataSource(loadNetworkDatasource: false) { }
-            default: ()
-            }
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_select_media_folder_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.selectStartDirectoryPhotosTab()
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.filterTypeFileImage = !self.filterTypeFileImage
+                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString(filterTypeFileVideo ? "_media_viewvideo_show_" : "_media_viewvideo_hide_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.filterTypeFileVideo = !self.filterTypeFileVideo
+                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                    }
+                )
+            )
+
+        } else {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_cancel_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        self.selectocId.removeAll()
+                        self.collectionView?.reloadDataThenPerform {
+                            self.downloadThumbnail()
+                        }
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_delete_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.deleteItems()
+                    }
+                )
+            )
         }
-        
-        if dropdownMenu.token == "menuButtonMoreSelect" {
-            switch indexPath.row {
-            case 0:
-                isEditMode = false
-                selectocId.removeAll()
-                collectionView?.reloadDataThenPerform {
-                    self.downloadThumbnail()
-                }
-            case 1:
-                deleteItems()
-            default: ()
-            }
-        }
+
+        mainMenuViewController.actions = actions
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        self.present(menuPanelController, animated: true, completion: nil)
     }
     
     // MARK: Select Directory

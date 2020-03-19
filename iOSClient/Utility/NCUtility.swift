@@ -24,7 +24,6 @@
 import Foundation
 import SVGKit
 import KTVHTTPCache
-import Sheeeeeeeeet
 import NCCommunication
 
 class NCUtility: NSObject {

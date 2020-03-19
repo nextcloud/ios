@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
 
 class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate  {
     
@@ -50,9 +49,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-    
-    private var actionSheet: ActionSheet?
-    
+        
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
@@ -140,7 +137,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
@@ -342,41 +338,76 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         }
         
         if !isEditMode {
-            
-            var items = [MenuItem]()
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            var actions = [NCMenuAction]()
 
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-            
-            // 0 == CCMore, 1 = first NCOffline ....
-            if (self == self.navigationController?.viewControllers[1]) {
-                items.append(MenuItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
+
+            var iconHeader: UIImage!
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+                iconHeader = icon
+            } else {
+                iconHeader = UIImage(named: metadata.iconName)
             }
-            items.append(MenuItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            items.append(MenuItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
-            items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
-                if item.value as? Int == 0 {
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+
+            actions.append(
+                NCMenuAction(
+                    title: metadata.fileNameView,
+                    icon: iconHeader,
+                    action: nil
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        if metadata.directory {
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
+                        } else {
+                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                        }
+                        self.loadDatasource()
                     }
-                    self.loadDatasource()
-                }
-                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0) }
-                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
-                if item is CancelButton { print("Cancel buttons has the value `true`") }
-            })
-            
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-            actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
-            
-            actionSheet?.present(in: self, from: sender as! UIButton)
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_delete_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    action: { menuAction in
+                        self.deleteItem(with: metadata, sender: sender)
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_cancel_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in }
+                )
+            )
+
+            mainMenuViewController.actions = actions
+            let menuPanelController = NCMenuPanelController()
+            menuPanelController.parentPresenter = self
+            menuPanelController.delegate = mainMenuViewController
+            menuPanelController.set(contentViewController: mainMenuViewController)
+            menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+            self.present(menuPanelController, animated: true, completion: nil)
         } else {
             
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
@@ -761,28 +792,33 @@ extension NCOffline {
     }
     
     func deleteItem(with metadata: tableMetadata, sender: Any) {
-        
-        var items = [MenuItem]()
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
-        items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
-            if item is DestructiveButton  {
-                NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
-            }
-            if item is CancelButton { print("Cancel buttons has the value `true`") }
-        })
-        
-        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-        actionSheet?.headerView = headerView
-        actionSheet?.headerView?.frame.size.height = 50
-     
-        actionSheet?.present(in: self, from: sender as! UIButton)
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+
+        var actions = [NCMenuAction]()
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                action: { menuAction in
+                    NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                }
+            )
+        )
+
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in }
+            )
+        )
+
+        mainMenuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
     }
 }
