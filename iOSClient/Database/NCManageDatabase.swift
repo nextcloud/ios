@@ -1885,10 +1885,6 @@ class NCManageDatabase: NSObject {
     
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
-        if metadata.isInvalidated {
-            return nil
-        }
-        
         let serverUrl = metadata.serverUrl
         let account = metadata.account
         
@@ -1904,10 +1900,6 @@ class NCManageDatabase: NSObject {
         }
         
         self.setDateReadDirectory(serverUrl: serverUrl, account: account)
-        
-        if metadata.isInvalidated {
-            return nil
-        }
         
         return tableMetadata.init(value: metadata)
     }
