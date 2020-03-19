@@ -464,6 +464,11 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                             
             var index = 0
             if let indexFound = metadatas.firstIndex(where: { $0.ocId == self.metadata?.ocId }) { index = indexFound }
+            // Video -> is a Live Photo ?
+            if metadata?.typeFile == k_metadataTypeFile_video && metadata != nil {
+                let filename = (metadata!.fileNameView as NSString).deletingPathExtension.lowercased()
+                if let indexFound = metadatas.firstIndex(where: { (($0.fileNameView as NSString).deletingPathExtension.lowercased() as String) == filename && $0.typeFile == k_metadataTypeFile_image }) { index = indexFound }
+            }
             self.metadatas = metadatas
             
             viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
