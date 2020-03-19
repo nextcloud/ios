@@ -23,7 +23,6 @@
 
 import Foundation
 import NCCommunication
-import Sheeeeeeeeet
 
 class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
