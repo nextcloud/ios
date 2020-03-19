@@ -91,7 +91,7 @@ class NCDetailViewController: UIViewController {
         
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
-            NCViewerMedia.sharedInstance.removeObserver()
+            NCViewerVideo.sharedInstance.removeObserver()
         }
     }
     
@@ -321,7 +321,7 @@ class NCDetailViewController: UIViewController {
         
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
-            NCViewerMedia.sharedInstance.removeObserver()
+            NCViewerVideo.sharedInstance.removeObserver()
         }
         
         // IMAGE VIDEO AUDIO

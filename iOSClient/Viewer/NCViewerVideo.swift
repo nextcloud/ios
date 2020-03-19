@@ -1,5 +1,5 @@
 //
-//  NCViewerMedia.swift
+//  NCViewerVideo.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/09/18.
@@ -24,17 +24,17 @@
 import Foundation
 import KTVHTTPCache
 
-class NCViewerMedia: NSObject {
+class NCViewerVideo: NSObject {
 
     var metadata: tableMetadata!
     var videoURL: URL!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
 
-    @objc static let sharedInstance: NCViewerMedia = {
-        let viewMedia = NCViewerMedia()
-        viewMedia.setupHTTPCache()
-        return viewMedia
+    @objc static let sharedInstance: NCViewerVideo = {
+        let viewVideo = NCViewerVideo()
+        viewVideo.setupHTTPCache()
+        return viewVideo
     }()
 
     @objc func viewMedia(_ metadata: tableMetadata, view: UIView, frame: CGRect) {
