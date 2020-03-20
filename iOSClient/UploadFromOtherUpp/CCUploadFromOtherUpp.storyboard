@@ -162,6 +162,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="destinationLabel" destination="Dk7-2l-tvL" id="bvt-2R-EOe"/>
                         <outlet property="fileNameTextfield" destination="xkS-C6-OZA" id="8Qb-gc-i6C"/>
                         <outlet property="fileSizeLabel" destination="Glj-Ta-UnA" id="plu-w1-L9x"/>
                     </connections>

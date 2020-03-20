@@ -95,8 +95,7 @@
         case 2:
             if (row == 0) {
     
-                nameLabel = (UILabel *)[cell viewWithTag:101];
-                nameLabel.text = destinationTitle;
+                self.destinationLabel.text = destinationTitle;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
                 img.image = [UIImage imageNamed:@"folder"];
@@ -145,7 +144,7 @@
     if (serverUrl) {
         serverUrlLocal = serverUrl;
         destinationTitle = metadata.fileNameView;
-        //destinationTitle = NSLocalizedString(@"_home_", nil);
+        self.destinationLabel.text = destinationTitle;
     }
 }
 
