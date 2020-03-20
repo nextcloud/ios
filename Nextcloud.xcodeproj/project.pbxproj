@@ -128,8 +128,6 @@
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
-		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
-		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */; };
 		F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72E0B9C21AD60BC00898D7B /* WeScan.framework */; };
@@ -735,10 +733,6 @@
 		F728B2BB23E83AD200E12DA0 /* Notification_Service_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Notification_Service_Extension.plist; sourceTree = "<group>"; };
 		F728B2BC23E83AD200E12DA0 /* Notification_Service_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notification_Service_Extension.entitlements; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
-		F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
-		F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheet.m; sourceTree = "<group>"; };
-		F72AAEC41E5C60C700BB17E1 /* AHKActionSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheetViewController.h; sourceTree = "<group>"; };
-		F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheetViewController.m; sourceTree = "<group>"; };
 		F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotificationEncryption.m; sourceTree = "<group>"; };
 		F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotificationEncryption.h; sourceTree = "<group>"; };
 		F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerNextcloudText.swift; sourceTree = "<group>"; };
@@ -1631,17 +1625,6 @@
 			path = Share;
 			sourceTree = "<group>";
 		};
-		F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */ = {
-			isa = PBXGroup;
-			children = (
-				F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */,
-				F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */,
-				F72AAEC41E5C60C700BB17E1 /* AHKActionSheetViewController.h */,
-				F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */,
-			);
-			path = AHKActionSheet;
-			sourceTree = "<group>";
-		};
 		F72B60941A24F04E004EF66F /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
@@ -2481,7 +2464,6 @@
 		F7F54CAC1E5B143100E19C62 /* Library */ = {
 			isa = PBXGroup;
 			children = (
-				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
 				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
 				F754EEC321772B6100BB1CDF /* DropdownMenu */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
@@ -3371,7 +3353,6 @@
 				F73B4EF91F470D9100BBEE4B /* LangEsperantoModel.cpp in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
-				F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */,
 				F760F79B21F21F61006B1A73 /* ColorCollectionViewCell.swift in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
@@ -3452,7 +3433,6 @@
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
 				F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */,
 				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
-				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
 				F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */,
 				F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */,
