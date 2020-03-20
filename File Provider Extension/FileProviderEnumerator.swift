@@ -28,6 +28,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
+    let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: fileProviderData.sharedInstance.account)
     
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         
@@ -102,8 +103,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if (page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
                 
-                if NCBrandBeta.shared.iOSHelper {
-                    
+                if capabilities?.isPaginationEnabled ?? false {
+                                    
                     // Beta
                     self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
                         self.completeObserver(observer, numPage: 1, metadatas: metadatas)
@@ -125,8 +126,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
 
-                if NCBrandBeta.shared.iOSHelper {
-                         
+                if capabilities?.isPaginationEnabled ?? false {
+
                     // Beta
                     self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
                         self.completeObserver(observer, numPage: 1, metadatas: metadatas)

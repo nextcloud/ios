@@ -197,6 +197,9 @@ class tableCapabilities: Object {
     @objc dynamic var isFulltextsearchEnabled: Bool = false
     // Extended Support
     @objc dynamic var isExtendedSupportEnabled: Bool = false
+    // Pagination iOS Helper
+    @objc dynamic var isPaginationEnabled: Bool = false
+    @objc dynamic var paginationEndponit = ""
 }
 
 class tableComments: Object {

@@ -1448,6 +1448,12 @@
                 capabilities.isFileUndeleteEnabled = fileUndeleteEnabledNumber.boolValue;
                 capabilities.isFileVersioningEnabled = fileVersioningEnabledNumber.boolValue;
             
+                NSDictionary *pagination = [files valueForKey:@"pagination"];
+                if (pagination) {
+                    capabilities.isPaginationEnabled = true;
+                    capabilities.paginationEndponit = [pagination valueForKey:@"endpoint"];
+                }
+                
                 //THEMING
             
                 NSDictionary *theming = [capabilitiesDict valueForKey:@"theming"];

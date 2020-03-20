@@ -121,4 +121,8 @@
 // Extended Support
 @property (nonatomic) BOOL isExtendedSupportEnabled;
 
+// Pagination
+@property (nonatomic) BOOL isPaginationEnabled;
+@property (nonatomic, strong) NSString *paginationEndponit;
+
 @end

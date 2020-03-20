@@ -948,7 +948,10 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.isFulltextsearchEnabled = capabilities.isFulltextsearchEnabled
                 // Extended Support
                 resultCapabilities.isExtendedSupportEnabled = capabilities.isExtendedSupportEnabled
-                
+                // Pagination iOS Helper
+                resultCapabilities.isPaginationEnabled = capabilities.isPaginationEnabled
+                resultCapabilities.paginationEndponit = capabilities.paginationEndponit
+
                 if result == nil {
                     realm.add(resultCapabilities)
                 }

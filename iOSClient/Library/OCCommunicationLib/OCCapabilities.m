@@ -41,10 +41,10 @@
         self.richdocumentsMimetypes = [NSArray new];
         
         self.HCShopUrl = @"";
+        
+        self.paginationEndponit = @"";
     }
     return self;
 }
-
-
 
 @end
