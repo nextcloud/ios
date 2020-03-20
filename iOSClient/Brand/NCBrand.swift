@@ -165,6 +165,6 @@ class NCBrandColor: NSObject {
         return instance
     }()
 
-    @objc public let iOSHelper: Bool = true
+    @objc public let iOSHelper: Bool = false
 }
 
