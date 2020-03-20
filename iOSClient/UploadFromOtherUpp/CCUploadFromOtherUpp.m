@@ -42,7 +42,6 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"_cancel_", nil);
     self.title = NSLocalizedString(@"_upload_", nil);
     
     serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
@@ -89,13 +88,15 @@
                                 
                 NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] error:nil];
                 NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
+                self.fileNameTextfield.text = appDelegate.fileNameUpload;
+                self.fileSizeLabel.text = fileSize;
             }
             break;
         case 2:
             if (row == 0) {
     
-                nameLabel = (UILabel *)[cell viewWithTag:101]; nameLabel.text = destinationTitle;
+                nameLabel = (UILabel *)[cell viewWithTag:101];
+                nameLabel.text = destinationTitle;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
                 img.image = [UIImage imageNamed:@"folder"];
@@ -104,7 +105,8 @@
         case 4:
             
             if (row == 0) {
-                nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
+                nameLabel = (UILabel *)[cell viewWithTag:102];
+                nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
             }
             
             break;
@@ -167,7 +169,7 @@
 
 -(void)upload
 {
-    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload serverUrl:serverUrlLocal account:appDelegate.activeAccount];
+    NSString *fileName = [[NCUtility sharedInstance] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.activeAccount];
     
     tableMetadata *metadataForUpload = [tableMetadata new];
     
@@ -193,8 +195,8 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)Annula:(UIBarButtonItem *)sender
-{    
+- (IBAction)cancelUpload:(UIBarButtonItem *)sender
+{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
