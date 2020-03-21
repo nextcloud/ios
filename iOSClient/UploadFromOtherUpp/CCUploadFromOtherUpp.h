@@ -24,7 +24,8 @@
 #import <UIKit/UIKit.h>
 
 @interface CCUploadFromOtherUpp : UITableViewController <UITableViewDelegate, UITableViewDataSource>
-
-- (IBAction)Annula:(UIBarButtonItem *)sender;
+@property (weak, nonatomic) IBOutlet UILabel *fileSizeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *fileNameTextfield;
+@property (weak, nonatomic) IBOutlet UILabel *destinationLabel;
 
 @end

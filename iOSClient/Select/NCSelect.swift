@@ -262,7 +262,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: nil, type: type)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type)
         self.dismiss(animated: true, completion: nil)
     }
     
