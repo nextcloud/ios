@@ -152,7 +152,6 @@
 // 4) done or error
 //
 #define k_metadataStatusNormal                          0
-#define k_metadataStatusHide                            1
 
 #define k_metadataStatusWaitDownload                    2
 #define k_metadataStatusInDownload                      3
