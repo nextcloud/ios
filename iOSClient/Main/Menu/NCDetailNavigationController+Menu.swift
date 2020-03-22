@@ -32,6 +32,16 @@ extension NCDetailNavigationController {
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
 
         actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_details_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                }
+            )
+        )
+        
+        actions.append(
             NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
