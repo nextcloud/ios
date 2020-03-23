@@ -126,12 +126,7 @@ import PDFKit
         viewerPDFSearch.pdfDocument = pdfDocument
         
         let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
-        
-//        if traitCollection.horizontalSizeClass == .regular {
-            
-//        } else {
-            appDelegate.activeDetail.present(navigaionController, animated: true)
-//        }
+        appDelegate.activeDetail.present(navigaionController, animated: true)
     }
     
     func searchPdfSelection(_ pdfSelection: PDFSelection) {

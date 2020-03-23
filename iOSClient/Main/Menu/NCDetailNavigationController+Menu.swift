@@ -73,7 +73,15 @@ extension NCDetailNavigationController {
         
         if #available(iOS 11.0, *) {
             if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
+                actions.append(
+                    NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        action: { menuAction in
+                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:
+                                               k_notificationCenter_menuSearchTextPDF), object: nil)
+                        }
+                    )
+                )
             }
         }
         
