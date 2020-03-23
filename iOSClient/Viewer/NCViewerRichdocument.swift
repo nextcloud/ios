@@ -41,7 +41,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationDelegate = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: "ViewerRichdocumentGrabFocus"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: k_notificationCenter_richdocumentGrabFocus), object: nil)
     }
     
     required init?(coder: NSCoder) {

@@ -47,8 +47,8 @@ class NCText: UIViewController, UITextViewDelegate {
         
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(keyboardWillShowHandle(info:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(keyboardWillHideHandle), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
                 
@@ -86,7 +86,7 @@ class NCText: UIViewController, UITextViewDelegate {
         textView.font = UIFont(name: "NameOfTheFont", size: 20)
 
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         textViewDidChange(textView)

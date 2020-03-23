@@ -79,7 +79,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         self.collectionView.emptyDataSetSource = self;
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     

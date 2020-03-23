@@ -216,7 +216,7 @@
     [self pushNotification];
     
     NSLog(@"[LOG] RichDocument");
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"ViewerRichdocumentGrabFocus" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
 }
 
 //

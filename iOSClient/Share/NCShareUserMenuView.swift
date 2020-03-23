@@ -313,12 +313,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNCShare), object: nil, userInfo: nil)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNCShare), object: nil, userInfo: nil)
     }
     
     func updateShareWithError(idRemoteShared: Int) {
