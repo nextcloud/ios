@@ -32,6 +32,8 @@ import PDFKit
     private var thumbnailViewHeight: CGFloat = 40
     private var pdfThumbnailView: PDFThumbnailView?
     private var pdfDocument: PDFDocument?
+    private let pageView = UIView()
+    private let pageViewLabel = UILabel()
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -43,8 +45,12 @@ import PDFKit
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange(notification:)), name: Notification.Name.PDFViewPageChanged, object: nil)
+    }
+    
+    @objc private func handlePageChange(notification: Notification) {
+        print("Page changed")
     }
     
     @objc func changeTheming() {
@@ -82,6 +88,31 @@ import PDFKit
         pdfThumbnailView!.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
         pdfThumbnailView!.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
         pdfThumbnailView!.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        
+        pageView.translatesAutoresizingMaskIntoConstraints = false
+        pageView.layer.cornerRadius = 10
+        pageView.backgroundColor = UIColor.gray.withAlphaComponent(0.3)
+        
+        view.addSubview(pageView)
+        
+        pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        pageView.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 5).isActive = true
+        
+        pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
+        pageViewLabel.text = "100 di 500"
+        pageViewLabel.textAlignment = .center
+        pageViewLabel.textColor = .gray
+        
+        pageView.addSubview(pageViewLabel)
+        
+        pageViewLabel.leftAnchor.constraint(equalTo: pageView.leftAnchor).isActive = true
+        pageViewLabel.rightAnchor.constraint(equalTo: pageView.rightAnchor).isActive = true
+        pageViewLabel.topAnchor.constraint(equalTo: pageView.topAnchor).isActive = true
+        pageViewLabel.bottomAnchor.constraint(equalTo: pageView.bottomAnchor).isActive = true
+        
+        view.layoutIfNeeded()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
         tapGesture.numberOfTapsRequired = 1
