@@ -51,15 +51,6 @@ extension NCDetailNavigationController {
         )
 
         actions.append(
-            NCMenuAction(title: NSLocalizedString("_share_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NCMainCommon.sharedInstance.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
-                }
-            )
-        )
-        
-        actions.append(
             NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
                          icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
