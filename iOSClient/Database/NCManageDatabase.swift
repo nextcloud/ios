@@ -2451,7 +2451,7 @@ class NCManageDatabase: NSObject {
         // For Live Photo
         var fileNameImages = [String]()
         let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
-        filtered.forEach { print($0)
+        filtered.forEach { 
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
             fileNameImages.append(fileName)
         }
