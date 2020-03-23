@@ -34,6 +34,7 @@ import PDFKit
     private var pdfDocument: PDFDocument?
     private let pageView = UIView()
     private let pageViewLabel = UILabel()
+    private var pageViewWidthAnchor : NSLayoutConstraint?
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -44,17 +45,23 @@ import PDFKit
         let height = frame.height - thumbnailViewHeight
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange(notification:)), name: Notification.Name.PDFViewPageChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
     }
     
-    @objc private func handlePageChange(notification: Notification) {
+    @objc private func handlePageChange() {
         
-        guard let curPage = currentPage?.pageRef?.pageNumber else { return }
+        guard let curPage = currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
         guard let totalPages = document?.pageCount else { return }
         
+        pageView.alpha = 1
         pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
+        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
+        
+        UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
+            self.pageView.alpha = 0
+        })
     }
     
     @objc func changeTheming() {
@@ -100,7 +107,8 @@ import PDFKit
         view.addSubview(pageView)
         
         pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        pageView.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        pageViewWidthAnchor = pageView.widthAnchor.constraint(equalToConstant: 10)
+        pageViewWidthAnchor?.isActive = true
         pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 5).isActive = true
         
@@ -116,6 +124,7 @@ import PDFKit
         pageViewLabel.bottomAnchor.constraint(equalTo: pageView.bottomAnchor).isActive = true
         
         view.layoutIfNeeded()
+        handlePageChange()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
         tapGesture.numberOfTapsRequired = 1
