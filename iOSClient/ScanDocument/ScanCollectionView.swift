@@ -87,7 +87,7 @@ class DragDropViewController: UIViewController {
         add.addGestureRecognizer(longPressRecognizer)
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
