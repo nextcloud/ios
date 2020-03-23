@@ -85,7 +85,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
         //}
         
         let pdfPage = pdfSelection.pages.first
-        cell.pageNumberLabel.text = NSLocalizedString("_page_", comment: "") + ": " + (pdfPage?.label ?? "")
+        cell.pageNumberLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + ": " + (pdfPage?.label ?? "")
         
         let extendSelection = pdfSelection.copy() as! PDFSelection
         extendSelection.extend(atStart: 10)
