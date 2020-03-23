@@ -365,6 +365,8 @@
 		F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F769454722E9F20D000A798A /* NCShareNetworking.swift */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
+		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
+		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -1028,6 +1030,8 @@
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
 		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
 		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
+		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
+		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
 		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1999,6 +2003,16 @@
 			path = Section;
 			sourceTree = "<group>";
 		};
+		F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */ = {
+			isa = PBXGroup;
+			children = (
+				F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */,
+				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
+				F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */,
+			);
+			path = NCViewerPDF;
+			sourceTree = "<group>";
+		};
 		F771E3D120E2392D00AFB62D /* File Provider Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2094,7 +2108,7 @@
 			children = (
 				F79018B1240962C7007C9B6D /* NCViewerImage */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
-				F710D1F42405770F00A6033D /* NCViewerPDF.swift */,
+				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
 				F7FB1D3D215E191D00D669EA /* NCViewerDocumentWeb.swift */,
 				F79630ED215527D40015EEA5 /* NCViewerVideo.swift */,
@@ -2891,6 +2905,7 @@
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F760F78621F21F61006B1A73 /* LaunchScreen.storyboard in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
+				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
 				F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */,
 				F749C10E23C4A5340027D966 /* NCIntroCollectionViewCell.xib in Resources */,
 				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
@@ -3212,6 +3227,7 @@
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F762CB061EACB66200B38484 /* XLFormTextViewCell.m in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
+				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
 				F760F79C21F21F61006B1A73 /* GradientView.swift in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
