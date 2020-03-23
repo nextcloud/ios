@@ -79,9 +79,11 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCViewerPDFSearchCell
         let pdfSelection = searchResultArray[indexPath.row] as PDFSelection
-        if let pdfOutline = pdfDocument?.outlineItem(for: pdfSelection) {
-            cell.outlineLabel.text = pdfOutline.label
-        }
+        
+        //if let pdfOutline = pdfDocument?.outlineItem(for: pdfSelection) {
+        //    cell.outlineLabel.text = pdfOutline.label
+        //}
+        
         let pdfPage = pdfSelection.pages.first
         cell.pageNumberLabel.text = "Page: " + (pdfPage?.label ?? "")
         
