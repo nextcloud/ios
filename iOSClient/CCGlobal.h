@@ -335,6 +335,7 @@
 #define k_notificationCenter_renameFile                 @"renameFile"
 #define k_notificationCenter_moveFile                   @"moveFile"
 
+#define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
 
 // -----------------------------------------------------------------------------------------------------------
 // INTERNAL

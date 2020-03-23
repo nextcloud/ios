@@ -69,6 +69,16 @@ extension NCDetailNavigationController {
             )
         )
         
+        // PDF
+        
+        if #available(iOS 11.0, *) {
+            if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
+            }
+        }
+        
+        // IMAGE - VIDEO - AUDIO
+        
         if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
@@ -112,6 +122,8 @@ extension NCDetailNavigationController {
                 )
             )
         }
+        
+        // CLOSE
         
         actions.append(
             NCMenuAction(title: NSLocalizedString("_close_", comment: ""),

@@ -26,12 +26,13 @@ import PDFKit
 
 @available(iOS 11, *)
 
-@objc class NCViewerPDF: PDFView {
+@objc class NCViewerPDF: PDFView, NCViewerPDFSearchDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var thumbnailViewHeight: CGFloat = 40
     private var pdfThumbnailView: PDFThumbnailView?
-
+    private var pdfDocument: PDFDocument?
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -42,6 +43,8 @@ import PDFKit
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
     }
     
     @objc func changeTheming() {
@@ -53,7 +56,7 @@ import PDFKit
     }
     
     @objc func setupPdfView(filePath: URL, view: UIView) {
-        guard let pdfDocument = PDFDocument(url: filePath) else { return }
+        pdfDocument = PDFDocument(url: filePath)
         
         document = pdfDocument
         backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -114,5 +117,26 @@ import PDFKit
         }
              
         self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
+    }
+    
+    @objc func searchText() {
+        
+        let viewerPDFSearch = UIStoryboard.init(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as! NCViewerPDFSearch
+        viewerPDFSearch.delegate = self
+        viewerPDFSearch.pdfDocument = pdfDocument
+        
+        let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
+        
+//        if traitCollection.horizontalSizeClass == .regular {
+            
+//        } else {
+            appDelegate.activeDetail.present(navigaionController, animated: true)
+//        }
+    }
+    
+    func searchPdfSelection(_ pdfSelection: PDFSelection) {
+        pdfSelection.color = .yellow
+        currentSelection = pdfSelection
+        go(to: pdfSelection)
     }
 }
