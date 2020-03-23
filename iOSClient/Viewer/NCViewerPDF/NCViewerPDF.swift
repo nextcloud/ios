@@ -50,28 +50,6 @@ import PDFKit
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
     }
     
-    @objc private func handlePageChange() {
-        
-        guard let curPage = currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
-        guard let totalPages = document?.pageCount else { return }
-        
-        pageView.alpha = 1
-        pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
-        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
-        
-        UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
-            self.pageView.alpha = 0
-        })
-    }
-    
-    @objc func changeTheming() {
-        guard let navigationController = appDelegate.activeDetail.navigationController else { return }
-
-        if navigationController.isNavigationBarHidden == false {
-            backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        }
-    }
-    
     @objc func setupPdfView(filePath: URL, view: UIView) {
         pdfDocument = PDFDocument(url: filePath)
         
@@ -131,6 +109,32 @@ import PDFKit
         view.addGestureRecognizer(tapGesture)
     }
     
+    //MARK: - NotificationCenter
+    
+    @objc private func handlePageChange() {
+        
+        guard let curPage = currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
+        guard let totalPages = document?.pageCount else { return }
+        
+        pageView.alpha = 1
+        pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
+        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
+        
+        UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
+            self.pageView.alpha = 0
+        })
+    }
+    
+    @objc func changeTheming() {
+        guard let navigationController = appDelegate.activeDetail.navigationController else { return }
+
+        if navigationController.isNavigationBarHidden == false {
+            backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        }
+    }
+    
+    //MARK: - Gesture Recognizer
+    
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
         guard let navigationController = appDelegate.activeDetail.navigationController else { return }
         
@@ -161,6 +165,8 @@ import PDFKit
              
         self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
     }
+    
+    //MARK: - 
     
     @objc func searchText() {
         
