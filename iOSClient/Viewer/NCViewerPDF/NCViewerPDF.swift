@@ -164,9 +164,11 @@ import PDFKit
         }
              
         self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
+        
+        handlePageChange()
     }
     
-    //MARK: - 
+    //MARK: -
     
     @objc func searchText() {
         
