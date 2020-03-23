@@ -94,7 +94,6 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
         
         let nsRange = NSString(string: extendSelection.string!).range(of: pdfSelection.string!, options: String.CompareOptions.caseInsensitive)
         if nsRange.location != NSNotFound {
-            
             let attributedSubString = NSAttributedString.init(string: NSString(string: extendSelection.string!).substring(with: nsRange), attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 17)])
             let attributedString = NSMutableAttributedString.init(string: extendSelection.string!)
             attributedString.replaceCharacters(in: nsRange, with: attributedSubString)

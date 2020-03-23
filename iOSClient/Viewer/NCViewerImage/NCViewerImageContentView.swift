@@ -242,7 +242,7 @@ extension NCViewerImageContentView {
 
         let isImageCoveringScreen = imageView.frame.size.width > bounds.size.width &&
             imageView.frame.size.height > bounds.size.height
-        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale/2) ? minimumZoomScale : maximumZoomScale/2
+        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale/3) ? minimumZoomScale : maximumZoomScale/3
 
         guard zoomTo != zoomScale else {
             return
