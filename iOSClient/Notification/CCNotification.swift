@@ -41,10 +41,10 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         self.tableView.allowsSelection = false
         
         // Register to receive notification reload data
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name(rawValue: "notificationReloadData"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDatasource), name: Notification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
 
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         reloadDatasource()
@@ -57,7 +57,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     @objc func viewClose() {
         
         // Stop listening notification reload data
-        NotificationCenter.default.removeObserver(self, name: Notification.Name("notificationReloadData"), object: nil);
+        NotificationCenter.default.removeObserver(self, name: Notification.Name(k_notificationCenter_reloadDataNotification), object: nil);
         
         self.dismiss(animated: true, completion: nil)
     }

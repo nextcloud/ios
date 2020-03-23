@@ -331,6 +331,7 @@
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
+#define k_notificationCenter_reloadDataNotification     @"reloadDataNotification"
 
 #define k_notificationCenter_uploadFile                 @"uploadFile"
 #define k_notificationCenter_downloadFile               @"downloadFile"

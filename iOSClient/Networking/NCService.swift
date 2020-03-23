@@ -231,7 +231,7 @@ class NCService: NSObject {
                                     
                                     if (new != old) {
                                         self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
-                                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
                                     }
                                     
                                     // Update Main NavigationBar
@@ -254,7 +254,7 @@ class NCService: NSObject {
                     
                     // Remove all Notification
                     self.appDelegate.listOfNotifications.removeAllObjects()
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
                     // Update Main NavigationBar
                     if (self.appDelegate.activeMain != nil && self.appDelegate.activeMain.isSelectedMode == false) {
                         self.appDelegate.activeMain.setUINavigationBarDefault()
