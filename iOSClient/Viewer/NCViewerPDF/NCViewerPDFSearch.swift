@@ -85,7 +85,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
         //}
         
         let pdfPage = pdfSelection.pages.first
-        cell.pageNumberLabel.text = "Page: " + (pdfPage?.label ?? "")
+        cell.pageNumberLabel.text = NSLocalizedString("_page_", comment: "") + ": " + (pdfPage?.label ?? "")
         
         let extendSelection = pdfSelection.copy() as! PDFSelection
         extendSelection.extend(atStart: 10)
@@ -148,7 +148,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         
-        let cancelBarButtonItem = UIBarButtonItem.init(title: "Cancel", style: .plain, target: self, action: #selector(cancelBarButtonItemClicked))
+        let cancelBarButtonItem = UIBarButtonItem.init(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(cancelBarButtonItemClicked))
         navigationItem.setRightBarButton(cancelBarButtonItem, animated: true)
         return true
     }
