@@ -45,7 +45,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("fileName")
                     }
 
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
         )
@@ -65,7 +65,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("date")
                     }
 
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
         )
@@ -85,7 +85,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("size")
                     }
                     
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
         )
@@ -98,7 +98,7 @@ extension CCMain {
                 on: CCUtility.getDirectoryOnTop(),
                 action: { menuAction in
                     CCUtility.setDirectoryOnTop(!CCUtility.getDirectoryOnTop())
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
         )
