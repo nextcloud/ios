@@ -50,7 +50,11 @@ import PDFKit
     }
     
     @objc private func handlePageChange(notification: Notification) {
-        print("Page changed")
+        
+        guard let curPage = currentPage?.pageRef?.pageNumber else { return }
+        guard let totalPages = document?.pageCount else { return }
+        
+        pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
     }
     
     @objc func changeTheming() {
@@ -101,7 +105,6 @@ import PDFKit
         pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 5).isActive = true
         
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
-        pageViewLabel.text = "100 di 500"
         pageViewLabel.textAlignment = .center
         pageViewLabel.textColor = .gray
         
