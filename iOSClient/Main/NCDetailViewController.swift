@@ -155,6 +155,7 @@ class NCDetailViewController: UIViewController {
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
+        if self.view?.window == nil { return }
         
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
@@ -166,7 +167,8 @@ class NCDetailViewController: UIViewController {
     }
    
     @objc func changeDisplayMode() {
-       
+       if self.view?.window == nil { return }
+        
         NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
@@ -175,7 +177,7 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
-        
+        if self.view?.window == nil { return }
         guard let metadata = self.metadata else { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
@@ -188,6 +190,8 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func synchronizationMedia(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let type = userInfo["type"] as? String {
                 
@@ -221,6 +225,8 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
@@ -246,6 +252,8 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func renameFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
@@ -268,6 +276,8 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func downloadFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
@@ -285,7 +295,6 @@ class NCDetailViewController: UIViewController {
     
     @objc func downloadImage(_ notification: NSNotification) {
         if self.view?.window == nil { return }
-        guard let metadata = self.metadata else {return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
