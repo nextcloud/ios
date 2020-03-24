@@ -66,7 +66,7 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
                
         NotificationCenter.default.addObserver(self, selector: #selector(synchronizationMedia(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_synchronizationMedia), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadImage), name: NSNotification.Name(rawValue: k_notificationCenter_menuDownloadImage), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadImage(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuDownloadImage), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
@@ -283,25 +283,31 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func downloadImage() {
-        
+    @objc func downloadImage(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
         guard let metadata = self.metadata else {return }
         
-        metadata.session = k_download_session
-        metadata.sessionError = ""
-        metadata.sessionSelector = ""
-        metadata.status = Int(k_metadataStatusWaitDownload)
-        
-        self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
-        
-        if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
-            metadatas[index] = self.metadata!
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                metadata.session = k_download_session
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.status = Int(k_metadataStatusWaitDownload)
+                
+                self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
+                    metadatas[index] = self.metadata!
+                }
+                
+                appDelegate.startLoadAutoDownloadUpload()
+            }
         }
-        
-        appDelegate.startLoadAutoDownloadUpload()
     }
     
     @objc func saveLivePhoto(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let metadataMov = userInfo["metadataMov"] as? tableMetadata {
                 let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
