@@ -117,6 +117,8 @@
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
+"_search_"                  = "Search";
+"_of_"                      = "of";
 "_internal_modify_"         = "Edit with internal editor";
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
 "_download_image_max_"      = "Download the image in full resolution";
