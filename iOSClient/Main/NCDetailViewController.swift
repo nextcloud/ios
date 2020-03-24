@@ -340,7 +340,8 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func viewUnload() {
-        
+        if self.view?.window == nil { return }
+
         metadata = nil
         selector = nil
         
