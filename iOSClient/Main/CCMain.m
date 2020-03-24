@@ -389,8 +389,8 @@
         if (appDelegate.player != nil && appDelegate.player.rate != 0) {
             [appDelegate.player pause];
         }
-        [appDelegate.activeDetail viewUnload];
-        
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
+                
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
         
