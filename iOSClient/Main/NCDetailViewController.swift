@@ -155,7 +155,6 @@ class NCDetailViewController: UIViewController {
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        if self.view?.window == nil { return }
         
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
