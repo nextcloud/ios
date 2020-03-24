@@ -342,6 +342,10 @@
 #define k_notificationCenter_moveFile                   @"moveFile"
 
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
+#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"
+#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"
+#define k_notificationCenter_menuDetailClose            @"menuDetailClose"
+
 
 // -----------------------------------------------------------------------------------------------------------
 // INTERNAL

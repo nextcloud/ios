@@ -92,7 +92,7 @@ extension NCDetailNavigationController {
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        self.appDelegate.activeDetail.downloadImage()
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil)
                     }
                 )
             )
@@ -105,7 +105,8 @@ extension NCDetailNavigationController {
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
-                                self.appDelegate.activeDetail.saveLivePhoto(metadata: metadata, metadataMov: metadataMov)
+                                let userInfo: [String : Any] = ["metadata": metadata, "metadataMov": metadataMov]
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil, userInfo: userInfo)
                             }
                         )
                     )
@@ -137,7 +138,7 @@ extension NCDetailNavigationController {
             NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    self.appDelegate.activeDetail.viewUnload()
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDetailClose), object: nil)
                 }
             )
         )
