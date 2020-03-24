@@ -359,9 +359,7 @@ class NCDetailViewController: UIViewController {
             NCViewerVideo.sharedInstance.removeObserver()
         }
         
-        // Add Notification
-        NotificationCenter.default.removeObserver(self)
-        
+        // Add Notification        
         NotificationCenter.default.addObserver(self, selector: #selector(downloadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         //NotificationCenter.default.addObserver(self, selector: #selector(self.uploadFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFile), object: nil)
