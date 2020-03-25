@@ -108,6 +108,11 @@ import PDFKit
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
         tapGesture.numberOfTapsRequired = 1
         addGestureRecognizer(tapGesture)
+        
+        // recognize single / double tap
+        for gesture in gestureRecognizers! {
+            tapGesture.require(toFail:gesture)
+        }
     }
     
     //MARK: - NotificationCenter
