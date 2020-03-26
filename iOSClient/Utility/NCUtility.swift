@@ -508,7 +508,7 @@ class NCUtility: NSObject {
         return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
     }
     
-    public func extrasMediaFile(phAsset: PHAsset, videoRequestOptions: PHVideoRequestOptions? = nil, imageRequestOptions: PHImageRequestOptions? = nil, exportPreset: String = AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: Bool = false, urlImage: URL?, urlVideo: URL?, progressBlock:((Double) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID? {
+    @objc public func extrasMediaFile(phAsset: PHAsset, videoRequestOptions: PHVideoRequestOptions? = nil, imageRequestOptions: PHImageRequestOptions? = nil, exportPreset: String = AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: Bool = false, urlImage: URL?, urlVideo: URL?, progressBlock:((Double) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID {
         
         var type: PHAssetResourceType? = nil
         if phAsset.mediaSubtypes.contains(.photoLive) == true, convertLivePhotosToJPG == false {
@@ -516,7 +516,7 @@ class NCUtility: NSObject {
         }else {
             type = phAsset.mediaType == .video ? .video : .photo
         }
-        guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == type }).first else { return nil }
+        guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == type }).first else { return 0 }
         
         let fileName = resource.originalFilename
         var writeURL: URL? = nil
@@ -533,7 +533,7 @@ class NCUtility: NSObject {
                 writeURL?.appendPathComponent("\(fileName2).jpg")
             }
         }
-        guard let localURL = writeURL, let mimetype = MIMEType(writeURL) else { return nil }
+        guard let localURL = writeURL, let mimetype = MIMEType(writeURL) else { return 0 }
         
         switch phAsset.mediaType {
             
@@ -586,7 +586,7 @@ class NCUtility: NSObject {
                 }catch { }
             })
         default:
-            return nil
+            return 0
         }
     }
     
