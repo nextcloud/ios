@@ -507,5 +507,103 @@ class NCUtility: NSObject {
         let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
         return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
     }
+    
+    public func extrasMediaFile(phAsset: PHAsset, videoRequestOptions: PHVideoRequestOptions? = nil, imageRequestOptions: PHImageRequestOptions? = nil, exportPreset: String = AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: Bool = false, urlImage: URL?, urlVideo: URL?, progressBlock:((Double) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID? {
+        
+        var type: PHAssetResourceType? = nil
+        if phAsset.mediaSubtypes.contains(.photoLive) == true, convertLivePhotosToJPG == false {
+            type = .pairedVideo
+        }else {
+            type = phAsset.mediaType == .video ? .video : .photo
+        }
+        guard let resource = (PHAssetResource.assetResources(for: phAsset).filter{ $0.type == type }).first else { return nil }
+        
+        let fileName = resource.originalFilename
+        var writeURL: URL? = nil
+        
+        if #available(iOS 10.0, *) {
+            writeURL = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName)")
+        } else {
+            writeURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("\(fileName)")
+        }
+        
+        if (writeURL?.pathExtension.uppercased() == "HEIC" || writeURL?.pathExtension.uppercased() == "HEIF") && convertLivePhotosToJPG {
+            if let fileName2 = writeURL?.deletingPathExtension().lastPathComponent {
+                writeURL?.deleteLastPathComponent()
+                writeURL?.appendPathComponent("\(fileName2).jpg")
+            }
+        }
+        guard let localURL = writeURL, let mimetype = MIMEType(writeURL) else { return nil }
+        
+        switch phAsset.mediaType {
+            
+        case .video:
+            var requestOptions = PHVideoRequestOptions()
+            if let options = videoRequestOptions {
+                requestOptions = options
+            }else {
+                requestOptions.isNetworkAccessAllowed = true
+            }
+            //iCloud download progress
+            requestOptions.progressHandler = { (progress, error, stop, info) in
+                DispatchQueue.main.async {
+                    progressBlock?(progress)
+                }
+            }
+            return PHImageManager.default().requestExportSession(forVideo: phAsset, options: requestOptions, exportPreset: exportPreset) { (session, infoDict) in
+                session?.outputURL = localURL
+                session?.outputFileType = AVFileType.mov
+                session?.exportAsynchronously(completionHandler: {
+                    DispatchQueue.main.async {
+                        completionBlock(localURL, mimetype)
+                    }
+                })
+            }
+            
+        case .image:
+            var requestOptions = PHImageRequestOptions()
+            if let options = imageRequestOptions {
+                requestOptions = options
+            }else {
+                requestOptions.isNetworkAccessAllowed = true
+            }
+            //iCloud download progress
+            requestOptions.progressHandler = { (progress, error, stop, info) in
+                DispatchQueue.main.async {
+                    progressBlock?(progress)
+                }
+            }
+            return PHImageManager.default().requestImageData(for: phAsset, options: requestOptions, resultHandler: { (data, uti, orientation, info) in
+                do {
+                    var data = data
+                    if convertLivePhotosToJPG == true, let imgData = data, let rawImage = UIImage(data: imgData)?.upOrientationImage() {
+                        data = rawImage.jpegData(compressionQuality: 1)
+                    }
+                    try data?.write(to: localURL)
+                    DispatchQueue.main.async {
+                        completionBlock(localURL, mimetype)
+                    }
+                }catch { }
+            })
+        default:
+            return nil
+        }
+    }
+    
+    private func MIMEType(_ url: URL?) -> String? {
+        guard let ext = url?.pathExtension else { return nil }
+        if !ext.isEmpty {
+            let UTIRef = UTTypeCreatePreferredIdentifierForTag("public.filename-extension" as CFString, ext as CFString, nil)
+            let UTI = UTIRef?.takeUnretainedValue()
+            UTIRef?.release()
+            if let UTI = UTI {
+                guard let MIMETypeRef = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType) else { return nil }
+                let MIMEType = MIMETypeRef.takeUnretainedValue()
+                MIMETypeRef.release()
+                return MIMEType as String
+            }
+        }
+        return nil
+    }
 }
 

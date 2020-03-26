@@ -120,6 +120,9 @@
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F716FE7A23795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F716FE7923795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift */; };
+		F720FA9C242CA3EC00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
+		F720FA9D242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
+		F720FA9E242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
@@ -3048,6 +3051,7 @@
 				2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */,
 				2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
+				F720FA9E242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F7D91AAA23FBDED60038FC09 /* NCContentPresenter.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
 				2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */,
@@ -3104,6 +3108,7 @@
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */,
+				F720FA9C242CA3EC00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
@@ -3176,6 +3181,7 @@
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F7434B4220E2405500417916 /* OCSharedDto.m in Sources */,
+				F720FA9D242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
