@@ -508,6 +508,7 @@ class NCUtility: NSObject {
         return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
     }
     
+    @discardableResult
     @objc public func extrasMediaFile(phAsset: PHAsset, videoRequestOptions: PHVideoRequestOptions? = nil, imageRequestOptions: PHImageRequestOptions? = nil, exportPreset: String = AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: Bool = false, urlImage: URL?, urlVideo: URL?, progressBlock:((Double) -> Void)? = nil, completionBlock:@escaping ((URL,String) -> Void)) -> PHImageRequestID {
         
         var type: PHAssetResourceType? = nil
