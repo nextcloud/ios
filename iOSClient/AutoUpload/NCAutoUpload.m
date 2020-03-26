@@ -589,6 +589,47 @@
     return nil;
 }
 
+- (void)videoUrlForLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletionBlock:(void (^)(NSURL* url))completionBlock {
+    
+    if ([asset isKindOfClass:[PHAsset class]]) {
+        
+        //NSString* identifier = [(PHAsset*)asset localIdentifier];
+        //NSString* filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.mov",[NSString stringWithFormat:@"%.0f",[[NSDate date] timeIntervalSince1970]]]];
+        
+        NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+
+        PHLivePhotoRequestOptions* options = [PHLivePhotoRequestOptions new];
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+        options.networkAccessAllowed = YES;
+        [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+            if(livePhoto){
+                NSArray* assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
+                PHAssetResource* videoResource = nil;
+                for(PHAssetResource* resource in assetResources){
+                    if (resource.type == PHAssetResourceTypePairedVideo) {
+                        videoResource = resource;
+                        break;
+                    }
+                }
+                if(videoResource){
+                    [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                        if (!error) {
+                            completionBlock(fileUrl);
+                        } else {
+                            completionBlock(nil);
+                        }
+                    }];
+                } else {
+                    completionBlock(nil);
+                }
+            } else {
+                completionBlock(nil);
+            }
+        }];
+    } else {
+        completionBlock(nil);
+    }
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Align Photo Library ====
 #pragma --------------------------------------------------------------------------------------------
