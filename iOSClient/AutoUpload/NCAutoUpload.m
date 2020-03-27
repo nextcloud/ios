@@ -423,6 +423,21 @@
             // Update database Auto Upload
             if ([selector isEqualToString:selectorUploadAutoUpload])
                 [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+            
+            /*
+            // Add Medtadata MOV LIVE PHOTO for upload
+            if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto) {
+                
+                NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
+                NSString *filePath = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileNameMove directory:false];
+                
+                [self extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
+                    if (url != nil) {
+                        
+                    }
+                }];
+            }
+            */
         }
     }
     
@@ -589,46 +604,32 @@
     return nil;
 }
 
-- (void)videoUrlForLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletionBlock:(void (^)(NSURL* url))completionBlock {
+- (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion {
     
-    if ([asset isKindOfClass:[PHAsset class]]) {
-        
-        //NSString* identifier = [(PHAsset*)asset localIdentifier];
-        //NSString* filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.mov",[NSString stringWithFormat:@"%.0f",[[NSDate date] timeIntervalSince1970]]]];
-        
-        NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-
-        PHLivePhotoRequestOptions* options = [PHLivePhotoRequestOptions new];
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-        options.networkAccessAllowed = YES;
-        [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
-            if(livePhoto){
-                NSArray* assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
-                PHAssetResource* videoResource = nil;
-                for(PHAssetResource* resource in assetResources){
-                    if (resource.type == PHAssetResourceTypePairedVideo) {
-                        videoResource = resource;
-                        break;
-                    }
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+        if (livePhoto) {
+            NSArray *assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
+            PHAssetResource *videoResource = nil;
+            for(PHAssetResource *resource in assetResources){
+                if (resource.type == PHAssetResourceTypePairedVideo) {
+                    videoResource = resource;
+                    break;
                 }
-                if(videoResource){
-                    [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                        if (!error) {
-                            completionBlock(fileUrl);
-                        } else {
-                            completionBlock(nil);
-                        }
-                    }];
-                } else {
-                    completionBlock(nil);
-                }
-            } else {
-                completionBlock(nil);
             }
-        }];
-    } else {
-        completionBlock(nil);
-    }
+            if(videoResource){
+                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                    if (!error) {
+                        completion(fileUrl);
+                    } else { completion(nil); }
+                }];
+            } else { completion(nil); }
+        } else { completion(nil); }
+    }];
 }
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Align Photo Library ====

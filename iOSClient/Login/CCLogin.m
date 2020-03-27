@@ -181,27 +181,47 @@
             [self.activity stopAnimating];
             self.login.enabled = YES;
             
-            // Login Flow
-            if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+            // Login Flow V2
+            [[NCCommunication sharedInstance] getLoginFlowV2WithUrlString:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
-                NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                activeLoginWeb.urlBase = self.baseUrl.text;
+                // Login Flow V2
+                /*
+                if (errorCode == 0 && token != nil && endpoint != nil && login != nil) {
+                    
+                    NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                    
+                    activeLoginWeb.urlBase = self.baseUrl.text;
+                    activeLoginWeb.loginFlowV2Available = true;
+                    activeLoginWeb.loginFlowV2Token = token;
+                    activeLoginWeb.loginFlowV2Endpoint = endpoint;
+                    activeLoginWeb.loginFlowV2Login = login;
+                    
+                    [self.navigationController pushViewController:activeLoginWeb animated:true];
+                } else
+                */
                 
-                [self.navigationController pushViewController:activeLoginWeb animated:true];
-            }
-            
-            // NO Login Flow available
-            if (versionMajor < k_flow_version_available) {
+                // Login Flow
+                if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+                    
+                    NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+                    activeLoginWeb.urlBase = self.baseUrl.text;
+                    
+                    [self.navigationController pushViewController:activeLoginWeb animated:true];
+                }
                 
-                [self.loginTypeView setHidden:YES];
-                
-                _imageUser.hidden = NO;
-                _user.hidden = NO;
-                _imagePassword.hidden = NO;
-                _password.hidden = NO;
-                
-                [_user becomeFirstResponder];
-            }
+                // NO Login Flow available
+                else if (versionMajor < k_flow_version_available) {
+                    
+                    [self.loginTypeView setHidden:YES];
+                    
+                    _imageUser.hidden = NO;
+                    _user.hidden = NO;
+                    _imagePassword.hidden = NO;
+                    _password.hidden = NO;
+                    
+                    [_user becomeFirstResponder];
+                }
+            }];
             
         } else {
             

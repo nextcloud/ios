@@ -23,6 +23,7 @@
 
 import Foundation
 import WebKit
+import NCCommunication
 
 class NCLoginWeb: UIViewController {
     
@@ -31,7 +32,12 @@ class NCLoginWeb: UIViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc var urlBase = ""
-
+    
+    @objc var loginFlowV2Available = false
+    @objc var loginFlowV2Token = ""
+    @objc var loginFlowV2Endpoint = ""
+    @objc var loginFlowV2Login = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,7 +63,11 @@ class NCLoginWeb: UIViewController {
         
         // ADD k_flowEndpoint for Web Flow
         if urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders {
-            urlBase =  urlBase + k_flowEndpoint
+            if loginFlowV2Available {
+                urlBase = loginFlowV2Login
+            } else {
+                urlBase = urlBase + k_flowEndpoint
+            }
         }
         
         activityIndicator = UIActivityIndicatorView(style: .gray)
@@ -229,5 +239,16 @@ extension NCLoginWeb: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         activityIndicator.stopAnimating()
         print("didFinishProvisionalNavigation");
+        
+        if loginFlowV2Available {
+            
+            NCCommunication.sharedInstance.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
+                
+                if errorCode == 0 {
+                    print("")
+                }
+            }
+            
+        }
     }
 }
