@@ -85,7 +85,7 @@
     [self changeTheming];
     
     // Open View
-    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {        
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.serverUrl length] > 0 || [self.metadataDetail.ocId length] > 0) {
         [self viewFile];
     }
 }
@@ -263,7 +263,7 @@
             }
             
             return;
-        }        
+        }
         
         // RichDocument
         if ([[NCUtility sharedInstance] isRichDocument:self.metadataDetail] && appDelegate.reachability.isReachable) {
@@ -626,7 +626,7 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
-    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {        
+    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_file_not_found_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
         return;
     }

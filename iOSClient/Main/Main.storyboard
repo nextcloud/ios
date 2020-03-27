@@ -648,7 +648,7 @@
     <resources>
         <image name="avatar" width="25" height="25"/>
         <image name="disclosureIndicator" width="26" height="28"/>
-        <image name="logo" width="300" height="300"/>
+        <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
