@@ -240,15 +240,14 @@ extension NCLoginWeb: WKNavigationDelegate {
         activityIndicator.stopAnimating()
         print("didFinishProvisionalNavigation");
         
+        /*
         if loginFlowV2Available {
-            
             NCCommunication.sharedInstance.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
-                
                 if errorCode == 0 {
                     print("")
                 }
             }
-            
         }
+        */
     }
 }
