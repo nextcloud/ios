@@ -30,7 +30,10 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var pageControl: UIPageControl!
 
     @objc var delegate: NCIntroViewController?
-    private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
+    private let titles = [Bundle.main.localizedString(forKey: "_intro_1_title_", value: nil, table: "IntroLocalizable"),
+                          Bundle.main.localizedString(forKey: "_intro_2_title_", value: nil, table: "IntroLocalizable"),
+                          Bundle.main.localizedString(forKey: "_intro_3_title_", value: nil, table: "IntroLocalizable"),
+                          Bundle.main.localizedString(forKey: "_intro_4_title_", value: nil, table: "IntroLocalizable")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timerAutoScroll: Timer?
 

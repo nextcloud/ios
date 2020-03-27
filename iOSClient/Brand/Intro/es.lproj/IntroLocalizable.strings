@@ -1,0 +1,11 @@
+/* 
+  IntroLocalizable.strings
+  kDrive
+
+  Created by Philippe Weidmann on 27.03.20.
+  Copyright © 2020 Marino Faggiana. All rights reserved.
+*/
+"_intro_1_title_"                   = "El Cloud seguro para pymes y particulares";
+"_intro_2_title_"                   = "Accede a tus archivos en todos tus dispositivos";
+"_intro_3_title_"                   = "Comparte y trabaja con otros en el mismo lugar";
+"_intro_4_title_"                   = "Realiza la copia de seguridad automática de tus fotos";

@@ -699,10 +699,10 @@
 
 // Intro
 
-"_intro_1_title_"                   = "A secure cloud for SMEs and private individuals";
-"_intro_2_title_"                   = "Access your files on all your devices";
-"_intro_3_title_"                   = "Share and work together in the same place";
-"_intro_4_title_"                   = "Backup your photos automatically";
+"_intro_1_title_"                   = "Keep your data secure and under your control";
+"_intro_2_title_"                   = "Secure collaboration & file exchange";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendering & contacts";
+"_intro_4_title_"                   = "Screensharing, online meetings & web conferences";
 
 "_log_in_"                          = "Log in";
 "_sign_up_"                         = "Sign up with provider";
@@ -800,6 +800,5 @@
 "_voice_memo_stop_"         = "tap to stop";
 "_voice_memo_filename_"     = "voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
-
 
 
