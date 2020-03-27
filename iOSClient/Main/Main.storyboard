@@ -11,7 +11,7 @@
         <!--Split View Controller-->
         <scene sceneID="B1o-fj-nYn">
             <objects>
-                <splitViewController id="4IE-mo-rkp" customClass="NCSplitViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <splitViewController id="4IE-mo-rkp" customClass="NCSplitViewController" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <segue destination="mtc-lf-PRo" kind="relationship" relationship="detailViewController" id="W5b-lw-8O1"/>
@@ -136,7 +136,7 @@
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>
                     </navigationItem>
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei" customClass="NCMainTabBar" customModule="Nextcloud" customModuleProvider="target">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei" customClass="NCMainTabBar" customModule="kDrive" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -162,7 +162,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -188,7 +188,7 @@
             <objects>
                 <navigationController storyboardIdentifier="CCDetailNC" extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="mtc-lf-PRo" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="vxw-dW-rgx">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="vxw-dW-rgx">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -526,7 +526,7 @@
                                     <outlet property="delegate" destination="Frr-j9-xav" id="46E-kI-GUB"/>
                                 </connections>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="kDrive" customModuleProvider="target">
                                 <rect key="frame" x="15" y="113" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="moA-ZW-N2y"/>
@@ -631,8 +631,8 @@
         <!--Master Navigation Controller-->
         <scene sceneID="vvl-da-xtI">
             <objects>
-                <navigationController id="k86-ao-8mQ" customClass="NCMasterNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="yOS-hc-yM4" customClass="NC">
+                <navigationController id="k86-ao-8mQ" customClass="NCMasterNavigationController" customModule="kDrive" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" barStyle="black" translucent="NO" id="yOS-hc-yM4" customClass="NC">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -648,10 +648,10 @@
     <resources>
         <image name="avatar" width="25" height="25"/>
         <image name="disclosureIndicator" width="26" height="28"/>
-        <image name="logo" width="223" height="157.5"/>
+        <image name="logo" width="300" height="300"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="W5b-lw-8O1"/>
+        <segue reference="2Qm-A6-CfB"/>
     </inferredMetricsTieBreakers>
 </document>
