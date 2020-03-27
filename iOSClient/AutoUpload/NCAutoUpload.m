@@ -418,18 +418,14 @@
             metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
             metadataForUpload.status = k_metadataStatusWaitUpload;
 
-            [metadataFull addObject:metadataForUpload];
-            
-            // Update database Auto Upload
-            if ([selector isEqualToString:selectorUploadAutoUpload])
-                [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
-            
             // Add Medtadata MOV LIVE PHOTO for upload
             if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto) {
                 
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
                 NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileNameMove directory:false];
                 NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
+                
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                 
                 [self extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
                     if (url != nil) {
@@ -448,10 +444,25 @@
                         metadataMOVForUpload.size = fileSize;
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                         
-                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+                        [metadataFull addObject:metadataMOVForUpload];
+                        
+                        // Update database Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload])
+                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
                     }
+                    
+                    dispatch_semaphore_signal(semaphore);
                 }];
+                
+                while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
+                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
             }
+            
+            [metadataFull addObject:metadataForUpload];
+                       
+            // Update database Auto Upload
+            if ([selector isEqualToString:selectorUploadAutoUpload])
+                [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
         }
     }
     
