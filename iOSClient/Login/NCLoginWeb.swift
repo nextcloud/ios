@@ -64,7 +64,11 @@ class NCLoginWeb: UIViewController {
         activityIndicator.startAnimating()
         self.view.addSubview(activityIndicator)
         
-        loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+        if let url = URL(string: urlBase) {
+            loadWebPage(webView: webView!, url: url)
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: "_login_url_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -86,9 +90,9 @@ class NCLoginWeb: UIViewController {
         let language = NSLocale.preferredLanguages[0] as String
         var request = URLRequest(url: url)
         
-        request.setValue(CCUtility.getUserAgent(), forHTTPHeaderField: "User-Agent")
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        webView.customUserAgent = CCUtility.getUserAgent()
         
         webView.load(request)
     }

@@ -41,7 +41,7 @@
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, PKPushRegistryDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -134,8 +134,6 @@
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
-- (void)plusButtonVisibile:(BOOL)visible;
-- (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification

@@ -960,7 +960,7 @@ NSString *const NCResource = @"<d:displayname/>"
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     NSString *userAgent = [request valueForHTTPHeaderField:@"User-Agent"];
     //[request setValue:[userAgent stringByAppendingString:@" (SilentPush)"] forHTTPHeaderField:@"User-Agent"];
-    [request setValue:[userAgent stringByAppendingString:@" (PushKit)"] forHTTPHeaderField:@"User-Agent"];
+    [request setValue:[userAgent stringByAppendingString:@" (Strict VoIP)"] forHTTPHeaderField:@"User-Agent"];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];

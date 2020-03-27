@@ -3,19 +3,19 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Split-->
+        <!--Split View Controller-->
         <scene sceneID="B1o-fj-nYn">
             <objects>
-                <splitViewController id="4IE-mo-rkp" customClass="CCSplit" sceneMemberID="viewController">
+                <splitViewController id="4IE-mo-rkp" customClass="NCSplitViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
                         <segue destination="mtc-lf-PRo" kind="relationship" relationship="detailViewController" id="W5b-lw-8O1"/>
-                        <segue destination="FkP-Lh-8zt" kind="relationship" relationship="masterViewController" id="XFR-ol-usq"/>
+                        <segue destination="k86-ao-8mQ" kind="relationship" relationship="masterViewController" id="JcJ-dS-r1m"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6BR-HM-b4e" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -161,20 +161,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
-                                <rect key="frame" x="95.5" y="369.5" width="223" height="157.5"/>
+                            <imageView userInteractionEnabled="NO" tag="999" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerY" secondItem="cUA-lB-tGG" secondAttribute="centerY" id="NqJ-e6-LfV"/>
-                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="centerX" secondItem="3ph-Od-2hO" secondAttribute="centerX" id="VG7-UF-Zrf"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="HSh-HF-TAJ"/>
+                            <constraint firstItem="3ph-Od-2hO" firstAttribute="bottom" secondItem="zlU-MP-ZVs" secondAttribute="bottom" id="hvN-HY-D9V"/>
+                            <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
                     <navigationItem key="navigationItem" id="cJm-UN-Dvj" userLabel="Detail"/>
                     <connections>
-                        <outlet property="imageBackground" destination="zlU-MP-ZVs" id="XRF-iq-qSn"/>
+                        <outlet property="viewBackground" destination="zlU-MP-ZVs" id="J4v-73-vGf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IJ0-oL-QKv" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -336,7 +338,9 @@
         <!--NCTrash.storyboard-->
         <scene sceneID="361-ZH-Lss">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="NCTrash.storyboard" storyboardName="NCTrash" referencedIdentifier="NCTrash.storyboard" id="WTp-0D-Gpe" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="NCTrash.storyboard" storyboardName="NCTrash" referencedIdentifier="NCTrash.storyboard" id="WTp-0D-Gpe" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="mjj-Fc-L6W"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WGZ-c6-AXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10870" y="228"/>
@@ -344,7 +348,9 @@
         <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="NCOnDevice.storyboard" storyboardName="NCOffline" referencedIdentifier="NCOffline.storyboard" id="biz-Qc-WHi" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="NCOnDevice.storyboard" storyboardName="NCOffline" referencedIdentifier="NCOffline.storyboard" id="biz-Qc-WHi" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="rfB-6v-cRv"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10876" y="327"/>
@@ -352,7 +358,9 @@
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
             <objects>
-                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="2JP-H5-EI3" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="2JP-H5-EI3" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="2tm-Tj-UzB"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10879" y="424"/>
@@ -378,6 +386,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="jsN-hz-vF5"/>
                     </view>
+                    <navigationItem key="navigationItem" id="aV2-3j-vnZ"/>
                     <connections>
                         <outlet property="tableView" destination="pnc-dQ-cNG" id="YDD-pc-NFL"/>
                     </connections>
@@ -407,6 +416,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="2pW-5T-ywS"/>
                     </view>
+                    <navigationItem key="navigationItem" id="Xn3-AA-DIm"/>
                     <connections>
                         <outlet property="tableView" destination="UXi-wu-3m5" id="msO-8g-crr"/>
                     </connections>
@@ -618,6 +628,22 @@
             </objects>
             <point key="canvasLocation" x="9212" y="1216.9950738916257"/>
         </scene>
+        <!--Master Navigation Controller-->
+        <scene sceneID="vvl-da-xtI">
+            <objects>
+                <navigationController id="k86-ao-8mQ" customClass="NCMasterNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="yOS-hc-yM4" customClass="NC">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="FkP-Lh-8zt" kind="relationship" relationship="rootViewController" id="X0W-jo-GrL"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Uq6-72-639" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5670" y="-709"/>
+        </scene>
     </scenes>
     <resources>
         <image name="avatar" width="25" height="25"/>
@@ -626,6 +652,6 @@
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="2Qm-A6-CfB"/>
+        <segue reference="W5b-lw-8O1"/>
     </inferredMetricsTieBreakers>
 </document>

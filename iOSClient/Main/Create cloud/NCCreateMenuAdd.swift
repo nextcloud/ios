@@ -97,7 +97,7 @@ class NCCreateMenuAdd: NSObject {
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                viewController.typeTemplate = k_nextcloudtext_document
+                viewController.typeTemplate = k_template_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
                 
@@ -120,7 +120,7 @@ class NCCreateMenuAdd: NSObject {
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                viewController.typeTemplate = k_richdocument_document
+                viewController.typeTemplate = k_template_document
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
                 
@@ -133,7 +133,7 @@ class NCCreateMenuAdd: NSObject {
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                viewController.typeTemplate = k_richdocument_spreadsheet
+                viewController.typeTemplate = k_template_spreadsheet
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
                 
@@ -146,7 +146,7 @@ class NCCreateMenuAdd: NSObject {
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 
                 let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
-                viewController.typeTemplate = k_richdocument_presentation
+                viewController.typeTemplate = k_template_presentation
                 viewController.serverUrl = self.appDelegate.activeMain.serverUrl
                 viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
                 

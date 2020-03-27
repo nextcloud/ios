@@ -74,6 +74,7 @@
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
 
 #define k_dismissAfterSecond                            4
+#define k_dismissAfterSecondLong                        10
 
 #define k_daysOfActivity                                7
 
@@ -81,7 +82,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         85
+#define k_databaseSchemaVersion                         87
 
 // Intro selector
 #define k_intro_login                                   0
@@ -274,13 +275,9 @@
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
-// Template Rich document
-#define k_richdocument_document                         @"document"
-#define k_richdocument_spreadsheet                      @"spreadsheet"
-#define k_richdocument_presentation                     @"presentation"
 
 // Template Nextcloud Text
-#define k_nextcloudtext_document                        @"textdocument"
+
 
 // Layout
 #define k_layout_list                                   @"typeLayoutList"
@@ -293,6 +290,20 @@
 
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"
+
+// Text -  OnlyOffice - Collabora
+#define k_editor_text                                   @"text"
+#define k_editor_onlyoffice                             @"onlyoffice"
+#define k_editor_collabora                              @"collabora"
+
+#define k_onlyoffice_docx                               @"onlyoffice_docx"
+#define k_onlyoffice_xlsx                               @"onlyoffice_xlsx"
+#define k_onlyoffice_pptx                               @"onlyoffice_pptx"
+
+// Template
+#define k_template_document                             @"document"
+#define k_template_spreadsheet                          @"spreadsheet"
+#define k_template_presentation                         @"presentation"
 
 // Nextcloud unsupported
 #define k_nextcloud_unsupported                         13

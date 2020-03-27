@@ -37,9 +37,10 @@
 
 @interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
+@property(nonatomic, weak) IBOutlet UIImageView *viewBackground;
+
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property (nonatomic, strong) NSString *selectorDetail;
-
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 - (void)viewFile;
@@ -72,7 +73,6 @@
 // IM
 @property (nonatomic, strong) NCViewerImagemeter *imagemeter;
 
-@property(nonatomic, weak) IBOutlet UIImageView *imageBackground;
 
 - (void)changeToDisplayMode;
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode;

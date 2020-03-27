@@ -31,9 +31,41 @@ Please read the [Code of Conduct](https://nextcloud.com/code-of-conduct/). This 
 More information how to contribute: [https://nextcloud.com/contribute/](https://nextcloud.com/contribute/)
 
 ## Start contributing
-Fork this repository and contribute back using pull requests to the master branch!
 
-Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls) and working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22).
+You can start by forking this repository and creating pull requests on the develop
+branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22starter+issue%22). 
+
+Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
+
+### Xcode Project Setup
+
+#### Dependencies
+
+After forking the repository you have to build the dependecies. Dependencies are managed with Carthage. 
+Run
+
+```
+carthage build --platform ios
+```
+to fetch and compile the dependencies.
+
+### Creating Pull requests
+
+#### DCO Signoff
+
+Nextcloud enforces the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) on Pull Requests. It requires your commit messages to contain a Signed-off-by line with an email address that matches your GitHub account.
+
+##### How to Signoff
+
+The DCO is a way for contributors to certify that they wrote or otherwise have the right to submit the code they are contributing by adding a Signed-off-by line to commit messages.
+
+```
+My Commit message
+
+Signed-off-by: Random Contributor <random@contributor.dev>
+```
+
+Git even has a `-s | --signoff` command line option to append this to your commit messages automatically.
 
 ## Support
 

@@ -29,8 +29,6 @@
 
 #import "NCBridgeSwift.h"
 
-#define TOOLBAR_HEIGHT 49.0f
-
 #define alertRequestPasswordPDF 1
 
 @interface CCDetail () <NCTextDelegate, UIDocumentInteractionControllerDelegate>
@@ -135,7 +133,7 @@
     }
     
     // Logo
-    self.imageBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
+    self.viewBackground.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"logo"] multiplier:2 color:[NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.4]];
 
     // reload image
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image]) {
@@ -165,7 +163,10 @@
     
     // Title
     self.navigationController.navigationBar.topItem.title = _metadataDetail.fileNameView;
-
+    if (!self.splitViewController.isCollapsed) {
+        self.navigationController.topViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
+    }
+    
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:self.metadataDetail.ocId fileNameView:self.metadataDetail.fileNameView]] == NO) {
         [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView ocId:self.metadataDetail.ocId extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
@@ -216,24 +217,30 @@
             return;
         }
         
-        // Nextcloud Text - RichWorkspace
+        // DirectEditinf: Nextcloud Text - OnlyOffice
         if ([[NCUtility sharedInstance] isDirectEditing:self.metadataDetail] != nil && appDelegate.reachability.isReachable) {
             
             NSString *editor = [[NCUtility sharedInstance] isDirectEditing:self.metadataDetail];
-            if ([editor.lowercaseString isEqualToString:@"nextcloud text"]) {
+            if ([editor isEqualToString:k_editor_text] || [editor isEqualToString:k_editor_onlyoffice]) {
             
                 if([self.metadataDetail.url isEqualToString:@""]) {
                     
                     [[NCUtility sharedInstance] startActivityIndicatorWithView:self.view bottom:0];
                     
+                    NSString *customUserAgent = nil;
                     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadataDetail.fileName serverUrl:self.metadataDetail.serverUrl activeUrl:appDelegate.activeUrl];
-                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor: @"text" account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
+
+                    if ([editor isEqualToString:k_editor_onlyoffice]) {
+                        customUserAgent = [[NCUtility sharedInstance] getCustomUserAgentOnlyOffice];
+                    }
+                    
+                    [[NCCommunication sharedInstance] NCTextOpenFileWithUrlString:appDelegate.activeUrl fileNamePath:fileNamePath editor:editor customUserAgent:customUserAgent account:self.metadataDetail.account completionHandler:^(NSString *account, NSString *url, NSInteger errorCode, NSString *errorMessage) {
                         
                         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                             
                             self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                             [self.view addSubview:self.nextcloudText];
-                            [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail];
+                            [self.nextcloudText viewerAt:url detail:self metadata:self.metadataDetail editor:editor];
                             
                         } else {
                             
@@ -251,7 +258,7 @@
                     
                     self.nextcloudText = [[NCViewerNextcloudText alloc] initWithFrame:self.view.bounds configuration:[WKWebViewConfiguration new]];
                     [self.view addSubview:self.nextcloudText];
-                    [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail];
+                    [self.nextcloudText viewerAt:self.metadataDetail.url detail:self metadata:self.metadataDetail editor:editor];
                 }
             }
             
@@ -308,13 +315,8 @@
 
 - (void)createToolbar
 {
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
+    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - masterToolBarHeight, self.view.bounds.size.width, masterToolBarHeight)];
     
     UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
@@ -852,17 +854,13 @@
 - (void)readerPDF:(NSString *)fileName password:(NSString *)password
 {
     ReaderDocument *documentPDF = [ReaderDocument withDocumentFilePath:fileName password:password];
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
     
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
         self.readerPDFViewController.delegate = self;
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - masterToolBarHeight);
         [self.readerPDFViewController updateContentViews];
 
         [self addChildViewController:self.readerPDFViewController];
@@ -884,6 +882,7 @@
     UILayoutGuide *layoutGuide;
     CGFloat safeAreaTop = 0;
     CGFloat safeAreaBottom = 0;
+    CGFloat masterToolBarHeight = appDelegate.activeMain.tabBarController.tabBar.bounds.size.height;
     
     if (@available(iOS 11, *)) {
         layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
@@ -897,7 +896,7 @@
     if (self.toolbar.isHidden) {
         self.readerPDFViewController.view.frame = CGRectMake(0, safeAreaTop, self.view.bounds.size.width, self.view.bounds.size.height - safeAreaTop - safeAreaBottom);
     } else {
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - masterToolBarHeight);
     }
     [self.readerPDFViewController updateContentViews];
 }
@@ -980,7 +979,7 @@
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", self.metadataDetail.ocId]];
     
-    if (metadata && ![InfomaniakUtils openOnlyOfficeWithMetadata:metadata] && [self.selectorDetail isEqualToString:selectorLoadFileInternalView]) {
+    if (metadata && ![InfomaniakUtils openOnlyOfficeWithMetadata:metadata]) {
         
         UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
         

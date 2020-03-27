@@ -62,7 +62,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             metadata.status = Int(k_metadataStatusNormal)
                   
             guard let metadataUpdated = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdated)
+            _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdated)
             
             // New file
             if ocId != ocIdTemp {

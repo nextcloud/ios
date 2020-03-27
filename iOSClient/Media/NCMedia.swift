@@ -621,6 +621,8 @@ extension NCMedia {
                 
             }  else {
                 
+                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                
                 self.loadingSearch = false
                 
                 self.reloadDataSource(loadNetworkDatasource: false)

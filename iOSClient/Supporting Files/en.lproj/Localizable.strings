@@ -117,6 +117,8 @@
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version ?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
+"_internal_modify_"         = "Edit with internal editor";
+"_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
 
 // App
 
@@ -283,6 +285,7 @@
 "_account_already_exists_"      = "The account %@ already exists";
 "_traditional_login_"           = "Revert to old login method";
 "_web_login_"                   = "Revert to web login method";
+"_login_url_error_"             = "Url error, please verify your server url";
 
 // Favorite
 

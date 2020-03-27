@@ -21,39 +21,56 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
-import SwiftRichString
+import MarkdownKit
 
 @objc class NCViewRichWorkspace: UIView {
     
     @objc @IBOutlet weak var textView: UITextView!
     @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
 
-    let gradientLayer: CAGradientLayer = CAGradientLayer()
+    private var markdownParser = MarkdownParser()
+    private var richWorkspaceText: String?
+    private var textViewColor: UIColor?
+    private let gradient : CAGradientLayer = CAGradientLayer()
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    @objc func load(richWorkspaceText: String) {
-        let richWorkspaceCommon = NCRichWorkspaceCommon()
+    override func awakeFromNib() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        changeTheming()
         
-        richWorkspaceCommon.setRichWorkspaceText(richWorkspaceText, textView: textView)
-        setGradient()
+        // Gradient
+        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        layer.addSublayer(gradient)
     }
     
-    @objc func setGradient() {
-        
-        gradientLayer.removeFromSuperlayer()
-        gradientLayer.frame = CGRect(x: 0.0, y: 0.0, width: textView.frame.width, height: textView.frame.height)
-        if CCUtility.getDarkMode() {
-            gradientLayer.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
-        } else {
-            gradientLayer.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        gradient.frame = self.bounds
+    }
+
+    @objc func changeTheming() {
+        if textViewColor != NCBrandColor.sharedInstance.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            if let richWorkspaceText = richWorkspaceText {
+                textView.attributedText = markdownParser.parse(richWorkspaceText)
+            }
+            textViewColor = NCBrandColor.sharedInstance.textView
+            
+            if CCUtility.getDarkMode() {
+                gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            } else {
+                gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            }
+            
         }
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0.60)
-        gradientLayer.endPoint = CGPoint(x: 0, y: 1)
-        textView.layer.addSublayer(gradientLayer)
+    }
+    
+    @objc func load(richWorkspaceText: String) {
+        if richWorkspaceText != self.richWorkspaceText {
+            textView.attributedText = markdownParser.parse(richWorkspaceText)
+            self.richWorkspaceText = richWorkspaceText
+        }
     }
 }

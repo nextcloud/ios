@@ -36,10 +36,7 @@ class NCViewerDocumentWeb: NSObject {
     
     @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
         
-        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            detail.navigationController?.popViewController(animated: true)
-            return
-        }
+        if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) { return }
         
         if #available(iOS 11.0, *) {
             safeAreaBottom = Int((UIApplication.shared.keyWindow?.safeAreaInsets.bottom)!)

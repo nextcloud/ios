@@ -659,11 +659,6 @@
 
 + (BOOL)getDarkMode
 {
-    if ([self getDarkModeDetect]) {
-        if (@available(iOS 12.0, *)) {
-            return [UIScreen mainScreen].traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-        }
-    }
     return [[UICKeyChainStore stringForKey:@"darkMode" service:k_serviceShareKeyChain] boolValue];
 }
 
@@ -1154,6 +1149,15 @@
     
     if (fileSize > 0) return true;
     else return false;
+}
+
++ (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [self getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView];
+    
+    double fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    
+    return fileSize;
 }
 
 + (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView

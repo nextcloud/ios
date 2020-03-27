@@ -1,11 +1,9 @@
 //
-//  CCSplit.h
+//  Notification_Service_Extension-Bridging-Header.h
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 09/10/15.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//  Created by Ivan Sein on 30.01.20.
+//  Author Ivan Sein <ivan@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -21,14 +19,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <UIKit/UIKit.h>
+#import "CCUtility.h"
+#import "NCPushNotificationEncryption.h"
 
-#import "CCLogin.h"
-#import "CCDetail.h"
+#import "OCActivity.h"
+#import "OCUserProfile.h"
+#import "OCCapabilities.h"
+#import "OCExternalSites.h"
+#import "OCSharedDto.h"
 
-@interface CCSplit : UISplitViewController <UISplitViewControllerDelegate>
-
-@property (nonatomic, strong) NSString *version;
-@property (nonatomic, strong) NSString *build;
-
-@end
+#import "HCFeatures.h"
+#import "NCComments.h"

@@ -229,7 +229,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 metadata.status = Int(k_metadataStatusNormal)
                 guard let metadataDownloaded = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDownloaded)
+                _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDownloaded)
                 
                 completionHandler(nil)
                 

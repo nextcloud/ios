@@ -105,6 +105,23 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
+                    if oldSchemaVersion < 87 {
+                        migration.deleteData(forType: tableActivity.className())
+                        migration.deleteData(forType: tableActivityPreview.className())
+                        migration.deleteData(forType: tableActivitySubjectRich.className())
+                        migration.deleteData(forType: tableCapabilities.className())
+                        migration.deleteData(forType: tableComments.className())
+                        migration.deleteData(forType: tableDirectEditingCreators.className())
+                        migration.deleteData(forType: tableDirectEditingEditors.className())
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
+                        migration.deleteData(forType: tableExternalSites.className())
+                        migration.deleteData(forType: tableGPS.className())
+                        migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableTag.className())
+                        migration.deleteData(forType: tableTrash.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -118,7 +135,14 @@ class NCManageDatabase: NSObject {
             
             do {
                 _ = try Realm(configuration: configCompact)
-            } catch { }
+            } catch {
+                if let databaseFilePath = databaseFilePath {
+                    do {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                        try FileManager.default.removeItem(at: databaseFilePath)
+                    } catch {}
+                }
+            }
                         
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
@@ -128,6 +152,19 @@ class NCManageDatabase: NSObject {
             Realm.Configuration.defaultConfiguration = config
         }
         
+        // Verify Database, if corrupr remove it
+        do {
+            let _ = try Realm()
+        } catch {
+            if let databaseFilePath = databaseFilePath {
+                do {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                    try FileManager.default.removeItem(at: databaseFilePath)
+                } catch {}
+            }
+        }
+        
+        // Open Real
         _ = try! Realm()
     }
     
@@ -1081,6 +1118,11 @@ class NCManageDatabase: NSObject {
                         addObject.mimetypes.append(mimeType)
                     }
                     addObject.name = editor.name
+                    if editor.name.lowercased() == "onlyoffice" {
+                        addObject.editor = "onlyoffice"
+                    } else if editor.name.lowercased() == "nextcloud text" {
+                        addObject.editor = "text"
+                    }
                     for mimeType in editor.optionalMimetypes {
                         addObject.optionalMimetypes.append(mimeType)
                     }
@@ -1697,14 +1739,13 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table LocalFile
     
-    @objc func addLocalFile(metadata: tableMetadata) {
+    @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
         
         let realm = try! Realm()
+        let addObject = tableLocalFile()
 
         do {
             try realm.write {
-            
-                let addObject = tableLocalFile()
             
                 addObject.account = metadata.account
                 addObject.date = metadata.date
@@ -1720,7 +1761,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
+        
+        return tableLocalFile.init(value: addObject)
     }
     
     @objc func deleteLocalFile(predicate: NSPredicate) {

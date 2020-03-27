@@ -81,36 +81,57 @@ class NCMainMenuTableViewController: UITableViewController {
 extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        return NCMainMenuFloatingPanelLayout(height: min(self.actions.count * 60, Int(self.view.frame.height) - 48))
+        if #available(iOS 11.0, *) {
+            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
+        } else {
+            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60)
+        }
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
         return NCMainMenuFloatingPanelBehavior()
     }
-
+    
+    func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
+        if vc.position == .hidden {
+            vc.dismiss(animated: false, completion: nil)
+        }
+    }
 }
 
 class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
-
+    
     init(height: Int) {
         self.height = CGFloat(height)
     }
 
     var initialPosition: FloatingPanelPosition {
-        return .tip
+        return .full
     }
 
     var supportedPositions: Set<FloatingPanelPosition> {
-        return [.tip]
+        return [.full, .hidden]
     }
 
     func insetFor(position: FloatingPanelPosition) -> CGFloat? {
-        switch position {
-        case .tip: return height
-        default: return nil
+        if (position == .full) {
+            return max(48, UIScreen.main.bounds.size.height - height)
+        } else {
+            return nil
         }
+    }
+    
+    var positionReference: FloatingPanelLayoutReference {
+        return .fromSuperview
+    }
+
+    public func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
+        return [
+            surfaceView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            surfaceView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
+        ]
     }
 
     func backdropAlphaFor(position: FloatingPanelPosition) -> CGFloat {

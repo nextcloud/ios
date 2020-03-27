@@ -18,6 +18,8 @@
 
 #include "util/test_file.hpp"
 
+#include "test_utils.hpp"
+
 #include "impl/realm_coordinator.hpp"
 
 #if REALM_ENABLE_SYNC
@@ -219,6 +221,28 @@ void wait_for_download(Realm& realm)
     wait_for_session(realm, &SyncSession::wait_for_download_completion);
 }
 
+TestSyncManager::TestSyncManager(std::string const& base_path, SyncManager::MetadataMode mode)
+{
+    configure(base_path, mode);
+}
+
+TestSyncManager::~TestSyncManager()
+{
+    SyncManager::shared().reset_for_testing();
+}
+
+void TestSyncManager::configure(std::string const& base_path, SyncManager::MetadataMode mode)
+{
+    SyncClientConfig config;
+    config.base_file_path = base_path.empty() ? tmp_dir() : base_path;
+    config.metadata_mode = mode;
+#if TEST_ENABLE_SYNC_LOGGING
+    config.log_level = util::Logger::Level::all;
+#else
+    config.log_level = util::Logger::Level::off;
+#endif
+    SyncManager::shared().configure(config);
+}
 
 #endif // REALM_ENABLE_SYNC
 

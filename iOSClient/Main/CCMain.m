@@ -212,12 +212,10 @@
     if (!self.tableView.editing)
         [_selectedocIdsMetadatas removeAllObjects];
 
-    // Get Shares
-    appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
-    
-    // Get RichWorkspace
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    self.richWorkspaceText = directory.richWorkspace;
+    // Check server URL "/"
+    if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
+        self.serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+    }
     
     // Query data source
     if (self.searchController.isActive == false) {
@@ -240,21 +238,21 @@
     } else {
         
         if (appDelegate.activeAccount.length > 0 && [_selectedocIdsMetadatas count] == 0) {
-        
             // Read (file) Folder
             [self readFileReloadFolder];
-            
-            // TEST
-            /*
-            NSString *directoryPath = [CCUtility returnPathfromServerUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
-            
-            [[NCCommunication sharedInstance] searchReadFolderWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUserID directoryPath:directoryPath lastFileName:@"" limit:100 account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *message) {
-                
-            }];
-            */
         }
     }
 
+    if (appDelegate.activeAccount.length > 0 && self.serverUrl != nil) {
+        
+        // Get Shares
+        appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
+        
+        // Get RichWorkspace
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+        self.richWorkspaceText = directory.richWorkspace;
+    }
+    
     // Title
     [self setTitle];
 }
