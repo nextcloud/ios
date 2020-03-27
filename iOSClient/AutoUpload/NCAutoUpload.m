@@ -424,20 +424,34 @@
             if ([selector isEqualToString:selectorUploadAutoUpload])
                 [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
             
-            /*
             // Add Medtadata MOV LIVE PHOTO for upload
             if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto) {
                 
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
-                NSString *filePath = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileNameMove directory:false];
+                NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileNameMove directory:false];
+                NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
                 
                 [self extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
                     if (url != nil) {
+                        unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
                         
+                        tableMetadata *metadataMOVForUpload = [tableMetadata new];
+                        
+                        metadataMOVForUpload.account = appDelegate.activeAccount;
+                        metadataMOVForUpload.date = [NSDate new];
+                        metadataMOVForUpload.ocId = ocId;
+                        metadataMOVForUpload.fileName = fileNameMove;
+                        metadataMOVForUpload.fileNameView = fileNameMove;
+                        metadataMOVForUpload.serverUrl = serverUrl;
+                        metadataMOVForUpload.session = session;
+                        metadataMOVForUpload.sessionSelector = selector;
+                        metadataMOVForUpload.size = fileSize;
+                        metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+                        
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
                     }
                 }];
             }
-            */
         }
     }
     
@@ -606,6 +620,7 @@
 
 - (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion {
     
+    [CCUtility removeFileAtPath:filePath];
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
     PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
     options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
