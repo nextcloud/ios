@@ -903,6 +903,18 @@
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
 
         [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
+        
+        UIColor *color = NCBrandColor.sharedInstance.brand;
+        BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
+        BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
+        
+        if (isTooLight) {
+            color = [NCBrandColor.sharedInstance.brand darkerBy:10];
+        } else if (isTooDark) {
+            color = [NCBrandColor.sharedInstance.brand lighterBy:10];
+        }
+        
+        NCBrandColor.sharedInstance.brand = color;
             
     } else {
     
@@ -911,18 +923,6 @@
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
         
-    UIColor *color = NCBrandColor.sharedInstance.brand;
-    BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
-    BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
-    
-    if (isTooLight) {
-        color = [NCBrandColor.sharedInstance.brand darkerBy:10];
-    } else if (isTooDark) {
-        color = [NCBrandColor.sharedInstance.brand lighterBy:10];
-    }
-    
-    NCBrandColor.sharedInstance.brand = color;
-    
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
