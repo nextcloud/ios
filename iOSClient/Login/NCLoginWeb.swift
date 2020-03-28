@@ -144,10 +144,6 @@ extension NCLoginWeb: WKNavigationDelegate {
                     serverUrl = urlBase
                 }
                 
-                if (serverUrl.last == "/") {
-                    serverUrl = String(serverUrl.dropLast())
-                }
-                
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
                 
@@ -204,11 +200,11 @@ extension NCLoginWeb: WKNavigationDelegate {
         print("didFinishProvisionalNavigation");
         
         if loginFlowV2Available {
-            NCCommunication.sharedInstance.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
-                if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
-                    self.createAccount(server: server!, username: loginName!, password: appPassword!)
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                NCCommunication.sharedInstance.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
+                    if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
+                        self.createAccount(server: server!, username: loginName!, password: appPassword!)
+                    }
                 }
             }
         }
@@ -218,28 +214,37 @@ extension NCLoginWeb: WKNavigationDelegate {
 
     func createAccount(server: String, username: String, password: String) {
         
+        var serverUrl = server
+        
         // NO account found, clear all
         if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
             
+        // Normalized
+        if (serverUrl.last == "/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        
         // Create account
-        let account: String = "\(username) \(server)"
+        let account: String = "\(username) \(serverUrl)"
 
         // Add new account
         NCManageDatabase.sharedInstance.deleteAccount(account)
-        NCManageDatabase.sharedInstance.addAccount(account, url: server, user: username, password: password)
+        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
             
         guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
             self.dismiss(animated: true, completion: nil)
             return
         }
             
-        appDelegate.settingActiveAccount(account, activeUrl: server, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
             
         if (CCUtility.getIntro()) {
+            
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
             self.dismiss(animated: true)
                 
         } else {
+            
             CCUtility.setIntro(true)
             if (self.presentingViewController == nil) {
                 let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
