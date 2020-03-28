@@ -185,8 +185,7 @@
             [[NCCommunication sharedInstance] getLoginFlowV2WithUrlString:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
                 // Login Flow V2
-                /*
-                if (errorCode == 0 && token != nil && endpoint != nil && login != nil) {
+                if (errorCode == 0 && [[NCBrandOptions sharedInstance] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {
                     
                     NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                     
@@ -197,11 +196,10 @@
                     activeLoginWeb.loginFlowV2Login = login;
                     
                     [self.navigationController pushViewController:activeLoginWeb animated:true];
-                } else
-                */
+                }
                 
                 // Login Flow
-                if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+                else if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                     
                     NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                     activeLoginWeb.urlBase = self.baseUrl.text;
