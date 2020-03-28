@@ -149,46 +149,9 @@ extension NCLoginWeb: WKNavigationDelegate {
                 }
                 
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
-                let token: String = password.replacingOccurrences(of: "password:", with: "")
+                let password: String = password.replacingOccurrences(of: "password:", with: "")
                 
-                let account : String = "\(username) \(serverUrl)"
-                
-                // NO account found, clear
-                if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
-                
-                
-                // Add new account
-                NCManageDatabase.sharedInstance.deleteAccount(account)
-                NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token)
-                
-                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                    self.dismiss(animated: true, completion: nil)
-                    return
-                }
-                
-                appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token)
-                
-                if (CCUtility.getIntro()) {
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
-                    self.dismiss(animated: true)
-                    
-                } else {
-                    CCUtility.setIntro(true)
-                    if (self.presentingViewController == nil) {
-                        let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                        splitController?.modalPresentationStyle = .fullScreen
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
-                        splitController!.view.alpha = 0
-                        appDelegate.window.rootViewController = splitController!
-                        appDelegate.window.makeKeyAndVisible()
-                        UIView.animate(withDuration: 0.5) {
-                            splitController!.view.alpha = 1
-                        }
-                    } else {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
-                        self.dismiss(animated: true)
-                    }
-                }
+                createAccount(server: serverUrl, username: username, password: password)
             }
         }
     }
@@ -242,9 +205,55 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         if loginFlowV2Available {
             NCCommunication.sharedInstance.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { (server, loginName, appPassword, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    print("")
+                if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
+                    self.createAccount(server: server!, username: loginName!, password: appPassword!)
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
+            }
+        }
+    }
+    
+    //MARK: -
+
+    func createAccount(server: String, username: String, password: String) {
+        
+        // NO account found, clear all
+        if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
+            
+        // Create account
+        let account: String = "\(username) \(server)"
+
+        // Add new account
+        NCManageDatabase.sharedInstance.deleteAccount(account)
+        NCManageDatabase.sharedInstance.addAccount(account, url: server, user: username, password: password)
+            
+        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+            self.dismiss(animated: true, completion: nil)
+            return
+        }
+            
+        appDelegate.settingActiveAccount(account, activeUrl: server, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+            
+        if (CCUtility.getIntro()) {
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+            self.dismiss(animated: true)
+                
+        } else {
+            CCUtility.setIntro(true)
+            if (self.presentingViewController == nil) {
+                let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                splitController?.modalPresentationStyle = .fullScreen
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                splitController!.view.alpha = 0
+                appDelegate.window.rootViewController = splitController!
+                appDelegate.window.makeKeyAndVisible()
+                UIView.animate(withDuration: 0.5) {
+                    splitController!.view.alpha = 1
+                }
+            } else {
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                self.dismiss(animated: true)
             }
         }
     }
