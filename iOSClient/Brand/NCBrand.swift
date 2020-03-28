@@ -79,7 +79,8 @@ import UIKit
     @objc public var use_middlewarePing:                Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
     @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
-    
+    @objc public var use_loginflowv2:                   Bool = false                                                // Don't touch me !!
+
     @objc public var disable_intro:                     Bool = false
     @objc public var disable_request_login_url:         Bool = false
     @objc public var disable_multiaccount:              Bool = false
