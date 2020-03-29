@@ -41,9 +41,11 @@ import Foundation
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     @objc var metadatas: [tableMetadata]
-    
+    @objc var metadatasConflict: [tableMetadata]
+
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
+        self.metadatasConflict = [tableMetadata]()
         super.init(coder: aDecoder)
     }
     
@@ -56,7 +58,6 @@ import Foundation
         tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
     }
 }
-
 
 // MARK: - UITableViewDelegate
 

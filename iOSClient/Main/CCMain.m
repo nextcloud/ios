@@ -1048,7 +1048,8 @@
 - (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     NSMutableArray *metadatas = [NSMutableArray new];
-    
+    NSMutableArray *metadatasConflict = [NSMutableArray new];
+
     for (PHAsset *asset in assets) {
         
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
@@ -1089,7 +1090,20 @@
         metadataForUpload.status = k_metadataStatusWaitUpload;
                 
         [metadatas addObject:metadataForUpload];
-            
+        
+        // verify exists conflict
+        NSString *fileNameExtension = [fileName pathExtension].lowercaseString;
+        NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
+        NSString *fileNameConflict = fileName;
+        
+        if ([fileNameExtension isEqualToString:@"heic"] && [CCUtility getFormatCompatibility]) {
+            fileNameConflict = [fileNameWithoutExtension stringByAppendingString:@".jpg"];
+        }
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameConflict]];
+        if (metadata) {
+            [metadatasConflict addObject:metadata];
+        }
+                    
         // Add Medtadata MOV LIVE PHOTO for upload
         if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto && urls.count == assets.count) {
                 
@@ -1119,15 +1133,19 @@
     }
     
     // Verify if file(s) exists
-    if (metadatas.count > 0) {
+    if (metadatasConflict.count > 0) {
+        
         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
         conflict.metadatas = metadatas;
+        conflict.metadatasConflict = metadatasConflict;
         
         [self presentViewController:conflict animated:YES completion:nil];
+        
+    } else {
+        
+        [appDelegate startLoadAutoDownloadUpload];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
-    
-    //[appDelegate startLoadAutoDownloadUpload];
-    //[[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
 
 #pragma --------------------------------------------------------------------------------------------
