@@ -54,6 +54,7 @@ import Foundation
         
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.tableFooterView = UIView()
         
         tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
         
@@ -62,11 +63,14 @@ import Foundation
         labelNewFiles.text = NSLocalizedString("_file_conflict_new_", comment: "")
         labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         
-        buttonCancel.layer.cornerRadius = 15
+        switchNewFiles.isOn = false
+        switchAlreadyExistingFiles.isOn = false
+        
+        buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
         
-        buttonContinue.layer.cornerRadius = 15
+        buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
@@ -78,7 +82,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return 125
     }
 }
 
@@ -113,6 +117,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             }
             
             cell.labelFileName.text = metadata.fileNameView
+            cell.labelDetail.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
+            cell.switchNewFile.isOn = false
+            cell.switchAlreadyExistingFile.isOn = false
             
             return cell
         }
