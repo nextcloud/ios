@@ -40,8 +40,10 @@ import Foundation
     @IBOutlet weak var buttonContinue: UIButton!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
     @objc var metadatas: [tableMetadata]
     @objc var metadatasConflict: [tableMetadata]
+    @objc var metadatasConflictChoice = [String:String]()
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
