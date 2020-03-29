@@ -107,6 +107,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             
             let metadata = metadatasConflict[indexPath.row]
             
+            cell.fileId = metadata.fileId
+            cell.delegate = self
+            
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
                 NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
                     cell.imageFile.image = image
@@ -130,3 +133,16 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         return UITableViewCell()
     }
 }
+
+// MARK: - NCCreateFormUploadConflictCellDelegate
+
+extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
+    func valueChangedSwitchNewFile(with fileId: String, sender: Any) {
+        
+    }
+    
+    func valueChangedSwitchAlreadyExistingFile(with fileId: String, sender: Any) {
+        
+    }
+}
+

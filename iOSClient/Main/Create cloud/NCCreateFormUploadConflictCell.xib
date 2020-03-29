@@ -31,9 +31,15 @@
                     </label>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FUL-4V-OgL">
                         <rect key="frame" x="5" y="96" width="51" height="31"/>
+                        <connections>
+                            <action selector="valueChangedSwitchNewFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="s5p-Ao-3Ty"/>
+                        </connections>
                     </switch>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jBi-8r-tc5">
                         <rect key="frame" x="587" y="96" width="51" height="31"/>
+                        <connections>
+                            <action selector="valueChangedSwitchAlreadyExistingFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="MVS-Uv-X6e"/>
+                        </connections>
                     </switch>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hq-re-YVn">
                         <rect key="frame" x="65" y="34.5" width="571" height="18"/>

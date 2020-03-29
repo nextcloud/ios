@@ -32,4 +32,23 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
 
     @IBOutlet weak var switchNewFile: UISwitch!
     @IBOutlet weak var switchAlreadyExistingFile: UISwitch!
+    
+    var delegate: NCCreateFormUploadConflictCellDelegate?
+    var fileId: String = ""
+
+    @IBAction func valueChangedSwitchNewFile(_ sender: Any) {
+        delegate?.valueChangedSwitchNewFile(with: fileId, sender: sender)
+    }
+    
+    @IBAction func valueChangedSwitchAlreadyExistingFile(_ sender: Any) {
+        delegate?.valueChangedSwitchAlreadyExistingFile(with: fileId, sender: sender)
+    }
+    
+}
+
+protocol NCCreateFormUploadConflictCellDelegate {
+    
+    func valueChangedSwitchNewFile(with fileId: String, sender: Any)
+    func valueChangedSwitchAlreadyExistingFile(with fileId: String, sender: Any)
+
 }
