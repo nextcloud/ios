@@ -39,5 +39,63 @@ class NCCreateFormUploadConflict: UIViewController {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
     
-    var metadatas: [tableMetadata]?
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var metadatas: [tableMetadata]
+    
+    // This is also necessary when extending the superclass.
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented") // or see Roman Sausarnes's answer
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        self.metadatas = [tableMetadata]()
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    convenience init(metadatas: [tableMetadata]) {
+        self.init(nibName:nil, bundle:nil)
+        self.metadatas = metadatas
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
+    }
+}
+
+
+// MARK: - UITableViewDelegate
+
+extension NCCreateFormUploadConflict: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension NCCreateFormUploadConflict: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return metadatas.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
+            
+            return cell
+        }
+        
+        return UITableViewCell()
+    }
 }
