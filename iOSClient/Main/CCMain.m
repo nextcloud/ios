@@ -1047,9 +1047,10 @@
 
 - (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
+    NSMutableArray *metadatas = [NSMutableArray new];
+    
     for (PHAsset *asset in assets) {
         
-        tableMetadata *metadata;
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
         
         NSDate *assetDate = asset.creationDate;
@@ -1086,78 +1087,42 @@
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
-        
-        NSString *fileNameExtension = [fileName pathExtension];
-        NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
-        
-        if ([[fileNameExtension lowercaseString] isEqualToString:@"heic"] && [CCUtility getFormatCompatibility]) {
-            NSString *fileNameCompatibility = [fileNameWithoutExtension stringByAppendingString:@".jpg"];
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameCompatibility]];
-        } else {
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileName]];
-        }
-        
-        // Check il file already exists
-        if (metadata) {
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileNameWithoutExtension message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }];
-            
-            UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
-                // Remove record metadata
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+        [metadatas addObject:metadataForUpload];
+            
+        // Add Medtadata MOV LIVE PHOTO for upload
+        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto && urls.count == assets.count) {
+                
+            NSUInteger index = [assets indexOfObject:asset];
+            NSURL *url = [urls objectAtIndex:index];
+            tableMetadata *metadataMOVForUpload = [tableMetadata new];
+            NSString *fileNameNoExt = [fileName stringByDeletingPathExtension];
+            NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameNoExt];
+            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
 
-                // Add Medtadata for upload
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                
-                [appDelegate startLoadAutoDownloadUpload];
-            }];
+            metadataMOVForUpload.account = appDelegate.activeAccount;
+            metadataMOVForUpload.date = [NSDate new];
+            metadataMOVForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
+            metadataMOVForUpload.fileName = fileName;
+            metadataMOVForUpload.fileNameView = fileName;
+            metadataMOVForUpload.serverUrl = serverUrl;
+            metadataMOVForUpload.session = session;
+            metadataMOVForUpload.sessionSelector = selectorUploadFile;
+            metadataMOVForUpload.size = fileSize;
+            metadataMOVForUpload.status = k_metadataStatusWaitUpload;
             
-            [alertController addAction:cancelAction];
-            [alertController addAction:overwriteAction];
-           
-            UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
-            alertWindow.rootViewController = [[UIViewController alloc]init];
-            alertWindow.windowLevel = UIWindowLevelAlert + 1;
-            [alertWindow makeKeyAndVisible];
-            [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
-                
-        } else {
+            // Prepare file and directory
+            [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
             
-            // Add Medtadata for upload
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-            
-            // Add Medtadata MOV LIVE PHOTO for upload
-            if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getMOVLivePhoto && urls.count == assets.count) {
-                
-                NSUInteger index = [assets indexOfObject:asset];
-                NSURL *url = [urls objectAtIndex:index];
-                tableMetadata *metadataMOVForUpload = [tableMetadata new];
-                NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameWithoutExtension];
-                unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
-
-                metadataMOVForUpload.account = appDelegate.activeAccount;
-                metadataMOVForUpload.date = [NSDate new];
-                metadataMOVForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-                metadataMOVForUpload.fileName = fileName;
-                metadataMOVForUpload.fileNameView = fileName;
-                metadataMOVForUpload.serverUrl = serverUrl;
-                metadataMOVForUpload.session = session;
-                metadataMOVForUpload.sessionSelector = selectorUploadFile;
-                metadataMOVForUpload.size = fileSize;
-                metadataMOVForUpload.status = k_metadataStatusWaitUpload;
-                
-                // Prepare file and directory
-                [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
-                
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
-            }
-                        
-            [appDelegate startLoadAutoDownloadUpload];
+            [metadatas addObject:metadataMOVForUpload];
         }
     }
+    
+    // Verify if file(s) exists
+    
+    
+    
+    [appDelegate startLoadAutoDownloadUpload];
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
