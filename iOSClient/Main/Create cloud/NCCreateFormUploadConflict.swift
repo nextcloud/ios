@@ -56,6 +56,20 @@ import Foundation
         tableView.delegate = self
         
         tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        
+        labelTitle.text = String(metadatasConflict.count) + " " + NSLocalizedString("_file_conflict_num_", comment: "")
+        labelSubTitle.text = NSLocalizedString("_file_conflict_desc_", comment: "")
+        labelNewFiles.text = NSLocalizedString("_file_conflict_new_", comment: "")
+        labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
+        
+        buttonCancel.layer.cornerRadius = 15
+        buttonCancel.layer.masksToBounds = true
+        buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        
+        buttonContinue.layer.cornerRadius = 15
+        buttonContinue.layer.masksToBounds = true
+        buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
+        buttonContinue.isEnabled = false
     }
 }
 
