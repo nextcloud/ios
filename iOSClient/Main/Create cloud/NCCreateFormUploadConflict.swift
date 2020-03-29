@@ -43,7 +43,10 @@ import Foundation
     
     @objc var metadatas: [tableMetadata]
     @objc var metadatasConflict: [tableMetadata]
-    @objc var metadatasConflictChoice = [String:String]()
+    
+    var metadatasConflictNewFiles = [String]()
+    var metadatasConflictNewAlreadyExistingFiles = [String]()
+
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
@@ -81,9 +84,27 @@ import Foundation
     }
     
     @IBAction func valueChangedSwitchNewFiles(_ sender: Any) {
+        metadatasConflictNewFiles.removeAll()
+
+        if switchNewFiles.isOn {
+            for metadata in metadatasConflict {
+                metadatasConflictNewFiles.append(metadata.fileId)
+            }
+        }
+        
+        tableView.reloadData()
     }
     
     @IBAction func valueChangedSwitchAlreadyExistingFiles(_ sender: Any) {
+        metadatasConflictNewAlreadyExistingFiles.removeAll()
+        
+        if switchAlreadyExistingFiles.isOn {
+            for metadata in metadatasConflict {
+                metadatasConflictNewAlreadyExistingFiles.append(metadata.fileId)
+            }
+        }
+        
+        tableView.reloadData()
     }
 }
 
@@ -131,8 +152,18 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             
             cell.labelFileName.text = metadata.fileNameView
             cell.labelDetail.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
-            cell.switchNewFile.isOn = false
-            cell.switchAlreadyExistingFile.isOn = false
+                        
+            if metadatasConflictNewFiles.contains(metadata.fileId) {
+                cell.switchNewFile.isOn = true
+            } else {
+                cell.switchNewFile.isOn = false
+            }
+            
+            if metadatasConflictNewAlreadyExistingFiles.contains(metadata.fileId) {
+                cell.switchAlreadyExistingFile.isOn = true
+            } else {
+                cell.switchAlreadyExistingFile.isOn = false
+            }
             
             return cell
         }
