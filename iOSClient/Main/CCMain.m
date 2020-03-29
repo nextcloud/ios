@@ -1143,6 +1143,8 @@
         
     } else {
         
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+        
         [appDelegate startLoadAutoDownloadUpload];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
