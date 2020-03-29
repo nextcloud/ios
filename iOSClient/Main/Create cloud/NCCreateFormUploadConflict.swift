@@ -224,7 +224,7 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
     func canContinue() {
         var result = true
         for metadata in metadatasConflict {
-            if metadatasConflictNewFiles.contains(metadata.ocId) == false && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
+            if !metadatasConflictNewFiles.contains(metadata.ocId) && !metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 result = false
             }
         }
