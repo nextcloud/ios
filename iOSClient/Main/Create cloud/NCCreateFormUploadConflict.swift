@@ -64,7 +64,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 120
     }
 }
 
@@ -77,14 +77,26 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return metadatas.count
+        return metadatasConflict.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
-            let metadata = metadatas[indexPath.row]
+            let metadata = metadatasConflict[indexPath.row]
+            
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
+                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
+                    cell.imageFile.image = image
+                }
+            } else {
+                if metadata.iconName.count > 0 {
+                    cell.imageFile.image = UIImage.init(named: metadata.iconName)
+                } else {
+                    cell.imageFile.image = UIImage.init(named: "file")
+                }
+            }
             
             cell.labelFileName.text = metadata.fileNameView
             

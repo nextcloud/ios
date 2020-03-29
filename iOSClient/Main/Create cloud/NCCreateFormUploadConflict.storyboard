@@ -27,7 +27,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="71" id="k4n-DL-b4D"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -38,25 +38,25 @@
                                         <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
                                     </switch>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ge9-Fi-Rb1">
-                                        <rect key="frame" x="345" y="0.0" width="51" height="31"/>
+                                        <rect key="frame" x="340" y="0.0" width="51" height="31"/>
                                     </switch>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New files" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7Y-Nu-nJ3">
-                                        <rect key="frame" x="0.0" y="36" width="70.5" height="24"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="0.0" y="36" width="63" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Already existing files" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Tf-oD-aTF">
-                                        <rect key="frame" x="237" y="36" width="157" height="24"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="248" y="36" width="141" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="3Tf-oD-aTF" secondAttribute="trailing" id="0gO-Y8-9Dl"/>
-                                    <constraint firstAttribute="trailing" secondItem="ge9-Fi-Rb1" secondAttribute="trailing" id="AkQ-ni-sBE"/>
+                                    <constraint firstAttribute="trailing" secondItem="3Tf-oD-aTF" secondAttribute="trailing" constant="5" id="0gO-Y8-9Dl"/>
+                                    <constraint firstAttribute="trailing" secondItem="ge9-Fi-Rb1" secondAttribute="trailing" constant="5" id="AkQ-ni-sBE"/>
                                     <constraint firstItem="ge9-Fi-Rb1" firstAttribute="top" secondItem="qry-YF-g1N" secondAttribute="top" id="OXS-I0-XDN"/>
                                     <constraint firstAttribute="height" constant="65" id="PKH-cZ-F2x"/>
                                     <constraint firstItem="H7Y-Nu-nJ3" firstAttribute="top" secondItem="08D-oc-nWS" secondAttribute="bottom" constant="5" id="WLj-QZ-Ogj"/>
@@ -68,7 +68,7 @@
                                 </constraints>
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wkN-gS-XKZ">
-                                <rect key="frame" x="10" y="247.5" width="394" height="544.5"/>
+                                <rect key="frame" x="10" y="257.5" width="394" height="534.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <connections>
                                     <outlet property="dataSource" destination="30l-Wp-khL" id="TVO-SU-fFp"/>
@@ -112,7 +112,7 @@
                             <constraint firstItem="pSm-Za-OgF" firstAttribute="bottom" secondItem="Fow-JU-J8L" secondAttribute="bottom" constant="10" id="9H9-d9-7ST"/>
                             <constraint firstItem="pSm-Za-OgF" firstAttribute="trailing" secondItem="wkN-gS-XKZ" secondAttribute="trailing" constant="10" id="BDJ-k9-p0j"/>
                             <constraint firstItem="pSm-Za-OgF" firstAttribute="trailing" secondItem="qry-YF-g1N" secondAttribute="trailing" constant="10" id="GFR-EG-gbz"/>
-                            <constraint firstItem="wkN-gS-XKZ" firstAttribute="top" secondItem="qry-YF-g1N" secondAttribute="bottom" constant="10" id="HDO-22-kC7"/>
+                            <constraint firstItem="wkN-gS-XKZ" firstAttribute="top" secondItem="qry-YF-g1N" secondAttribute="bottom" constant="20" id="HDO-22-kC7"/>
                             <constraint firstItem="pSm-Za-OgF" firstAttribute="trailing" secondItem="bXc-v3-Lun" secondAttribute="trailing" constant="10" id="J1O-5e-Kr9"/>
                             <constraint firstItem="wkN-gS-XKZ" firstAttribute="leading" secondItem="pSm-Za-OgF" secondAttribute="leading" constant="10" id="JjQ-Dd-hXO"/>
                             <constraint firstItem="qry-YF-g1N" firstAttribute="top" secondItem="bXc-v3-Lun" secondAttribute="bottom" constant="10" id="Lrv-4d-zee"/>
