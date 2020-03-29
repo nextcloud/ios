@@ -1121,7 +1121,6 @@
     // Verify if file(s) exists
     
     
-    
     [appDelegate startLoadAutoDownloadUpload];
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
