@@ -1119,11 +1119,15 @@
     }
     
     // Verify if file(s) exists
+    if (metadatas.count > 0) {
+        NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
+        conflict.metadatas = metadatas;
+        
+        [self presentViewController:conflict animated:YES completion:nil];
+    }
     
-    
-    [appDelegate startLoadAutoDownloadUpload];
-    
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    //[appDelegate startLoadAutoDownloadUpload];
+    //[[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
 
 #pragma --------------------------------------------------------------------------------------------

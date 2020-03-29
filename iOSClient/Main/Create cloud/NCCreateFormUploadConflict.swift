@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCCreateFormUploadConflict: UIViewController {
+@objc class NCCreateFormUploadConflict: UIViewController {
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelSubTitle: UILabel!
@@ -40,21 +40,11 @@ class NCCreateFormUploadConflict: UIViewController {
     @IBOutlet weak var buttonContinue: UIButton!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    private var metadatas: [tableMetadata]
+    @objc var metadatas: [tableMetadata]
     
-    // This is also necessary when extending the superclass.
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented") // or see Roman Sausarnes's answer
-    }
-    
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-    
-    convenience init(metadatas: [tableMetadata]) {
-        self.init(nibName:nil, bundle:nil)
-        self.metadatas = metadatas
+        super.init(coder: aDecoder)
     }
     
     override func viewDidLoad() {
@@ -73,7 +63,7 @@ class NCCreateFormUploadConflict: UIViewController {
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+        return 100
     }
 }
 
@@ -92,6 +82,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
+            
+            let metadata = metadatas[indexPath.row]
+            
+            cell.labelFileName.text = metadata.fileNameView
             
             return cell
         }
