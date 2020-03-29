@@ -176,11 +176,11 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
 extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
     
-    func valueChangedSwitchNewFile(with fileId: String, sender: Any) {
+    func valueChangedSwitchNewFile(with fileId: String, isOn: Bool) {
         
     }
     
-    func valueChangedSwitchAlreadyExistingFile(with fileId: String, sender: Any) {
+    func valueChangedSwitchAlreadyExistingFile(with fileId: String, isOn: Bool) {
         
     }
 }
