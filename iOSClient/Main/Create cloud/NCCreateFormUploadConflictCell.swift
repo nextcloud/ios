@@ -1,5 +1,5 @@
 //
-//  NCCreateFormUploadConflict.swift
+//  NCCreateFormUploadConflictCell.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 29/03/2020.
@@ -23,21 +23,13 @@
 
 import Foundation
 
-class NCCreateFormUploadConflict: UIViewController {
-
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelSubTitle: UILabel!
-
-    @IBOutlet weak var switchNewFiles: UISwitch!
-    @IBOutlet weak var switchAlreadyExistingFiles: UISwitch!
-
-    @IBOutlet weak var labelNewFiles: UILabel!
-    @IBOutlet weak var labelAlreadyExistingFiles: UILabel!
-
-    @IBOutlet weak var tableView: UITableView!
-
-    @IBOutlet weak var buttonCancel: UIButton!
-    @IBOutlet weak var buttonContinue: UIButton!
+class NCCreateFormUploadConflictCell: UITableViewCell {
     
-    var metadatas: [tableMetadata]?
+    @IBOutlet weak var imageFile: UIImageView!
+
+    @IBOutlet weak var labelFileName: UILabel!
+    @IBOutlet weak var labelDetail: UILabel!
+
+    @IBOutlet weak var switchNewFile: UISwitch!
+    @IBOutlet weak var switchAlreadyExistingFile: UISwitch!
 }
