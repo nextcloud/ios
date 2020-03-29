@@ -45,7 +45,7 @@ import Foundation
     @objc var metadatasConflict: [tableMetadata]
     
     var metadatasConflictNewFiles = [String]()
-    var metadatasConflictNewAlreadyExistingFiles = [String]()
+    var metadatasConflictAlreadyExistingFiles = [String]()
 
 
     @objc required init?(coder aDecoder: NSCoder) {
@@ -88,7 +88,7 @@ import Foundation
 
         if switchNewFiles.isOn {
             for metadata in metadatasConflict {
-                metadatasConflictNewFiles.append(metadata.fileId)
+                metadatasConflictNewFiles.append(metadata.ocId)
             }
         }
         
@@ -96,11 +96,11 @@ import Foundation
     }
     
     @IBAction func valueChangedSwitchAlreadyExistingFiles(_ sender: Any) {
-        metadatasConflictNewAlreadyExistingFiles.removeAll()
+        metadatasConflictAlreadyExistingFiles.removeAll()
         
         if switchAlreadyExistingFiles.isOn {
             for metadata in metadatasConflict {
-                metadatasConflictNewAlreadyExistingFiles.append(metadata.fileId)
+                metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
             }
         }
         
@@ -135,7 +135,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             
             let metadata = metadatasConflict[indexPath.row]
             
-            cell.fileId = metadata.fileId
+            cell.ocId = metadata.ocId
             cell.delegate = self
             
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
@@ -153,13 +153,13 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.labelFileName.text = metadata.fileNameView
             cell.labelDetail.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
                         
-            if metadatasConflictNewFiles.contains(metadata.fileId) {
+            if metadatasConflictNewFiles.contains(metadata.ocId) {
                 cell.switchNewFile.isOn = true
             } else {
                 cell.switchNewFile.isOn = false
             }
             
-            if metadatasConflictNewAlreadyExistingFiles.contains(metadata.fileId) {
+            if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 cell.switchAlreadyExistingFile.isOn = true
             } else {
                 cell.switchAlreadyExistingFile.isOn = false
@@ -176,12 +176,32 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
 extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
     
-    func valueChangedSwitchNewFile(with fileId: String, isOn: Bool) {
-        
+    func valueChangedSwitchNewFile(with ocId: String, isOn: Bool) {
+        if let index = metadatasConflictNewFiles.firstIndex(of: ocId) {
+            metadatasConflictNewFiles.remove(at: index)
+        }
+        if isOn {
+            metadatasConflictNewFiles.append(ocId)
+        }
+        if metadatasConflictNewFiles.count == metadatasConflict.count {
+            switchNewFiles.isOn = true
+        } else {
+            switchNewFiles.isOn = false
+        }
     }
     
-    func valueChangedSwitchAlreadyExistingFile(with fileId: String, isOn: Bool) {
-        
+    func valueChangedSwitchAlreadyExistingFile(with ocId: String, isOn: Bool) {
+        if let index = metadatasConflictAlreadyExistingFiles.firstIndex(of: ocId) {
+            metadatasConflictAlreadyExistingFiles.remove(at: index)
+        }
+        if isOn {
+            metadatasConflictAlreadyExistingFiles.append(ocId)
+        }
+        if metadatasConflictAlreadyExistingFiles.count == metadatasConflict.count {
+            switchAlreadyExistingFiles.isOn = true
+        } else {
+            switchAlreadyExistingFiles.isOn = false
+        }
     }
 }
 
