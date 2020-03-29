@@ -69,11 +69,14 @@ import Foundation
         buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
+        buttonCancel.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
         
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
+        buttonContinue.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+
     }
 }
 
