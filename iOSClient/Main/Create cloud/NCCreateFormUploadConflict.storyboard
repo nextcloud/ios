@@ -93,6 +93,9 @@
                                         <state key="normal" title="Cancel">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
+                                        <connections>
+                                            <action selector="buttonCancelTouch:" destination="30l-Wp-khL" eventType="touchUpInside" id="k3H-hT-Lbm"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RU9-v6-zSl">
                                         <rect key="frame" x="264" y="5" width="120" height="40"/>
@@ -103,6 +106,9 @@
                                         <state key="normal" title="Continue">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
+                                        <connections>
+                                            <action selector="buttonContinueTouch:" destination="30l-Wp-khL" eventType="touchUpInside" id="iQq-LC-PSc"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>

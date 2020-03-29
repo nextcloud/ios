@@ -80,6 +80,7 @@ import Foundation
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
+        buttonContinue.setTitleColor(.lightGray, for: .normal)
         buttonContinue.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
     }
     
@@ -93,6 +94,8 @@ import Foundation
         }
         
         tableView.reloadData()
+        
+        canContinue()
     }
     
     @IBAction func valueChangedSwitchAlreadyExistingFiles(_ sender: Any) {
@@ -105,6 +108,16 @@ import Foundation
         }
         
         tableView.reloadData()
+        
+        canContinue()
+    }
+    
+    @IBAction func buttonCancelTouch(_ sender: Any) {
+        dismiss(animated: true)
+    }
+    
+    @IBAction func buttonContinueTouch(_ sender: Any) {
+        
     }
 }
 
@@ -188,6 +201,8 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
         } else {
             switchNewFiles.isOn = false
         }
+        
+        canContinue()
     }
     
     func valueChangedSwitchAlreadyExistingFile(with ocId: String, isOn: Bool) {
@@ -201,6 +216,25 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
             switchAlreadyExistingFiles.isOn = true
         } else {
             switchAlreadyExistingFiles.isOn = false
+        }
+        
+        canContinue()
+    }
+    
+    func canContinue() {
+        var result = true
+        for metadata in metadatasConflict {
+            if metadatasConflictNewFiles.contains(metadata.ocId) == false && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
+                result = false
+            }
+        }
+        
+        if result {
+            buttonContinue.isEnabled = true
+            buttonContinue.setTitleColor(.black, for: .normal)
+        } else {
+            buttonContinue.isEnabled = false
+            buttonContinue.setTitleColor(.lightGray, for: .normal)
         }
     }
 }
