@@ -79,6 +79,8 @@
 		F700510322DF6897003A3356 /* Parchment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F700510222DF6897003A3356 /* Parchment.framework */; };
 		F700510522DF6A89003A3356 /* NCShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700510422DF6A89003A3356 /* NCShare.swift */; };
 		F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */; };
+		F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */; };
+		F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */; };
 		F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */; };
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
@@ -689,6 +691,8 @@
 		F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMainTransfer.xib; sourceTree = "<group>"; };
 		F70211FA1BAC56E9003FC03E /* CCMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMain.h; sourceTree = "<group>"; };
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMain.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadConflict.storyboard; sourceTree = "<group>"; };
+		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
 		F704FA5B232A343F00BBA952 /* IMImagemeterViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMImagemeterViewer.swift; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
@@ -2445,6 +2449,8 @@
 			children = (
 				F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */,
 				F7651A8823A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard */,
+				F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */,
+				F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */,
 				F7651A8923A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift */,
 				F7DFB7F1219C5C0000680748 /* NCCreateFormUploadFileText.swift */,
 				F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */,
@@ -2935,6 +2941,7 @@
 				F760F78F21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
+				F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
@@ -3447,6 +3454,7 @@
 				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F762CB131EACB66200B38484 /* XLFormRightDetailCell.m in Sources */,
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
+				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F73B4F0A1F470D9100BBEE4B /* nsEUCTWProber.cpp in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
