@@ -36,9 +36,15 @@
                                 <subviews>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="08D-oc-nWS">
                                         <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="valueChangedSwitchNewFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="vG9-tl-Ybg"/>
+                                        </connections>
                                     </switch>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ge9-Fi-Rb1">
                                         <rect key="frame" x="340" y="0.0" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="valueChangedSwitchAlreadyExistingFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="yFJ-Ri-2WX"/>
+                                        </connections>
                                     </switch>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New files" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7Y-Nu-nJ3">
                                         <rect key="frame" x="0.0" y="36" width="63" height="24"/>

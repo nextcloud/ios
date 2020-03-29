@@ -76,7 +76,12 @@ import Foundation
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
         buttonContinue.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
-
+    }
+    
+    @IBAction func valueChangedSwitchNewFiles(_ sender: Any) {
+    }
+    
+    @IBAction func valueChangedSwitchAlreadyExistingFiles(_ sender: Any) {
     }
 }
 
@@ -137,6 +142,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 // MARK: - NCCreateFormUploadConflictCellDelegate
 
 extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
+    
     func valueChangedSwitchNewFile(with fileId: String, sender: Any) {
         
     }
