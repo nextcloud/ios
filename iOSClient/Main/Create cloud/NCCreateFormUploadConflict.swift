@@ -164,15 +164,28 @@ import Foundation
             // remove
             } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 
-                // nothing
+                let fileNameMOV = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                var index = 0
+                
+                for metadataMOV in metadatasMOV {
+                    if metadataMOV.fileName == fileNameMOV {
+                        metadatasMOV.remove(at: index)
+                        break
+                    }
+                    index += 1
+                }
                 
             } else {
                 print("error")
             }
         }
         
-        NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-        NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
+        if metadatas.count > 0 {
+            NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+        }
+        if metadatasMOV.count > 0 {
+            NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
+        }
         
         appDelegate.startLoadAutoDownloadUpload()
         
