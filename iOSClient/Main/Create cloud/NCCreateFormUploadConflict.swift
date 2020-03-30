@@ -126,21 +126,50 @@ import Foundation
             // new filename + num
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
+                let saveFileName = metadata.fileName
+                
+                let newFileName = NCUtility.sharedInstance.createFileName(saveFileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                let ocId = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: newFileName, directory: false)!
+                metadata.ocId = ocId
+                metadata.fileName = newFileName
+                metadata.fileNameView = newFileName
+                
+                metadatas.append(metadata)
+                
+                // MOV
+                for metadataMOV in metadatasMOV {
+                    if metadataMOV.fileName == saveFileName {
+                        
+                        let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
+                        let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
+                        
+                        let ocId = CCUtility.createMetadataID(fromAccount: metadataMOV.account, serverUrl: metadataMOV.serverUrl, fileNameView: newFileNameMOV, directory: false)!
+                        metadataMOV.ocId = ocId
+                        metadataMOV.fileName = newFileNameMOV
+                        metadataMOV.fileNameView = newFileNameMOV
+                        
+                        let newPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileNameMOV)
+                        CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                    }
+                }
+                
+                
             // overwrite
             } else if metadatasConflictNewFiles.contains(metadata.ocId) {
                 
+                metadatas.append(metadata)
+            
             // remove
             } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 
-                
+                // nothing
                 
             } else {
-                return
+                print("error")
             }
         }
         
         NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-        NCManageDatabase.sharedInstance.addMetadatas(metadatasConflict)
         NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
         
         appDelegate.startLoadAutoDownloadUpload()
