@@ -42,6 +42,7 @@ import Foundation
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc var metadatas: [tableMetadata]
+    @objc var metadatasMOV: [tableMetadata]
     @objc var metadatasConflict: [tableMetadata]
     
     var metadatasConflictNewFiles = [String]()
@@ -51,6 +52,7 @@ import Foundation
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
+        self.metadatasMOV = [tableMetadata]()
         self.metadatasConflict = [tableMetadata]()
         super.init(coder: aDecoder)
     }

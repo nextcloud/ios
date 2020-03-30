@@ -1048,6 +1048,7 @@
 - (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     NSMutableArray *metadatas = [NSMutableArray new];
+    NSMutableArray *metadatasMOV = [NSMutableArray new];
     NSMutableArray *metadatasConflict = [NSMutableArray new];
 
     for (PHAsset *asset in assets) {
@@ -1089,8 +1090,6 @@
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
                 
-        [metadatas addObject:metadataForUpload];
-        
         // verify exists conflict
         NSString *fileNameExtension = [fileName pathExtension].lowercaseString;
         NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
@@ -1102,6 +1101,8 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameConflict]];
         if (metadata) {
             [metadatasConflict addObject:metadata];
+        } else {
+            [metadatas addObject:metadataForUpload];
         }
                     
         // Add Medtadata MOV LIVE PHOTO for upload
@@ -1128,7 +1129,7 @@
             // Prepare file and directory
             [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
             
-            [metadatas addObject:metadataMOVForUpload];
+            [metadatasMOV addObject:metadataMOVForUpload];
         }
     }
     
@@ -1137,6 +1138,7 @@
         
         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
         conflict.metadatas = metadatas;
+        conflict.metadatasMOV = metadatasMOV;
         conflict.metadatasConflict = metadatasConflict;
         
         [self presentViewController:conflict animated:YES completion:nil];
@@ -1144,6 +1146,7 @@
     } else {
         
         (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
         [appDelegate startLoadAutoDownloadUpload];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
