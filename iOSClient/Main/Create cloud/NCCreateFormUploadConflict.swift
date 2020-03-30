@@ -214,16 +214,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             cell.labelFileName.text = metadata.fileNameView
 
             // Image New
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
-                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
-                    cell.imageFileNew.image = image
-                }
+            if metadata.iconName.count > 0 {
+                cell.imageFileNew.image = UIImage.init(named: metadata.iconName)
             } else {
-                if metadata.iconName.count > 0 {
-                    cell.imageFileNew.image = UIImage.init(named: metadata.iconName)
-                } else {
-                    cell.imageFileNew.image = UIImage.init(named: "file")
-                }
+                cell.imageFileNew.image = UIImage.init(named: "file")
             }
             
             // Image

@@ -1089,7 +1089,8 @@
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
-                
+        [CCUtility insertTypeFileIconName:fileName metadata:metadataForUpload];
+        
         // verify exists conflict
         NSString *fileNameExtension = [fileName pathExtension].lowercaseString;
         NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
