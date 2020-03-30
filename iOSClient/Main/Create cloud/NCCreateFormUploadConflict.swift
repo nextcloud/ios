@@ -231,7 +231,16 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             } else {
                 cell.imageFileNew.image = UIImage.init(named: "file")
             }
-            
+            // Image New < Preview >
+            if metadata.assetLocalIdentifier.count > 0 {
+                let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+                if result.count == 1 {
+                    PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 200, height: 200), contentMode: PHImageContentMode.aspectFill, options: nil) { (image, info) in
+                        cell.imageFileNew.image = image
+                    }
+                }
+            }
+        
             // Image
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict.ocId, fileNameView: metadataInConflict.fileName)) {
                 NCUtility.sharedInstance.loadImage(ocId: metadataInConflict.ocId, fileNameView: metadataInConflict.fileNameView) { (image) in
