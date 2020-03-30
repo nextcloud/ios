@@ -73,8 +73,8 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="imageFile" destination="WSQ-HI-Wkg" id="dPr-RT-mou"/>
-                <outlet property="imageFileNew" destination="Tx2-JG-GGa" id="EVG-EZ-23z"/>
+                <outlet property="imageFile" destination="Tx2-JG-GGa" id="b00-10-AN8"/>
+                <outlet property="imageFileNew" destination="WSQ-HI-Wkg" id="JRg-97-v7V"/>
                 <outlet property="labelDetail" destination="0hq-re-YVn" id="MjI-Yb-xMj"/>
                 <outlet property="labelFileName" destination="Hv8-qJ-lkR" id="g4W-UF-h47"/>
                 <outlet property="switchAlreadyExistingFile" destination="jBi-8r-tc5" id="L0M-zb-k6v"/>

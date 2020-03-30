@@ -213,6 +213,19 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             
             cell.labelFileName.text = metadata.fileNameView
 
+            // Image New
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
+                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
+                    cell.imageFileNew.image = image
+                }
+            } else {
+                if metadata.iconName.count > 0 {
+                    cell.imageFileNew.image = UIImage.init(named: metadata.iconName)
+                } else {
+                    cell.imageFileNew.image = UIImage.init(named: "file")
+                }
+            }
+            
             // Image
             if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict.ocId, fileNameView: metadataInConflict.fileName)) {
                 NCUtility.sharedInstance.loadImage(ocId: metadataInConflict.ocId, fileNameView: metadataInConflict.fileNameView) { (image) in
@@ -226,20 +239,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 }
             }
             
-            // Image New
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
-                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
-                    cell.imageFile.image = image
-                }
-            } else {
-                if metadata.iconName.count > 0 {
-                    cell.imageFile.image = UIImage.init(named: metadata.iconName)
-                } else {
-                    cell.imageFile.image = UIImage.init(named: "file")
-                }
-            }
-            
-            cell.labelDetail.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
+            cell.labelDetail.text = CCUtility.dateDiff(metadataInConflict.date as Date) + ", " + CCUtility.transformedSize(metadataInConflict.size)
                         
             if metadatasConflictNewFiles.contains(metadata.ocId) {
                 cell.switchNewFile.isOn = true
