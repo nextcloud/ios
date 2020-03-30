@@ -256,7 +256,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             return
         }
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-        guard let fileNameForm = rowFileName.value else {
+        guard var fileNameForm = rowFileName.value else {
             return
         }
         if fileNameForm as! String == "" {
@@ -264,7 +264,9 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         } else {
             
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+            fileName = NCUtility.sharedInstance.createFileName(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount)
             fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+            fileNameForm = fileName
         }
             
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
