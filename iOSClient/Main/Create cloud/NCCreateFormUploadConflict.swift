@@ -120,6 +120,7 @@ import Foundation
     }
     
     @IBAction func buttonContinueTouch(_ sender: Any) {
+        
         for metadata in metadatasConflict {
             
             // new filename + num
@@ -131,10 +132,18 @@ import Foundation
             // remove
             } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 
+                
+                
             } else {
                 return
             }
         }
+        
+        NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+        NCManageDatabase.sharedInstance.addMetadatas(metadatasConflict)
+        NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
+        
+        appDelegate.startLoadAutoDownloadUpload()
     }
 }
 

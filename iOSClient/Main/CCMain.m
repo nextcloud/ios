@@ -1145,8 +1145,8 @@
         
     } else {
         
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
         [appDelegate startLoadAutoDownloadUpload];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
@@ -1232,7 +1232,7 @@
     }
     // reinsert metadatas in Download
     if (metadatasInDownload) {
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
     }
     
     // File is changed ??

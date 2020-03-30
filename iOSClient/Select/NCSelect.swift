@@ -768,11 +768,11 @@ extension NCSelect {
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal))
                 NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
                 
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
+                NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
                 
                 if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
                     
-                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
                 }
                 
             } else if errorCode != 0 {

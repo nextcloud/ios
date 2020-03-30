@@ -246,7 +246,7 @@
             
             // reinsert metadatas in Download
             if (metadatasInDownload) {
-                (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
+                [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
             }
                                
         } else {

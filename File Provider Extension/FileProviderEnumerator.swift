@@ -253,10 +253,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         NCManageDatabase.sharedInstance.addMetadatas(files: files!, account: account, serverUrl: serverUrl, removeFirst: true)
                          
                         if metadatasInDownload != nil {
-                            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
                         }
                         if metadatasInUpload != nil {
-                            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
+                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                         }
                     }
                     completionHandler()
@@ -288,10 +288,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                     let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
                     if metadatasInDownload != nil {
-                        _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
                     }
                     if metadatasInUpload != nil {
-                        _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
+                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                     }
                 }
                 

@@ -196,7 +196,7 @@
         }
         
         if ([addMetadatas count] > 0)
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas];
+            [[NCManageDatabase sharedInstance] addMetadatas:addMetadatas];
         
         if ([metadatasForVerifyChange count] > 0)
             [self verifyChangeMedatas:metadatasForVerifyChange serverUrl:serverUrl account:account withDownload:YES];
@@ -314,7 +314,7 @@
         [metadataToAdd addObject:metadata];
     }
     
-    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
+    [[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
     
     for (NSString *serverUrl in serverUrlToReload) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];

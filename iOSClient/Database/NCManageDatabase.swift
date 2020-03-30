@@ -1907,6 +1907,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
+    @discardableResult
     @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
         
         var directoryToClearDate = [String:String]()
