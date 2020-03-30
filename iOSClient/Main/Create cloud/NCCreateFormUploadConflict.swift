@@ -161,7 +161,7 @@ import Foundation
                 
                 metadatas.append(metadata)
             
-            // remove
+            // remove (MOV)
             } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 
                 let fileNameMOV = (metadata.fileName as NSString).deletingPathExtension + ".mov"
