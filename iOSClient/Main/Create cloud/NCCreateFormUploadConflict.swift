@@ -185,7 +185,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 135
+        return 175
     }
 }
 
@@ -206,13 +206,29 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
             let metadata = metadatasConflict[indexPath.row]
-            let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName))
+            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)) else { return UITableViewCell() }
             
             cell.ocId = metadata.ocId
             cell.delegate = self
             
-            if metadataInConflict != nil && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict!.ocId, fileNameView: metadataInConflict!.fileName)) {
-                NCUtility.sharedInstance.loadImage(ocId: metadataInConflict!.ocId, fileNameView: metadataInConflict!.fileNameView) { (image) in
+            cell.labelFileName.text = metadata.fileNameView
+
+            // Image
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict.ocId, fileNameView: metadataInConflict.fileName)) {
+                NCUtility.sharedInstance.loadImage(ocId: metadataInConflict.ocId, fileNameView: metadataInConflict.fileNameView) { (image) in
+                    cell.imageFile.image = image
+                }
+            } else {
+                if metadataInConflict.iconName.count > 0 {
+                    cell.imageFile.image = UIImage.init(named: metadataInConflict.iconName)
+                } else {
+                    cell.imageFile.image = UIImage.init(named: "file")
+                }
+            }
+            
+            // Image New
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
+                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
                     cell.imageFile.image = image
                 }
             } else {
@@ -223,7 +239,6 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 }
             }
             
-            cell.labelFileName.text = metadata.fileNameView
             cell.labelDetail.text = CCUtility.dateDiff(metadata.date as Date) + ", " + CCUtility.transformedSize(metadata.size)
                         
             if metadatasConflictNewFiles.contains(metadata.ocId) {

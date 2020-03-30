@@ -25,10 +25,13 @@ import Foundation
 
 class NCCreateFormUploadConflictCell: UITableViewCell {
     
-    @IBOutlet weak var imageFile: UIImageView!
-
     @IBOutlet weak var labelFileName: UILabel!
+
+    @IBOutlet weak var imageFile: UIImageView!
+    @IBOutlet weak var imageFileNew: UIImageView!
+
     @IBOutlet weak var labelDetail: UILabel!
+    @IBOutlet weak var labelDetailNew: UILabel!
 
     @IBOutlet weak var switchNewFile: UISwitch!
     @IBOutlet weak var switchAlreadyExistingFile: UISwitch!
