@@ -1100,7 +1100,7 @@
         }
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameConflict]];
         if (metadata) {
-            [metadatasConflict addObject:metadata];
+            [metadatasConflict addObject:metadataForUpload];
         } else {
             [metadatas addObject:metadataForUpload];
         }

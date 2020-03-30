@@ -126,9 +126,9 @@ import Foundation
             // new filename + num
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
-                let saveFileName = metadata.fileName
+                let fileNameMOV = (metadata.fileName as NSString).deletingPathExtension + ".mov"
                 
-                let newFileName = NCUtility.sharedInstance.createFileName(saveFileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                let newFileName = NCUtility.sharedInstance.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 let ocId = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: newFileName, directory: false)!
                 metadata.ocId = ocId
                 metadata.fileName = newFileName
@@ -138,7 +138,7 @@ import Foundation
                 
                 // MOV
                 for metadataMOV in metadatasMOV {
-                    if metadataMOV.fileName == saveFileName {
+                    if metadataMOV.fileName == fileNameMOV {
                         
                         let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
                         let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
