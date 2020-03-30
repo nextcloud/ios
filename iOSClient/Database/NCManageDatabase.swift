@@ -1886,6 +1886,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
+    @discardableResult
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
         let serverUrl = metadata.serverUrl

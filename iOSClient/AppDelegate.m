@@ -1388,7 +1388,7 @@
             else if (metadata.status == k_metadataStatusUploadError)
                 metadata.status = k_metadataStatusWaitUpload;
             
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
     }
     
@@ -1414,7 +1414,7 @@
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitDownload;
                 
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
@@ -1441,7 +1441,7 @@
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitUpload;
                 
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
         }];
     }
@@ -1452,7 +1452,7 @@
     for (tableMetadata *metadata in metadatasInUpload) {
         if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
             metadata.status = k_metadataStatusWaitUpload;
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [[NCManageDatabase sharedInstance] addMetadata:metadata];
         } else {
             [self.sessionPendingStatusInUpload addObject:metadata.ocId];
         }

@@ -189,7 +189,7 @@ class NCText: UIViewController, UITextViewDelegate {
                         metadata.sessionSelector = selectorUploadFile
                         metadata.status = Int(k_metadataStatusWaitUpload)
 
-                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: metadata.ocId, action: Int32(k_action_MOD))
                         
                         self.appDelegate.startLoadAutoDownloadUpload()

@@ -463,7 +463,7 @@ extension CCMain {
                             metadata.sessionSelector = selectorDownloadEditPhoto
                             metadata.status = Int(k_metadataStatusWaitDownload)
 
-                            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                            NCManageDatabase.sharedInstance.addMetadata(metadata)
                             appDelegate.startLoadAutoDownloadUpload()
                         }
                     )
@@ -490,7 +490,7 @@ extension CCMain {
                                 metadata.sessionSelector = selectorLoadOffline
                                 metadata.status = Int(k_metadataStatusWaitDownload)
 
-                                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                NCManageDatabase.sharedInstance.addMetadata(metadata)
                                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
                                 appDelegate.startLoadAutoDownloadUpload()
                             } else {

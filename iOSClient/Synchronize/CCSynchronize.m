@@ -93,7 +93,7 @@
     }
     
     // Add metadata and update etag Directory
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
+    [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
     
     // reload folder ../ *
@@ -160,7 +160,7 @@
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                 
                 if (!result)
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                    [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
                 [self readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selector account:account];
                 

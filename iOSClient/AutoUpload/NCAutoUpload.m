@@ -448,7 +448,7 @@
                         
                         // Update database Auto Upload
                         if ([selector isEqualToString:selectorUploadAutoUpload])
-                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+                            [[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
                     }
                     
                     dispatch_semaphore_signal(semaphore);
@@ -488,7 +488,7 @@
 {
     @synchronized(self) {
         
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {

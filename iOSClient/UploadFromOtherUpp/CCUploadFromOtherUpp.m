@@ -186,7 +186,7 @@
     [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
     
     // Add Medtadata for upload
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal ocId:metadataForUpload.ocId action:k_action_NULL];
 
     [appDelegate startLoadAutoDownloadUpload];

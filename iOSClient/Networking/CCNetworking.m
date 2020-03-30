@@ -896,7 +896,7 @@
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:&error];
     long long fileSize = [[fileAttributes objectForKey:NSFileSize] longLongValue];
     metadata.size = fileSize;
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    [[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding]];
     request = [NSMutableURLRequest requestWithURL:url];

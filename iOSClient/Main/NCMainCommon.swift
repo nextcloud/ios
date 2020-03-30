@@ -209,7 +209,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                         metadata.sessionSelector = ""
                         metadata.status = Int(k_metadataStatusNormal)
                         
-                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                     }
                     
                     // Cancel Task
@@ -1108,7 +1108,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         metadata.sessionSelector = selectorUploadFile
         metadata.status = Int(k_metadataStatusWaitUpload)
         
-        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
     }
     
     func canceledEditing() {
@@ -1130,7 +1130,7 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
             metadata.sessionSelector = selector //selectorOpenIn
             metadata.status = Int(k_metadataStatusWaitDownload)
             
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
             reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
         }
     }

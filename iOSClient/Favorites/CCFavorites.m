@@ -654,7 +654,7 @@
                     self.metadata.status = k_metadataStatusWaitDownload;
                         
                     // Add Metadata for Download
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+                    [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
                     
                     [appDelegate startLoadAutoDownloadUpload];

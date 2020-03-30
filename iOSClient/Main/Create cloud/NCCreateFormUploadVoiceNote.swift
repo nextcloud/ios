@@ -246,7 +246,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: fileNameSave))
             
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
             NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
             self.appDelegate.startLoadAutoDownloadUpload()

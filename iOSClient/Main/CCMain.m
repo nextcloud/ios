@@ -771,7 +771,7 @@
                             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                             
                             // Add Medtadata for upload
-                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                            [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 
                             [appDelegate startLoadAutoDownloadUpload];
@@ -789,7 +789,7 @@
                     } else {
                         
                         // Add Medtadata for upload
-                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                        [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                         
                         [appDelegate startLoadAutoDownloadUpload];
@@ -918,7 +918,7 @@
                 metadata.status = k_metadataStatusWaitDownload;
                     
                 // Add Metadata for Download
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
                 [appDelegate startLoadAutoDownloadUpload];
             }
@@ -1833,7 +1833,7 @@
     
     // Create Directory (temp) on metadata
     tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES ocId:ocIdTemp serverUrl:serverUrl fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    [[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
@@ -2050,7 +2050,7 @@
                 metadata.status = k_metadataStatusWaitDownload;
                     
                 // Add Metadata for Download
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
                 
                 [appDelegate startLoadAutoDownloadUpload];
@@ -2359,7 +2359,7 @@
         self.metadata.status = k_metadataStatusWaitDownload;
             
         // Add Metadata for Download
-        (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+        [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
         
         [appDelegate startLoadAutoDownloadUpload];
@@ -2388,7 +2388,7 @@
             metadata.status = k_metadataStatusWaitDownload;
                 
             // Add Metadata for Download
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [[NCManageDatabase sharedInstance] addMetadata:metadata];
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
             
             [appDelegate startLoadAutoDownloadUpload];
@@ -2472,7 +2472,7 @@
                 metadataForUpload.status = k_metadataStatusWaitUpload;
                             
                 // Add Medtadata for upload
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
             }
@@ -3320,7 +3320,7 @@
                     self.metadata.status = k_metadataStatusWaitDownload;
                     
                     // Add Metadata for Download
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+                    [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
                     
                     [appDelegate startLoadAutoDownloadUpload];

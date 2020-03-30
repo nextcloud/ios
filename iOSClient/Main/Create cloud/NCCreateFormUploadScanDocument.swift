@@ -562,7 +562,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
-        _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+        NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
         self.appDelegate.startLoadAutoDownloadUpload()
