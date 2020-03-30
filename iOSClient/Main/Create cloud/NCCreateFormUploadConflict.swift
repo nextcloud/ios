@@ -47,6 +47,7 @@ import Foundation
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
 
+    // MARK: - Cicle
 
     @objc required init?(coder aDecoder: NSCoder) {
         self.metadatas = [tableMetadata]()
@@ -117,7 +118,21 @@ import Foundation
     }
     
     @IBAction func buttonContinueTouch(_ sender: Any) {
-        
+        for metadata in metadatasConflict {
+            
+            // new filename + num
+            if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
+            
+            // overwrite
+            } else if metadatasConflictNewFiles.contains(metadata.ocId) {
+                
+            // remove
+            } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
+                
+            } else {
+                return
+            }
+        }
     }
 }
 
@@ -223,6 +238,7 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
     
     func canContinue() {
         var result = true
+        
         for metadata in metadatasConflict {
             if !metadatasConflictNewFiles.contains(metadata.ocId) && !metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 result = false
