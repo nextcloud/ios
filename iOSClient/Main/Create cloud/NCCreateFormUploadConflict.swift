@@ -67,6 +67,7 @@ import Foundation
         
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
         
         tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
