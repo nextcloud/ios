@@ -150,6 +150,8 @@ import Foundation
                         
                         let newPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileNameMOV)
                         CCUtility.moveFile(atPath: oldPath, toPath: newPath)
+                        
+                        break
                     }
                 }
                 
