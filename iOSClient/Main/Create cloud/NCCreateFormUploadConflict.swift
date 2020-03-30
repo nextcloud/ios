@@ -173,6 +173,8 @@ import Foundation
         NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
         
         appDelegate.startLoadAutoDownloadUpload()
+        
+        dismiss(animated: true)
     }
 }
 
