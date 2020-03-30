@@ -756,44 +756,10 @@
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    // Check il file already exists
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileName]];
-                    if (metadata) {
+                    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                         
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                        
-                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                            // NO OVERWITE
-                        }];
-                        UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                            
-                            // Remove record metadata
-                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                            
-                            // Add Medtadata for upload
-                            [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-
-                            [appDelegate startLoadAutoDownloadUpload];
-                        }];
-                        
-                        [alertController addAction:cancelAction];
-                        [alertController addAction:overwriteAction];
-                        
-                        UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
-                        alertWindow.rootViewController = [[UIViewController alloc]init];
-                        alertWindow.windowLevel = UIWindowLevelAlert + 1;
-                        [alertWindow makeKeyAndVisible];
-                        [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
-                        
-                    } else {
-                        
-                        // Add Medtadata for upload
-                        [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-                        
-                        [appDelegate startLoadAutoDownloadUpload];
-                    }
+                    [appDelegate startLoadAutoDownloadUpload];
                     
                 } else {
                                         
