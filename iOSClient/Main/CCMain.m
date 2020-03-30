@@ -34,7 +34,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate, NCCreateFormUploadConflictDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -1138,6 +1138,7 @@
     if (metadatasConflict.count > 0) {
         
         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
+        conflict.delegate = self;
         conflict.metadatas = metadatas;
         conflict.metadatasMOV = metadatasMOV;
         conflict.metadatasConflict = metadatasConflict;
@@ -1148,6 +1149,20 @@
         
         [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
+        
+        [appDelegate startLoadAutoDownloadUpload];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== NCCreateFormUploadConflictDelegate ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)dismissCreateFormUploadConflictWithMetadatas:(NSArray *)metadatas
+{
+    if (metadatas.count > 0) {
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
         
         [appDelegate startLoadAutoDownloadUpload];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];

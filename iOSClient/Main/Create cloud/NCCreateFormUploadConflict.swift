@@ -23,6 +23,10 @@
 
 import Foundation
 
+@objc protocol NCCreateFormUploadConflictDelegate {
+    @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata])
+}
+
 @objc class NCCreateFormUploadConflict: UIViewController {
 
     @IBOutlet weak var labelTitle: UILabel!
@@ -44,6 +48,7 @@ import Foundation
     @objc var metadatas: [tableMetadata]
     @objc var metadatasMOV: [tableMetadata]
     @objc var metadatasConflict: [tableMetadata]
+    @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
@@ -180,14 +185,9 @@ import Foundation
             }
         }
         
-        if metadatas.count > 0 {
-            NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-        }
-        if metadatasMOV.count > 0 {
-            NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
-        }
+        metadatas.append(contentsOf: metadatasMOV)
         
-        appDelegate.startLoadAutoDownloadUpload()
+        delegate?.dismissCreateFormUploadConflict(metadatas: metadatas)
         
         dismiss(animated: true)
     }

@@ -231,9 +231,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
                 NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
-                self.appDelegate.startLoadAutoDownloadUpload()
-                
-                
+                self.appDelegate.startLoadAutoDownloadUpload()                
             
             } else {
                 
