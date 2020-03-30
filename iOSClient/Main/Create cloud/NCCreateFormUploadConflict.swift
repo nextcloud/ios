@@ -202,12 +202,13 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
             let metadata = metadatasConflict[indexPath.row]
+            let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName))
             
             cell.ocId = metadata.ocId
             cell.delegate = self
             
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
-                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
+            if metadataInConflict != nil && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict!.ocId, fileNameView: metadataInConflict!.fileName)) {
+                NCUtility.sharedInstance.loadImage(ocId: metadataInConflict!.ocId, fileNameView: metadataInConflict!.fileNameView) { (image) in
                     cell.imageFile.image = image
                 }
             } else {
