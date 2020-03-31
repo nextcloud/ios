@@ -174,7 +174,7 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
         
-    [[NCCommunication sharedInstance] getServerStatusWithUrlString:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication sharedInstance] getServerStatusWithServerUrl:self.baseUrl.text completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             

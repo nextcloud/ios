@@ -760,7 +760,7 @@ extension NCTrash {
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         
-        NCCommunication.sharedInstance.downloadPreviewTrash(serverUrl: appDelegate.activeUrl, fileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: CGFloat(k_sizePreview), height: CGFloat(k_sizePreview), account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.downloadPreviewTrash(serverUrl: appDelegate.activeUrl, fileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath), let image = UIImage.init(data: data!) {
