@@ -143,6 +143,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     //MARK: - NotificationCenter
 
     @objc func deleteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         self.loadDatasource()
     }
     
