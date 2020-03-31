@@ -73,9 +73,6 @@
     
     // Filter ocId
     self.filterocId = [NSMutableArray new];
-
-    // Upload Pending In Upload (crash)
-    self.sessionPendingStatusInUpload = [NSMutableArray new];
     
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
@@ -1390,75 +1387,6 @@
             
             [[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
-    }
-    
-    // Verify internal error download (lost task)
-    //
-    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusDownloading] sorted:nil ascending:true];
-    for (tableMetadata *metadata in matadatasInDownloading) {
-        
-        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            NSURLSessionTask *findTask;
-            
-            for (NSURLSessionTask *task in downloadTasks) {
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                    findTask = task;
-                }
-            }
-            
-            if (!findTask) {
-                
-                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                metadata.status = k_metadataStatusWaitDownload;
-                
-                [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-        }];
-    }
-    
-    // Verify internal error upload (lost task)
-    //
-    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-    for (tableMetadata *metadata in metadatasUploading) {
-        
-        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            NSURLSessionTask *findTask;
-            
-            for (NSURLSessionTask *task in uploadTasks) {
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                    findTask = task;
-                }
-            }
-            
-            if (!findTask) {
-                
-                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                metadata.status = k_metadataStatusWaitUpload;
-                
-                [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-        }];
-    }
-    
-    // Upload in pending
-    //
-    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
-    for (tableMetadata *metadata in metadatasInUpload) {
-        if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
-            metadata.status = k_metadataStatusWaitUpload;
-            [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        } else {
-            [self.sessionPendingStatusInUpload addObject:metadata.ocId];
-        }
-    }
-    if (metadatasInUpload.count == 0) {
-        [self.sessionPendingStatusInUpload removeAllObjects];
     }
     
     // Start Timer
