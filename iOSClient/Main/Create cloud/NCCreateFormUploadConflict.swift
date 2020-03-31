@@ -72,12 +72,12 @@ import Foundation
         
         tableView.register(UINib.init(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
         
-        labelTitle.text = String(metadatasConflict.count) + " " + NSLocalizedString("_file_conflict_num_", comment: "")
         if metadatasConflict.count == 1 {
-            labelSubTitle.text = NSLocalizedString("_file_conflict_desc_", comment: "")
+            labelTitle.text = String(metadatasConflict.count) + " " + NSLocalizedString("_file_conflict_num_", comment: "")
         } else {
-            labelSubTitle.text = NSLocalizedString("_file_conflicts_desc_", comment: "")
+            labelTitle.text = String(metadatasConflict.count) + " " + NSLocalizedString("_file_conflicts_num_", comment: "")
         }
+        labelSubTitle.text = NSLocalizedString("_file_conflict_desc_", comment: "")
         labelNewFiles.text = NSLocalizedString("_file_conflict_new_", comment: "")
         labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         
