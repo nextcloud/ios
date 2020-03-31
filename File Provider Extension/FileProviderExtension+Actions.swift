@@ -239,7 +239,7 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
             
-            NCCommunication.sharedInstance.setFavorite(urlString: fileProviderData.sharedInstance.accountUrl, fileName: fileNamePath, favorite: favorite, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+            NCCommunication.sharedInstance.setFavorite(serverUrl: fileProviderData.sharedInstance.accountUrl, fileName: fileNamePath, favorite: favorite, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
                     // Change DB
                     metadata.favorite = favorite

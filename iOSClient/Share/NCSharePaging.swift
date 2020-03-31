@@ -272,7 +272,7 @@ class NCShareHeaderView: UIView {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
             
-            NCCommunication.sharedInstance.setFavorite(urlString: appDelegate.activeUrl, fileName: metadata.fileName, favorite: !metadata.favorite, account: metadata.account) { (account, errorCode, errorDescription) in
+            NCCommunication.sharedInstance.setFavorite(serverUrl: appDelegate.activeUrl, fileName: metadata.fileName, favorite: !metadata.favorite, account: metadata.account) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite)
                     if !metadata.favorite {

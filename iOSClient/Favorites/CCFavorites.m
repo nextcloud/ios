@@ -180,7 +180,7 @@
 {
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:appDelegate.activeUrl];
     
-    [[NCCommunication sharedInstance] setFavoriteWithUrlString:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
+    [[NCCommunication sharedInstance] setFavoriteWithServerUrl:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:favorite];
@@ -203,7 +203,7 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    [[NCCommunication sharedInstance] listingFavoritesWithUrlString:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
+    [[NCCommunication sharedInstance] listingFavoritesWithServerUrl:appDelegate.activeUrl account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              

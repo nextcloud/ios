@@ -182,7 +182,7 @@
             self.login.enabled = YES;
             
             // Login Flow V2
-            [[NCCommunication sharedInstance] getLoginFlowV2WithUrlString:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
+            [[NCCommunication sharedInstance] getLoginFlowV2WithServerUrl:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
                 // Login Flow V2
                 if (errorCode == 0 && [[NCBrandOptions sharedInstance] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {

@@ -1998,7 +1998,7 @@
 {
     NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
     
-    [[NCCommunication sharedInstance] setFavoriteWithUrlString:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
+    [[NCCommunication sharedInstance] setFavoriteWithServerUrl:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
         
         if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
             
