@@ -394,14 +394,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 )
             )
 
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in }
-                )
-            )
-
             mainMenuViewController.actions = actions
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = self

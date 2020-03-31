@@ -369,14 +369,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 )
             )
 
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in }
-                )
-            )
-
             mainMenuViewController.actions = actions
 
             let menuPanelController = NCMenuPanelController()
@@ -439,14 +431,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_cancel_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in }
                 )
             )
 
