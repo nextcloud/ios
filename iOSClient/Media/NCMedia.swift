@@ -574,11 +574,16 @@ extension NCMedia {
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
         }
-                
+        
+        // copy in arrayDeleteMetadata
         for ocId in selectocId {
             if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                NCNetworking.sharedInstance.deleteMetadata(metadata, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                appDelegate.arrayDeleteMetadata.add(metadata)
             }
+        }
+        if let metadata = appDelegate.arrayDeleteMetadata.firstObject {
+            appDelegate.arrayDeleteMetadata.removeObject(at: 0)
+            NCNetworking.sharedInstance.deleteMetadata(metadata as! tableMetadata, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
         }
     }
     

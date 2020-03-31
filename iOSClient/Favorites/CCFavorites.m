@@ -127,6 +127,8 @@
 
 - (void)deleteFile:(NSNotification *)notification
 {
+    if (self.view.window == nil) { return; }
+
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     if (metadata) {

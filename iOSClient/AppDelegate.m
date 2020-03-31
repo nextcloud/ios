@@ -80,9 +80,10 @@
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
-    // Initialization List
+    // Initialization List & Array
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
+    self.arrayDeleteMetadata = [NSMutableArray new];
     
     // Push Notification
     [application registerForRemoteNotifications];
@@ -176,6 +177,9 @@
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
     
+    // Observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+
     return YES;
 }
 
@@ -644,6 +648,24 @@
     }
     
     return [token copy];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== NotificationCenter ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)deleteFile:(NSNotification *)notification
+{
+    if (self.arrayDeleteMetadata.count > 0) {
+        tableMetadata *metadata = self.arrayDeleteMetadata.firstObject;
+        [self.arrayDeleteMetadata removeObjectAtIndex:0];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+        if (account) {
+            [[NCNetworking sharedInstance] deleteMetadata:metadata user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        } else {
+            [self deleteFile:[NSNotification new]];
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -106,8 +106,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
-
 @property (nonatomic, strong) NSMutableArray *filterocId;
+@property (nonatomic, strong) NSMutableArray *arrayDeleteMetadata;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 

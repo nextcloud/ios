@@ -435,10 +435,12 @@
 
 - (void)deleteFile:(NSNotification *)notification
 {
+    if (self.view.window == nil) { return; }
+    
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
+    
     if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
-        
         if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
             [self readFileReloadFolder];
         } else {
@@ -1435,20 +1437,18 @@
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
      
-    NSArray *metadatas;
     if ([_selectedocIdsMetadatas count] > 0) {
-        metadatas = [_selectedocIdsMetadatas allValues];
+        [appDelegate.arrayDeleteMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
-        metadatas = [[NSArray alloc] initWithObjects:self.metadata, nil];
+        [appDelegate.arrayDeleteMetadata addObject:self.metadata];
     }
+    
+    [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
     
     // remove optimization
     _dateReadDataSource = nil;
     
-    for (tableMetadata *metadata in metadatas) {
-        [[NCNetworking sharedInstance] deleteMetadata:metadata user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    }
-
     // End Select Table View
     [self tableViewSelect:false];
 }
