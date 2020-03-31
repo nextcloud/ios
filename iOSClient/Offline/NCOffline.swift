@@ -389,7 +389,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
-                        self.deleteItem(with: metadata, sender: sender)
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
                     }
                 )
             )
@@ -785,6 +785,7 @@ extension NCOffline {
         collectionView.reloadData()
     }
     
+    /*
     func deleteItem(with metadata: tableMetadata, sender: Any) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 
@@ -815,4 +816,5 @@ extension NCOffline {
         menuPanelController.set(contentViewController: mainMenuViewController)
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
     }
+    */
 }
