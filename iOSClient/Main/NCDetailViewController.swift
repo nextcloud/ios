@@ -469,6 +469,10 @@ class NCDetailViewController: UIViewController {
                         
                     } else {
                         
+                        if editor == k_editor_onlyoffice {
+                            self.navigationController?.navigationBar.topItem?.title = ""
+                        } 
+                            
                         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                         let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
                         nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: backgroundView, viewController: self)

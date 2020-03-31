@@ -265,8 +265,8 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             
             fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             fileName = NCUtility.sharedInstance.createFileName(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount)
-            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
             fileNameForm = fileName
+            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         }
             
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
