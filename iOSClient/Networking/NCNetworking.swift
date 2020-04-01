@@ -366,23 +366,23 @@ import NCCommunication
         }
     }
     
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
         
         if directory != nil && directory?.e2eEncrypted == true {
             //self.deleteMetadataE2EE(metadata, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
-            
             renameMetadataPlain(metadata, fileNameNew: fileNameNew, viewController: viewController, completion: completion)
         }
     }
     
-    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
             NCContentPresenter.shared.messageNotification("_error_", description: "_no_permission_modify_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            completion(Int(k_CCErrorInternalError),  "_no_permission_modify_file_")
             return
         }
         
@@ -392,12 +392,14 @@ import NCCommunication
         // Verify if exists the fileName TO
         let serverUrlFileName = metadata.serverUrl + "/" + fileNameNew
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: metadata.account) { (account ,files, errorCode, errorDescription) in
-            
+           
             if errorCode == 0  {
                 
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in })
                 viewController?.present(alertController, animated: true, completion:nil)
+                
+                completion(Int(k_CCErrorInternalError), "_file_already_exists_")
                 
             } else if errorCode == kOCErrorServerPathNotFound {
                 
@@ -446,12 +448,60 @@ import NCCommunication
                         let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": errorDescription!]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_renameFile), object: nil, userInfo: userInfo)
                     }
+                    
+                    completion(errorCode, errorDescription)
                 }
                 
             } else {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                
+                completion(errorCode, errorDescription)
             }
         }
+    }
+    
+    private func renameMetadataE2EE(_ metadata: tableMetadata, fileNameNew: String, directory: tableDirectory, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
+        // verify if exists the new fileName
+        if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+            
+            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_file_already_exists_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            
+            completion(Int(k_CCErrorInternalError), "_file_already_exists_")
+        
+        } else {
+            
+            DispatchQueue.global().async {
+                
+                if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, account: metadata.account, user: user, userID: userID, password: password, url: url) as NSError? {
+                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_send_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
+                } else {
+                    NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
+                    
+                    // Move file system
+                    let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
+                    let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                    do {
+                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                    } catch { }
+                    let atPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                    let toPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: fileNameNew)!
+                    do {
+                        try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
+                    } catch { }
+                }
+                
+                // UNLOCK
+                if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: metadata.serverUrl) {
+                    if let error = NCNetworkingEndToEnd.sharedManager()?.unlockFolderEncrypted(onServerUrl: metadata.serverUrl, ocId: directory.ocId, token: tableLock.token, user: user, userID: userID, password: password, url: url) as NSError? {
+                        NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    completion(0, "")
+                }
+            }
+        }
     }
 }
