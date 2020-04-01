@@ -77,19 +77,6 @@ class NCSharePaging: UIViewController {
         changeTheming()
     }
     
-    @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        
-        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
-        (pagingViewController.view as! NCSharePagingView).setupConstraints()
-        pagingViewController.reloadMenu()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -106,6 +93,21 @@ class NCSharePaging: UIViewController {
     
     @objc func exitTapped() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    //MARK: - NotificationCenter
+    
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        
+        pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.textColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
+        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
+        (pagingViewController.view as! NCSharePagingView).setupConstraints()
+        pagingViewController.reloadMenu()
     }
 }
 
@@ -269,19 +271,14 @@ class NCShareHeaderView: UIView {
     var ocId = ""
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
-        
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-            
-            NCCommunication.sharedInstance.setFavorite(serverUrl: appDelegate.activeUrl, fileName: metadata.fileName, favorite: !metadata.favorite, account: metadata.account) { (account, errorCode, errorDescription) in
+            NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite)
                     if !metadata.favorite {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
                     } else {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.textInfo), for: .normal)
                     }
-                    self.appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
-                    self.appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
                 }
             }
         }
