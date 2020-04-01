@@ -63,6 +63,27 @@ extension NCDetailNavigationController {
         )
 
         actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_rename_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+                    alertController.addTextField { (textField) in textField.text = metadata.fileNameView }
+                    let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+                    let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                        let fileNameNew = alertController.textFields![0].text
+                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                    })
+                    alertController.addAction(cancelAction)
+                    alertController.addAction(okAction)
+
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            )
+        )
+        
+        actions.append(
             NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
                          icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in

@@ -360,6 +360,7 @@ extension CCMain {
                     )
                 )
             }
+            
         } else {
             var iconHeader: UIImage!
             if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
