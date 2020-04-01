@@ -68,6 +68,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     
     // Metadata
     self.metadata = [tableMetadata new];
@@ -136,6 +137,19 @@
     }
 }
 
+- (void)favoriteFile:(NSNotification *)notification
+{
+    if (self.view.window == nil) { return; }
+    
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    
+    if (errorCode == 0) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
@@ -170,27 +184,6 @@
     NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Favorite =====
-#pragma--------------------------------------------------------------------------------------------
-
-- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
-{
-    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:metadata.serverUrl activeUrl:appDelegate.activeUrl];
-    
-    [[NCCommunication sharedInstance] setFavoriteWithServerUrl:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
-        
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:favorite];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDecription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -398,8 +391,7 @@
     if (direction == MGSwipeDirectionLeftToRight) {
         
         tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-        
-        [self settingFavorite:metadata favorite:NO];
+        [[NCNetworking sharedInstance] favoriteMetadata:metadata url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
     
     return YES;

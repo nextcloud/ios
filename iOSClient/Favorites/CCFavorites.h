@@ -47,6 +47,5 @@
 - (void)listingFavorites;
 
 - (void)actionDelete:(NSIndexPath *)indexPath;
-- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite;
 
 @end

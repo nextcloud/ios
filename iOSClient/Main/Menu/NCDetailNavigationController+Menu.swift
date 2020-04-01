@@ -38,7 +38,7 @@ extension NCDetailNavigationController {
                 title: titleFavorite,
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    
+                    NCNetworking.sharedInstance.favoriteMetadata(metadata, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                 }
             )
         )

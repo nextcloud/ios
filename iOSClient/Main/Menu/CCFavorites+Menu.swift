@@ -29,6 +29,7 @@ extension CCFavorites {
 
     private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
@@ -55,7 +56,7 @@ extension CCFavorites {
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        self.settingFavorite(metadata, favorite: false)
+                        NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
