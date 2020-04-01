@@ -137,17 +137,11 @@ extension NCLoginWeb: WKNavigationDelegate {
             
             if server != "" && user != "" && password != "" {
                 
-                var serverUrl: String = server.replacingOccurrences(of: "/server:", with: "")
-                
-                // Login Flow NC 12
-                if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && serverUrl.hasPrefix("http://") == false && serverUrl.hasPrefix("https://") == false) {
-                    serverUrl = urlBase
-                }
-                
-                let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
+                let server: String = server.replacingOccurrences(of: "/server:", with: "")
+                let username: String = user.replacingOccurrences(of: "user:", with: "")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
                 
-                createAccount(server: serverUrl, username: username, password: password)
+                createAccount(server: server, username: username, password: password)
             }
         }
     }
