@@ -374,7 +374,7 @@ import NCCommunication
         }
         
         if directory.e2eEncrypted == true {
-            deleteMetadataE2EE(metadata, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+            renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
             renameMetadataPlain(metadata, fileNameNew: fileNameNew, viewController: viewController, completion: completion)
         }
