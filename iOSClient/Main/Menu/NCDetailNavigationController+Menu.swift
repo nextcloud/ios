@@ -160,6 +160,8 @@ extension NCDetailNavigationController {
     }
 
     @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+        // Refresh metadata
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
         if appDelegate.activeDetail.subViewActive() != nil {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
             mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
