@@ -388,9 +388,14 @@ import NCCommunication
             completion(Int(k_CCErrorInternalError),  "_no_permission_modify_file_")
             return
         }
-        
-        guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else { return }
-        if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView { return }
+        guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
+            completion(Int(k_CCErrorInternalError), "")
+            return
+        }
+        if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
+            completion(Int(k_CCErrorInternalError), "")
+            return
+        }
         
         // Verify if exists the fileName TO
         let serverUrlFileName = metadata.serverUrl + "/" + fileNameNew
@@ -516,6 +521,28 @@ import NCCommunication
                 DispatchQueue.main.async {
                     completion(errorCode, errorDescription)
                 }
+            }
+        }
+    }
+    
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
+        var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
+        fileNameFolder = NCUtility.sharedInstance.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
+        if fileNameFolder.count == 0 {
+            completion(Int(k_CCErrorInternalError), "")
+        }
+        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
+            completion(Int(k_CCErrorInternalError), "")
+            return
+        }
+        
+        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+        NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, account: account) { (account, ocId, date, errorCode, errorDescription) in
+            if errorCode == 0 {
+                
+            } else {
+               
             }
         }
     }
