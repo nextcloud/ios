@@ -366,12 +366,15 @@ import NCCommunication
         }
     }
     
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
+        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+            completion(Int(k_CCErrorInternalError), "")
+            return
+        }
         
-        if directory != nil && directory?.e2eEncrypted == true {
-            //self.deleteMetadataE2EE(metadata, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
+        if directory.e2eEncrypted == true {
+            deleteMetadataE2EE(metadata, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
             renameMetadataPlain(metadata, fileNameNew: fileNameNew, viewController: viewController, completion: completion)
         }

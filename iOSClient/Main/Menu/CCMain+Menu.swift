@@ -265,7 +265,7 @@ extension CCMain {
 
                             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                                 let fileNameNew = alertController.textFields![0].text
-                                NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                                NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                             })
                             okAction.isEnabled = false
                             alertController.addAction(cancelAction)
@@ -429,7 +429,7 @@ extension CCMain {
 
                         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                             let fileNameNew = alertController.textFields![0].text
-                            NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                            NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                         })
                         okAction.isEnabled = false
                         alertController.addAction(cancelAction)

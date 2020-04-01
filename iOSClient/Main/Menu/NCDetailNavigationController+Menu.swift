@@ -73,7 +73,7 @@ extension NCDetailNavigationController {
                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                     })
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
