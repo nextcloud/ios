@@ -229,7 +229,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        self.settingFavorite(metadata, favorite: !metadata.favorite)
+                        NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -382,7 +382,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        self.settingFavorite(metadata, favorite: !metadata.favorite)
+                        NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )

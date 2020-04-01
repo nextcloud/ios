@@ -336,4 +336,33 @@ import NCCommunication
             }
         }
     }
+    
+    @objc func favoriteMetadata(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: url)!
+        var favorite = true
+        if metadata.favorite { favorite = false }
+        
+        NCCommunication.sharedInstance.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, account: metadata.account) { (account, errorCode, errorDescription) in
+            
+            var description = ""
+            if errorDescription != nil { description = errorDescription! }
+            
+            if errorCode == 0 && metadata.account == account {
+                
+                NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
+                
+            } else if (errorCode != 0) {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            } else {
+                print("[LOG] It has been changed user during networking process, error.")
+
+            }
+            
+            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description, "favorite": Bool(favorite)]
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_favoriteFile), object: nil, userInfo: userInfo)
+            
+            completion(errorCode, description)
+        }
+    }
 }

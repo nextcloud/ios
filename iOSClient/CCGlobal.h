@@ -340,7 +340,7 @@
 #define k_notificationCenter_deleteFile                 @"deleteFile"
 #define k_notificationCenter_renameFile                 @"renameFile"
 #define k_notificationCenter_moveFile                   @"moveFile"
-
+#define k_notificationCenter_favoriteFile               @"favoriteFile"
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"
 #define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"

@@ -30,7 +30,19 @@ extension NCDetailNavigationController {
         var actions = [NCMenuAction]()
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
-
+        
+        var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
+        if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
+        actions.append(
+            NCMenuAction(
+                title: titleFavorite,
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    
+                }
+            )
+        )
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),

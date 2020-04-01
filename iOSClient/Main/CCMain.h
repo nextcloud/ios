@@ -95,7 +95,6 @@
 - (void)downloadSelectedFilesFolders;
 - (void)moveOpenWindow:(NSArray *)indexPaths;
 
-- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite;
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
 - (void)renameFile:(NSArray *)arguments;
 - (void)comandoLockPassword;

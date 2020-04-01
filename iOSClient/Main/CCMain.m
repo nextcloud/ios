@@ -130,6 +130,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:k_notificationCenter_setTitleMain object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
     // Search
@@ -449,6 +450,52 @@
             } else {
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
             }
+        }
+    }
+}
+
+- (void)favoriteFile:(NSNotification *)notification
+{
+    if (self.view.window == nil) { return; }
+    
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    BOOL favorite = [userInfo[@"favorite"] boolValue];
+    
+    if (errorCode == 0) {
+        _dateReadDataSource = nil;
+        if (self.searchController.isActive) {
+            [self readFolder:self.serverUrl];
+        } else {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
+        }
+        
+        if (metadata.directory && favorite) {
+                       
+            NSString *selector;
+                       
+            if ([CCUtility getFavoriteOffline])
+                selector = selectorReadFolderWithDownload;
+            else
+                selector = selectorReadFolder;
+                       
+            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector account:appDelegate.activeAccount];
+        }
+                   
+        if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
+                       
+            metadata.favorite = favorite;
+            metadata.session = k_download_session;
+            metadata.sessionError = @"";
+            metadata.sessionSelector = selectorDownloadSynchronize;
+            metadata.status = k_metadataStatusWaitDownload;
+                           
+            // Add Metadata for Download
+            [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
+                    
+            [appDelegate startLoadAutoDownloadUpload];
         }
     }
 }
@@ -1991,62 +2038,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Favorite =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
-{
-    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
-    
-    [[NCCommunication sharedInstance] setFavoriteWithServerUrl:appDelegate.activeUrl fileName:fileNameServerUrl favorite:favorite account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDecription) {
-        
-        if (errorCode == 0 && [appDelegate.activeAccount isEqualToString:account]) {
-            
-            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:favorite];
-
-            _dateReadDataSource = nil;
-            if (self.searchController.isActive)
-                [self readFolder:self.serverUrl];
-            else
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
-            
-            if (metadata.directory && favorite) {
-                
-                NSString *selector;
-                
-                if ([CCUtility getFavoriteOffline])
-                    selector = selectorReadFolderWithDownload;
-                else
-                    selector = selectorReadFolder;
-                
-                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector account:appDelegate.activeAccount];
-            }
-            
-            if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
-                
-                metadata.favorite = favorite;
-                metadata.session = k_download_session;
-                metadata.sessionError = @"";
-                metadata.sessionSelector = selectorDownloadSynchronize;
-                metadata.status = k_metadataStatusWaitDownload;
-                    
-                // Add Metadata for Download
-                [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
-                
-                [appDelegate startLoadAutoDownloadUpload];
-            }
-            
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDecription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-        
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Menu LOGO ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2645,10 +2636,7 @@
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
-        if (self.metadata.favorite)
-            [self settingFavorite:self.metadata favorite:NO];
-        else
-            [self settingFavorite:self.metadata favorite:YES];
+        [[NCNetworking sharedInstance] favoriteMetadata:self.metadata url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
     
     return YES;
