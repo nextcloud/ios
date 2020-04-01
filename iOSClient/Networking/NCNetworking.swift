@@ -473,8 +473,13 @@ import NCCommunication
             
             DispatchQueue.global().async {
                 
+                var errorCode: Int = 0
+                var errorDescription = ""
+                
                 if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, account: metadata.account, user: user, userID: userID, password: password, url: url) as NSError? {
-                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_send_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
+                    errorCode = error.code
+                    errorDescription = "_e2e_error_send_metadata_"
+                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
                     
@@ -489,17 +494,24 @@ import NCCommunication
                     do {
                         try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
+                    
+                    DispatchQueue.main.async {
+                        let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(0), "errorDescription": ""]
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_renameFile), object: nil, userInfo: userInfo)
+                    }
                 }
                 
                 // UNLOCK
                 if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: metadata.serverUrl) {
                     if let error = NCNetworkingEndToEnd.sharedManager()?.unlockFolderEncrypted(onServerUrl: metadata.serverUrl, ocId: directory.ocId, token: tableLock.token, user: user, userID: userID, password: password, url: url) as NSError? {
-                        NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
+                        errorCode = error.code
+                        errorDescription = error.localizedDescription
+                        NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
                 
                 DispatchQueue.main.async {
-                    completion(0, "")
+                    completion(errorCode, errorDescription)
                 }
             }
         }
