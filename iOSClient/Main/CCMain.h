@@ -96,7 +96,6 @@
 - (void)moveOpenWindow:(NSArray *)indexPaths;
 
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
-- (void)renameFile:(NSArray *)arguments;
 - (void)comandoLockPassword;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 - (void)openinFile:(id)sender;

@@ -264,10 +264,9 @@ extension CCMain {
                             let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
 
                             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                                    let fileName = alertController.textFields![0].text
-                                    self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
-
-                                })
+                                let fileNameNew = alertController.textFields![0].text
+                                NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                            })
                             okAction.isEnabled = false
                             alertController.addAction(cancelAction)
                             alertController.addAction(okAction)
@@ -428,10 +427,9 @@ extension CCMain {
                         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
 
                         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                                let fileName = alertController.textFields![0].text
-                                self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
-
-                            })
+                            let fileNameNew = alertController.textFields![0].text
+                            NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, viewController: self) { (errorCode, errorDescription) in }
+                        })
                         okAction.isEnabled = false
                         alertController.addAction(cancelAction)
                         alertController.addAction(okAction)

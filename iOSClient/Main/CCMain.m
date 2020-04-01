@@ -131,6 +131,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(renameFile:) name:k_notificationCenter_renameFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
     // Search
@@ -498,6 +499,10 @@
             [appDelegate startLoadAutoDownloadUpload];
         }
     }
+}
+
+- (void)renameFile:(NSNotification *)notification {
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1500,6 +1505,7 @@
     [self tableViewSelect:false];
 }
 
+/*
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Rename =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1648,6 +1654,7 @@
         }];
     }
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Move =====

@@ -2074,6 +2074,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @discardableResult
     @objc func renameMetadata(fileNameTo: String, ocId: String) -> tableMetadata? {
         
         var result: tableMetadata?
