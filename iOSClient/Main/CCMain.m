@@ -42,7 +42,6 @@
     BOOL _isViewDidLoad;
     
     NSMutableDictionary *_selectedocIdsMetadatas;
-    NSUInteger _numSelectedocIdsMetadatas;
     
     UIImageView *_imageTitleHome;
     
@@ -1563,7 +1562,7 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
+- (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
@@ -1575,7 +1574,7 @@
         }
         [appDelegate.arrayMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
-        [appDelegate.arrayMoveMetadata addObject:self.metadata];
+        [appDelegate.arrayMoveMetadata addObject:metadata];
         [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
     }
     
@@ -1707,16 +1706,10 @@
         }
         
         if ([_selectedocIdsMetadatas count] > 0) {
-            
-            _numSelectedocIdsMetadatas = [_selectedocIdsMetadatas count];
             NSArray *metadatas = [_selectedocIdsMetadatas allValues];
-            
-            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl numFile:[_selectedocIdsMetadatas count] ofFile:_numSelectedocIdsMetadatas];
-            
+            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl];
         } else {
-            
-            _numSelectedocIdsMetadatas = 1;
-            [self moveFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl numFile:1 ofFile:_numSelectedocIdsMetadatas];
+            [self moveFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl];
         }
     }
 }
