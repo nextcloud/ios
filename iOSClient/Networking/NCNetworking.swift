@@ -375,59 +375,43 @@ import NCCommunication
             return
         }
         
-        // Verify if exists the fileName TO
-        let serverUrlFileName = metadata.serverUrl + "/" + fileNameNew
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: metadata.account) { (account ,files, errorCode, errorDescription) in
-           
-            if errorCode == 0  {
+        let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
                 
-                self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
-                
-            } else if errorCode == kOCErrorServerPathNotFound {
-                
-                let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
-                let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
-                
-                NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: true, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false, account: metadata.account) { (account, errorCode, errorDescription) in
                     
-                    if errorCode == 0 {
+            if errorCode == 0 {
                         
-                        NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
-                        NCManageDatabase.sharedInstance.renameMedia(fileNameTo: fileNameNew, ocId: metadata.ocId)
+                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
+                NCManageDatabase.sharedInstance.renameMedia(fileNameTo: fileNameNew, ocId: metadata.ocId)
                         
-                        if metadata.directory {
+                if metadata.directory {
                             
-                            let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                            let serverUrlTo = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)!
-                            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                    let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
+                    let serverUrlTo = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)!
+                    if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                                 
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: serverUrlTo, etag: "", ocId: nil, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: metadata.account)
-                            }
-                            
-                        } else {
-                            
-                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: fileNameNew, etag: nil)
-                            // Move file system
-                            let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                            let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-                            do {
-                                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                            } catch { }
-                            let atPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)!
-                            let toPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: fileNameNew)!
-                            do {
-                                try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
-                            } catch { }
-                        }
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: serverUrlTo, etag: "", ocId: nil, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: metadata.account)
                     }
-                    
-                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                            
+                } else {
+                            
+                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: fileNameNew, etag: nil)
+                    // Move file system
+                    let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                    let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                    do {
+                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                    } catch { }
+                    let atPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)!
+                    let toPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: fileNameNew)!
+                    do {
+                        try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
+                    } catch { }
                 }
-                
-            } else {
-                
-               self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
+                    
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
     

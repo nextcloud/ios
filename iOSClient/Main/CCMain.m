@@ -512,7 +512,17 @@
 }
 
 - (void)renameFile:(NSNotification *)notification {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    if (self.view.window == nil) { return; }
+
+    NSDictionary *userInfo = notification.userInfo;
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
+    
+    if (errorCode == 0) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+    }
 }
 
 - (void)createFolder:(NSNotification *)notification {
