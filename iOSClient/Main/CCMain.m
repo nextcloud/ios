@@ -1550,10 +1550,7 @@
     
     [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
-    
-    // remove optimization
-    _dateReadDataSource = nil;
-    
+        
     // End Select Table View
     [self tableViewSelect:false];
 }
@@ -1582,6 +1579,9 @@
     
     [appDelegate.arrayMoveMetadata removeObjectAtIndex:0];
     [appDelegate.arrayMoveServerUrlTo removeObjectAtIndex:0];
+    
+    // End Select Table View
+    [self tableViewSelect:false];
 }
 
 // DELEGATE : Select
