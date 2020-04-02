@@ -459,6 +459,53 @@ import NCCommunication
         }
     }
     
+    private func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    
+        let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
+        if !(metadata.permissions == "") && !permission {
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            return
+        }
+        
+        let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+        let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+        
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { (account, errorCode, errorDescription) in
+                    
+            if errorCode == 0 {
+    
+                if metadata.directory {
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: account)
+                }
+                
+                NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
+                NCManageDatabase.sharedInstance.moveMedia(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
+                
+                NCManageDatabase.sharedInstance.clearDateRead(serverUrl: metadata.serverUrl, account: account)
+                NCManageDatabase.sharedInstance.clearDateRead(serverUrl: serverUrlTo, account: account)
+            }
+                    
+            self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+        }
+    }
+    
+    private func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    
+        let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
+        if !(metadata.permissions == "") && !permission {
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            return
+        }
+        
+        let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+        let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+        
+        NCCommunication.sharedInstance.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { (account, errorCode, errorDescription) in
+                    
+            self.NotificationPost(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+        }
+    }
+    
     @objc func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!

@@ -2033,6 +2033,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @discardableResult
     @objc func moveMetadata(ocId: String, serverUrlTo: String) -> tableMetadata? {
         
         var result: tableMetadata?
