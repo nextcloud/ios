@@ -148,7 +148,7 @@ extension CCMain {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_move_selected_files_", comment: ""),
+                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     self.moveOpenWindow(self.tableView.indexPathsForSelectedRows)
@@ -280,7 +280,7 @@ extension CCMain {
             if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_copy_or_move_", comment: ""),
+                        title: NSLocalizedString("_move_or_copy_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             self.moveOpenWindow([indexPath])
@@ -443,7 +443,7 @@ extension CCMain {
             if (!metadataFolder.e2eEncrypted) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_copy_or_move_", comment: ""),
+                        title: NSLocalizedString("_move_or_copy_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             self.moveOpenWindow([indexPath])
