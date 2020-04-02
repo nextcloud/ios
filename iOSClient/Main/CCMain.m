@@ -132,6 +132,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(renameFile:) name:k_notificationCenter_renameFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
     // Search
@@ -503,6 +504,17 @@
 
 - (void)renameFile:(NSNotification *)notification {
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+}
+
+- (void)createFolder:(NSNotification *)notification {
+    if (self.view.window == nil) { return; }
+    
+    NSDictionary *userInfo = notification.userInfo;
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    
+    if (errorCode == 0) {
+        [self readFolder:self.serverUrl];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1697,7 +1709,8 @@
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         
         UITextField *fileName = alertController.textFields.firstObject;
-        [self createFolder:fileName.text serverUrl:serverUrl];
+        
+        [[NCNetworking sharedInstance] createFolderWithFileName:fileName.text serverUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }];
     
     okAction.enabled = NO;
@@ -1706,62 +1719,6 @@
     [alertController addAction:okAction];
     
     [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
-{
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    fileNameFolder = [[NCUtility sharedInstance] createFileName:fileNameFolder serverUrl:self.serverUrl account:appDelegate.activeAccount];
-    if (![fileNameFolder length]) return;
-    NSString *ocIdTemp = [[NSUUID UUID] UUIDString];
-    
-    // Create Directory (temp) on metadata
-    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES ocId:ocIdTemp serverUrl:serverUrl fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-    [[NCManageDatabase sharedInstance] addMetadata:metadata];
-    
-    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    
-    // Creeate folder Networking
-    [[OCNetworking sharedManager] createFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileNameFolder completion:^(NSString *account, NSString *ocId, NSDate *date, NSString *message, NSInteger errorCode) {
-       
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-            // Delete Temp Dir
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocIdTemp]];
-            
-            NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
-            
-            if (_metadataFolder.e2eEncrypted) {
-                
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncryptedOnServerUrl:newDirectory ocId:ocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error) {
-                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                        }
-                        [self readFolder:self.serverUrl];
-                    });
-                });
-                
-            } else {
-                
-                [self readFolder:self.serverUrl];
-            }
-        
-        } else {
-            
-            // Delete Temp Dir
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocIdTemp]];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-            
-            if (errorCode != 0) {
-                [[NCContentPresenter shared] messageNotification:@"_create_folder_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-            } else {
-                NSLog(@"[LOG] It has been changed user during networking process, error.");
-            }
-        }
-    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

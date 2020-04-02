@@ -337,6 +337,7 @@
 #define k_notificationCenter_downloadFile               @"downloadFile"
 #define k_notificationCenter_progressTask               @"progressTask"
 
+#define k_notificationCenter_createFolder               @"createFolder"
 #define k_notificationCenter_deleteFile                 @"deleteFile"
 #define k_notificationCenter_renameFile                 @"renameFile"
 #define k_notificationCenter_moveFile                   @"moveFile"

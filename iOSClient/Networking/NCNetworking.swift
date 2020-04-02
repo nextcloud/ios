@@ -540,9 +540,30 @@ import NCCommunication
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
         NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, account: account) { (account, ocId, date, errorCode, errorDescription) in
             if errorCode == 0 {
-                
+                if directory.e2eEncrypted {
+                    
+                    DispatchQueue.global().async {
+                        if let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: fileNameFolderUrl, ocId: ocId, user: user, userID: userID, password: password, url: url) as NSError? {
+                            
+                            DispatchQueue.main.async {
+                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
+                                let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code, "errorDescription": error.localizedDescription]
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0), "errorDescription": ""]
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                            }
+                        }
+                    }
+                } else {
+                    let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0), "errorDescription": ""]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                }
             } else {
-               
+               let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode, "errorDescription": errorDescription]
+               NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
             }
         }
     }
