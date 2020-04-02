@@ -274,17 +274,14 @@ import NCCommunication
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
-            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission), "errorDescription": NSLocalizedString("_no_permission_delete_file_", comment: "")]
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
-            completion(Int(k_CCErrorNotPermission), "_no_permission_delete_file_")
+            
+            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorNotPermission)], errorDescription: "_no_permission_delete_file_", completion: completion)
             return
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: metadata.account) { (account, errorCode, errorDescription) in
-            var description = ""
-            if errorDescription != nil { description = errorDescription! }
-            
+        
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 
                 do {
@@ -298,13 +295,9 @@ import NCCommunication
                 if metadata.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
-            } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
             
-            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description]
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: userInfo)
-            completion(errorCode, description)
+            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
     
@@ -344,25 +337,12 @@ import NCCommunication
         if metadata.favorite { favorite = false }
         
         NCCommunication.sharedInstance.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, account: metadata.account) { (account, errorCode, errorDescription) in
-            
-            var description = ""
-            if errorDescription != nil { description = errorDescription! }
-            
+    
             if errorCode == 0 && metadata.account == account {
-                
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-                
-            } else if (errorCode != 0) {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-
             }
             
-            let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": description, "favorite": Bool(favorite)]
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_favoriteFile), object: nil, userInfo: userInfo)
-            
-            completion(errorCode, description)
+            self.NotificationPost(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
     
