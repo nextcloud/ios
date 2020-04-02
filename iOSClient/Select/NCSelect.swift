@@ -30,11 +30,12 @@ import Foundation
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    @IBOutlet fileprivate weak var toolbar: UIToolbar!
+    @IBOutlet fileprivate weak var toolbar: UIView!
 
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
-    @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
-    @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
+    @IBOutlet fileprivate weak var buttonCreateFolder: UIButton!
+    @IBOutlet fileprivate weak var buttonDone: UIButton!
+    @IBOutlet fileprivate weak var buttonDone1: UIButton!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
@@ -45,6 +46,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var includeImages = false
     @objc var type = ""
     @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
+    @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
     @objc var layoutViewSelect = k_layout_view_move
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -125,7 +127,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
-        buttonCreateFolder.title = NSLocalizedString("_create_folder_", comment: "")
+        buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
@@ -137,7 +139,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         self.navigationItem.title = titleCurrentFolder
         
-        buttonDone.title = titleButtonDone
+        buttonDone.setTitle(titleButtonDone, for: .normal)
         
         if selectFile {
             buttonDone.isEnabled = false
@@ -176,8 +178,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
-        toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = .gray
+        toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
+        //toolbar.tintColor = .gray
     }
     
     // MARK: DZNEmpty
@@ -262,6 +264,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @IBAction func actionDone(_ sender: Any) {
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func actionDone1(_ sender: Any) {
         delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type)
         self.dismiss(animated: true, completion: nil)
     }
