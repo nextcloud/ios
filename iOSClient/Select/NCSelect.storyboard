@@ -75,6 +75,9 @@
                                                     <constraint firstAttribute="height" constant="20" id="c71-Rx-wA7"/>
                                                     <constraint firstAttribute="width" constant="35" id="eQO-iB-kxo"/>
                                                 </constraints>
+                                                <connections>
+                                                    <action selector="valueChangedSwitchOverwrite:" destination="VYq-xA-D35" eventType="valueChanged" id="bYR-qG-s45"/>
+                                                </connections>
                                             </switch>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overwrite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SQc-p3-dhj">
                                                 <rect key="frame" x="9" y="34" width="59" height="16"/>
@@ -133,6 +136,7 @@
                         <outlet property="buttonDone1" destination="kze-s7-kTI" id="XoG-Z1-Sc5"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
                         <outlet property="overwriteLabel" destination="SQc-p3-dhj" id="Hk3-6G-ZaD"/>
+                        <outlet property="overwriteSwitch" destination="obN-5M-keH" id="5LA-Lu-tto"/>
                         <outlet property="overwriteView" destination="bvU-cp-GX3" id="Wh1-Xr-CSQ"/>
                         <outlet property="toolbar" destination="un8-Xf-9Fb" id="RhD-n3-mlq"/>
                     </connections>
