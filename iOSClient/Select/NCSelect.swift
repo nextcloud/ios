@@ -324,7 +324,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @IBAction func valueChangedSwitchOverwrite(_ sender: Any) {
-        
+        overwrite = overwriteSwitch.isOn
     }
     
     // MARK: TAP EVENT
