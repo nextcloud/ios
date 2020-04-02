@@ -67,17 +67,17 @@
                                         </connections>
                                     </button>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bvU-cp-GX3">
-                                        <rect key="frame" x="127" y="5" width="70" height="40"/>
+                                        <rect key="frame" x="130" y="5" width="77" height="40"/>
                                         <subviews>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="obN-5M-keH">
-                                                <rect key="frame" x="17.5" y="5" width="37" height="20"/>
+                                                <rect key="frame" x="21" y="5" width="37" height="20"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="20" id="c71-Rx-wA7"/>
                                                     <constraint firstAttribute="width" constant="35" id="eQO-iB-kxo"/>
                                                 </constraints>
                                             </switch>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overwrite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SQc-p3-dhj">
-                                                <rect key="frame" x="5.5" y="34" width="59" height="16"/>
+                                                <rect key="frame" x="9" y="34" width="59" height="16"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -86,7 +86,6 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="SQc-p3-dhj" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="2tb-50-fVx"/>
-                                            <constraint firstAttribute="width" constant="70" id="Cb4-30-Orh"/>
                                             <constraint firstAttribute="bottom" secondItem="SQc-p3-dhj" secondAttribute="bottom" constant="-10" id="OSr-G4-QAG"/>
                                             <constraint firstItem="obN-5M-keH" firstAttribute="top" secondItem="bvU-cp-GX3" secondAttribute="top" constant="5" id="TjV-mN-FS2"/>
                                             <constraint firstItem="obN-5M-keH" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="Tlh-4S-fnU"/>
@@ -97,7 +96,6 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstItem="kze-s7-kTI" firstAttribute="centerY" secondItem="un8-Xf-9Fb" secondAttribute="centerY" id="899-zh-WyZ"/>
-                                    <constraint firstItem="kze-s7-kTI" firstAttribute="leading" secondItem="bvU-cp-GX3" secondAttribute="trailing" constant="10" id="KP4-eN-Eg7"/>
                                     <constraint firstAttribute="trailing" secondItem="gUK-Yw-aVP" secondAttribute="trailing" constant="18" id="OEt-Jd-Y4n"/>
                                     <constraint firstAttribute="height" constant="70" id="TsU-bO-Yu0"/>
                                     <constraint firstItem="gUK-Yw-aVP" firstAttribute="leading" secondItem="kze-s7-kTI" secondAttribute="trailing" constant="10" id="YEP-mX-zEQ"/>
@@ -105,6 +103,8 @@
                                     <constraint firstItem="bvU-cp-GX3" firstAttribute="top" secondItem="un8-Xf-9Fb" secondAttribute="top" constant="5" id="neE-bw-XB6"/>
                                     <constraint firstItem="QFB-w0-4Kc" firstAttribute="leading" secondItem="un8-Xf-9Fb" secondAttribute="leading" constant="10" id="pcs-Y5-Jp6"/>
                                     <constraint firstItem="QFB-w0-4Kc" firstAttribute="centerY" secondItem="un8-Xf-9Fb" secondAttribute="centerY" id="pzi-K5-nNo"/>
+                                    <constraint firstItem="kze-s7-kTI" firstAttribute="leading" secondItem="bvU-cp-GX3" secondAttribute="trailing" id="rpH-2T-uAd"/>
+                                    <constraint firstItem="bvU-cp-GX3" firstAttribute="leading" secondItem="QFB-w0-4Kc" secondAttribute="trailing" id="wzK-KD-aFO"/>
                                 </constraints>
                             </view>
                         </subviews>
