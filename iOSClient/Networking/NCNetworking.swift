@@ -305,7 +305,7 @@ import NCCommunication
                         
         DispatchQueue.global().async {
             // LOCK FOLDER
-            let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url)
+            let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url) as NSError?
             
             DispatchQueue.main.async {
                 if error == nil {
@@ -317,14 +317,13 @@ import NCCommunication
                         
                         DispatchQueue.global().async {
                             NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: directory.serverUrl, account: self.account, user: user, userID: userID, password: password, url: url)
-                            DispatchQueue.main.async {
-                                completion(errorCode, errorDescription)
-                            }
                         }
+                        
+                        self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 } else {
-                    NCContentPresenter.shared.messageNotification("_delete_", description: error!.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                    completion(Int(k_CCErrorInternalError), error!.localizedDescription)
+                    
+                    self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": error!.code], errorDescription: error?.localizedDescription, completion: completion)
                 }
             }
         }
