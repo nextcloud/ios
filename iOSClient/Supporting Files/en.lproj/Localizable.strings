@@ -130,6 +130,8 @@
 "_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
 "_file_conflict_new_"       = "New files";
 "_file_conflict_exists_"    = "Already existing files";
+"_move_or_copy_"            = "Move or copy";
+"_copy_"                    = "Copy";
 
 // App
 
