@@ -384,7 +384,6 @@ import NCCommunication
         
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_no_permission_modify_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
             completion(Int(k_CCErrorInternalError),  "_no_permission_modify_file_")
             return
         }
@@ -461,6 +460,7 @@ import NCCommunication
                 }
                 
             } else {
+                
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 
                 completion(errorCode, errorDescription)
@@ -546,25 +546,31 @@ import NCCommunication
                         if let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: fileNameFolderUrl, ocId: ocId, user: user, userID: userID, password: password, url: url) as NSError? {
                             
                             DispatchQueue.main.async {
-                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: error.code)
-                                let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code, "errorDescription": error.localizedDescription]
-                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                             }
                         } else {
-                            DispatchQueue.main.async {
-                                let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0), "errorDescription": ""]
-                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
-                            }
+                            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                         }
                     }
                 } else {
-                    let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0), "errorDescription": ""]
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                    self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                 }
             } else {
-               let userInfo: [String : Any] = ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode, "errorDescription": errorDescription]
-               NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_createFolder), object: nil, userInfo: userInfo)
+                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
+        }
+    }
+    
+    private func NotificationPost(name: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        var userInfo = userInfo
+        DispatchQueue.main.async {
+            
+            if errorDescription == nil { userInfo["errorDescription"] = "" }
+            else { userInfo["errorDescription"] = errorDescription! }
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: name), object: nil, userInfo: userInfo)
+            
+            completion(userInfo["errorCode"] as! Int, userInfo["errorDescription"] as! String)
         }
     }
 }
