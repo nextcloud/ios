@@ -145,7 +145,15 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     @objc func deleteFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
-        self.loadDatasource()
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                if errorCode == 0 {
+                    self.loadDatasource()
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
     }
     
     @objc func changeTheming() {

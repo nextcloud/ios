@@ -442,17 +442,23 @@
     
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
-        if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
-            [self readFileReloadFolder];
-        } else {
-            if (self.searchController.isActive) {
-                [self readFolder:self.serverUrl];
+    if (errorCode == 0 && metadata) {
+        if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
+            if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
+                [self readFileReloadFolder];
             } else {
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                if (self.searchController.isActive) {
+                    [self readFolder:self.serverUrl];
+                } else {
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                }
             }
         }
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
@@ -463,6 +469,7 @@
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
     BOOL favorite = [userInfo[@"favorite"] boolValue];
     
     if (errorCode == 0) {
@@ -499,6 +506,8 @@
                     
             [appDelegate startLoadAutoDownloadUpload];
         }
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
@@ -511,9 +520,12 @@
     
     NSDictionary *userInfo = notification.userInfo;
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (errorCode == 0) {
         [self readFolder:self.serverUrl];
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
