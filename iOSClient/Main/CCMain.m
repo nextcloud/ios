@@ -1995,16 +1995,16 @@
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         
-        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_file_", nil) action:@selector(copyFile:)]];
-        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_files_", nil) action:@selector(copyFiles:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_file_", nil) action:@selector(copyTouchFile:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_copy_files_", nil) action:@selector(copyTouchFiles:)]];
         if ([NCBrandOptions sharedInstance].disable_openin_file == false) {
-            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinFile:)]];
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinTouchFile:)]];
         }
         if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_internal_view_", nil) action:@selector(openInternalViewer:)]];
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_internal_view_", nil) action:@selector(openInternalViewerTouch:)]];
         }
-        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteFile:)]];
-        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteTouchFile:)]];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteTouchFiles:)]];
 
         [menuController setMenuItems:items];
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:self.tableView];
@@ -2026,13 +2026,13 @@
     // NO In Session mode (download/upload)
     // NO Template
     
-    if (@selector(copyFile:) == action || @selector(openinFile:) == action || @selector(openInternalViewer:) == action) {
+    if (@selector(copyTouchFile:) == action || @selector(openinTouchFile:) == action || @selector(openInternalViewerTouch:) == action) {
         
         if (_isSelectedMode == NO && self.metadata && !self.metadata.directory && self.metadata.status == k_metadataStatusNormal) return YES;
         else return NO;
     }
     
-    if (@selector(copyFiles:) == action) {
+    if (@selector(copyTouchFiles:) == action) {
         
         if (_isSelectedMode) {
             
@@ -2047,7 +2047,7 @@
         return NO;
     }
 
-    if (@selector(pasteFile:) == action) {
+    if (@selector(pasteTouchFile:) == action) {
         
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         NSArray *items = [pasteboard items];
@@ -2074,7 +2074,7 @@
         return NO;
     }
     
-    if (@selector(pasteFiles:) == action) {
+    if (@selector(pasteTouchFiles:) == action) {
         
         BOOL isValid = NO;
         
@@ -2117,7 +2117,7 @@
 
 /************************************ COPY ************************************/
 
-- (void)copyFile:(id)sender
+- (void)copyTouchFile:(id)sender
 {
     // Remove all item
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -2142,7 +2142,7 @@
     }
 }
 
-- (void)copyFiles:(id)sender
+- (void)copyTouchFiles:(id)sender
 {
     // Remove all item
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
@@ -2189,26 +2189,26 @@
 
 /************************************ OPEN IN ... ******************************/
 
-- (void)openinFile:(id)sender
+- (void)openinTouchFile:(id)sender
 {
     [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
 /************************************ OPEN INTERNAL VIEWER ... ******************************/
-- (void)openInternalViewer:(id)sender
+- (void)openInternalViewerTouch:(id)sender
 {
     [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
 }
 
 /************************************ PASTE ************************************/
 
-- (void)pasteFile:(id)sender
+- (void)pasteTouchFile:(id)sender
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [self uploadFilePasteArray:[pasteboard items]];
 }
 
-- (void)pasteFiles:(id)sender
+- (void)pasteTouchFiles:(id)sender
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [self uploadFilePasteArray:[pasteboard items]];
