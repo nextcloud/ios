@@ -133,7 +133,7 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
                 
@@ -174,7 +174,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
                 

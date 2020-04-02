@@ -388,7 +388,7 @@ import NCCommunication
                 let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
                 let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
                 
-                NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, account: metadata.account) { (account, errorCode, errorDescription) in
+                NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: true, account: metadata.account) { (account, errorCode, errorDescription) in
                     
                     if errorCode == 0 {
                         

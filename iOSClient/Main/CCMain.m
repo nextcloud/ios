@@ -1567,7 +1567,7 @@
                 NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName];
                 NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName];
             
-                [[NCCommunication sharedInstance] moveFileOrFolderWithServerUrlFileNameSource:fileNamePath serverUrlFileNameDestination:fileNameToPath account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+                [[NCCommunication sharedInstance] moveFileOrFolderWithServerUrlFileNameSource:fileNamePath serverUrlFileNameDestination:fileNameToPath overwrite:false account:appDelegate.activeAccount completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
                     
                     [_hud hideHud];
                     
