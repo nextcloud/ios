@@ -339,7 +339,7 @@
 
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
 #define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, fileName, errorCode, errorDescription
+#define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_moveFile                   @"moveFile"
 #define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite, errorCode, errorDescription
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"

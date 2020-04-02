@@ -349,7 +349,7 @@ import NCCommunication
         
         guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
             return
         }
         
@@ -364,15 +364,15 @@ import NCCommunication
         
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
             return
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": "", "errorCode": Int(0)], errorDescription: "", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
         }
         if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
         }
         
@@ -382,7 +382,7 @@ import NCCommunication
            
             if errorCode == 0  {
                 
-                self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
+                self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
                 
             } else if errorCode == kOCErrorServerPathNotFound {
                 
@@ -422,12 +422,12 @@ import NCCommunication
                         }
                     }
                     
-                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                 }
                 
             } else {
                 
-               self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+               self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
