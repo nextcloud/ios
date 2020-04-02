@@ -84,8 +84,8 @@
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
     self.arrayDeleteMetadata = [NSMutableArray new];
-    self.arrayCopyMoveMetadata = [NSMutableArray new];
-    self.arrayCopyMoveServerUrlTo = [NSMutableArray new];
+    self.arrayMoveMetadata = [NSMutableArray new];
+    self.arrayMoveServerUrlTo = [NSMutableArray new];
 
     // Push Notification
     [application registerForRemoteNotifications];
@@ -181,6 +181,7 @@
     
     // Observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
 
     return YES;
 }
@@ -664,6 +665,22 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
             [[NCNetworking sharedInstance] deleteMetadata:metadata user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        } else {
+            [self deleteFile:[NSNotification new]];
+        }
+    }
+}
+
+- (void)moveFile:(NSNotification *)notification
+{
+    if (self.arrayMoveMetadata.count > 0) {
+        tableMetadata *metadata = self.arrayMoveMetadata.firstObject;
+        NSString *serverUrlTo = self.arrayMoveServerUrlTo.firstObject;
+        [self.arrayMoveMetadata removeObjectAtIndex:0];
+        [self.arrayMoveServerUrlTo removeObjectAtIndex:0];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+        if (account) {
+            [[NCNetworking sharedInstance] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self deleteFile:[NSNotification new]];
         }

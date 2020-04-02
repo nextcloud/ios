@@ -1570,19 +1570,19 @@
      
     if ([_selectedocIdsMetadatas count] > 0) {
         for (tableMetadata *metadataSelect in _selectedocIdsMetadatas) {
-            [appDelegate.arrayCopyMoveMetadata addObject:metadataSelect];
-            [appDelegate.arrayCopyMoveServerUrlTo addObject:serverUrlTo];
+            [appDelegate.arrayMoveMetadata addObject:metadataSelect];
+            [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
         }
-        [appDelegate.arrayCopyMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
+        [appDelegate.arrayMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
-        [appDelegate.arrayCopyMoveMetadata addObject:self.metadata];
-        [appDelegate.arrayCopyMoveServerUrlTo addObject:serverUrlTo];
+        [appDelegate.arrayMoveMetadata addObject:self.metadata];
+        [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
     }
     
     [[NCNetworking sharedInstance] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
     
-    [appDelegate.arrayCopyMoveMetadata removeObjectAtIndex:0];
-    [appDelegate.arrayCopyMoveServerUrlTo removeObjectAtIndex:0];
+    [appDelegate.arrayMoveMetadata removeObjectAtIndex:0];
+    [appDelegate.arrayMoveServerUrlTo removeObjectAtIndex:0];
 
     
     /*

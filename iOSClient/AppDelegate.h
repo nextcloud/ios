@@ -109,8 +109,8 @@
 @property (nonatomic, strong) NSMutableArray *filterocId;
 
 @property (nonatomic, strong) NSMutableArray *arrayDeleteMetadata;
-@property (nonatomic, strong) NSMutableArray *arrayCopyMoveMetadata;
-@property (nonatomic, strong) NSMutableArray *arrayCopyMoveServerUrlTo;
+@property (nonatomic, strong) NSMutableArray *arrayMoveMetadata;
+@property (nonatomic, strong) NSMutableArray *arrayMoveServerUrlTo;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 
