@@ -184,6 +184,7 @@
     // Observer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
 
     return YES;
 }
@@ -684,7 +685,23 @@
         if (account) {
             [[NCNetworking sharedInstance] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
-            [self deleteFile:[NSNotification new]];
+            [self moveFile:[NSNotification new]];
+        }
+    }
+}
+
+- (void)copyFile:(NSNotification *)notification
+{
+    if (self.arrayCopyMetadata.count > 0) {
+        tableMetadata *metadata = self.arrayCopyMetadata.firstObject;
+        NSString *serverUrlTo = self.arrayCopyServerUrlTo.firstObject;
+        [self.arrayCopyMetadata removeObjectAtIndex:0];
+        [self.arrayCopyServerUrlTo removeObjectAtIndex:0];
+        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+        if (account) {
+            [[NCNetworking sharedInstance] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        } else {
+            [self copyFile:[NSNotification new]];
         }
     }
 }

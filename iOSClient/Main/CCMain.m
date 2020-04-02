@@ -132,6 +132,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(renameFile:) name:k_notificationCenter_renameFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
@@ -463,6 +464,25 @@
 }
 
 - (void)moveFile:(NSNotification *)notification
+{
+    if (self.view.window == nil) { return; }
+    
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
+    
+    if (errorCode == 0) {
+        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [serverUrlTo isEqualToString:self.serverUrl]) {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        }
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+    }
+}
+
+- (void)copyFile:(NSNotification *)notification
 {
     if (self.view.window == nil) { return; }
     
@@ -1556,29 +1576,43 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Move =====
+#pragma mark ===== Move / Copy =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo
+- (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo move:(BOOL)move overwrite:(BOOL)overwrite
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
-     
+    
+    NSMutableArray *arrayMetadata, *arrayServerUrlTo;
+    
+    if (move) {
+        arrayMetadata = appDelegate.arrayMoveMetadata;
+        arrayServerUrlTo = appDelegate.arrayMoveServerUrlTo;
+    } else {
+        arrayMetadata = appDelegate.arrayCopyMetadata;
+        arrayServerUrlTo = appDelegate.arrayCopyServerUrlTo;
+    }
+    
     if ([_selectedocIdsMetadatas count] > 0) {
         for (NSString *key in _selectedocIdsMetadatas) {
             tableMetadata *metadata = [_selectedocIdsMetadatas objectForKey:key];
-            [appDelegate.arrayMoveMetadata addObject:metadata];
-            [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
+            [arrayMetadata addObject:metadata];
+            [arrayServerUrlTo addObject:serverUrlTo];
         }
     } else {
-        [appDelegate.arrayMoveMetadata addObject:metadata];
-        [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
+        [arrayMetadata addObject:metadata];
+        [arrayServerUrlTo addObject:serverUrlTo];
     }
     
-    [[NCNetworking sharedInstance] moveMetadata:appDelegate.arrayMoveMetadata.firstObject serverUrlTo:appDelegate.arrayMoveServerUrlTo.firstObject overwrite:true completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+    if (move) {
+        [[NCNetworking sharedInstance] moveMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+    } else {
+        [[NCNetworking sharedInstance] copyMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+    }
     
-    [appDelegate.arrayMoveMetadata removeObjectAtIndex:0];
-    [appDelegate.arrayMoveServerUrlTo removeObjectAtIndex:0];
+    [arrayMetadata removeObjectAtIndex:0];
+    [arrayServerUrlTo removeObjectAtIndex:0];
     
     // End Select Table View
     [self tableViewSelect:false];
@@ -1598,11 +1632,16 @@
             return;
         }
         
+        BOOL move = true;
+        BOOL overwrite = false;
+        
+        if ([buttonType isEqualToString:@"done1"]) { move = false; }
+        
         if ([_selectedocIdsMetadatas count] > 0) {
             NSArray *metadatas = [_selectedocIdsMetadatas allValues];
-            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl];
+            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl move:move overwrite:overwrite];
         } else {
-            [self moveFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl];
+            [self moveFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl move:move overwrite:overwrite];
         }
     }
 }
