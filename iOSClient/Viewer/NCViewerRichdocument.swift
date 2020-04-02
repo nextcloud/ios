@@ -200,7 +200,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     //MARK: -
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String) {
         
         if serverUrl != nil && metadata != nil {
             

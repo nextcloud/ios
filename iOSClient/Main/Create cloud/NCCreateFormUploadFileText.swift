@@ -148,7 +148,7 @@ class NCCreateFormUploadFileText: XLFormViewController, NCSelectDelegate {
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String) {
         
         if serverUrl != nil {
             

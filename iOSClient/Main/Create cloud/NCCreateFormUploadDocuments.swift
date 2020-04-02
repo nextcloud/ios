@@ -210,7 +210,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String) {
         
         guard let serverUrl = serverUrl else {
             return

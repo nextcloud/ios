@@ -24,7 +24,7 @@
 import Foundation
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate {
@@ -259,17 +259,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, buttonType: "cancel")
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done")
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone1(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done1")
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -567,7 +567,7 @@ extension NCSelect: UICollectionViewDelegate {
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, buttonType: "select")
             self.dismiss(animated: true, completion: nil)
         }
     }
