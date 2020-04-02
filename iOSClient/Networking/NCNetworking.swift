@@ -332,8 +332,7 @@ import NCCommunication
     @objc func favoriteMetadata(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: url)!
-        var favorite = true
-        if metadata.favorite { favorite = false }
+        let favorite = !metadata.favorite
         
         NCCommunication.sharedInstance.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, account: metadata.account) { (account, errorCode, errorDescription) in
     
