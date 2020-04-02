@@ -139,7 +139,7 @@
 #pragma mark == IBAction ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
     if (serverUrl) {
         serverUrlLocal = serverUrl;

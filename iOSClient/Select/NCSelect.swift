@@ -24,7 +24,7 @@
 import Foundation
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate {
@@ -38,7 +38,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @IBOutlet fileprivate weak var buttonDone: UIButton!
     @IBOutlet fileprivate weak var buttonDone1: UIButton!
     
-    @IBOutlet fileprivate weak var overwrite: UISwitch!
+    @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
     @IBOutlet fileprivate weak var overwriteLabel: UILabel!
 
     // ------ external settings ------------------------------------
@@ -68,7 +68,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var isEditMode = false
     private var networkInProgress = false
     private var selectocId = [String]()
-    
+    private var overwrite = false
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
     private var typeLayout = ""
@@ -285,17 +285,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, buttonType: "cancel")
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, buttonType: "cancel", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done")
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone1(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done1")
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done1", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -321,6 +321,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         alertController.addAction(actionCancel)
         
         self.present(alertController, animated: true, completion:nil)
+    }
+    
+    @IBAction func valueChangedSwitchOverwrite(_ sender: Any) {
+        
     }
     
     // MARK: TAP EVENT
@@ -593,7 +597,7 @@ extension NCSelect: UICollectionViewDelegate {
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, buttonType: "select")
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, buttonType: "select", overwrite: overwrite)
             self.dismiss(animated: true, completion: nil)
         }
     }

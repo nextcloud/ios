@@ -368,7 +368,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
