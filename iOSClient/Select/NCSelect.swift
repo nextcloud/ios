@@ -35,7 +35,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonCreateFolder: UIButton!
     @IBOutlet fileprivate weak var buttonDone: UIButton!
-    @IBOutlet fileprivate weak var buttonDone1: UIButton!
+    @IBOutlet fileprivate var buttonDone1: UIButton!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
@@ -47,6 +47,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var type = ""
     @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
     @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
+    @objc var isButtonDone1Hide = true
     @objc var layoutViewSelect = k_layout_view_move
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -129,6 +130,22 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
         buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
         
+        // button
+        buttonCreateFolder.layer.cornerRadius = 15
+        buttonCreateFolder.layer.masksToBounds = true
+        buttonCreateFolder.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonCreateFolder.setTitleColor(.black, for: .normal)
+
+        buttonDone.layer.cornerRadius = 15
+        buttonDone.layer.masksToBounds = true
+        buttonDone.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone.setTitleColor(.black, for: .normal)
+        
+        buttonDone1.layer.cornerRadius = 15
+        buttonDone1.layer.masksToBounds = true
+        buttonDone1.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone1.setTitleColor(.black, for: .normal)
+        
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
@@ -140,6 +157,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         self.navigationItem.title = titleCurrentFolder
         
         buttonDone.setTitle(titleButtonDone, for: .normal)
+        buttonDone1.setTitle(titleButtonDone1, for: .normal)
+        buttonDone1.isHidden = isButtonDone1Hide
         
         if selectFile {
             buttonDone.isEnabled = false

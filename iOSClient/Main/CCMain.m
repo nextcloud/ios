@@ -1622,6 +1622,8 @@
     viewController.includeImages = false;
     viewController.type = @"";
     viewController.titleButtonDone = NSLocalizedString(@"_move_", nil);
+    viewController.titleButtonDone1 = NSLocalizedString(@"_copy_", nil);
+    viewController.isButtonDone1Hide = false;
     viewController.layoutViewSelect = k_layout_view_move;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
