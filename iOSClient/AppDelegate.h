@@ -111,6 +111,8 @@
 @property (nonatomic, strong) NSMutableArray *arrayDeleteMetadata;
 @property (nonatomic, strong) NSMutableArray *arrayMoveMetadata;
 @property (nonatomic, strong) NSMutableArray *arrayMoveServerUrlTo;
+@property (nonatomic, strong) NSMutableArray *arrayCopyMetadata;
+@property (nonatomic, strong) NSMutableArray *arrayCopyServerUrlTo;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 

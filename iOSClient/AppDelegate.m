@@ -86,7 +86,9 @@
     self.arrayDeleteMetadata = [NSMutableArray new];
     self.arrayMoveMetadata = [NSMutableArray new];
     self.arrayMoveServerUrlTo = [NSMutableArray new];
-
+    self.arrayCopyMetadata = [NSMutableArray new];
+    self.arrayCopyServerUrlTo = [NSMutableArray new];
+    
     // Push Notification
     [application registerForRemoteNotifications];
     
