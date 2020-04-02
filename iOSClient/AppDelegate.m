@@ -84,7 +84,9 @@
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
     self.arrayDeleteMetadata = [NSMutableArray new];
-    
+    self.arrayCopyMoveMetadata = [NSMutableArray new];
+    self.arrayCopyMoveServerUrlTo = [NSMutableArray new];
+
     // Push Notification
     [application registerForRemoteNotifications];
     

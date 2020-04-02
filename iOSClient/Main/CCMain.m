@@ -132,6 +132,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(renameFile:) name:k_notificationCenter_renameFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
@@ -456,6 +457,25 @@
                     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                 }
             }
+        }
+    } else {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+    }
+}
+
+- (void)moveFile:(NSNotification *)notification
+{
+    if (self.view.window == nil) { return; }
+    
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
+    
+    if (errorCode == 0) {
+        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [serverUrlTo isEqualToString:self.serverUrl]) {
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1545,6 +1565,27 @@
 
 - (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
+    if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
+        return;
+     
+    if ([_selectedocIdsMetadatas count] > 0) {
+        for (tableMetadata *metadataSelect in _selectedocIdsMetadatas) {
+            [appDelegate.arrayCopyMoveMetadata addObject:metadataSelect];
+            [appDelegate.arrayCopyMoveServerUrlTo addObject:serverUrlTo];
+        }
+        [appDelegate.arrayCopyMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
+    } else {
+        [appDelegate.arrayCopyMoveMetadata addObject:self.metadata];
+        [appDelegate.arrayCopyMoveServerUrlTo addObject:serverUrlTo];
+    }
+    
+    [[NCNetworking sharedInstance] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+    
+    [appDelegate.arrayCopyMoveMetadata removeObjectAtIndex:0];
+    [appDelegate.arrayCopyMoveServerUrlTo removeObjectAtIndex:0];
+
+    
+    /*
     // verify permission
     BOOL permission = [[NCUtility sharedInstance] permissionsContainsString:metadata.permissions permissions:k_permission_can_move];
     if (![metadata.permissions isEqualToString:@""] && permission == false) {
@@ -1648,6 +1689,7 @@
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
     }];
+    */
 }
 
 // DELEGATE : Select
