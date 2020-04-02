@@ -1573,7 +1573,6 @@
             [appDelegate.arrayMoveMetadata addObject:metadata];
             [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
         }
-        [appDelegate.arrayMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
         [appDelegate.arrayMoveMetadata addObject:metadata];
         [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
