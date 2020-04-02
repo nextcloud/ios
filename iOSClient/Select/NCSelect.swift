@@ -31,11 +31,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
+    @IBOutlet fileprivate weak var overwriteView: UIView!
 
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonCreateFolder: UIButton!
     @IBOutlet fileprivate weak var buttonDone: UIButton!
-    @IBOutlet fileprivate var buttonDone1: UIButton!
+    @IBOutlet fileprivate weak var buttonDone1: UIButton!
+    
+    @IBOutlet fileprivate weak var overwrite: UISwitch!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
@@ -48,6 +51,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
     @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
     @objc var isButtonDone1Hide = true
+    @objc var isOverwriteHide = true
     @objc var layoutViewSelect = k_layout_view_move
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -159,6 +163,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
+        
+        overwriteView.isHidden = isOverwriteHide
         
         if selectFile {
             buttonDone.isEnabled = false
