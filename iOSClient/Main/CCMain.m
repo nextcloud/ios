@@ -1568,8 +1568,9 @@
         return;
      
     if ([_selectedocIdsMetadatas count] > 0) {
-        for (tableMetadata *metadataSelect in _selectedocIdsMetadatas) {
-            [appDelegate.arrayMoveMetadata addObject:metadataSelect];
+        for (NSString *key in _selectedocIdsMetadatas) {
+            tableMetadata *metadata = [_selectedocIdsMetadatas objectForKey:key];
+            [appDelegate.arrayMoveMetadata addObject:metadata];
             [appDelegate.arrayMoveServerUrlTo addObject:serverUrlTo];
         }
         [appDelegate.arrayMoveMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
