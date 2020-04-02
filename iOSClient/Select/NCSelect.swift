@@ -39,6 +39,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @IBOutlet fileprivate weak var buttonDone1: UIButton!
     
     @IBOutlet fileprivate weak var overwrite: UISwitch!
+    @IBOutlet fileprivate weak var overwriteLabel: UILabel!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?

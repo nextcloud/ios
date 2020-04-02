@@ -70,18 +70,26 @@
                                         <rect key="frame" x="137" y="15" width="60" height="40"/>
                                         <subviews>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="obN-5M-keH">
-                                                <rect key="frame" x="12.5" y="0.0" width="37" height="25"/>
+                                                <rect key="frame" x="12.5" y="7.5" width="37" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="25" id="c71-Rx-wA7"/>
                                                     <constraint firstAttribute="width" constant="35" id="eQO-iB-kxo"/>
                                                 </constraints>
                                             </switch>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overwrite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SQc-p3-dhj">
+                                                <rect key="frame" x="6.5" y="28" width="47" height="12"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="obN-5M-keH" firstAttribute="top" secondItem="bvU-cp-GX3" secondAttribute="top" id="6NF-88-omG"/>
+                                            <constraint firstItem="SQc-p3-dhj" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="2tb-50-fVx"/>
                                             <constraint firstAttribute="width" constant="60" id="Cb4-30-Orh"/>
                                             <constraint firstItem="obN-5M-keH" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="FRm-bs-i20"/>
+                                            <constraint firstItem="obN-5M-keH" firstAttribute="centerY" secondItem="bvU-cp-GX3" secondAttribute="centerY" id="JCK-J5-6WH"/>
+                                            <constraint firstAttribute="bottom" secondItem="SQc-p3-dhj" secondAttribute="bottom" id="OSr-G4-QAG"/>
                                             <constraint firstAttribute="height" constant="40" id="idi-T7-L9J"/>
                                         </constraints>
                                     </view>
@@ -124,6 +132,7 @@
                         <outlet property="buttonDone" destination="gUK-Yw-aVP" id="oNt-6m-aHh"/>
                         <outlet property="buttonDone1" destination="kze-s7-kTI" id="XoG-Z1-Sc5"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
+                        <outlet property="overwriteLabel" destination="SQc-p3-dhj" id="Hk3-6G-ZaD"/>
                         <outlet property="overwriteView" destination="bvU-cp-GX3" id="Wh1-Xr-CSQ"/>
                         <outlet property="toolbar" destination="un8-Xf-9Fb" id="RhD-n3-mlq"/>
                     </connections>
