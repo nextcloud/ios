@@ -228,26 +228,26 @@ class NCDetailViewController: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String{
-                if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
-                // IMAGE
-                if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
-                
-                    if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
-                        var index = viewerImageViewController!.index - 1
-                        if index < 0 { index = 0}
-                        self.metadata = metadatas[index]
-                        viewImage()
-                    } else {
+                if errorCode == 0 {
+                    // IMAGE
+                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                    
+                        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+                            var index = viewerImageViewController!.index - 1
+                            if index < 0 { index = 0}
+                            self.metadata = metadatas[index]
+                            viewImage()
+                        } else {
+                            viewUnload()
+                        }
+                    }
+                    
+                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                         viewUnload()
                     }
-                }
-                
-                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
-                    viewUnload()
-                }
-                
-                if errorCode != 0 {
+                } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
@@ -259,23 +259,23 @@ class NCDetailViewController: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                    self.metadata = metadata
-                    
-                    // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                if errorCode == 0 {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                        self.metadata = metadata
                         
-                        viewImage()
+                        // IMAGE
+                        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                            
+                            viewImage()
+                        }
+                        
+                        if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
+                            self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+                        }
                     }
-                    
-                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
-                        self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
-                    }
-                }
-                
-                if errorCode != 0 {
+                } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
