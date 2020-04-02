@@ -369,30 +369,31 @@ import NCCommunication
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-            completion(Int(k_CCErrorInternalError), "")
+            
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
             return
         }
         
         if directory.e2eEncrypted == true {
             renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
-            renameMetadataPlain(metadata, fileNameNew: fileNameNew, viewController: viewController, completion: completion)
+            renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
         }
     }
     
-    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    private func renameMetadataPlain(_ metadata: tableMetadata, fileNameNew: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            completion(Int(k_CCErrorInternalError),  "_no_permission_modify_file_")
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
             return
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
-            completion(Int(k_CCErrorInternalError), "")
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": "", "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
         }
         if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
-            completion(Int(k_CCErrorInternalError), "")
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
         }
         
@@ -402,11 +403,7 @@ import NCCommunication
            
             if errorCode == 0  {
                 
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in })
-                viewController?.present(alertController, animated: true, completion:nil)
-                
-                completion(Int(k_CCErrorInternalError), "_file_already_exists_")
+                self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
                 
             } else if errorCode == kOCErrorServerPathNotFound {
                 
@@ -417,10 +414,7 @@ import NCCommunication
                     
                     if errorCode == 0 {
                         
-                        if let metadataNew = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId) {
-                            let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "errorCode": Int(errorCode), "errorDescription": ""]
-                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_renameFile), object: nil, userInfo: userInfo)
-                        }
+                        NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
                         NCManageDatabase.sharedInstance.renameMedia(fileNameTo: fileNameNew, ocId: metadata.ocId)
                         
                         if metadata.directory {
@@ -447,23 +441,14 @@ import NCCommunication
                                 try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                             } catch { }
                         }
-                        
-                    } else {
-                        
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                        
-                        let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(errorCode), "errorDescription": errorDescription!]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_renameFile), object: nil, userInfo: userInfo)
                     }
                     
-                    completion(errorCode, errorDescription)
+                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                 }
                 
             } else {
                 
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                
-                completion(errorCode, errorDescription)
+               self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "fileName": fileNameNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
@@ -473,21 +458,16 @@ import NCCommunication
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             
-            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_file_already_exists_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-            
-            completion(Int(k_CCErrorInternalError), "_file_already_exists_")
-        
+            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
+
         } else {
             
             DispatchQueue.global().async {
                 
-                var errorCode: Int = 0
-                var errorDescription = ""
-                
                 if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, account: metadata.account, user: user, userID: userID, password: password, url: url) as NSError? {
-                    errorCode = error.code
-                    errorDescription = "_e2e_error_send_metadata_"
-                    NCContentPresenter.shared.messageNotification("_error_e2ee_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    
+                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
+                    
                 } else {
                     NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
                     
@@ -503,23 +483,15 @@ import NCCommunication
                         try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
                     
-                    DispatchQueue.main.async {
-                        let userInfo: [String : Any] = ["metadata": metadata, "errorCode": Int(0), "errorDescription": ""]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_renameFile), object: nil, userInfo: userInfo)
-                    }
+                    self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(0)], errorDescription: "", completion: completion)
                 }
                 
                 // UNLOCK
                 if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: metadata.serverUrl) {
                     if let error = NCNetworkingEndToEnd.sharedManager()?.unlockFolderEncrypted(onServerUrl: metadata.serverUrl, ocId: directory.ocId, token: tableLock.token, user: user, userID: userID, password: password, url: url) as NSError? {
-                        errorCode = error.code
-                        errorDescription = error.localizedDescription
-                        NCContentPresenter.shared.messageNotification("_error_e2ee_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        
+                        self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                     }
-                }
-                
-                DispatchQueue.main.async {
-                    completion(errorCode, errorDescription)
                 }
             }
         }
@@ -530,10 +502,11 @@ import NCCommunication
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         fileNameFolder = NCUtility.sharedInstance.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
-            completion(Int(k_CCErrorInternalError), "")
+            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            return
         }
         guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
-            completion(Int(k_CCErrorInternalError), "")
+            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "Database error", completion: completion)
             return
         }
         
@@ -561,12 +534,14 @@ import NCCommunication
         }
     }
     
+    //MARK: - Notification Post
+    
     private func NotificationPost(name: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         var userInfo = userInfo
         DispatchQueue.main.async {
             
             if errorDescription == nil { userInfo["errorDescription"] = "" }
-            else { userInfo["errorDescription"] = errorDescription! }
+            else { userInfo["errorDescription"] = NSLocalizedString(errorDescription as! String, comment: "") }
             
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: name), object: nil, userInfo: userInfo)
             
