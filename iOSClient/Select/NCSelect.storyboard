@@ -80,7 +80,7 @@
                                                 </connections>
                                             </switch>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Overwrite" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SQc-p3-dhj">
-                                                <rect key="frame" x="9" y="34" width="59" height="16"/>
+                                                <rect key="frame" x="9" y="39" width="59" height="16"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -89,7 +89,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="SQc-p3-dhj" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="2tb-50-fVx"/>
-                                            <constraint firstAttribute="bottom" secondItem="SQc-p3-dhj" secondAttribute="bottom" constant="-10" id="OSr-G4-QAG"/>
+                                            <constraint firstAttribute="bottom" secondItem="SQc-p3-dhj" secondAttribute="bottom" constant="-15" id="OSr-G4-QAG"/>
                                             <constraint firstItem="obN-5M-keH" firstAttribute="top" secondItem="bvU-cp-GX3" secondAttribute="top" constant="5" id="TjV-mN-FS2"/>
                                             <constraint firstItem="obN-5M-keH" firstAttribute="centerX" secondItem="bvU-cp-GX3" secondAttribute="centerX" id="Tlh-4S-fnU"/>
                                             <constraint firstAttribute="height" constant="40" id="idi-T7-L9J"/>
