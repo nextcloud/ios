@@ -227,7 +227,7 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String{
                 if errorCode != 0 || metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
                 // IMAGE
@@ -246,6 +246,10 @@ class NCDetailViewController: UIViewController {
                 if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     viewUnload()
                 }
+                
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
             }
         }
     }
@@ -254,7 +258,7 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                 if errorCode != 0 || metadataNew.account != self.metadata?.account || metadataNew.serverUrl != self.metadata?.serverUrl { return }
                 
                 // IMAGE
@@ -265,6 +269,10 @@ class NCDetailViewController: UIViewController {
                 
                 if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+                }
+                
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
