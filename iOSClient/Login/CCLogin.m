@@ -87,7 +87,7 @@
     _baseUrl.tintColor = textColor;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
     UILabel *baseUrlPlaceholder = object_getIvar(_baseUrl, ivar);
-    baseUrlPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
+    baseUrlPlaceholder.textColor = [textColor colorWithAlphaComponent:0.5];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
     
@@ -97,7 +97,7 @@
     _user.tintColor = textColor;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
     UILabel *userPlaceholder = object_getIvar(_user, ivar);
-    userPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
+    userPlaceholder.textColor = [textColor colorWithAlphaComponent:0.5];
 
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
@@ -108,7 +108,7 @@
     _password.tintColor = textColor;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
     UILabel *passwordPlaceholder = object_getIvar(_password, ivar);
-    passwordPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
+    passwordPlaceholder.textColor = [textColor colorWithAlphaComponent:0.5];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
@@ -123,7 +123,7 @@
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[textColor colorWithAlphaComponent:0.7] forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[textColor colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
 
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
