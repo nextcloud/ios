@@ -68,7 +68,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
         self.buttonSignUp.layer.cornerRadius = 20
-        self.buttonSignUp.setTitleColor(textColor, for: .normal)
+        self.buttonSignUp.setTitleColor(.white, for: .normal)
         self.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
         self.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
