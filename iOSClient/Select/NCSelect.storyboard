@@ -70,11 +70,7 @@
                                         <rect key="frame" x="130" y="5" width="77" height="40"/>
                                         <subviews>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="obN-5M-keH">
-                                                <rect key="frame" x="21" y="5" width="37" height="20"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="20" id="c71-Rx-wA7"/>
-                                                    <constraint firstAttribute="width" constant="35" id="eQO-iB-kxo"/>
-                                                </constraints>
+                                                <rect key="frame" x="14" y="5" width="51" height="31"/>
                                                 <connections>
                                                     <action selector="valueChangedSwitchOverwrite:" destination="VYq-xA-D35" eventType="valueChanged" id="bYR-qG-s45"/>
                                                 </connections>
