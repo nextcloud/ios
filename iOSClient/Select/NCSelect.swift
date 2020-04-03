@@ -555,7 +555,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         visualController.includeImages = includeImages
         visualController.type = type
         visualController.titleButtonDone = titleButtonDone
+        visualController.titleButtonDone1 = titleButtonDone1
         visualController.layoutViewSelect = layoutViewSelect
+        visualController.isButtonDone1Hide = isButtonDone1Hide
+        visualController.isOverwriteHide = isOverwriteHide
+        visualController.overwrite = overwrite
         
         visualController.titleCurrentFolder = metadataPush!.fileNameView
         visualController.serverUrl = serverUrlPush
