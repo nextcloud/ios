@@ -58,6 +58,7 @@
 
     // Background color
     self.view.backgroundColor = NCBrandColor.sharedInstance.customer;
+    
     // Text Color
     BOOL isTooLight = NCBrandColor.sharedInstance.customer.isTooLight;
     BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
