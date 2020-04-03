@@ -48,6 +48,7 @@
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
+"_deselect_"                = "Deselect";
 "_select_all_"              = "Select all";
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
@@ -124,11 +125,13 @@
 "_download_image_max_"      = "Download the image in full resolution";
 "_livephoto_save_"          = "Save Live Photo to photo album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
-
 "_file_conflict_num_"       = "file conflict";
+"_file_conflicts_num_"      = "file conflicts";
 "_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
 "_file_conflict_new_"       = "New files";
 "_file_conflict_exists_"    = "Already existing files";
+"_move_or_copy_"            = "Move or copy";
+"_copy_"                    = "Copy";
 
 // App
 
@@ -363,6 +366,7 @@
 "_order_by_size_largest_"       = "Sort from the largest";
 "_delete_selected_files_"       = "Delete files";
 "_move_selected_files_"         = "Move files";
+"_move_or_copy_selected_files_" = "Move or Copy files";
 "_download_selected_files_"     = "Download files";
 "_download_selected_files_folders_" = "Download files and folders";
 "_error_operation_canc_"        = "Error: Operation canceled.";
