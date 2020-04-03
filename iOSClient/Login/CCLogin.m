@@ -112,7 +112,7 @@
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
-    [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.toggleVisiblePassword setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"visiblePassword"] multiplier:2 color:textColor] forState:UIControlStateNormal];
     
     // Login
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
