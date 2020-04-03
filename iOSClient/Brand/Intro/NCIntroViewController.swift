@@ -37,28 +37,44 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
     private var timerAutoScroll: Timer?
-
+    private var textColor: UIColor = .white
+    private var textColorOpponent: UIColor = .black
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText
+        
+        let isTooLight = NCBrandColor.sharedInstance.customer.isTooLight()
+        let isTooDark = NCBrandColor.sharedInstance.customer.isTooDark()
+        
+        if isTooLight {
+            textColor = .black
+            textColorOpponent = .white
+        } else if isTooDark {
+            textColor = .white
+            textColorOpponent = .black
+        } else {
+            textColor = .white
+            textColorOpponent = .black
+        }
+        
+        self.navigationController?.navigationBar.tintColor = textColor
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
-        self.pageControl.currentPageIndicatorTintColor = NCBrandColor.sharedInstance.customerText
+        self.pageControl.currentPageIndicatorTintColor = textColor
         self.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
 
-
         self.buttonLogin.layer.cornerRadius = 20
-        self.buttonLogin.setTitleColor(.black, for: .normal)
-        self.buttonLogin.backgroundColor = NCBrandColor.sharedInstance.customerText
+        self.buttonLogin.setTitleColor(textColorOpponent, for: .normal)
+        self.buttonLogin.backgroundColor = textColor
         self.buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
         self.buttonSignUp.layer.cornerRadius = 20
-        self.buttonSignUp.setTitleColor(.white, for: .normal)
+        self.buttonSignUp.setTitleColor(textColor, for: .normal)
         self.buttonSignUp.backgroundColor = UIColor(red: 25.0 / 255.0, green: 89.0 / 255.0, blue: 141.0 / 255.0, alpha: 1)
         self.buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
         self.buttonHost.layer.cornerRadius = 20
         self.buttonHost.setTitle(NSLocalizedString("_host_your_own_server", comment: ""), for: .normal)
-        self.buttonHost.setTitleColor(UIColor(red: 1, green: 1, blue: 1, alpha: 0.7), for: .normal)
+        self.buttonHost.setTitleColor(textColor.withAlphaComponent(0.5), for: .normal)
 
         self.introCollectionView.register(UINib(nibName: "NCIntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         self.introCollectionView.dataSource = self
@@ -101,7 +117,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! NCIntroCollectionViewCell
         cell.backgroundColor = NCBrandColor.sharedInstance.customer
 
-        cell.titleLabel.textColor = NCBrandColor.sharedInstance.customerText
+        cell.titleLabel.textColor = textColor
         cell.titleLabel.text = titles[indexPath.row]
         cell.imageView.image = images[indexPath.row]
         return cell
