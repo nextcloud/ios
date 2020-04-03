@@ -1579,7 +1579,7 @@
 #pragma mark ===== Move / Copy =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo move:(BOOL)move overwrite:(BOOL)overwrite
+- (void)moveCopyFileOrFolderMetadata:(tableMetadata *)metadata serverUrlTo:(NSString *)serverUrlTo move:(BOOL)move overwrite:(BOOL)overwrite
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
@@ -1633,15 +1633,13 @@
         }
         
         BOOL move = true;
-        BOOL overwrite = false;
-        
         if ([buttonType isEqualToString:@"done1"]) { move = false; }
         
         if ([_selectedocIdsMetadatas count] > 0) {
             NSArray *metadatas = [_selectedocIdsMetadatas allValues];
-            [self moveFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl move:move overwrite:overwrite];
+            [self moveCopyFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl move:move overwrite:overwrite];
         } else {
-            [self moveFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl move:move overwrite:overwrite];
+            [self moveCopyFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl move:move overwrite:overwrite];
         }
     }
 }
