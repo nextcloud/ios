@@ -32,6 +32,7 @@
     AppDelegate *appDelegate;
     UIView *rootView;
     UIColor *textColor;
+    UIColor *textColorOpponent;
 }
 @end
 
@@ -64,10 +65,13 @@
     BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
     if (isTooLight) {
         textColor = [UIColor blackColor];
+        textColorOpponent = [UIColor whiteColor];
     } else if (isTooDark) {
         textColor = [UIColor whiteColor];
+        textColorOpponent = [UIColor blackColor];
     } else {
         textColor = [UIColor whiteColor];
+        textColorOpponent = [UIColor blackColor];
     }
     
     // Image Brand
@@ -83,7 +87,7 @@
     _baseUrl.tintColor = textColor;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
     UILabel *baseUrlPlaceholder = object_getIvar(_baseUrl, ivar);
-    baseUrlPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
+    baseUrlPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
     
@@ -93,7 +97,7 @@
     _user.tintColor = textColor;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
     UILabel *userPlaceholder = object_getIvar(_user, ivar);
-    userPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
+    userPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
 
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
@@ -104,7 +108,7 @@
     _password.tintColor = textColor;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
     UILabel *passwordPlaceholder = object_getIvar(_password, ivar);
-    passwordPlaceholder.textColor = [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7];
+    passwordPlaceholder.textColor = [textColor colorWithAlphaComponent:0.7];
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
 
@@ -113,13 +117,13 @@
     // Login
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal] ;
     self.login.backgroundColor = textColor;
-    self.login.tintColor = [UIColor blackColor];
+    self.login.tintColor = textColorOpponent;
     self.login.layer.cornerRadius = 20;
     self.login.clipsToBounds = YES;
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:0.7] forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[textColor colorWithAlphaComponent:0.7] forState:UIControlStateNormal];
 
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -129,7 +133,7 @@
     }
     
     // QrCode image
-    [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:[UIColor whiteColor]] forState:UIControlStateNormal];
+    [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:textColor] forState:UIControlStateNormal];
     
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     if ([listAccount count] == 0) {
