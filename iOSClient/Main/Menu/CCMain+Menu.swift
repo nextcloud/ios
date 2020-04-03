@@ -199,11 +199,9 @@ extension CCMain {
         if (metadata.directory) {
             var lockDirectory = false
             var isOffline = false
-            let isFolderEncrypted = CCUtility.isFolderEncrypted("\(self.serverUrl ?? "")/\(metadata.fileName)", account: appDelegate.activeAccount)
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, account: metadata.account)
             var passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
-
-
-            let dirServerUrl = CCUtility.stringAppendServerUrl(self.metadata.serverUrl, addFileName: metadata.fileName)!
+            let dirServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
 
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl)) {
                 if (CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
