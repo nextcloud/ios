@@ -197,20 +197,15 @@ extension CCMain {
         var actions = [NCMenuAction]()
 
         if (metadata.directory) {
-            var lockDirectory = false
+            
+            var isDirectoryLock = false
             var isOffline = false
             let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, account: metadata.account)
-            var passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
-            let dirServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
 
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl)) {
-                if (CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
-                    lockDirectory = true
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
+                if (directory.lock && CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
+                    isDirectoryLock = true
                 }
-                if (directory.lock) {
-                    passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
-                }
-
                 isOffline = directory.offline
             }
 
@@ -232,7 +227,7 @@ extension CCMain {
                 )
             )
 
-            if (!lockDirectory && !isFolderEncrypted) {
+            if (!isDirectoryLock && !isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
@@ -244,7 +239,7 @@ extension CCMain {
                 )
             }
 
-            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !metadata.e2eEncrypted) {
+            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isDirectoryLock && !metadata.e2eEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_rename_", comment: ""),
@@ -275,7 +270,7 @@ extension CCMain {
                 )
             }
 
-            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !isFolderEncrypted) {
+            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isDirectoryLock && !isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_move_or_copy_", comment: ""),
@@ -293,9 +288,10 @@ extension CCMain {
                         title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: dirServerUrl, offline: !isOffline, account: appDelegate.activeAccount)
+                            let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: !isOffline, account: appDelegate.activeAccount)
                             if(isOffline) {
-                                CCSynchronize.shared()?.readFolder(dirServerUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
+                                CCSynchronize.shared()?.readFolder(serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
                             }
                             DispatchQueue.main.async {
                                 self.tableView.reloadRows(at: [indexPath], with: .none)
@@ -307,7 +303,7 @@ extension CCMain {
 
             actions.append(
                 NCMenuAction(
-                    title: passcodeTitle,
+                    title: isDirectoryLock ? NSLocalizedString("_remove_passcode_", comment: "") : NSLocalizedString("_protect_passcode_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "settingsPasscodeYES"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.perform(#selector(self.comandoLockPassword))
@@ -360,6 +356,7 @@ extension CCMain {
             }
             
         } else {
+            
             var iconHeader: UIImage!
             if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                 iconHeader = icon
@@ -450,7 +447,7 @@ extension CCMain {
                 )
             }
 
-            if(NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
+            if (NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
                 actions.append(
                     NCMenuAction(title: NSLocalizedString("_modify_photo_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
