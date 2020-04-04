@@ -822,7 +822,12 @@ extension NCDetailViewController: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if let metadata = self.metadata, let serverUrl = serverUrl {
-            NCNetworking.sharedInstance.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in }
+            
+            if buttonType == "done" {
+                NCNetworking.sharedInstance.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in }
+            } else {
+                NCNetworking.sharedInstance.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in }
+            }
         }
     }
 }
