@@ -63,6 +63,7 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_copyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
                
         NotificationCenter.default.addObserver(self, selector: #selector(synchronizationMedia(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_synchronizationMedia), object: nil)
@@ -220,6 +221,24 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func moveFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let serverUrlTo = userInfo["serverUrlTo"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                if metadata.account != self.metadata?.account { return }
+                
+                if errorCode == 0 {
+                    
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+    }
+    
+    @objc func copyFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
         deleteFile(notification)
     }
     
@@ -231,6 +250,7 @@ class NCDetailViewController: UIViewController {
                 if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
                 if errorCode == 0 {
+                    
                     // IMAGE
                     if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
                     
@@ -244,6 +264,7 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                     
+                    // OTHER
                     if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                         viewUnload()
                     }
@@ -271,6 +292,7 @@ class NCDetailViewController: UIViewController {
                             viewImage()
                         }
                         
+                        // OTHER
                         if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                             self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                         }
