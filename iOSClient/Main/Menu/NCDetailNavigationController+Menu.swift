@@ -30,9 +30,16 @@ extension NCDetailNavigationController {
         var actions = [NCMenuAction]()
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
-        
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
+        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        var titleLocalFile = ""
+        if (localFile == nil || localFile!.offline == false) {
+            titleLocalFile = NSLocalizedString("_set_available_offline_", comment: "")
+        } else {
+            titleLocalFile = NSLocalizedString("_remove_available_offline_", comment: "")
+        }
+        
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
@@ -107,6 +114,28 @@ extension NCDetailNavigationController {
                     
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                     self.present(navigationController, animated: true, completion: nil)
+                }
+            )
+        )
+        
+        actions.append(
+            NCMenuAction(
+                title: titleLocalFile,
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
+                        
+                        metadata.session = k_download_session
+                        metadata.sessionError = ""
+                        metadata.sessionSelector = selectorLoadOffline
+                        metadata.status = Int(k_metadataStatusWaitDownload)
+
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        self.appDelegate.startLoadAutoDownloadUpload()
+                        
+                    } else {
+                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                    }
                 }
             )
         )
