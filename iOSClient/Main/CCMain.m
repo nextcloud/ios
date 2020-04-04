@@ -469,12 +469,12 @@
     
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
-    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
+    tableMetadata *metadataNew = userInfo[@"metadataNew"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (errorCode == 0) {
-        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [serverUrlTo isEqualToString:self.serverUrl]) {
+        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [metadataNew.serverUrl isEqualToString:self.serverUrl]) {
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
         }
     } else {

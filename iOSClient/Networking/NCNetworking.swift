@@ -472,20 +472,24 @@ import NCCommunication
         
         NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { (account, errorCode, errorDescription) in
                     
+            var metadataNew = tableMetadata()
+            
             if errorCode == 0 {
     
                 if metadata.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: account)
                 }
                 
-                NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
+                if let metadataMove = NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo) {
+                    metadataNew = metadataMove
+                }
                 NCManageDatabase.sharedInstance.moveMedia(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
                 
                 NCManageDatabase.sharedInstance.clearDateRead(serverUrl: metadata.serverUrl, account: account)
                 NCManageDatabase.sharedInstance.clearDateRead(serverUrl: serverUrlTo, account: account)
             }
                     
-            self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
     
