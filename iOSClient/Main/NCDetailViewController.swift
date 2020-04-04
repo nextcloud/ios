@@ -231,6 +231,7 @@ class NCDetailViewController: UIViewController {
                     // IMAGE
                     if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
                         
+                        deleteFile(notification)
                     }
                     
                     // OTHER
@@ -813,3 +814,16 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
 }
+
+//MARK: -
+
+extension NCDetailViewController: NCSelectDelegate {
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
+        
+        if let metadata = metadata, let serverUrl = serverUrl {
+            NCNetworking.sharedInstance.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in }
+        }
+    }
+}
+

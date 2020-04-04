@@ -84,6 +84,34 @@ extension NCDetailNavigationController {
         )
         
         actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_move_or_copy_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    
+                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+                    let viewController = navigationController.topViewController as! NCSelect
+                    
+                    viewController.delegate = self.appDelegate.activeDetail
+                    viewController.hideButtonCreateFolder = false
+                    viewController.selectFile = false
+                    viewController.includeDirectoryE2EEncryption = false
+                    viewController.includeImages = false
+                    viewController.type = ""
+                    viewController.titleButtonDone = NSLocalizedString("_move_", comment: "")
+                    viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
+                    viewController.isButtonDone1Hide = false
+                    viewController.isOverwriteHide = false
+                    viewController.layoutViewSelect = k_layout_view_move
+                    
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                    self.present(navigationController, animated: true, completion: nil)
+                }
+            )
+        )
+        
+        actions.append(
             NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
                          icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
