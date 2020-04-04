@@ -238,6 +238,15 @@ class NCDetailViewController: UIViewController {
                     if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadataNew.ocId == self.metadata?.ocId {
                         
                         self.metadata = metadataNew
+                        // update subview
+                        for view in backgroundView.subviews {
+                            if view is NCViewerNextcloudText {
+                                (view as! NCViewerNextcloudText).metadata = self.metadata
+                            }
+                            else if view is NCViewerRichdocument {
+                                (view as! NCViewerRichdocument).metadata = self.metadata
+                            }
+                        }
                     }
                     
                 } else {
