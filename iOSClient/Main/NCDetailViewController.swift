@@ -63,7 +63,6 @@ class NCDetailViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_copyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
                
         NotificationCenter.default.addObserver(self, selector: #selector(synchronizationMedia(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_synchronizationMedia), object: nil)
@@ -229,6 +228,11 @@ class NCDetailViewController: UIViewController {
                 
                 if errorCode == 0 {
                     
+                    // IMAGE
+                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                        
+                    }
+                    
                     // OTHER
                     if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadataNew.ocId == self.metadata?.ocId {
                         
@@ -240,12 +244,6 @@ class NCDetailViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    @objc func copyFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
-        
-        deleteFile(notification)
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
