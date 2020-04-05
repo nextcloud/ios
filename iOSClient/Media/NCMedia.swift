@@ -53,6 +53,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     private let refreshControl = UIRefreshControl()
     private var loadingSearch = false
+    private let colorSection = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8)
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -470,7 +471,7 @@ extension NCMedia: UICollectionViewDataSource {
             header.labelSection.textColor = .white
             header.labelHeightConstraint.constant = 20
             header.labelSection.layer.cornerRadius = 10
-            header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
+            header.labelSection.layer.backgroundColor = colorSection.cgColor
             let width = header.labelSection.intrinsicContentSize.width + 30
             let leading = collectionView.bounds.width / 2 - width / 2
             header.labelWidthConstraint.constant = width
@@ -783,7 +784,7 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         
         //handle
         collectionView.handleTimeToDisappear = 1
-        collectionView.handleImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "cursor"), width: 34, height: 30, color: NCBrandColor.sharedInstance.brand)
+        collectionView.handleImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "cursor"), width: 34, height: 30, color: colorSection)
         collectionView.handleWidth = 34.0
         collectionView.handleHeight = 30.0
         collectionView.handleRadius = 0.0
