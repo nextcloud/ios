@@ -45,10 +45,15 @@ class NCContentPresenter: NSObject {
         case info
     }
     
+    @objc private var lastErrorCode: Int = 0
+
     //MARK: - Message
     
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
                        
+        if errorCode == lastErrorCode { return }
+        else { lastErrorCode = errorCode }
+        
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
