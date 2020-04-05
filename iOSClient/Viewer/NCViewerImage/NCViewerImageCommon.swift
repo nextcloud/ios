@@ -79,13 +79,23 @@ class NCViewerImageCommon: NSObject {
     func getImage(metadata: tableMetadata) -> UIImage? {
         
         var image: UIImage?
+        let ext = CCUtility.getExtension(metadata.fileNameView)
         
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
            
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let ext = CCUtility.getExtension(metadata.fileNameView)
             if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
             else { image = UIImage.init(contentsOfFile: imagePath) }
+            
+        } else {
+            
+            // AUTOMATIC DOWNLOAD FOR GIF
+            
+            if ext == "GIF" && metadata.session == "" {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
+                }
+            }
         }
         
         return image

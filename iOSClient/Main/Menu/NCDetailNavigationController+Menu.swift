@@ -184,8 +184,7 @@ extension NCDetailNavigationController {
                 NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        let userInfo: [String : Any] = ["metadata": metadata]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: userInfo)
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
                     }
                 )
             )
