@@ -33,11 +33,11 @@ extension NCDetailNavigationController {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        var titleLocalFile = ""
+        var titleOffline = ""
         if (localFile == nil || localFile!.offline == false) {
-            titleLocalFile = NSLocalizedString("_set_available_offline_", comment: "")
+            titleOffline = NSLocalizedString("_set_available_offline_", comment: "")
         } else {
-            titleLocalFile = NSLocalizedString("_remove_available_offline_", comment: "")
+            titleOffline = NSLocalizedString("_remove_available_offline_", comment: "")
         }
         
         actions.append(
@@ -120,7 +120,7 @@ extension NCDetailNavigationController {
         
         actions.append(
             NCMenuAction(
-                title: titleLocalFile,
+                title: titleOffline,
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
