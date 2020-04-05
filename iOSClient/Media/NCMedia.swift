@@ -780,35 +780,29 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         
         //bubble
         collectionView.deactivateBubble = true
-        collectionView.bubbleFocus = .dynamic
-        collectionView.bubbleTextSize = 14.0
-        collectionView.bubbleMarginRight = 50.0
-        collectionView.bubbleColor = UIColor(red: 38.0 / 255.0, green: 48.0 / 255.0, blue: 60.0 / 255.0, alpha: 1.0)
         
         //handle
-        /*
-        collectionView.handleHeight = 40.0
-        collectionView.handleWidth = 40.0
-        collectionView.handleRadius = 20.0
-        */
         collectionView.handleTimeToDisappear = 1
-        collectionView.handleMarginRight = 3
-        collectionView.handleColor = NCBrandColor.sharedInstance.brand
-        collectionView.handle?.backgroundColor = NCBrandColor.sharedInstance.brand
+        collectionView.handleImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "cursor"), width: 34, height: 30, color: NCBrandColor.sharedInstance.brand)
+        collectionView.handleWidth = 34.0
+        collectionView.handleHeight = 30.0
+        collectionView.handleRadius = 0.0
+        collectionView.handleMarginRight = 0
+        collectionView.handleColor = UIColor.clear
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
         collectionView.scrollbarMarginTop = 43.0
         collectionView.scrollbarMarginBottom = 5.0
         collectionView.scrollbarMarginRight = 10.0
-        
+ 
         //callback action to display bubble name
         /*
-        collectionView.bubbleNameForIndexPath = { indexPath in
+         collectionView.bubbleNameForIndexPath = { indexPath in
             let visibleSection: Section = self.data[indexPath.section]
             return visibleSection.sectionTitle
-        }
-        */
+         }
+         */
     }
     
     func hideHandle() {
@@ -818,18 +812,7 @@ extension NCMedia: FastScrollCollectionViewDelegate {
 
 extension FastScrollCollectionView
 {
-    /// Calls reloadsData() on self, and ensures that the given closure is
-    /// called after reloadData() has been completed.
-    ///
-    /// Discussion: reloadData() appears to be asynchronous. i.e. the
-    /// reloading actually happens during the next layout pass. So, doing
-    /// things like scrolling the collectionView immediately after a
-    /// call to reloadData() can cause trouble.
-    ///
-    /// This method uses CATransaction to schedule the closure.
-    
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void))
-    {
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
         CATransaction.begin()
         CATransaction.setCompletionBlock(closure)
         self.reloadData()
