@@ -366,7 +366,7 @@
 "_order_by_size_largest_"       = "Sort from the largest";
 "_delete_selected_files_"       = "Delete files";
 "_move_selected_files_"         = "Move files";
-"_move_or_copy_selected_files_" = "Move or Copy files";
+"_move_or_copy_selected_files_" = "Move or copy files";
 "_download_selected_files_"     = "Download files";
 "_download_selected_files_folders_" = "Download files and folders";
 "_error_operation_canc_"        = "Error: Operation canceled.";
