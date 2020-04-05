@@ -75,12 +75,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
-        
-        collectionView.scrollIndicatorInsets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
-        
-       
-
-
+                
         gridLayout = NCGridMediaLayout()
         gridLayout.preferenceWidth = CGFloat(CCUtility.getMediaWidthImage())
         gridLayout.sectionHeadersPinToVisibleBounds = true
