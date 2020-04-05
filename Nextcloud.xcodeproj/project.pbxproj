@@ -261,7 +261,6 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
-		F75153242226920200323DDC /* FastScroll.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75153232226920200323DDC /* FastScroll.framework */; };
 		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
 		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
 		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
@@ -474,6 +473,8 @@
 		F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B174C722FAC0A8000B7579 /* AppDelegate.m */; };
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
+		F7B3FF37243A0F5D00BD9150 /* FastScrollTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3FF35243A0F5D00BD9150 /* FastScrollTableView.swift */; };
+		F7B3FF38243A0F5D00BD9150 /* FastScrollCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3FF36243A0F5D00BD9150 /* FastScrollCollectionView.swift */; };
 		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
 		F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
 		F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
@@ -1164,6 +1165,8 @@
 		F7B2DEED1F976785007CF4D2 /* english.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F7B2DEEE1F976785007CF4D2 /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NYMnemonic.m; sourceTree = "<group>"; };
+		F7B3FF35243A0F5D00BD9150 /* FastScrollTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastScrollTableView.swift; sourceTree = "<group>"; };
+		F7B3FF36243A0F5D00BD9150 /* FastScrollCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FastScrollCollectionView.swift; sourceTree = "<group>"; };
 		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
 		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
 		F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLCommentsParser.m; sourceTree = "<group>"; };
@@ -1348,7 +1351,6 @@
 				F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */,
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */,
-				F75153242226920200323DDC /* FastScroll.framework in Frameworks */,
 				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
@@ -2243,6 +2245,15 @@
 			path = languages;
 			sourceTree = "<group>";
 		};
+		F7B3FF34243A0F5D00BD9150 /* FastScroll */ = {
+			isa = PBXGroup;
+			children = (
+				F7B3FF35243A0F5D00BD9150 /* FastScrollTableView.swift */,
+				F7B3FF36243A0F5D00BD9150 /* FastScrollCollectionView.swift */,
+			);
+			path = FastScroll;
+			sourceTree = "<group>";
+		};
 		F7B4F1C51F44356F00B53B42 /* NCUchardet */ = {
 			isa = PBXGroup;
 			children = (
@@ -2498,6 +2509,7 @@
 			children = (
 				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
 				F754EEC321772B6100BB1CDF /* DropdownMenu */,
+				F7B3FF34243A0F5D00BD9150 /* FastScroll */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
 				F760F75621F21F61006B1A73 /* PhotoEditor */,
 				F762CA9F1EACB66200B38484 /* XLForm */,
@@ -3013,7 +3025,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/FastScroll.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/AFNetworking.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZIPFoundation.framework",
@@ -3295,6 +3306,7 @@
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
 				F762CB081EACB66200B38484 /* XLFormOptionsViewController.m in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
+				F7B3FF38243A0F5D00BD9150 /* FastScrollCollectionView.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F760F78B21F21F61006B1A73 /* UIImage+Crop.swift in Sources */,
@@ -3431,6 +3443,7 @@
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
+				F7B3FF37243A0F5D00BD9150 /* FastScrollTableView.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */,
 				F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */,

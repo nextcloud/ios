@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import FastScroll
 
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
@@ -123,6 +122,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
         // Fast Scrool
+        collectionView?.setup()
         configFastScroll()
 
         // Reload Data Source
@@ -144,6 +144,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             self.collectionView?.reloadDataThenPerform {
                 self.downloadThumbnail()
             }
+            self.collectionView?.setup()
         }
     }
     
@@ -793,9 +794,11 @@ extension NCMedia: FastScrollCollectionViewDelegate {
         
         //scrollbar
         collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 43.0
-        collectionView.scrollbarMarginBottom = 5.0
-        collectionView.scrollbarMarginRight = 10.0
+        collectionView.scrollbarMarginTop = 0//43.0
+        collectionView.scrollbarMarginBottom = 0//5.0
+        collectionView.scrollbarMarginRight = 0//10.0
+        
+        
  
         //callback action to display bubble name
         /*

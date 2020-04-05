@@ -19,5 +19,4 @@ github "huri000/SwiftEntryKit" "1.2.3"
 github "scenee/FloatingPanel"
 github "ivanbruel/MarkdownKit"
 
-github "https://github.com/marinofaggiana/FastScroll" "master"
 github "https://github.com/marinofaggiana/AFNetworking" "master"
