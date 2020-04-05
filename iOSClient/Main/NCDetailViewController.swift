@@ -628,7 +628,6 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         if viewerImageViewController.index < metadatas.count {
             self.metadata = metadatas[viewerImageViewController.index]
             self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
-            
         }
         
         // Status Current
@@ -652,7 +651,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             }
                 
         // HEIC
-        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && metadata.hasPreview == false {
+        } else if metadata.contentType == "image/heic" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && metadata.hasPreview == false && metadata.session == "" {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -703,6 +702,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
             }
+            
         } else {
             completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
         }
