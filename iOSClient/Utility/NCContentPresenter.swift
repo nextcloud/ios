@@ -51,8 +51,11 @@ class NCContentPresenter: NSObject {
     
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
                        
-        if errorCode == lastErrorCode { return }
-        else { lastErrorCode = errorCode }
+        if errorCode == lastErrorCode {
+            if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
+        } else {
+            lastErrorCode = errorCode
+        }
         
         DispatchQueue.main.async {
             switch errorCode {
