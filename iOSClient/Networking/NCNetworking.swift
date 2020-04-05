@@ -346,14 +346,10 @@ import NCCommunication
     
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-            
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
-            return
-        }
+        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
         
-        if directory.e2eEncrypted == true {
-            renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+        if directory != nil && directory!.e2eEncrypted {
+            renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
         } else {
             renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
         }
