@@ -25,8 +25,7 @@ import Foundation
 
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
-    @IBOutlet weak var collectionView : FastScrollCollectionView!
-    
+    @IBOutlet weak var collectionView : UICollectionView!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var sectionDatasource = CCSectionDataSourceMetadata()
@@ -52,7 +51,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     private let refreshControl = UIRefreshControl()
     private var loadingSearch = false
-    private let colorSection = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8)
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,6 +75,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
+        
+        collectionView.scrollIndicatorInsets = UIEdgeInsets.init(top: 10, left: 10, bottom: 10, right: 10)
+        
+       
+
 
         gridLayout = NCGridMediaLayout()
         gridLayout.preferenceWidth = CGFloat(CCUtility.getMediaWidthImage())
@@ -90,7 +93,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // empty Data Source
         collectionView.emptyDataSetDelegate = self
         collectionView.emptyDataSetSource = self
-        
+                
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: view)
@@ -121,10 +124,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
-        // Fast Scrool
-        collectionView?.setup()
-        configFastScroll()
-
         // Reload Data Source
         self.reloadDataSource(loadNetworkDatasource: true) { }
     }
@@ -132,7 +131,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        collectionView?.reloadDataThenPerform {
+        reloadDataThenPerform {
             self.selectSearchSections()
         }
     }
@@ -141,10 +140,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
-            self.collectionView?.reloadDataThenPerform {
+            self.reloadDataThenPerform {
                 self.downloadThumbnail()
             }
-            self.collectionView?.setup()
         }
     }
     
@@ -313,7 +311,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     action: { menuAction in
                         self.isEditMode = false
                         self.selectocId.removeAll()
-                        self.collectionView?.reloadDataThenPerform {
+                        self.reloadDataThenPerform {
                             self.downloadThumbnail()
                         }
                     }
@@ -462,6 +460,13 @@ extension NCMedia: UICollectionViewDelegate {
 
 extension NCMedia: UICollectionViewDataSource {
     
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        collectionView?.reloadData()
+        CATransaction.commit()
+    }
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
@@ -472,7 +477,7 @@ extension NCMedia: UICollectionViewDataSource {
             header.labelSection.textColor = .white
             header.labelHeightConstraint.constant = 20
             header.labelSection.layer.cornerRadius = 10
-            header.labelSection.layer.backgroundColor = colorSection.cgColor
+            header.labelSection.layer.backgroundColor = UIColor(red: 152.0/255.0, green: 167.0/255.0, blue: 181.0/255.0, alpha: 0.8).cgColor
             let width = header.labelSection.intrinsicContentSize.width + 30
             let leading = collectionView.bounds.width / 2 - width / 2
             header.labelWidthConstraint.constant = width
@@ -561,7 +566,7 @@ extension NCMedia {
                     self.loadNetworkDatasource()
                 }
                 
-                self.collectionView?.reloadDataThenPerform {
+                self.reloadDataThenPerform {
                     self.downloadThumbnail()
                 }
                 
@@ -669,7 +674,7 @@ extension NCMedia {
                     }
                 }
                 
-                self.collectionView?.reloadDataThenPerform {
+                self.reloadDataThenPerform {
                     self.downloadThumbnail()
                 }
                 
@@ -701,7 +706,7 @@ extension NCMedia {
             search(lteDate: Date(), gteDate: gteDate, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search today, first date record")
         }
         
-        collectionView?.reloadDataThenPerform {
+        reloadDataThenPerform {
             self.downloadThumbnail()
         }
     }
@@ -740,8 +745,9 @@ extension NCMedia {
     }
     
     private func downloadThumbnail() {
+        guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for item in self.collectionView.indexPathsForVisibleItems {
+            for item in collectionView.indexPathsForVisibleItems {
                 if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
                     NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView as Any, indexPath: item)
                 }
@@ -750,77 +756,17 @@ extension NCMedia {
     }
 }
 
-// MARK: - FastScroll - ScrollView
+// MARK: - ScrollView
 
 extension NCMedia: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        collectionView.scrollViewDidScroll(scrollView)
-    }
     
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        collectionView.scrollViewWillBeginDragging(scrollView)
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            selectSearchSections()
+        }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        collectionView.scrollViewDidEndDecelerating(scrollView)
-    }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        collectionView.scrollViewDidEndDragging(scrollView, willDecelerate: decelerate)
-    }
-    
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         selectSearchSections()
     }
 }
-
-extension NCMedia: FastScrollCollectionViewDelegate {
-    
-    fileprivate func configFastScroll() {
-        
-        collectionView.fastScrollDelegate = self
-        
-        //bubble
-        collectionView.deactivateBubble = true
-        
-        //handle
-        collectionView.handleTimeToDisappear = 1
-        collectionView.handleImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "cursor"), width: 34, height: 30, color: colorSection)
-        collectionView.handleWidth = 34.0
-        collectionView.handleHeight = 30.0
-        collectionView.handleRadius = 0.0
-        collectionView.handleMarginRight = 0
-        collectionView.handleColor = UIColor.clear
-        
-        //scrollbar
-        collectionView.scrollbarWidth = 0.0
-        collectionView.scrollbarMarginTop = 0//43.0
-        collectionView.scrollbarMarginBottom = 0//5.0
-        collectionView.scrollbarMarginRight = 0//10.0
-        
-        
- 
-        //callback action to display bubble name
-        /*
-         collectionView.bubbleNameForIndexPath = { indexPath in
-            let visibleSection: Section = self.data[indexPath.section]
-            return visibleSection.sectionTitle
-         }
-         */
-    }
-    
-    func hideHandle() {
-        selectSearchSections()
-    }
-}
-
-extension FastScrollCollectionView
-{
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        self.reloadData()
-        CATransaction.commit()
-    }
-}
-
