@@ -410,13 +410,6 @@ class NCDetailViewController: UIViewController {
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
-        
-        // Standard Top Constraint
-        if #available(iOS 11, *) {
-            backgroundView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        } else {
-            backgroundView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        }
     }
     
     //MARK: - View File
@@ -428,13 +421,6 @@ class NCDetailViewController: UIViewController {
         self.backgroundView.image = nil
         for view in backgroundView.subviews { view.removeFromSuperview() }
 
-        // Standard Top Constraint
-        if #available(iOS 11, *) {
-            backgroundView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        } else {
-            backgroundView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        }
-        
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
         }
@@ -447,7 +433,6 @@ class NCDetailViewController: UIViewController {
         // IMAGE VIDEO AUDIO
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
-            backgroundView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
             viewImage()
             return
         }
