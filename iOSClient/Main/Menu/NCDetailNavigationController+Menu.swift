@@ -239,9 +239,12 @@ extension NCDetailNavigationController {
     }
 
     @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+        if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
+            return
+        }
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
@@ -250,7 +253,6 @@ extension NCDetailNavigationController {
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
         viewController.present(menuPanelController, animated: true, completion: nil)
-
     }
 }
 

@@ -136,10 +136,6 @@ class NCDetailViewController: UIViewController {
     
     //MARK: - Utility
 
-    func subViewActive() -> UIView? {
-        return backgroundView.subviews.first
-    }
-    
     @objc func navigateControllerBarHidden(_ state: Bool) {
         
         if state  {
@@ -396,15 +392,8 @@ class NCDetailViewController: UIViewController {
                     navigationController.popToRootViewController(animated: true)
                 }
             } else {
-                if backgroundView != nil {
-                    for view in backgroundView.subviews {
-                        view.removeFromSuperview()
-                    }
-                }
-                viewerImageViewController?.willMove(toParent: nil)
-                viewerImageViewController?.view.removeFromSuperview()
-                viewerImageViewController?.removeFromParent()
                 
+                closeAllSubView()
                 self.navigationController?.navigationBar.topItem?.title = ""
             }
         }
@@ -416,6 +405,18 @@ class NCDetailViewController: UIViewController {
         backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
     }
     
+    private func closeAllSubView() {
+        
+        if backgroundView != nil {
+            for view in backgroundView.subviews {
+                view.removeFromSuperview()
+            }
+        }
+        viewerImageViewController?.willMove(toParent: nil)
+        viewerImageViewController?.view.removeFromSuperview()
+        viewerImageViewController?.removeFromParent()
+    }
+    
     //MARK: - View File
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
@@ -423,7 +424,8 @@ class NCDetailViewController: UIViewController {
         self.metadata = metadata
         self.selector = selector
         self.backgroundView.image = nil
-        for view in backgroundView.subviews { view.removeFromSuperview() }
+        
+        closeAllSubView()
 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
@@ -579,7 +581,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewImage() {
         
-        for view in backgroundView.subviews { view.removeFromSuperview() }
+        closeAllSubView()
         
         if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             
