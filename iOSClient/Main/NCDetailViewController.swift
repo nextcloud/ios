@@ -401,6 +401,10 @@ class NCDetailViewController: UIViewController {
                         view.removeFromSuperview()
                     }
                 }
+                viewerImageViewController?.willMove(toParent: nil)
+                viewerImageViewController?.view.removeFromSuperview()
+                viewerImageViewController?.removeFromParent()
+                
                 self.navigationController?.navigationBar.topItem?.title = ""
             }
         }
@@ -598,9 +602,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 viewerImageViewController!.enableInteractiveDismissal = true
                 
                 addChild(viewerImageViewController!)
-                backgroundView.addSubview(viewerImageViewController!.view)
+                view.addSubview(viewerImageViewController!.view)
                 
-                viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
+                viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
                 viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 
                 viewerImageViewController!.didMove(toParent: self)
