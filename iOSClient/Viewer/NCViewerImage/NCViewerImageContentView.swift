@@ -28,7 +28,7 @@ public struct ZoomScale {
 
     public static let `default` = ZoomScale(
         minimum: 1.0,
-        maximum: 10.0
+        maximum: 5.0
     )
 
     public static let identity = ZoomScale(
@@ -242,7 +242,7 @@ extension NCViewerImageContentView {
 
         let isImageCoveringScreen = imageView.frame.size.width > bounds.size.width &&
             imageView.frame.size.height > bounds.size.height
-        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale/3) ? minimumZoomScale : maximumZoomScale/3
+        let zoomTo = (isImageCoveringScreen || zoomScale == maximumZoomScale) ? minimumZoomScale : maximumZoomScale
 
         guard zoomTo != zoomScale else {
             return
