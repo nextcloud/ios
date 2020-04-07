@@ -155,7 +155,7 @@ import NCCommunication
     
     //MARK: - File <> Metadata
     
-    @objc func convertFile(_ file: NCFile) -> tableMetadata {
+    @objc func convertFileToMetadata(_ file: NCFile) -> tableMetadata {
         
         let metadata = tableMetadata()
         
@@ -189,7 +189,7 @@ import NCCommunication
         return metadata
     }
     
-    @objc func convertFiles(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
+    @objc func convertFilesToMetadatas(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
         

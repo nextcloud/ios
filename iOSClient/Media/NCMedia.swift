@@ -628,7 +628,7 @@ extension NCMedia {
                 
                 DispatchQueue.global().async {
                     
-                    let metadatas = NCNetworking.sharedInstance.convertFiles(files!, metadataFolder: nil)
+                    let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: nil)
                 
                     var isDifferent: Bool = false
                     var newInsert: Int = 0

@@ -224,7 +224,7 @@
                     withDownload = YES;
                 
                 //Add/Update Metadata
-                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0]];
+                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
                 metadata.fileName = fileName;
                 metadata.fileNameView = fileName;
                 

@@ -1285,7 +1285,7 @@
           
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
             
-            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0]];
+            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
             
             // Rich Workspace
             [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
@@ -1471,7 +1471,7 @@
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              
-              NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files metadataFolder:nil];
+              NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
              _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
              [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
                           
