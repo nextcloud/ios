@@ -298,7 +298,9 @@
                
         [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorDescription) {        
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:table.serverUrl fileName:table.fileName user:appDelegate.activeUser];
+                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:table.serverUrl user:appDelegate.activeUser];
+                metadata.fileName = table.fileName;
+                metadata.fileNameView = table.fileName;
                 [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
             } 

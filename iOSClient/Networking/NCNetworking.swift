@@ -155,7 +155,7 @@ import NCCommunication
     
     //MARK: - File <> Metadata
     
-    @objc func convertFile(_ file: NCFile, urlString: String, serverUrl : String?, fileName: String, user: String) -> tableMetadata {
+    @objc func convertFile(_ file: NCFile, urlString: String, serverUrl : String?, user: String) -> tableMetadata {
         
         let metadata = tableMetadata()
         
@@ -169,8 +169,8 @@ import NCCommunication
         metadata.etag = file.etag
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
-        metadata.fileName = fileName
-        metadata.fileNameView = fileName
+        metadata.fileName = file.fileName
+        metadata.fileNameView = file.fileName
         metadata.hasPreview = file.hasPreview
         metadata.mountType = file.mountType
         metadata.ocId = file.ocId
@@ -186,6 +186,7 @@ import NCCommunication
         } else {
             metadata.serverUrl = serverUrl!
         }
+        metadata.serverUrl = file.serverUrl
         metadata.size = file.size
                    
         CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
@@ -230,6 +231,7 @@ import NCCommunication
             } else {
                 metadata.serverUrl = serverUrl!
             }
+            metadata.serverUrl = file.serverUrl
             metadata.size = file.size
                         
             CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)

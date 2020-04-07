@@ -224,7 +224,9 @@
                     withDownload = YES;
                 
                 //Add/Update Metadata
-                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:nil fileName:fileName user:appDelegate.activeUser];
+                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:nil user:appDelegate.activeUser];
+                metadata.fileName = fileName;
+                metadata.fileNameView = fileName;
                 
                 tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 if (addMetadata)

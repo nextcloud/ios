@@ -1285,7 +1285,7 @@
           
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
             
-            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:self.serverUrl fileName:@"" user:appDelegate.activeUser];
+            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFile:files[0] urlString:appDelegate.activeUrl serverUrl:self.serverUrl user:appDelegate.activeUser];
             
             // Rich Workspace
             [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
