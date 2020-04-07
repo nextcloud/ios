@@ -1449,6 +1449,24 @@
     
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
+    [[NCCommunication sharedInstance] searchLiteralWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUser depth:@"infinity" literal:_searchFileName account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+        
+         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+             
+             
+         } else {
+             
+             if (errorCode != 0) {
+                 [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+             } else {
+                 NSLog(@"[LOG] It has been changed user during networking process, error.");
+             }
+             
+             _searchFileName = @"";
+         }
+        
+    }];
+    
     [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil lteDateLastModified:nil gteDateLastModified:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
