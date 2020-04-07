@@ -435,7 +435,7 @@
     [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
     
     [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
-    [[NCCommunicationCommon sharedInstance] setupWithUsername:activeUser userID:activeUserID password:activePassword userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe

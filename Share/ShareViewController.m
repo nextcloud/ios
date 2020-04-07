@@ -64,7 +64,7 @@
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
 
         // Networking
-        [[NCCommunicationCommon sharedInstance] setupWithUsername:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
+        [[NCCommunicationCommon sharedInstance] setupWithUser:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
        
         _activeAccount = tableAccount.account;
         
