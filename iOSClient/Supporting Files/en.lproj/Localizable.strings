@@ -726,6 +726,7 @@
 
 // Error
 
+"_unauthorized_"                        = "Unauthorized";
 "_bad_username_password_"               = "Wrong username or password";
 "_cancelled_by_user"                    = "Transfer canceled";
 "_error_folder_destiny_is_the_same_"    = "It is not possible to move the folder into itself";
