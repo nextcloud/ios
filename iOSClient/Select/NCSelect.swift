@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 @objc protocol NCSelectDelegate {
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool)
@@ -788,15 +789,14 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        OCNetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, ocId, date, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+        NCNetworking.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+            
+            if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
     }
     
     func loadFolder() {
@@ -804,32 +804,40 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        OCNetworking.sharedManager().readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                self.metadataFolder = metadataFolder
+                // update etag
+                self.metadataFolder = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, fileName: "", user: self.appDelegate.activeUser)
                 
-                // Update directory etag
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, ocId: metadataFolder?.ocId, encrypted: metadataFolder!.e2eEncrypted, richWorkspace: nil, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal))
-                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: self.metadataFolder!.etag, ocId: self.metadataFolder!.ocId, encrypted: self.metadataFolder!.e2eEncrypted, richWorkspace: self.metadataFolder!.richWorkspace, account: account)
                 
-                NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
+                // Update DB
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, self.serverUrl, k_metadataStatusNormal))
                 
-                if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
-                    
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
+                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: account)
+                
+                let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
+                let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
+                
+                NCManageDatabase.sharedInstance.addMetadatas(files: files!, account: account, serverUrl: self.serverUrl, removeFirst: true)
+                 
+                if metadatasInDownload != nil {
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                }
+                if metadatasInUpload != nil {
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                 }
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
-        })
+        }
     }
 }
