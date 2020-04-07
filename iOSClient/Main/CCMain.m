@@ -1422,6 +1422,26 @@
 
     [self tableViewReloadData];
     
+     /*
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            
+            tableMetadata *metadataFolder = [tableMetadata new];
+            NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:serverUrl user:appDelegate.activeUser metadataFolder:&metadataFolder];
+            
+            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
+            
+        } else if (errorCode != 0) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
+        }
+        
+        _loadingFolder = NO;
+    }];
+    */
+   
     [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -1431,7 +1451,7 @@
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
-        
+    
         _loadingFolder = NO;
     }];
 }
