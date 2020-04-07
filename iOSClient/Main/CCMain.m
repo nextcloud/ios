@@ -1446,14 +1446,15 @@
     if (self.searchController.isActive == false) {
         return;
     }
-    
-    NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
-    
+        
     [[NCCommunication sharedInstance] searchLiteralWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUser depth:@"infinity" literal:_searchFileName account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              
-             
+              NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:nil user:appDelegate.activeUser metadataFolder:nil];
+             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
+             [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
+                          
          } else {
              
              if (errorCode != 0) {
@@ -1464,35 +1465,6 @@
              
              _searchFileName = @"";
          }
-        
-    }];
-    
-    [[OCNetworking sharedManager] searchWithAccount:appDelegate.activeAccount fileName:_searchFileName serverUrl:startDirectory contentType:nil lteDateLastModified:nil gteDateLastModified:nil depth:@"infinity" completion:^(NSString *account, NSArray *metadatas, NSString *message, NSInteger errorCode) {
-       
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
-#if TARGET_OS_SIMULATOR
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
-            if (capabilities.isFulltextsearchEnabled) {
-                [[OCNetworking sharedManager] fullTextSearchWithAccount:appDelegate.activeAccount text:_searchFileName page:1 completion:^(NSString *account, NSArray *items, NSString *message, NSInteger errorCode) {
-                    NSLog(@"x");
-                }];
-            }
-#endif
-            
-            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
-            [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
-            
-        } else {
-            
-            if (errorCode != 0) {
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-            } else {
-                NSLog(@"[LOG] It has been changed user during networking process, error.");
-            }
-            
-            _searchFileName = @"";
-        }
         
     }];
     

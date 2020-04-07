@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
@@ -618,23 +619,21 @@ extension NCMedia {
         }
         loadingSearch = true
         
-        let startDirectory = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
-        
-        OCNetworking.sharedManager()?.search(withAccount: appDelegate.activeAccount, fileName: "", serverUrl: startDirectory, contentType: ["image/%", "video/%"], lteDateLastModified: lteDate, gteDateLastModified: gteDate, depth: "infinity", completion: { (account, metadatas, message, errorCode) in
+        NCCommunication.sharedInstance.searchMedia(serverUrl: appDelegate.activeUrl, user: appDelegate.activeUser, lteDateLastModified: lteDate, gteDateLastModified: gteDate, account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
             
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
-            //self.navigationItem.titleView = nil
-            //self.navigationItem.title = NSLocalizedString("_media_", comment: "")
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
+                
+                let metadatas = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: nil, user: self.appDelegate.activeUser, metadataFolder: nil)
                 
                 var isDifferent: Bool = false
                 var newInsert: Int = 0
                 
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
                 
-                let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas as! [tableMetadata], lteDate: lteDate, gteDate: gteDate, account: account!)
+                let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
                 isDifferent = difference.isDifferent
                 newInsert = difference.newInsert
                 
@@ -673,13 +672,13 @@ extension NCMedia {
                     self.downloadThumbnail()
                 }
                 
-            }  else {
+            } else {
                 
                 self.loadingSearch = false
                 
                 self.reloadDataSource(loadNetworkDatasource: false) { }
             }
-        })
+        }
     }
     
     @objc private func loadNetworkDatasource() {
