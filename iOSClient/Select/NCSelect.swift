@@ -809,7 +809,7 @@ extension NCSelect {
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 // update etag
-                self.metadataFolder = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser)
+                self.metadataFolder = NCNetworking.sharedInstance.convertFile(files![0])
                 
                 NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: self.metadataFolder!.etag, ocId: self.metadataFolder!.ocId, encrypted: self.metadataFolder!.e2eEncrypted, richWorkspace: self.metadataFolder!.richWorkspace, account: account)
                 

@@ -59,7 +59,7 @@ import MarkdownKit
             
             if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
-                let metadata = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser)
+                let metadata = NCNetworking.sharedInstance.convertFile(files![0])
                 NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: metadata.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace {
                     self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText

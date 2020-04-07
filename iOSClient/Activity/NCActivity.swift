@@ -410,7 +410,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         
                         if account == self.appDelegate.activeAccount && errorCode == 0 && files?.count ?? 0 > 0  {
                             
-                            let metadata = NCNetworking.sharedInstance.convertFile(files![0], urlString: self.appDelegate.activeUrl, serverUrl: serverUrl, user: self.appDelegate.activeUser)
+                            let metadata = NCNetworking.sharedInstance.convertFile(files![0])
                             metadata.fileName = fileName
                             metadata.fileNameView = fileName
                             

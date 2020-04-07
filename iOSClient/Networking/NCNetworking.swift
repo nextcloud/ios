@@ -155,7 +155,7 @@ import NCCommunication
     
     //MARK: - File <> Metadata
     
-    @objc func convertFile(_ file: NCFile, urlString: String, serverUrl : String?, user: String) -> tableMetadata {
+    @objc func convertFile(_ file: NCFile) -> tableMetadata {
         
         let metadata = tableMetadata()
         
@@ -181,11 +181,6 @@ import NCCommunication
         metadata.quotaAvailableBytes = file.quotaAvailableBytes
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
-        if serverUrl == nil {
-            metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "dav/files/"+user, with: "webdav").dropLast()
-        } else {
-            metadata.serverUrl = serverUrl!
-        }
         metadata.serverUrl = file.serverUrl
         metadata.size = file.size
                    
@@ -194,7 +189,7 @@ import NCCommunication
         return metadata
     }
     
-    @objc func convertFiles(_ files: [NCFile], urlString: String, serverUrl : String?, user: String, metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
+    @objc func convertFiles(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
         
@@ -226,11 +221,6 @@ import NCCommunication
             metadata.quotaAvailableBytes = file.quotaAvailableBytes
             metadata.richWorkspace = file.richWorkspace
             metadata.resourceType = file.resourceType
-            if serverUrl == nil {
-                metadata.serverUrl = urlString + file.path.replacingOccurrences(of: "dav/files/"+user, with: "webdav").dropLast()
-            } else {
-                metadata.serverUrl = serverUrl!
-            }
             metadata.serverUrl = file.serverUrl
             metadata.size = file.size
                         

@@ -205,7 +205,7 @@
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              
-             NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:nil user:appDelegate.activeUser metadataFolder:nil];
+             NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files metadataFolder:nil];
              
              NSString *father = @"";
              NSMutableArray *filesOcId = [NSMutableArray new];
