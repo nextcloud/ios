@@ -192,10 +192,11 @@ import NCCommunication
     @objc func convertFilesToMetadatas(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
+        var counter: Int = 0
         
         for file in files {
             
-            if !CCUtility.getShowHiddenFiles() && file.fileName.first == "." { continue }
+            if !CCUtility.getShowHiddenFiles() && file.fileName.first == "." && file.serverUrl != ".." { continue }
             
             let metadata = tableMetadata()
             
@@ -226,12 +227,13 @@ import NCCommunication
                         
             CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
             
-            // Folder
-            if file.fileName.count == 0 && metadataFolder != nil {
+            if metadataFolder != nil && counter == 0 {
                 metadataFolder!.initialize(to: metadata)
             } else {
                 metadatas.append(metadata)
             }
+            
+            counter += 1
         }
         
         return metadatas
