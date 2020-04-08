@@ -1377,15 +1377,15 @@
 
     [self tableViewReloadData];
     
-     /*
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+     
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             tableMetadata *metadataFolder = [tableMetadata new];
-            NSArray *metadatas = [[NCNetworking sharedInstance] convertFiles:files urlString:appDelegate.activeUrl serverUrl:serverUrl user:appDelegate.activeUser metadataFolder:&metadataFolder];
-            
-            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
+            NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
+            //[self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
+            NSLog(metadatas);
             
         } else if (errorCode != 0) {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1395,7 +1395,7 @@
         
         _loadingFolder = NO;
     }];
-    */
+    
    
     [[OCNetworking sharedManager] readFolderWithAccount:appDelegate.activeAccount serverUrl:serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
         
@@ -1426,7 +1426,7 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
           
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
             
@@ -1463,7 +1463,7 @@
         return;
     }
         
-    [[NCCommunication sharedInstance] searchLiteralWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUser depth:@"infinity" literal:_searchFileName account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication sharedInstance] searchLiteralWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUser depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
              

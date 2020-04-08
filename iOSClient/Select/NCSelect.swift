@@ -804,7 +804,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 

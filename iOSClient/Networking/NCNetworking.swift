@@ -195,9 +195,7 @@ import NCCommunication
         var counter: Int = 0
         
         for file in files {
-            
-            if !CCUtility.getShowHiddenFiles() && file.fileName.first == "." && file.serverUrl != ".." { continue }
-            
+                        
             let metadata = tableMetadata()
             
             metadata.account = account

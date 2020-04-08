@@ -211,7 +211,7 @@
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
 
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
                 
         if (errorCode == 0 && [account isEqualToString:account] && files.count > 0) {
             

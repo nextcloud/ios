@@ -55,7 +55,7 @@ import MarkdownKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
