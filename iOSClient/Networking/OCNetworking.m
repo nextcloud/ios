@@ -509,6 +509,80 @@
 #pragma mark ===== WebDav =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)readFileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode))completion
+{
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    if (tableAccount == nil) {
+        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+    } else if ([CCUtility getPassword:account].length == 0) {
+        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
+    } else if ([CCUtility getCertificateError:account]) {
+        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
+    }
+    
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:tableAccount.url];
+    NSString *fileNamePath;
+
+    if (fileName) {
+        fileNamePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    } else {
+        fileName= @".";
+        fileNamePath = serverUrl;
+    }
+    
+    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
+
+    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    [communication readFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+            
+        if ([items count] > 0) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                tableMetadata *metadata = [tableMetadata new];
+                
+                OCFileDto *itemDto = [items objectAtIndex:0];
+                
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl account:account isFolderEncrypted:isFolderEncrypted];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completion(account, metadata, nil, 0);
+                });
+            });
+        // BUG 1038 item == 0
+        } else {
+                
+            [[NCContentPresenter shared] messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            completion(account, nil, NSLocalizedString(@"Read File WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
+        }
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        NSInteger errorCode = response.statusCode;
+        
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Server Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
+            [[OCNetworking sharedManager] checkRemoteUser:account function:@"read file or folder" errorCode:errorCode];
+        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            [CCUtility setCertificateError:account error:YES];
+        }
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        completion(account, nil, message, errorCode);
+    }];
+}
+
 - (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl  depth:(NSString *)depth completion:(void(^)(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
