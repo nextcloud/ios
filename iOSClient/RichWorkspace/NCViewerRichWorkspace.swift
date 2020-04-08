@@ -59,12 +59,13 @@ import MarkdownKit
             
             if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
-                let metadata = NCNetworking.sharedInstance.convertFileToMetadata(files![0])
-                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: metadata.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-                if self.richWorkspaceText != metadata.richWorkspace {
-                    self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadata.richWorkspace
-                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace)
+                if let file = files?[0] {
+                    NCManageDatabase.sharedInstance.setDirectory(ocId: file.ocId, serverUrl: self.serverUrl, richWorkspace: file.richWorkspace, account: account)
+                    if self.richWorkspaceText != file.richWorkspace {
+                        self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                        self.richWorkspaceText = file.richWorkspace
+                        self.textView.attributedText = self.markdownParser.parse(file.richWorkspace)
+                    }
                 }
             }
         }

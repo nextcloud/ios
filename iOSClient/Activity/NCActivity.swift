@@ -404,8 +404,6 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     
                     NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: activityPreview.account) { (account, files, errorCode, errorDescription) in
                        
-                    //OCNetworking.sharedManager()?.readFile(withAccount: activityPreview.account, serverUrl: serverUrl, fileName: fileName, completion: { (account, metadata, message, errorCode) in
-                        
                         NCUtility.sharedInstance.stopActivityIndicator()
                         
                         if account == self.appDelegate.activeAccount && errorCode == 0 && files?.count ?? 0 > 0  {
