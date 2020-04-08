@@ -2521,7 +2521,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func createTableMedia(_ metadatasSource: [tableMetadata], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
+    func createTableMedia(_ files: [NCFile], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
 
         let realm = try! Realm()
         realm.refresh()
@@ -2538,17 +2538,17 @@ class NCManageDatabase: NSObject {
         var oldServerUrl = ""
         var isValidMetadata = true
         
-        var metadatas = [tableMetadata]()
+        var filesBuffer = [NCFile]()
         
         let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
         if (serversUrlLocked.count > 0) {
-            for metadata in metadatasSource {
+            for file in files {
                 // Verify Lock
-                if (metadata.serverUrl != oldServerUrl) {
+                if (file.serverUrl != oldServerUrl) {
                     var foundLock = false
-                    oldServerUrl = metadata.serverUrl
+                    oldServerUrl = file.serverUrl
                     for serverUrlLocked in serversUrlLocked {
-                        if metadata.serverUrl.contains(serverUrlLocked) {
+                        if file.serverUrl.contains(serverUrlLocked) {
                             foundLock = true
                             break
                         }
@@ -2556,11 +2556,11 @@ class NCManageDatabase: NSObject {
                     isValidMetadata = !foundLock
                 }
                 if isValidMetadata {
-                    metadatas.append(tableMetadata.init(value: metadata))
+                    filesBuffer.append(file)
                 }
             }
         } else {
-            metadatas = metadatasSource
+            filesBuffer = files
         }
         
         do {
@@ -2570,11 +2570,8 @@ class NCManageDatabase: NSObject {
                 let results = realm.objects(tableMedia.self).filter("account == %@ AND date >= %@ AND date <= %@", account, gteDate, lteDate)
                 etagsDelete = Array(results.map { $0.etag })
                 numDelete = results.count
-                
-                // INSERT
-                let photos = Array(metadatas.map { tableMedia.init(value:$0) })
-                etagsInsert = Array(photos.map { $0.etag })
-                numInsert = photos.count
+                etagsInsert = Array(filesBuffer.map { $0.etag })
+                numInsert = filesBuffer.count
                 
                 // CALCULATE DIFFERENT RETURN
                 if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
@@ -2584,7 +2581,9 @@ class NCManageDatabase: NSObject {
                     newInsert = numInsert - numDelete
                     
                     realm.delete(results)
-                    realm.add(photos, update: .all)
+                    for file in filesBuffer {
+                        realm.add(convertFileToMedia(file, account: account), update: .all)
+                    }
                 }
             }
         } catch let error {
@@ -2623,6 +2622,52 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
+    }
+    
+    private func convertFileToMedia(_ file: NCFile, account: String) -> tableMedia {
+        
+        let media = tableMedia()
+        
+        media.account = account
+        media.commentsUnread = file.commentsUnread
+        media.contentType = file.contentType
+        media.creationDate = file.creationDate
+        media.date = file.date
+        media.directory = file.directory
+        media.e2eEncrypted = file.e2eEncrypted
+        media.etag = file.etag
+        media.favorite = file.favorite
+        media.fileId = file.fileId
+        media.fileName = file.fileName
+        media.fileNameView = file.fileName
+        media.hasPreview = file.hasPreview
+        media.mountType = file.mountType
+        media.ocId = file.ocId
+        media.ownerId = file.ownerId
+        media.ownerDisplayName = file.ownerDisplayName
+        media.permissions = file.permissions
+        media.quotaUsedBytes = file.quotaUsedBytes
+        media.quotaAvailableBytes = file.quotaAvailableBytes
+        media.richWorkspace = file.richWorkspace
+        media.resourceType = file.resourceType
+        media.serverUrl = file.serverUrl
+        media.size = file.size
+        
+        if let unmanagedFileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (file.fileName as NSString).pathExtension as CFString, nil) {
+            let fileUTI = unmanagedFileUTI.takeRetainedValue()
+            if UTTypeConformsTo(fileUTI, kUTTypeImage) {
+                media.typeFile = k_metadataTypeFile_image
+                media.iconName = "file_photo"
+            } else if UTTypeConformsTo(fileUTI, kUTTypeMovie) {
+                media.typeFile = k_metadataTypeFile_video
+                media.iconName = "file_movie"
+            } else if UTTypeConformsTo(fileUTI, kUTTypeAudio) {
+                media.typeFile = k_metadataTypeFile_audio
+                media.iconName = "file_audio"
+            }
+        }
+        
+        return media
     }
     
     //MARK: -
