@@ -1437,7 +1437,7 @@
             self.richWorkspaceText = file.richWorkspace;
             [self setTableViewHeader];
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, file.serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, self.serverUrl]];
             
             // Read folder: No record, Change etag or BLINK
             if ([sectionDataSource.allRecordsDataSource count] == 0 || [file.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
