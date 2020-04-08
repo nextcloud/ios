@@ -521,8 +521,6 @@
     }
     
     NSString *url = tableAccount.url;
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:url];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
@@ -555,12 +553,12 @@
                     
                     // root folder
                     serverUrlFolder = k_serverUrl_root;
-                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder  account:account isFolderEncrypted:isFolderEncrypted];
                     
                 } else {
                     
                     serverUrlFolder = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted];
+                    metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[serverUrl lastPathComponent] serverUrl:serverUrlFolder  account:account isFolderEncrypted:isFolderEncrypted];
                 }
                 
                 // Add metadata folder
@@ -590,7 +588,7 @@
                         (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite ocId:itemDto.ocId permissions:itemDto.permissions serverUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:fileName] richWorkspace: nil account:account];
                     }
                     
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory account:account isFolderEncrypted:isFolderEncrypted]];
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl  account:account isFolderEncrypted:isFolderEncrypted]];
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{

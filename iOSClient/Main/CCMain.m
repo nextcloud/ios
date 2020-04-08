@@ -1263,51 +1263,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Read File ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)readFileReloadFolder
-{
-    if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
-        return;
-    
-    // RichWorkspace
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    self.richWorkspaceText = directory.richWorkspace;
-    [self setTableViewHeader];
-    
-    // Load Datasource
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    });
-    
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
-          
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
-            
-            tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
-            
-            // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
-            self.richWorkspaceText = metadata.richWorkspace;
-            [self setTableViewHeader];
-            
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, metadata.serverUrl]];
-            
-            // Read folder: No record, Change etag or BLINK
-            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
-                [self readFolder:self.serverUrl];
-            }
-            
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1453,6 +1408,47 @@
         }
     
         _loadingFolder = NO;
+    }];
+}
+
+- (void)readFileReloadFolder
+{
+    if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
+        return;
+    
+    // RichWorkspace
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    self.richWorkspaceText = directory.richWorkspace;
+    [self setTableViewHeader];
+    
+    // Load Datasource
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    });
+    
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
+          
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
+            
+            NCFile *file = files[0];
+            
+            // Rich Workspace
+            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:file.ocId serverUrl:self.serverUrl richWorkspace:file.richWorkspace account:account];
+            self.richWorkspaceText = file.richWorkspace;
+            [self setTableViewHeader];
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, file.serverUrl]];
+            
+            // Read folder: No record, Change etag or BLINK
+            if ([sectionDataSource.allRecordsDataSource count] == 0 || [file.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
+                [self readFolder:self.serverUrl];
+            }
+            
+        } else if (errorCode != 0) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        } else {
+            NSLog(@"[LOG] It has been changed user during networking process, error.");
+        }
     }];
 }
 
