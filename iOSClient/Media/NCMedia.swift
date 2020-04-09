@@ -624,14 +624,15 @@ extension NCMedia {
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.activeAccount && files != nil {
                                     
                 var isDifferent: Bool = false
                 var newInsert: Int = 0
+                let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: nil)
             
                 let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
             
-                let difference = NCManageDatabase.sharedInstance.createTableMedia(files!, lteDate: lteDate, gteDate: gteDate, account: account)
+                let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
                 isDifferent = difference.isDifferent
                 newInsert = difference.newInsert
                 

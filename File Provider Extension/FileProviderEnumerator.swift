@@ -241,16 +241,19 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                     if errorCode == 0 && files != nil  && files!.count >= 1 {
                         
+                        // Metadata conversion
+                        var metadataFolder = tableMetadata()
+                        let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
+                        
                         // Update directory etag
-                        let directory = files![0]
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: directory.etag, ocId: directory.ocId, encrypted: directory.e2eEncrypted, richWorkspace: nil, account: account)
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder.etag, ocId: metadataFolder.ocId, encrypted: metadataFolder.e2eEncrypted, richWorkspace: nil, account: account)
                                                 
                         // Update DB
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
                         NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
                         let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                         let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
-                        NCManageDatabase.sharedInstance.addMetadatas(files: files!, account: account, serverUrl: serverUrl, removeFirst: true)
+                        NCManageDatabase.sharedInstance.addMetadatas(metadatas)
                          
                         if metadatasInDownload != nil {
                             NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
@@ -281,6 +284,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                 
+                // Metadata conversion
+                var metadataFolder = tableMetadata()
+                let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
+                
                 // Prepare DB
                 if offset == 0 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
@@ -295,7 +302,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                 }
                 
-                NCManageDatabase.sharedInstance.addMetadatas(files: files!, account: account, serverUrl: serverUrl, removeFirst: true)
+                NCManageDatabase.sharedInstance.addMetadatas(metadatas)
             }
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)

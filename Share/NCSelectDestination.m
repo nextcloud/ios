@@ -230,10 +230,12 @@
         
         if (errorCode == 0 && files.count >= 1) {
 
-            NCFile *fileDirectory = files[0];
+            // Metadata conversion
+            tableMetadata *metadataFolder = [tableMetadata new];
+            NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
         
             // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted richWorkspace:nil account:account];
+            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
             
             // Delete metadata
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status == %d", account, _serverUrl, k_metadataStatusNormal]];
@@ -242,7 +244,7 @@
             NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
             
             // Insert in Database
-            [[NCManageDatabase sharedInstance] addMetadatasWithFiles:files account:account serverUrl:_serverUrl removeFirst:true];
+            [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
             
             // reinsert metadatas in Download
             if (metadatasInDownload) {
