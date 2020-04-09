@@ -1377,7 +1377,6 @@
 
     [self tableViewReloadData];
     
-     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -1385,7 +1384,7 @@
             tableMetadata *metadataFolder = [tableMetadata new];
             NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
             //[self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-            NSLog(metadatas);
+            NSLog(@"metadatas");
             
         } else if (errorCode != 0) {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1427,6 +1426,7 @@
     });
     
     // TEST
+    /*
     [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:_serverUrl fileName:nil completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
@@ -1439,6 +1439,7 @@
             
         }
     }];
+    */
     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
           

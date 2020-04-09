@@ -172,6 +172,7 @@ import NCCommunication
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
         metadata.hasPreview = file.hasPreview
+        metadata.iconName = file.iconName
         metadata.mountType = file.mountType
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
@@ -183,8 +184,7 @@ import NCCommunication
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
         metadata.size = file.size
-                   
-        CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
+        metadata.typeFile = file.typeFile
         
         return metadata
     }
@@ -196,34 +196,7 @@ import NCCommunication
         
         for file in files {
                         
-            let metadata = tableMetadata()
-            
-            metadata.account = account
-            metadata.commentsUnread = file.commentsUnread
-            metadata.contentType = file.contentType
-            metadata.creationDate = file.creationDate
-            metadata.date = file.date
-            metadata.directory = file.directory
-            metadata.e2eEncrypted = file.e2eEncrypted
-            metadata.etag = file.etag
-            metadata.favorite = file.favorite
-            metadata.fileId = file.fileId
-            metadata.fileName = file.fileName
-            metadata.fileNameView = file.fileName
-            metadata.hasPreview = file.hasPreview
-            metadata.mountType = file.mountType
-            metadata.ocId = file.ocId
-            metadata.ownerId = file.ownerId
-            metadata.ownerDisplayName = file.ownerDisplayName
-            metadata.permissions = file.permissions
-            metadata.quotaUsedBytes = file.quotaUsedBytes
-            metadata.quotaAvailableBytes = file.quotaAvailableBytes
-            metadata.richWorkspace = file.richWorkspace
-            metadata.resourceType = file.resourceType
-            metadata.serverUrl = file.serverUrl
-            metadata.size = file.size
-                        
-            CCUtility.insertTypeFileIconName(metadata.fileName, metadata: metadata)
+            let metadata = self.convertFileToMetadata(file)
             
             if metadataFolder != nil && counter == 0 {
                 metadataFolder!.initialize(to: metadata)
