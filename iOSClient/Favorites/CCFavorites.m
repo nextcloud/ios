@@ -203,7 +203,7 @@
     
     [[NCCommunication sharedInstance] listingFavoritesWithServerUrl:appDelegate.activeUrl showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
         
-         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
              
              NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
              

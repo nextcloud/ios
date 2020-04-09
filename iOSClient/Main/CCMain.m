@@ -1379,7 +1379,7 @@
     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
             
             tableMetadata *metadataFolder = [tableMetadata new];
             NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
@@ -1443,7 +1443,7 @@
     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
           
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files.count > 0) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
             
             NCFile *file = files[0];
             
@@ -1480,7 +1480,7 @@
         
     [[NCCommunication sharedInstance] searchLiteralWithServerUrl:appDelegate.activeUrl user:appDelegate.activeUser depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
-         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
              
               NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
              _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];

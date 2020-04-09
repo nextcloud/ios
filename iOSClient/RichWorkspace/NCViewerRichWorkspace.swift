@@ -57,7 +57,7 @@ import MarkdownKit
         
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
+            if errorCode == 0 && account == self.appDelegate.activeAccount && files != nil {
                 
                 if let file = files?[0] {
                     NCManageDatabase.sharedInstance.setDirectory(ocId: file.ocId, serverUrl: self.serverUrl, richWorkspace: file.richWorkspace, account: account)

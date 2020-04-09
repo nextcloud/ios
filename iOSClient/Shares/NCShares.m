@@ -297,7 +297,7 @@
         NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", table.serverUrl, table.fileName];
                
         [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorDescription) {        
-            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
                 tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
                 metadata.fileName = table.fileName;
                 metadata.fileNameView = table.fileName;

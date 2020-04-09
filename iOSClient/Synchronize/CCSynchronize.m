@@ -213,7 +213,7 @@
 
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
                 
-        if (errorCode == 0 && [account isEqualToString:account] && files.count > 0) {
+        if (errorCode == 0 && [account isEqualToString:account] && files != nil) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 

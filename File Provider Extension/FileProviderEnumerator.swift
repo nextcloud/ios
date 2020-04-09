@@ -239,7 +239,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
                     
-                    if errorCode == 0 && files != nil  && files!.count >= 1 {
+                    if errorCode == 0 && files != nil {
                         
                         // Metadata conversion
                         var metadataFolder = tableMetadata()

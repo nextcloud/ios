@@ -406,7 +406,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                        
                         NCUtility.sharedInstance.stopActivityIndicator()
                         
-                        if account == self.appDelegate.activeAccount && errorCode == 0 && files?.count ?? 0 > 0  {
+                        if account == self.appDelegate.activeAccount && errorCode == 0 && files != nil  {
                             
                             let metadata = NCNetworking.sharedInstance.convertFileToMetadata(files![0])
                             metadata.fileName = fileName
