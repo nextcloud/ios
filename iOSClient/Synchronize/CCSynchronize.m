@@ -224,9 +224,6 @@
                 
                 //Add/Update Metadata
                 tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
-                metadata.fileName = fileName;
-                metadata.fileNameView = fileName;
-                
                 tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 if (addMetadata)
                     [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
@@ -387,10 +384,13 @@
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-    [[OCNetworking sharedManager] readFolderWithAccount:self.account serverUrl:self.serverUrl depth:@"1" completion:^(NSString *account, NSArray *metadatas, tableMetadata *metadataFolder, NSString *message, NSInteger errorCode) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:self.account completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
        
+        tableMetadata *metadataFolder = [tableMetadata new];
+        NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
+        
         if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
-            [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:message errorCode:errorCode];
+            [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:errorDescription errorCode:errorCode];
         
         [self complete];
     }];

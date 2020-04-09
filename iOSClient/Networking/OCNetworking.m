@@ -508,7 +508,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== WebDav =====
 #pragma --------------------------------------------------------------------------------------------
-
+/*
 - (void)readFileWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName completion:(void(^)(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode))completion
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
@@ -693,6 +693,7 @@
         completion(account, nil, nil, message, errorCode);
     }];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
