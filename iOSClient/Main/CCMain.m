@@ -1266,36 +1266,6 @@
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
 
-/*
-- (void)insertMetadatasWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
-{
-    // stoprefresh
-    [refreshControl endRefreshing];
-    
-    // save metadataFolder
-    _metadataFolder = metadataFolder;
-    
-    // insert in Database
-    NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-    // insert in Database the /
-    if (metadataFolder != nil) {
-        _metadataFolder = [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    }
-    // reinsert metadatas in Download
-    if (metadatasInDownload) {
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
-    }
-    
-    // File is changed ??
-    if (!self.searchController.isActive && metadatasToInsertInDB) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
-        });
-    }
-   
-}
-*/
-
 - (void)readFolder:(NSString *)serverUrl
 {
     // init control
