@@ -220,7 +220,7 @@ import NCCommunication
                 
                 let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, account: account)
                 var metadataFolder = tableMetadata()
-                let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
+                let metadatas = self.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
                 
                 // Add directory
                 NCManageDatabase.sharedInstance.addDirectory(encrypted: isFolderEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
@@ -264,7 +264,7 @@ import NCCommunication
 
             if errorCode == 0 && files != nil {
                 
-                let metadata = NCNetworking.sharedInstance.convertFileToMetadata(files![0])
+                let metadata = self.convertFileToMetadata(files![0])
                 completion(account, metadata, errorCode, "")
                 
             } else {
