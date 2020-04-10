@@ -1275,20 +1275,6 @@
     // save metadataFolder
     _metadataFolder = metadataFolder;
     
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        return;
-    }
-    
-    if (self.searchController.isActive == NO) {
-        
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal]];
-        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:serverUrl account:account];
-    }
-    
-    NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
-    
     // insert in Database
     NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
     // insert in Database the /
@@ -1306,52 +1292,7 @@
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
         });
     }
-    // Search Mode
-    if (self.searchController.isActive) {
-        
-        // Fix managed -> Unmanaged _searchResultMetadatas
-        if (metadatasToInsertInDB)
-            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
-        
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
-    }
-    
-    // this is the same directory
-    if ([serverUrl isEqualToString:_serverUrl] && !self.searchController.isActive) {
-        
-        // reload
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
-        
-        [self tableViewReloadData];
-    }
-    
-    // E2EE Is encrypted folder get metadata
-    if (_metadataFolder.e2eEncrypted) {
-        NSString *metadataFolderocId = metadataFolder.ocId;
-        // Read Metadata
-        if ([CCUtility isEndToEndEnabled:account]) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                NSString *metadata;
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata ocId:metadataFolderocId user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (error) {
-                        if (error.code != kOCErrorServerPathNotFound)
-                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                    } else {
-                        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:tableAccount.url] == false)
-                            [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                        else
-                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
-                    }
-                });
-            });
-        } else {
-            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
-        }
-    }
-    
-    // rewrite title
-    [self setTitle];
+   
 }
 */
 
@@ -1495,6 +1436,7 @@
                  
              [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
              [self tableViewReloadData];
+             [self setTitle];
                           
          } else {
              
@@ -1543,6 +1485,8 @@
                 [_timerWaitInput invalidate];
                 _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
             }
+            
+            [self setTitle];
         }
         
         if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
