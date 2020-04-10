@@ -30,7 +30,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hq-re-YVn">
-                        <rect key="frame" x="5" y="94.5" width="631" height="40"/>
+                        <rect key="frame" x="598.5" y="94.5" width="37.5" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="5Ed-pm-3oc"/>
                         </constraints>
@@ -57,6 +57,15 @@
                             <constraint firstAttribute="width" constant="50" id="brj-dv-3FM"/>
                         </constraints>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qye-6B-5aj">
+                        <rect key="frame" x="5" y="94.5" width="37.5" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="j5h-pt-EoN"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Hv8-qJ-lkR" firstAttribute="top" secondItem="y6Q-vz-Xda" secondAttribute="top" constant="5" id="2QQ-S7-55R"/>
@@ -68,16 +77,18 @@
                     <constraint firstItem="Hv8-qJ-lkR" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="10" id="JVe-dZ-Lqh"/>
                     <constraint firstItem="Tx2-JG-GGa" firstAttribute="top" secondItem="Hv8-qJ-lkR" secondAttribute="bottom" constant="10" id="KkM-mL-eYz"/>
                     <constraint firstAttribute="trailing" secondItem="Tx2-JG-GGa" secondAttribute="trailing" constant="5" id="NJl-pK-vY4"/>
+                    <constraint firstItem="Qye-6B-5aj" firstAttribute="top" secondItem="WSQ-HI-Wkg" secondAttribute="bottom" constant="10" id="NQ3-yE-Ocl"/>
                     <constraint firstAttribute="trailing" secondItem="jBi-8r-tc5" secondAttribute="trailing" constant="5" id="Vv4-gx-2nv"/>
                     <constraint firstAttribute="trailing" secondItem="0hq-re-YVn" secondAttribute="trailing" constant="5" id="bZH-Wd-tFZ"/>
                     <constraint firstAttribute="trailing" secondItem="Hv8-qJ-lkR" secondAttribute="trailing" constant="10" id="jEF-pw-ZsK"/>
                     <constraint firstItem="jBi-8r-tc5" firstAttribute="centerY" secondItem="FUL-4V-OgL" secondAttribute="centerY" id="oZZ-e1-nuY"/>
-                    <constraint firstItem="0hq-re-YVn" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="taV-L4-OCg"/>
+                    <constraint firstItem="Qye-6B-5aj" firstAttribute="leading" secondItem="y6Q-vz-Xda" secondAttribute="leading" constant="5" id="wfS-9D-K5V"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="imageFile" destination="Tx2-JG-GGa" id="b00-10-AN8"/>
                 <outlet property="imageFileNew" destination="WSQ-HI-Wkg" id="JRg-97-v7V"/>
+                <outlet property="labelDetail" destination="Qye-6B-5aj" id="Yb3-su-na8"/>
                 <outlet property="labelDetailNew" destination="0hq-re-YVn" id="TFQ-C0-v8p"/>
                 <outlet property="labelFileName" destination="Hv8-qJ-lkR" id="g4W-UF-h47"/>
                 <outlet property="switchAlreadyExistingFile" destination="jBi-8r-tc5" id="L0M-zb-k6v"/>

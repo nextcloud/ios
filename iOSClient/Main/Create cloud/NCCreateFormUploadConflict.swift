@@ -223,12 +223,22 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
             let metadata = metadatasConflict[indexPath.row]
-            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)) else { return UITableViewCell() }
+            let fileNameExtension = (metadata.fileName as NSString).pathExtension.lowercased()
+            let fileNameWithoutExtension = (metadata.fileName as NSString).deletingPathExtension
+            var fileNameConflict = metadata.fileName
+
+            if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+                fileNameConflict = fileNameWithoutExtension + ".jpg"
+            }
+
+            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameConflict)) else { return UITableViewCell() }
             
             cell.ocId = metadata.ocId
             cell.delegate = self
             
             cell.labelFileName.text = metadata.fileNameView
+            cell.labelDetail.text = ""
+            cell.labelDetailNew.text = ""
 
             // Image New
             if metadata.iconName.count > 0 {
@@ -243,7 +253,13 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 200, height: 200), contentMode: PHImageContentMode.aspectFill, options: nil) { (image, info) in
                         cell.imageFileNew.image = image
                     }
-                }
+                    
+                    let resource = PHAssetResource.assetResources(for: result.firstObject!)
+                    let size = resource.first?.value(forKey: "fileSize") as! Double
+                    let date = result.firstObject!.modificationDate
+                    
+                    cell.labelDetail.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(size)
+                }                
             }
         
             // Image
