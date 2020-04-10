@@ -441,7 +441,7 @@
 - (void)settingWebDavRoot:(NSString *)webdavRoot
 {
     if (webdavRoot != nil) {
-        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webdavRoot davRoot:@"remote.php/dav"];
+        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webdavRoot];
     }
 }
 
