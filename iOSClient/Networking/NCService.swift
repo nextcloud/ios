@@ -150,6 +150,9 @@ class NCService: NSObject {
                 // Update capabilities db
                 NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
                 
+                // Update webDavRoot
+                self.appDelegate.settingWebDavRoot(capabilities?.coreWebDavRoot)
+                
                 // ------ THEMING -----------------------------------------------------------------------
                 self.appDelegate.settingThemingColorBrand()
                 

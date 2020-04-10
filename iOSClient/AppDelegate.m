@@ -438,6 +438,13 @@
     [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
 }
 
+- (void)settingWebDavRoot:(NSString *)webdavRoot
+{
+    if (webdavRoot != nil) {
+        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webdavRoot davRoot:@"remote.php/dav"];
+    }
+}
+
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
 {
     [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
