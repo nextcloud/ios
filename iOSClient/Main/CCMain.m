@@ -1526,14 +1526,16 @@
         if (fileName.length >= k_minCharsSearch && [fileName isEqualToString:_searchFileName] == NO) {
             
             _searchFileName = fileName;
+            _metadataFolder = nil;
             
             // First : filter
                 
             NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@", appDelegate.activeAccount, _serverUrl, fileName] sorted:nil ascending:NO];
                 
             [_searchResultMetadatas removeAllObjects];
-            for (tableMetadata *record in records)
+            for (tableMetadata *record in records) {
                 [_searchResultMetadatas addObject:record];
+            }
             
             // Version >= 12
             if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
