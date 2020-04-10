@@ -1276,16 +1276,18 @@
                 capabilities.versionEdition = (NSString*)[version valueForKey:@"edition"];
             
                 NSDictionary *capabilitiesDict = [data valueForKey:@"capabilities"];
-                NSDictionary *core = [capabilitiesDict valueForKey:@"core"];
-            
+                
                 //CORE
             
+                NSDictionary *core = [capabilitiesDict valueForKey:@"core"];
+                
                 NSNumber *corePollIntervalNumber = (NSNumber*)[core valueForKey:@"pollinterval"];
                 capabilities.corePollInterval = corePollIntervalNumber.integerValue;
-            
-                NSDictionary *fileSharing = [capabilitiesDict valueForKey:@"files_sharing"];
+                capabilities.coreWebDavRoot = [core valueForKey:@"webdav-root"];
             
                 //FILE SHARING
+                
+                NSDictionary *fileSharing = [capabilitiesDict valueForKey:@"files_sharing"];
             
                 NSNumber *fileSharingAPIEnabled = (NSNumber*)[fileSharing valueForKey:@"api_enabled"];
                 NSNumber *filesSharingDefaultPermissions = (NSNumber*)[fileSharing valueForKey:@"default_permissions"];

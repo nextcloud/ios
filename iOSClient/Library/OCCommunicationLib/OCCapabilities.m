@@ -43,6 +43,8 @@
         self.HCShopUrl = @"";
         
         self.paginationEndponit = @"";
+        
+        self.coreWebDavRoot = @"remote.php/webdav";
     }
     return self;
 }

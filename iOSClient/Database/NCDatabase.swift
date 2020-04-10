@@ -200,6 +200,9 @@ class tableCapabilities: Object {
     // Pagination iOS Helper
     @objc dynamic var isPaginationEnabled: Bool = false
     @objc dynamic var paginationEndponit = ""
+    // Core
+    @objc dynamic var corePollInterval: Int = 0
+    @objc dynamic var coreWebDavRoot = ""
 }
 
 class tableComments: Object {

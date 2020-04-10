@@ -122,6 +122,11 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
+                    if oldSchemaVersion < 91 {
+                        migration.deleteData(forType: tableDirectory.className())
+                        migration.deleteData(forType: tableMetadata.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -951,7 +956,10 @@ class NCManageDatabase: NSObject {
                 // Pagination iOS Helper
                 resultCapabilities.isPaginationEnabled = capabilities.isPaginationEnabled
                 resultCapabilities.paginationEndponit = capabilities.paginationEndponit
-
+                // Core
+                resultCapabilities.corePollInterval = capabilities.corePollInterval
+                resultCapabilities.coreWebDavRoot = capabilities.coreWebDavRoot
+                
                 if result == nil {
                     realm.add(resultCapabilities)
                 }

@@ -21,6 +21,7 @@
 
 /*CORE*/
 @property (nonatomic) NSInteger corePollInterval;
+@property (nonatomic, strong) NSString *coreWebDavRoot;
 
 /*FILES SHARING*/
 
