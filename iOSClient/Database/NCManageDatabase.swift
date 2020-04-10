@@ -1179,7 +1179,8 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    @discardableResult
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1195,6 +1196,9 @@ class NCManageDatabase: NSObject {
         addObject.account = account
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
+        if let etag = etag {
+            addObject.etag = etag
+        }
         if let permissions = permissions {
             addObject.permissions = permissions
         }

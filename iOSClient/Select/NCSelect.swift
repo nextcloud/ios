@@ -804,14 +804,9 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
+        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files != nil {
-                
-                // Metadata conversion
-                let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &self.metadataFolder)
-                                
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: self.metadataFolder.etag, ocId: self.metadataFolder.ocId, encrypted: self.metadataFolder.e2eEncrypted, richWorkspace: self.metadataFolder.richWorkspace, account: account)
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 // Update DB
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, self.serverUrl, k_metadataStatusNormal))
@@ -821,7 +816,7 @@ extension NCSelect {
                 let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                 let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
                 
-                NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                NCManageDatabase.sharedInstance.addMetadatas(metadatas!)
                  
                 if metadatasInDownload != nil {
                     NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
@@ -832,8 +827,6 @@ extension NCSelect {
                 
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
             }
             
             self.networkInProgress = false

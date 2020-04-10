@@ -212,6 +212,28 @@ import NCCommunication
     
     //MARK: - WebDav
     
+    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+        
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
+            
+            if errorCode == 0 && files != nil {
+                
+                let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, account: account)
+                var metadataFolder = tableMetadata()
+                let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
+                
+                NCManageDatabase.sharedInstance.addDirectory(encrypted: isFolderEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                
+                completion(account, metadataFolder, metadatas, errorCode, "")
+                
+            } else {
+                var errorDescription = errorDescription
+                if errorDescription == nil { errorDescription = "Internal error. Error not found" }
+                completion(account, nil, nil, errorCode, errorDescription!)
+            }
+        }
+    }
+    
     @objc func deleteMetadata(_ metadata: tableMetadata, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))

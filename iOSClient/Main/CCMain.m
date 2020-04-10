@@ -1377,18 +1377,12 @@
 
     [self tableViewReloadData];
     
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatas, NSInteger errorCode, NSString *errorDescription) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
-            
-            tableMetadata *metadataFolder = [tableMetadata new];
-            NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
+        if (errorCode == 0 ) {
             [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
-            
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
         
         _loadingFolder = NO;
