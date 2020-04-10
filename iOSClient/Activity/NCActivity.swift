@@ -408,11 +408,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         
                         if account == self.appDelegate.activeAccount && errorCode == 0  {
                             
-                            metadata!.fileName = fileName
-                            metadata!.fileNameView = fileName
-                                                       
                             // move from id to oc:id + instanceid (ocId)
-                                                       
                             let atPath = CCUtility.getDirectoryProviderStorage()! + "/" + activitySubjectRich.id
                             let toPath = CCUtility.getDirectoryProviderStorage()! + "/" + metadata!.ocId
                                                        
