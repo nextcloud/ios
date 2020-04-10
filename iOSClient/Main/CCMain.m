@@ -1392,28 +1392,24 @@
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:appDelegate.activeAccount completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
-          
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
-            
-            NCFile *file = files[0];
+    [[NCNetworking sharedInstance] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+        
+        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
             // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:file.ocId serverUrl:self.serverUrl richWorkspace:file.richWorkspace account:account];
-            self.richWorkspaceText = file.richWorkspace;
+            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
+            self.richWorkspaceText = metadata.richWorkspace;
             [self setTableViewHeader];
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, self.serverUrl]];
             
             // Read folder: No record, Change etag or BLINK
-            if ([sectionDataSource.allRecordsDataSource count] == 0 || [file.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
+            if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
                 [self readFolder:self.serverUrl];
             }
             
         } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
     }];
 }

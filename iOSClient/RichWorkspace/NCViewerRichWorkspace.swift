@@ -55,17 +55,15 @@ import MarkdownKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
+        NCNetworking.sharedInstance.readFile(serverUrlFileName: serverUrl, account: appDelegate.activeAccount) { (account, metadata, errorCode, errorDescription) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files != nil {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                if let file = files?[0] {
-                    NCManageDatabase.sharedInstance.setDirectory(ocId: file.ocId, serverUrl: self.serverUrl, richWorkspace: file.richWorkspace, account: account)
-                    if self.richWorkspaceText != file.richWorkspace {
-                        self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                        self.richWorkspaceText = file.richWorkspace
-                        self.textView.attributedText = self.markdownParser.parse(file.richWorkspace)
-                    }
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata!.ocId, serverUrl: self.serverUrl, richWorkspace: metadata!.richWorkspace, account: account)
+                if self.richWorkspaceText != metadata?.richWorkspace {
+                    self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
+                    self.richWorkspaceText = metadata!.richWorkspace
+                    self.textView.attributedText = self.markdownParser.parse(metadata!.richWorkspace)
                 }
             }
         }

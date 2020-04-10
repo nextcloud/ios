@@ -211,9 +211,9 @@
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
 
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:serverUrlFileName depth:@"0" showHiddenFiles:[CCUtility getShowHiddenFiles] account:account completionHandler:^(NSString *account, NSArray*files, NSInteger errorCode, NSString *errorMessage) {
-                
-        if (errorCode == 0 && [account isEqualToString:account] && files != nil) {
+    [[NCNetworking sharedInstance] readFileWithServerUrlFileName:serverUrlFileName account:account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+        
+        if (errorCode == 0 && [account isEqualToString:account]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 
@@ -223,17 +223,16 @@
                     withDownload = YES;
                 
                 //Add/Update Metadata
-                tableMetadata *metadata = [[NCNetworking sharedInstance] convertFileToMetadata:files[0]];
                 tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 if (addMetadata)
                     [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:serverUrl account:account withDownload:withDownload];
             });
             
         } else if (errorCode == kOCErrorServerPathNotFound) {
-            
+                
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-            
+                
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         }
     }];

@@ -258,6 +258,22 @@ import NCCommunication
         }
     }
     
+    @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
+        
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
+
+            if errorCode == 0 && files != nil {
+                
+                let metadata = NCNetworking.sharedInstance.convertFileToMetadata(files![0])
+                completion(account, metadata, errorCode, "")
+                
+            } else {
+
+                completion(account, nil, errorCode, errorDescription!)
+            }
+        }
+    }
+    
     @objc func deleteMetadata(_ metadata: tableMetadata, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
