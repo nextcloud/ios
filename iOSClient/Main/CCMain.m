@@ -1266,6 +1266,7 @@
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)insertMetadatasWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
     // stoprefresh
@@ -1280,15 +1281,37 @@
     }
     
     if (self.searchController.isActive == NO) {
+        
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal]];
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:serverUrl account:account];
     }
     
+    NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+    
+    // insert in Database
+    NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+    // insert in Database the /
+    if (metadataFolder != nil) {
+        _metadataFolder = [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
+    }
+    // reinsert metadatas in Download
+    if (metadatasInDownload) {
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
+    }
+    
+    // File is changed ??
+    if (!self.searchController.isActive && metadatasToInsertInDB) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
+        });
+    }
     // Search Mode
     if (self.searchController.isActive) {
         
         // Fix managed -> Unmanaged _searchResultMetadatas
-        if (metadatas)
-            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
+        if (metadatasToInsertInDB)
+            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
         
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
     }
@@ -1330,6 +1353,7 @@
     // rewrite title
     [self setTitle];
 }
+*/
 
 - (void)readFolder:(NSString *)serverUrl
 {
@@ -1357,9 +1381,13 @@
     
     [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSInteger errorCode, NSString *errorDescription) {
         
+        [refreshControl endRefreshing];
+
         if (errorCode == 0 ) {
-            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:nil];
             
+            _metadataFolder = metadataFolder;
+            [self setTitle];
+
             // File is changed ??
             /*
             if (!self.searchController.isActive && metadatas) {
@@ -1369,6 +1397,37 @@
             }
             */
             
+            // E2EE Is encrypted folder get metadata
+            if (_metadataFolder.e2eEncrypted) {
+                NSString *metadataFolderocId = metadataFolder.ocId;
+                // Read Metadata
+                if ([CCUtility isEndToEndEnabled:account]) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                        NSString *metadata;
+                        NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata ocId:metadataFolderocId user:appDelegate.activeUrl userID:appDelegate.activeUserID password:[CCUtility getPassword:appDelegate.activeAccount] url:appDelegate.activeUrl];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (error) {
+                                if (error.code != kOCErrorServerPathNotFound)
+                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+                            } else {
+                                if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl] == false)
+                                    [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+                                else
+                                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                            }
+                        });
+                    });
+                    
+                } else {
+                    [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                }
+            }
+            
+            if ([serverUrl isEqualToString:_serverUrl]) {
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                [self tableViewReloadData];
+            }
+        
         } else {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
@@ -1429,16 +1488,18 @@
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
              
-              NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
-             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
-             [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
+             NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
+             NSMutableArray *metadatasDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasDB];
+             _metadataFolder = nil;
+                 
+             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
+             [self tableViewReloadData];
                           
          } else {
              
              if (errorCode != 0) {
                  [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-             } else {
-                 NSLog(@"[LOG] It has been changed user during networking process, error.");
              }
              
              _searchFileName = @"";
@@ -1474,8 +1535,6 @@
             for (tableMetadata *record in records)
                 [_searchResultMetadatas addObject:record];
             
-            [self insertMetadatasWithAccount:appDelegate.activeAccount serverUrl:_serverUrl metadataFolder:nil metadatas:_searchResultMetadatas];
-        
             // Version >= 12
             if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
                 

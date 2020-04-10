@@ -225,6 +225,8 @@ import NCCommunication
                 // Add directory
                 NCManageDatabase.sharedInstance.addDirectory(encrypted: isFolderEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 
+                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
+                
                 // Save status transfer metadata
                 let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
                 
