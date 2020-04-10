@@ -226,6 +226,19 @@
 
 - (void)readFolder
 {
+    [[NCNetworking sharedInstance] readFolderWithServerUrl:_serverUrl account:activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSInteger errorCode, NSString *errorDescription) {
+        
+        if (errorCode == 0) {
+            self.move.enabled = true;
+        } else {
+            self.move.enabled = false;
+        }
+        
+        _loadingFolder = YES;
+        [self.tableView reloadData];
+    }];
+    
+    /*
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSInteger errorCode, NSString *errorDecription) {
         
         if (errorCode == 0 && files != nil) {
@@ -269,8 +282,10 @@
     
     _loadingFolder = YES;
     [self.tableView reloadData];
+    */
 }
 
+    
 // MARK: - Create Folder
 
 - (void)createFolder:(NSString *)fileNameFolder

@@ -1280,37 +1280,15 @@
     }
     
     if (self.searchController.isActive == NO) {
-        
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal]];
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithServerUrl:serverUrl account:account];
     }
     
-    NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
-    
-    // insert in Database
-    NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-    // insert in Database the /
-    if (metadataFolder != nil) {
-        _metadataFolder = [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    }
-    // reinsert metadatas in Download
-    if (metadatasInDownload) {
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
-    }
-    
-    // File is changed ??
-    if (!self.searchController.isActive && metadatasToInsertInDB) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:serverUrl account:account withDownload:NO];
-        });
-    }
     // Search Mode
     if (self.searchController.isActive) {
         
         // Fix managed -> Unmanaged _searchResultMetadatas
-        if (metadatasToInsertInDB)
-            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
+        if (metadatas)
+            _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
         
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
     }
@@ -1377,10 +1355,20 @@
 
     [self tableViewReloadData];
     
-    [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatas, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 ) {
-            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:metadatas];
+            [self insertMetadatasWithAccount:account serverUrl:serverUrl metadataFolder:metadataFolder metadatas:nil];
+            
+            // File is changed ??
+            /*
+            if (!self.searchController.isActive && metadatas) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                    [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:serverUrl account:account withDownload:NO];
+                });
+            }
+            */
+            
         } else {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }

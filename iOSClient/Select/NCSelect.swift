@@ -804,30 +804,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                // Update DB
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, self.serverUrl, k_metadataStatusNormal))
-                
-                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: account)
-                
-                let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
-                let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, self.serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
-                
-                NCManageDatabase.sharedInstance.addMetadatas(metadatas!)
-                 
-                if metadatasInDownload != nil {
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
-                }
-                if metadatasInUpload != nil {
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                }
-                
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
+        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, errorCode, errorDescription) in
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)

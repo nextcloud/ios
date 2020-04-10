@@ -212,7 +212,7 @@ import NCCommunication
     
     //MARK: - WebDav
     
-    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
         
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
             
@@ -234,6 +234,7 @@ import NCCommunication
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
 
                 // Add metadata
+                let metadataFolderInserted = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
                 NCManageDatabase.sharedInstance.addMetadatas(metadatas)
                  
                 if metadatasInDownload != nil {
@@ -243,12 +244,16 @@ import NCCommunication
                     NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                 }
                 
-                completion(account, metadataFolder, metadatas, errorCode, "")
+                completion(account, metadataFolderInserted, errorCode, "")
                 
             } else {
+                
                 var errorDescription = errorDescription
                 if errorDescription == nil { errorDescription = "Internal error. Error not found" }
-                completion(account, nil, nil, errorCode, errorDescription!)
+                
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                
+                completion(account, nil, errorCode, errorDescription!)
             }
         }
     }
