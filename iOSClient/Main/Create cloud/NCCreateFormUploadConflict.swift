@@ -202,7 +202,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 175
+        return 180
     }
 }
 
@@ -259,7 +259,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 }
             }
             
-            cell.labelDetail.text = CCUtility.dateDiff(metadataInConflict.date as Date) + ", " + CCUtility.transformedSize(metadataInConflict.size)
+            cell.labelDetailNew.text = CCUtility.dateDiff(metadataInConflict.date as Date) + "\n" + CCUtility.transformedSize(metadataInConflict.size)
                         
             if metadatasConflictNewFiles.contains(metadata.ocId) {
                 cell.switchNewFile.isOn = true

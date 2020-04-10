@@ -9,11 +9,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="175" id="eGO-5i-ez1" customClass="NCCreateFormUploadConflictCell" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="641" height="175"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="275" id="eGO-5i-ez1" customClass="NCCreateFormUploadConflictCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="641" height="275"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="eGO-5i-ez1" id="y6Q-vz-Xda">
-                <rect key="frame" x="0.0" y="0.0" width="641" height="175"/>
+                <rect key="frame" x="0.0" y="0.0" width="641" height="275"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="WSQ-HI-Wkg">
@@ -29,20 +29,23 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hq-re-YVn">
-                        <rect key="frame" x="5" y="94.5" width="631" height="18"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0hq-re-YVn">
+                        <rect key="frame" x="5" y="94.5" width="631" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="5Ed-pm-3oc"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FUL-4V-OgL">
-                        <rect key="frame" x="5" y="134" width="51" height="31"/>
+                        <rect key="frame" x="5" y="234" width="51" height="31"/>
                         <connections>
                             <action selector="valueChangedSwitchNewFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="s5p-Ao-3Ty"/>
                         </connections>
                     </switch>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jBi-8r-tc5">
-                        <rect key="frame" x="587" y="134" width="51" height="31"/>
+                        <rect key="frame" x="587" y="234" width="51" height="31"/>
                         <connections>
                             <action selector="valueChangedSwitchAlreadyExistingFile:" destination="eGO-5i-ez1" eventType="valueChanged" id="MVS-Uv-X6e"/>
                         </connections>
@@ -75,12 +78,12 @@
             <connections>
                 <outlet property="imageFile" destination="Tx2-JG-GGa" id="b00-10-AN8"/>
                 <outlet property="imageFileNew" destination="WSQ-HI-Wkg" id="JRg-97-v7V"/>
-                <outlet property="labelDetail" destination="0hq-re-YVn" id="MjI-Yb-xMj"/>
+                <outlet property="labelDetailNew" destination="0hq-re-YVn" id="TFQ-C0-v8p"/>
                 <outlet property="labelFileName" destination="Hv8-qJ-lkR" id="g4W-UF-h47"/>
                 <outlet property="switchAlreadyExistingFile" destination="jBi-8r-tc5" id="L0M-zb-k6v"/>
                 <outlet property="switchNewFile" destination="FUL-4V-OgL" id="jhA-7N-hqA"/>
             </connections>
-            <point key="canvasLocation" x="173.18840579710147" y="40.513392857142854"/>
+            <point key="canvasLocation" x="173.18840579710147" y="73.995535714285708"/>
         </tableViewCell>
     </objects>
 </document>
