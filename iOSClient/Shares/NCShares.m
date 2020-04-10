@@ -299,8 +299,6 @@
         [[NCNetworking sharedInstance] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
             
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                metadata.fileName = table.fileName;
-                metadata.fileNameView = table.fileName;
                 [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
             }
