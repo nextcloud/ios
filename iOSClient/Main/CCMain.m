@@ -1308,9 +1308,7 @@
     if (self.searchController.isActive) {
         
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
-            
         _searchFileName = @""; // forced reload searchg
-        
         [self updateSearchResultsForSearchController:self.searchController];
         
         return;
