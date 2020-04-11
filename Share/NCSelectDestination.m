@@ -54,6 +54,8 @@
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
         
+        [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
+        
     } else {
         
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"_no_active_account_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -234,9 +236,12 @@
             self.move.enabled = false;
         }
         
-        _loadingFolder = YES;
+        _loadingFolder = NO;
         [self.tableView reloadData];
     }];
+    
+    _loadingFolder = YES;
+    [self.tableView reloadData];
     
     /*
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSInteger errorCode, NSString *errorDecription) {
