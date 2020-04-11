@@ -223,51 +223,24 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
     func readFileOrFolder(serverUrl: String, completionHandler: @escaping () -> Void) {
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
+        NCNetworking.sharedInstance.readFile(serverUrlFileName: serverUrl, account: fileProviderData.sharedInstance.account) { (account, metadata, errorCode, errorDescription) in
             
-            var needReadFolder = true
-        
-            if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                if errorCode == 0 && files != nil && files!.count == 1 {
-                    if tableDirectory.etag == files![0].etag {
-                        needReadFolder = false
-                    }
-                }
-            }
+            if errorCode == 0  {
             
-            if needReadFolder {
-
-                NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
-                    
-                    if errorCode == 0 && files != nil {
-                        
-                        // Metadata conversion
-                        var metadataFolder = tableMetadata()
-                        let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
-                        
-                        // Update directory etag
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: metadataFolder.etag, ocId: metadataFolder.ocId, encrypted: metadataFolder.e2eEncrypted, richWorkspace: nil, account: account)
-                                                
-                        // Update DB
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-                        NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
-                        let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
-                        let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
-                        NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-                         
-                        if metadatasInDownload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
-                        }
-                        if metadatasInUpload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                        }
+                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+            
+                if tableDirectory == nil || tableDirectory!.etag != metadata!.etag {
+            
+                    NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: fileProviderData.sharedInstance.account) { (account, metadataFolder, errorCode, ErrorDescription) in
+                        completionHandler()
                     }
+                } else {
                     completionHandler()
-                })
+                }
             } else {
                 completionHandler()
             }
-        })
+        }
     }
     
     func readFolder(serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
