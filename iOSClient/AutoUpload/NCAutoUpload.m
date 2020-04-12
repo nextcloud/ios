@@ -24,6 +24,7 @@
 #import "NCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
+#import "NSDate+NCUtil.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
@@ -387,13 +388,8 @@
         if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = k_upload_session_wwan;
         if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = k_upload_session_wwan;
         
-        NSDateFormatter *formatter = [NSDateFormatter new];
-        
-        [formatter setDateFormat:@"yyyy"];
-        NSString *yearString = [formatter stringFromDate:assetDate];
-        
-        [formatter setDateFormat:@"MM"];
-        NSString *monthString = [formatter stringFromDate:assetDate];
+        NSString *yearString = [assetDate NC_stringFromDateWithFormat:@"yyyy"];
+        NSString *monthString = [assetDate NC_stringFromDateWithFormat:@"MM"];
         
         if (tableAccount.autoUploadCreateSubfolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];

@@ -25,6 +25,7 @@
 #import "CCGraphics.h"
 #import "NCBridgeSwift.h"
 #import <OpenSSL/OpenSSL.h>
+#import "NSDate+NCUtil.h"
 
 #define INTRO_MessageType       @"MessageType_"
 
@@ -816,9 +817,8 @@
 
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
-    NSString *fileNameDate = [formatter stringFromDate:[NSDate date]];
+  
+    NSString *fileNameDate = [[NSDate date] NC_stringFromDateWithFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *returnFileName;
     
     if ([fileName isEqualToString:@""] && ![extension isEqualToString:@""]) {
@@ -853,10 +853,8 @@
     if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];
     else numberFileName = [CCUtility getIncrementalNumber];
     
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
-    NSString *fileNameDate = [formatter stringFromDate:fileDate];
-    
+    NSString *fileNameDate = [fileDate NC_stringFromDateWithFormat:@"yy-MM-dd HH-mm-ss"];
+
     NSString *fileNameType = @"";
     if (fileType == PHAssetMediaTypeImage)
         fileNameType = NSLocalizedString(@"_photo_", nil);
@@ -879,26 +877,16 @@
         
         if ([fileName length] > 0) {
             
-            [formatter setDateFormat:@"dd"];
-            NSString *dayNumber = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"MMM"];
-            NSString *month = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"MM"];
-            NSString *monthNumber = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"yyyy"];
-            NSString *year = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"yy"];
-            NSString *yearNumber = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"HH"];
-            NSString *hour24 = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"hh"];
-            NSString *hour12 = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"mm"];
-            NSString *minute = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"ss"];
-            NSString *second = [formatter stringFromDate:fileDate];
-            [formatter setDateFormat:@"a"];
-            NSString *ampm = [formatter stringFromDate:fileDate];
+            NSString *dayNumber = [fileDate NC_stringFromDateWithFormat:@"dd"];
+            NSString *month = [fileDate NC_stringFromDateWithFormat:@"MMM"];;
+            NSString *monthNumber = [fileDate NC_stringFromDateWithFormat:@"MM"];
+            NSString *year = [fileDate NC_stringFromDateWithFormat:@"yyyy"];
+            NSString *yearNumber = [fileDate NC_stringFromDateWithFormat:@"yy"];
+            NSString *hour24 = [fileDate NC_stringFromDateWithFormat:@"HH"];
+            NSString *hour12 = [fileDate NC_stringFromDateWithFormat:@"hh"];
+            NSString *minute = [fileDate NC_stringFromDateWithFormat:@"mm"];
+            NSString *second = [fileDate NC_stringFromDateWithFormat:@"ss"];
+            NSString *ampm = [fileDate NC_stringFromDateWithFormat:@"a"];
             
             // Replace string with date
 
@@ -1323,14 +1311,11 @@
         
         NSDate *assetDate = asset.creationDate;
         
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy"];
-        NSString *yearString = [formatter stringFromDate:assetDate];
+        NSString *yearString = [assetDate NC_stringFromDateWithFormat:@"yyyy"];
         if (yearString)
             [datesSubFolder addObject:yearString];
         
-        [formatter setDateFormat:@"MM"];
-        NSString *monthString = [formatter stringFromDate:assetDate];
+        NSString *monthString = [assetDate NC_stringFromDateWithFormat:@"MM"];
         monthString = [NSString stringWithFormat:@"%@/%@", yearString, monthString];
         if (monthString)
             [datesSubFolder addObject:monthString];

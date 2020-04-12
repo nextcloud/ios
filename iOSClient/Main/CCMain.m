@@ -33,7 +33,7 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
-
+#import "NSDate+NCUtil.h"
 @interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
 {
     AppDelegate *appDelegate;
@@ -1033,16 +1033,12 @@
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
         
         NSDate *assetDate = asset.creationDate;
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
         // Create serverUrl if use sub folder
         if (useSubFolder) {
             
-            [formatter setDateFormat:@"yyyy"];
-            NSString *yearString = [formatter stringFromDate:assetDate];
-        
-            [formatter setDateFormat:@"MM"];
-            NSString *monthString = [formatter stringFromDate:assetDate];
+            NSString *yearString = [assetDate NC_stringFromDateWithFormat:@"yyyy"];
+            NSString *monthString = [assetDate NC_stringFromDateWithFormat:@"MM"];
             
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         }
