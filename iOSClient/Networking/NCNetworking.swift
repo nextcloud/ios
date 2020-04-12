@@ -218,12 +218,12 @@ import NCCommunication
             
             if errorCode == 0 && files != nil {
                 
-                let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, account: account)
+                //let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, account: account)
                 var metadataFolder = tableMetadata()
                 let metadatas = self.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
                 
                 // Add directory
-                NCManageDatabase.sharedInstance.addDirectory(encrypted: isFolderEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                 
                 NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
                 
