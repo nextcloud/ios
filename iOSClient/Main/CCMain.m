@@ -1313,7 +1313,7 @@
                 if ([CCUtility isEndToEndEnabled:account]) {
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                         NSString *metadata;
-                        NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata ocId:metadataFolderocId user:appDelegate.activeUrl userID:appDelegate.activeUserID password:[CCUtility getPassword:appDelegate.activeAccount] url:appDelegate.activeUrl];
+                        NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata ocId:metadataFolderocId user:appDelegate.activeUser userID:appDelegate.activeUserID password:[CCUtility getPassword:appDelegate.activeAccount] url:appDelegate.activeUrl];
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (error) {
                                 if (error.code != kOCErrorServerPathNotFound)

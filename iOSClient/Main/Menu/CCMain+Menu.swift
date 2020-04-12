@@ -320,7 +320,7 @@ extension CCMain {
                             DispatchQueue.global(qos: .userInitiated).async {
                                 let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
                                 DispatchQueue.main.async {
-                                    if(error != nil) {
+                                    if (error != nil) {
                                         NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
                                     } else {
                                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
@@ -342,7 +342,7 @@ extension CCMain {
                             DispatchQueue.global(qos: .userInitiated).async {
                                 let error = NCNetworkingEndToEnd.sharedManager()?.deletemarkEndToEndFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
                                 DispatchQueue.main.async {
-                                    if(error != nil) {
+                                    if (error != nil) {
                                         NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
                                     } else {
                                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
