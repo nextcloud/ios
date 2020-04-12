@@ -200,7 +200,7 @@ extension CCMain {
             
             var isDirectoryLock = false
             var isOffline = false
-            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, account: metadata.account)
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
 
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
                 if (directory.lock && CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {

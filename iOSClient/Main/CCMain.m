@@ -1567,7 +1567,7 @@
     } else {
         
         // E2EE DENIED
-        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) {
+        if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
             
             [[NCContentPresenter shared] messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
             return;

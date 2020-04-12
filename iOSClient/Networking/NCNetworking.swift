@@ -155,7 +155,7 @@ import NCCommunication
     
     //MARK: - File <> Metadata
     
-    @objc func convertFileToMetadata(_ file: NCFile, isFolderEncrypted: Bool) -> tableMetadata {
+    @objc func convertFileToMetadata(_ file: NCFile, isEncrypted: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         
@@ -187,8 +187,8 @@ import NCCommunication
         metadata.typeFile = file.typeFile
         
         // E2EE find the fileName for fileNameView
-        if isFolderEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %d", account, file.serverUrl, file.fileName)) {
+        if isEncrypted || metadata.e2eEncrypted {
+            if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
             }
         }
@@ -201,16 +201,16 @@ import NCCommunication
         var metadatas = [tableMetadata]()
         var counter: Int = 0
         var serverUrl: String = ""
-        var isFolderEncrypted: Bool = false
+        var isEncrypted: Bool = false
 
         for file in files {
                         
             if serverUrl != file.serverUrl {
                 serverUrl = file.serverUrl
-                isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, account: account)
+                isEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
             }
             
-            let metadata = self.convertFileToMetadata(file, isFolderEncrypted: isFolderEncrypted)
+            let metadata = self.convertFileToMetadata(file, isEncrypted: isEncrypted)
             
             if metadataFolder != nil && counter == 0 {
                 metadataFolder!.initialize(to: metadata)
@@ -279,8 +279,9 @@ import NCCommunication
 
             if errorCode == 0 && files != nil {
              
-                let isFolderEncrypted = CCUtility.isFolderEncrypted(files![0].serverUrl, account: account)
-                let metadata = self.convertFileToMetadata(files![0], isFolderEncrypted: isFolderEncrypted)
+                let file = files![0]
+                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account)
+                let metadata = self.convertFileToMetadata(file, isEncrypted: isEncrypted)
                 completion(account, metadata, errorCode, "")
                 
             } else {

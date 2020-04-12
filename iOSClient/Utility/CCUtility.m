@@ -1428,26 +1428,27 @@
     return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
 }
 
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account
 {
-    BOOL depth = NO;
     
-    if (depth) {
+    /*
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
+    for (tableDirectory *directory in directories) {
+        if ([serverUrl containsString:directory.serverUrl])
+            return true;
+
+    */
+    
+    if (e2eEncrypted) {
         
-        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
-        for (tableDirectory *directory in directories) {
-            if ([serverUrl containsString:directory.serverUrl])
-                return true;
-        }
+        return true;
         
     } else {
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", account, serverUrl]];
-        if (directory != nil)
-            return true;
+        if (directory != nil) return true;
+        else return false;
     }
-    
-    return false;
 }
 
 #pragma --------------------------------------------------------------------------------------------

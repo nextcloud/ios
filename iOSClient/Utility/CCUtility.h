@@ -252,7 +252,7 @@
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account;
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account;
 
 // ===== CCMetadata =====
 

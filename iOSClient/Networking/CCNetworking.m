@@ -695,7 +695,7 @@
                 } else {
                     
                     // OOOOOK
-                    if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
+                    if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
                         [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                     } else {
                         [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
@@ -748,7 +748,7 @@
                             tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
                             
                             // OOOOOK
-                            if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
+                            if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
                                 [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
                             } else {
                                 [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
@@ -765,7 +765,7 @@
         tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
         
         // OOOOOK
-        if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
+        if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
             [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
         } else {
             [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
@@ -945,7 +945,7 @@
     } else {
         
         // E2EE : CREATE AND SEND METADATA
-        if ([CCUtility isFolderEncrypted:metadata.serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
+        if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
             
             NSString *serverUrl = metadata.serverUrl;
             
@@ -1060,7 +1060,7 @@
     }
     
     // is this a E2EE Directory ?
-    if ([CCUtility isFolderEncrypted:serverUrl account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
+    if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:false account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
         isE2EEDirectory = true;
     }
     
