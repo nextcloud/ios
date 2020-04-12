@@ -675,8 +675,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     
                     _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
-                    if let image = UIImage.init(contentsOfFile: fileNameLocalPath) {
-                        
+                    if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                         CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
                         completion(index, image, metadata, ZoomScale.default, nil)
