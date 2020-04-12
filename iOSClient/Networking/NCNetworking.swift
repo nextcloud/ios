@@ -200,14 +200,16 @@ import NCCommunication
         
         var metadatas = [tableMetadata]()
         var counter: Int = 0
-        var serverUrl: String = ""
         var isEncrypted: Bool = false
+        var listServerUrl = [String:Bool]()
 
         for file in files {
                         
-            if serverUrl != file.serverUrl {
-                serverUrl = file.serverUrl
-                isEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
+            if let key = listServerUrl[file.serverUrl] {
+                isEncrypted = key
+            } else {
+                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
+                listServerUrl[file.serverUrl] = isEncrypted
             }
             
             let metadata = self.convertFileToMetadata(file, isEncrypted: isEncrypted)
