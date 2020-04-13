@@ -49,7 +49,7 @@ class NCEndToEndMetadata : NSObject  {
         struct filesCodable: Codable {
             
             let initializationVector: String
-            let authenticationTag: String
+            let authenticationTag: String?
             let metadataKey: Int                // Number of metadataKey
             let encrypted: String               // encryptedFileAttributes
         }
@@ -142,6 +142,7 @@ class NCEndToEndMetadata : NSObject  {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
+        //let dataQuickLook = (data as! NSData)
                 
         do {
             
@@ -195,7 +196,7 @@ class NCEndToEndMetadata : NSObject  {
                         let object = tableE2eEncryption()
                     
                         object.account = account
-                        object.authenticationTag = filesCodable.authenticationTag
+                        object.authenticationTag = filesCodable.authenticationTag ?? ""
                         object.fileName = encryptedFileAttributes.filename
                         object.fileNameIdentifier = fileNameIdentifier
                         object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, activeUrl: url)

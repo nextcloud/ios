@@ -2561,7 +2561,7 @@
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, ocId];
     if (token) {
-        serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+        serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
         serverPath = [serverPath stringByAppendingString:@"&format=json"];
     } else {
         serverPath = [serverPath stringByAppendingString:@"?format=json"];
@@ -2590,9 +2590,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"token"] && ![[data valueForKey:@"token"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"e2e-token"] && ![[data valueForKey:@"e2e-token"] isKindOfClass:[NSNull class]]) {
                     
-                    token = [data valueForKey:@"token"];
+                    token = [data valueForKey:@"e2e-token"];
                     successRequest(response, token, request.redirectedServer);
                     
                 } else {
@@ -2757,7 +2757,7 @@
 
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, ocId];
-    serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+    serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
