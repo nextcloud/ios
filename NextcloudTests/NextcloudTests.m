@@ -23,6 +23,16 @@
 #import <XCTest/XCTest.h>
 
 #import "NSDate+NCUtil.h"
+#import "NCBridgeSwift.h"
+#import "NCAutoUpload.h"
+#import "AppDelegate.h"
+#import "NCAutoUpload+NCUtil.h"
+
+//#import <Nexcloud/Nexcloud-Swift.h>
+@class tableAccount;
+
+#define TICK   NSDate *startTime = [NSDate date]
+#define TOCK NSLog(@"%s Time: %f", __func__, -[startTime timeIntervalSinceNow])
 
 @interface NextcloudTests : XCTestCase
 
@@ -176,6 +186,124 @@
     }
 }
 
+// this is not ideal, I wanted to mock getCameraRollAssets and fill with random assets
+// but couldn't figure it out.
+// run this one a device with nextcloud logged in and photos in the lib
+// run time for ~28000 assets: 476.030864s (8 mins)
+// vs old method: 545.543996 (9 mins) - so around a 14% improvement.
+// uncomment the interval/progress lines to see your progress through your lib
+-(void)testCreatingNewAssetsToUploadNewMethod{
+    
+    TICK;
+    
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
+    NSString *autoUploadPath = ((AppDelegate *)UIApplication.sharedApplication.delegate).activeUrl;
+    NSString *serverUrl;
+    
+    PHFetchResult *newAssetToUpload = [[NCAutoUpload sharedInstance] getCameraRollAssets:tableAccount selector:selectorUploadAutoUploadAll alignPhotoLibrary:NO];
+    
+//    float interval = 100/(float)newAssetToUpload.count;
+//    float progress = 0.0f;
+//
+//    int maxInt = 0;
+//
+    for (PHAsset *asset in newAssetToUpload) {
+        
+        NSDate *assetDate = asset.creationDate;
+        PHAssetMediaType assetMediaType = asset.mediaType;
+        NSString *session;
+        NSString __unused *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType keyFileNameOriginal:k_keyFileNameOriginalAutoUpload];
+        
+        // Select type of session
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = k_upload_session_wwan;
+        
+        NSString *yearString = [assetDate NC_stringFromDateWithFormat:@"yyyy"];
+        NSString *monthString = [assetDate NC_stringFromDateWithFormat:@"MM"];
+        
+        if (tableAccount.autoUploadCreateSubfolder){
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
+        }
+        else{
+            serverUrl = autoUploadPath;
+        }
+        
+//        progress += interval;
+//
+//        if((int)progress > maxInt){
+//            NSLog(@"Progress = %@", [NSString stringWithFormat:@"%.2f\%%", progress]);
+//            maxInt = (int)progress;
+//        }
+    }
+        
+    TOCK;
+}
+
+// run this one a device with nextcloud logged in and photos in the lib
+// TOCK gives you the run time
+-(void)testCreatingNewAssetsToUploadOldMethod{
+    
+    TICK;
+    
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    
+    NSString *autoUploadPath = ((AppDelegate *)UIApplication.sharedApplication.delegate).activeUrl;
+    NSString *serverUrl;
+    
+    PHFetchResult *newAssetToUpload = [[NCAutoUpload sharedInstance] getCameraRollAssets:tableAccount selector:selectorUploadAutoUploadAll alignPhotoLibrary:NO];
+    
+//    float interval = 100/(float)newAssetToUpload.count;
+//    float progress = 0.0f;
+//
+//    int maxInt = 0;
+//
+    for (PHAsset *asset in newAssetToUpload) {
+        
+        NSDate *assetDate = asset.creationDate;
+        PHAssetMediaType assetMediaType = asset.mediaType;
+        NSString *session;
+        NSString __unused *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType keyFileNameOriginal:k_keyFileNameOriginalAutoUpload];
+        
+        // Select type of session
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = k_upload_session;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = k_upload_session_wwan;
+        
+        NSDateFormatter *formatter = [NSDateFormatter new];
+        
+        [formatter setDateFormat:@"yyyy"];
+        NSString *yearString = [formatter stringFromDate:assetDate];
+        
+        [formatter setDateFormat:@"MM"];
+        NSString *monthString = [formatter stringFromDate:assetDate];
+        
+        if (tableAccount.autoUploadCreateSubfolder){
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
+        }
+        else{
+            serverUrl = autoUploadPath;
+        }
+        
+//        progress += interval;
+//
+//        if((int)progress > maxInt){
+//            NSLog(@"Progress = %@", [NSString stringWithFormat:@"%.2f\%%", progress]);
+//            maxInt = (int)progress;
+//        }
+    }
+        
+    TOCK;
+}
+
+
 #pragma mark - Helpers
 /**
  Generate a random date sometime between now and n days before day.
@@ -204,6 +332,5 @@
 
     return randomDate;
 }
-
 
 @end
