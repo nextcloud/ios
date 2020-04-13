@@ -67,7 +67,12 @@ class NCContentPresenter: NSObject {
             default:
                 var description = description
                 if description == nil { description = "" }
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description!, comment: ""), delay: delay, imageName: nil, type: type, name: "\(errorCode)")
+                if type == messageType.error {
+                    description = NSLocalizedString("_error_", comment: "") + ": \(errorCode), " + NSLocalizedString(description!, comment: "")
+                } else {
+                    description = NSLocalizedString(description!, comment: "")
+                }
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description!, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
             }
         }
     }
