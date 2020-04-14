@@ -1,4 +1,4 @@
-github "nextcloud/ios-communication-library" "v0.54"
+github "infomaniak/ios-communication-library" "patch-folder-name"
 github "tilltue/TLPhotoPicker" "2.0.7"
 github "kishikawakatsumi/UICKeyChainStore" "v2.1.2"
 github "danielsaidi/Sheeeeeeeeet" "3.0.9"
