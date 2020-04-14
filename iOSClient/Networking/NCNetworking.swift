@@ -295,10 +295,15 @@ import NCCommunication
     
     @objc func deleteMetadata(_ metadata: tableMetadata, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
             
-        if directory != nil && directory?.e2eEncrypted == true {
-            self.deleteMetadataE2EE(metadata, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
+        if isDirectoryEncrypted {
+            
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                
+                self.deleteMetadataE2EE(metadata, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+            }
+            
         } else {
             // Verify Live Photo
             if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
@@ -392,11 +397,17 @@ import NCCommunication
     
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
         
-        if directory != nil && directory!.e2eEncrypted {
-            renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory!, user: user, userID: userID, password: password, url: url, completion: completion)
+        if isDirectoryEncrypted {
+            
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                
+                 renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+            }
+    
         } else {
+            
             renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
         }
     }

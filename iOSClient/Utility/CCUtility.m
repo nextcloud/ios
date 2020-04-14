@@ -1431,23 +1431,19 @@
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account
 {
     
-    /*
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
-    for (tableDirectory *directory in directories) {
-        if ([serverUrl containsString:directory.serverUrl])
-            return true;
-
-    */
-    
     if (e2eEncrypted) {
         
         return true;
         
     } else {
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", account, serverUrl]];
-        if (directory != nil) return true;
-        else return false;
+        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
+        for (tableDirectory *directory in directories) {
+            if ([serverUrl containsString:directory.serverUrl])
+                return true;
+        }
+        
+        return false;
     }
 }
 
