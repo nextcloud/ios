@@ -85,7 +85,7 @@ typedef enum {
 /* This flag indicate if the server handling forbidden characters */
 @property BOOL isForbiddenCharactersAvailable;
 
-
+@property NSInteger nextcloudVersion;
 
 ///-----------------------------------
 /// @name Init with Upload Session Manager
@@ -167,6 +167,8 @@ typedef enum {
  * Method to update the a request with the current credentials
  */
 - (id) getRequestWithCredentials:(id) request;
+
+- (void) setupNextcloudVersion:(NSInteger) version;
 
 
 #pragma mark - Network operations
