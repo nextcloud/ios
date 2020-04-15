@@ -1436,11 +1436,17 @@
         return true;
         
     } else {
+       
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@  AND serverUrl == %@", account, serverUrl]];
         
-        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
-        for (tableDirectory *directory in directories) {
-            if ([serverUrl containsString:directory.serverUrl])
+        while (directory != nil) {
+            if (directory.e2eEncrypted == true) {
                 return true;
+            }
+            NSURL *url = [NSURL URLWithString:serverUrl];
+            serverUrl = [url URLByDeletingLastPathComponent].absoluteString;
+            serverUrl = [serverUrl substringToIndex:[serverUrl length]-1];
+            directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@  AND serverUrl == %@", account, serverUrl]];
         }
         
         return false;

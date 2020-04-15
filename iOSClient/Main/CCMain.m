@@ -1295,7 +1295,9 @@
         if (errorCode == 0 ) {
             
             _metadataFolder = metadataFolder;
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
             [self setTitle];
+            
 
             // File is changed ??
             /*
@@ -1307,7 +1309,8 @@
             */
             
             // E2EE Is encrypted folder get metadata
-            if (_metadataFolder.e2eEncrypted) {
+            
+            if (isFolderEncrypted) {
                 NSString *metadataFolderFileId = metadataFolder.fileId;
                 // Read Metadata
                 if ([CCUtility isEndToEndEnabled:account]) {
@@ -3209,7 +3212,7 @@
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMain"];
             
             viewController.serverUrl = serverUrlPush;
-            viewController.titleMain = metadata.fileName;
+            viewController.titleMain = metadata.fileNameView;
             viewController.blinkFileNamePath = blinkFileNamePath;
             
             // save self
@@ -3221,7 +3224,7 @@
            
             if (viewController.isViewLoaded) {
                 
-                viewController.titleMain = metadata.fileName;
+                viewController.titleMain = metadata.fileNameView;
                 viewController.blinkFileNamePath = blinkFileNamePath;
                 
                 // Fix : Application tried to present modally an active controller
