@@ -356,7 +356,7 @@ import NCCommunication
                         
         DispatchQueue.global().async {
             // LOCK FOLDER
-            let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, ocId: directory.ocId, user: user, userID: userID, password: password, url: url) as NSError?
+            let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: directory.serverUrl, fileId: directory.fileId, user: user, userID: userID, password: password, url: url) as NSError?
             
             DispatchQueue.main.async {
                 if error == nil {
@@ -503,7 +503,7 @@ import NCCommunication
                 
                 // UNLOCK
                 if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: metadata.serverUrl) {
-                    if let error = NCNetworkingEndToEnd.sharedManager()?.unlockFolderEncrypted(onServerUrl: metadata.serverUrl, ocId: directory.ocId, token: tableLock.token, user: user, userID: userID, password: password, url: url) as NSError? {
+                    if let error = NCNetworkingEndToEnd.sharedManager()?.unlockFolderEncrypted(onServerUrl: metadata.serverUrl, fileId: directory.fileId, token: tableLock.token, user: user, userID: userID, password: password, url: url) as NSError? {
                         
                         self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                     }
@@ -598,7 +598,7 @@ import NCCommunication
                             
                             DispatchQueue.global().async {
                                 
-                                if let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: fileNameFolderUrl, ocId: ocId, user: user, userID: userID, password: password, url: url) as NSError? {
+                                if let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: fileNameFolderUrl, fileId: metadataFolder?.fileId, user: user, userID: userID, password: password, url: url) as NSError? {
                                     self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                                     return
                                 }
