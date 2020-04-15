@@ -587,7 +587,7 @@ import NCCommunication
         
         NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, account: account) { (account, ocId, date, errorCode, errorDescription) in
             if errorCode == 0 {
-                if isDirectoryEncrypted {
+                if isDirectoryEncrypted && NCManageDatabase.sharedInstance.getServerVersion(account: account) == k_nextcloud_version_19_0 {
                     
                     DispatchQueue.global().async {
                         
