@@ -291,12 +291,13 @@
     }];
 }
 
-- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileId:(NSString **)fileId error:(NSError **)error
+- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted ocId:(NSString **)ocId fileId:(NSString **)fileId error:(NSError **)error
 {
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
     __block NSError *returnError = nil;
     __block NSString *returnFileId = nil;
+    __block NSString *returnOcId = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -312,7 +313,8 @@
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             NSDictionary *fields = [response allHeaderFields];
-            returnFileId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            returnOcId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            returnFileId = returnOcId;
             
             if (encrypted) {
                 
@@ -350,6 +352,7 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
+    *ocId = returnOcId;
     *fileId = returnFileId;
     *error = returnError;
 }
