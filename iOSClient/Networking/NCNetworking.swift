@@ -578,7 +578,7 @@ import NCCommunication
             return
         }
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account)
-        if isDirectoryEncrypted {
+        if isDirectoryEncrypted && NCManageDatabase.sharedInstance.getServerVersion(account: account) == k_nextcloud_version_19_0 {
             fileNameIdentifier = CCUtility.generateRandomIdentifier()
             fileNameFolderUrl = serverUrl + "/" + fileNameIdentifier
         } else {
@@ -587,7 +587,7 @@ import NCCommunication
         
         NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, account: account) { (account, ocId, date, errorCode, errorDescription) in
             if errorCode == 0 {
-                if isDirectoryEncrypted && NCManageDatabase.sharedInstance.getServerVersion(account: account) == k_nextcloud_version_19_0 {
+                if isDirectoryEncrypted {
                     
                     DispatchQueue.global().async {
                         
@@ -595,28 +595,31 @@ import NCCommunication
                             self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                             return
                         }
+                        
+                        if NCManageDatabase.sharedInstance.getServerVersion(account: account) == k_nextcloud_version_19_0 {
                                                         
-                        NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
-                        let metadataKey = NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []) // AES_KEY_128_LENGTH
-                        
-                        object.account = account
-                        object.authenticationTag = nil
-                        object.fileName = fileNameFolder
-                        object.fileNameIdentifier = fileNameIdentifier
-                        object.fileNamePath = ""
-                        object.key = key! as String
-                        object.initializationVector = initializationVector! as String
-                        object.metadataKey = metadataKey!
-                        object.metadataKeyIndex = 0
-                        object.mimeType = "application/directory"
-                        object.serverUrl = serverUrl
-                        object.version = Int(NCManageDatabase.sharedInstance.getEndToEndEncryptionVersion(account: account))
-                        let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
-                        
-                        // Send Metadata
-                        if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, unlock: true, account: account, user: user, userID: userID, password: password, url: url) as NSError? {
-                            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
-                            return
+                            NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
+                            let metadataKey = NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []) // AES_KEY_128_LENGTH
+                            
+                            object.account = account
+                            object.authenticationTag = nil
+                            object.fileName = fileNameFolder
+                            object.fileNameIdentifier = fileNameIdentifier
+                            object.fileNamePath = ""
+                            object.key = key! as String
+                            object.initializationVector = initializationVector! as String
+                            object.metadataKey = metadataKey!
+                            object.metadataKeyIndex = 0
+                            object.mimeType = "application/directory"
+                            object.serverUrl = serverUrl
+                            object.version = Int(NCManageDatabase.sharedInstance.getEndToEndEncryptionVersion(account: account))
+                            let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
+                            
+                            // Send Metadata
+                            if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, unlock: true, account: account, user: user, userID: userID, password: password, url: url) as NSError? {
+                                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
+                                return
+                            }
                         }
                         
                         DispatchQueue.main.async {
