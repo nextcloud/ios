@@ -843,7 +843,7 @@
             // Get the last metadata
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", tableAccount.account, metadata.serverUrl]];
             
-            error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&e2eeMetadata ocId:directory.ocId user:tableAccount.user userID:tableAccount.userID password: [CCUtility getPassword:tableAccount.account] url:tableAccount.url];
+            error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&e2eeMetadata fileId:directory.fileId user:tableAccount.user userID:tableAccount.userID password: [CCUtility getPassword:tableAccount.account] url:tableAccount.url];
             if (error == nil) {
                 if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eeMetadata privateKey:[CCUtility getEndToEndPrivateKey:tableAccount.account] serverUrl:metadata.serverUrl account:tableAccount.account url:tableAccount.url] == false) {
                     
@@ -1224,7 +1224,7 @@
             
             if (tableLock) {
                 
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl ocId:tableLock.ocId token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] unlockEndToEndFolderEncryptedOnServerUrl:serverUrl fileId:tableLock.fileId token:tableLock.token user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 if (error) {
                     [[NCContentPresenter shared] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
                 }
