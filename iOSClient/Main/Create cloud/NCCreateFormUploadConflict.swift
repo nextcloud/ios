@@ -136,9 +136,9 @@ import Foundation
             // new filename + num
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
             
-                let fileNameMOV = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 
-                let newFileName = NCUtility.sharedInstance.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                let newFileName = NCUtility.sharedInstance.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
                 let ocId = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: newFileName, directory: false)!
                 metadata.ocId = ocId
                 metadata.fileName = newFileName
@@ -173,11 +173,11 @@ import Foundation
             // remove (MOV)
             } else if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
                 
-                let fileNameMOV = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 var index = 0
                 
                 for metadataMOV in metadatasMOV {
-                    if metadataMOV.fileName == fileNameMOV {
+                    if metadataMOV.fileNameView == fileNameMOV {
                         metadatasMOV.remove(at: index)
                         break
                     }
@@ -223,15 +223,15 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
             let metadata = metadatasConflict[indexPath.row]
-            let fileNameExtension = (metadata.fileName as NSString).pathExtension.lowercased()
-            let fileNameWithoutExtension = (metadata.fileName as NSString).deletingPathExtension
-            var fileNameConflict = metadata.fileName
+            let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.lowercased()
+            let fileNameWithoutExtension = (metadata.fileNameView as NSString).deletingPathExtension
+            var fileNameConflict = metadata.fileNameView
 
             if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
                 fileNameConflict = fileNameWithoutExtension + ".jpg"
             }
 
-            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameConflict)) else { return UITableViewCell() }
+            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadata.account, metadata.serverUrl, fileNameConflict)) else { return UITableViewCell() }
             
             cell.ocId = metadata.ocId
             cell.delegate = self
