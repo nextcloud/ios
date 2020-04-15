@@ -509,6 +509,7 @@
 - (BOOL)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *ocId;
+    NSString *fileId;
     NSError *error;
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     BOOL encrypted = [CCUtility isFolderEncrypted:autoUploadPath e2eEncrypted:false account:appDelegate.activeAccount];
@@ -519,7 +520,7 @@
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
         if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId etag:nil permissions:nil serverUrl:autoUploadPath richWorkspace:nil account:appDelegate.activeAccount];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId fileId:fileId etag:nil permissions:nil serverUrl:autoUploadPath richWorkspace:nil account:appDelegate.activeAccount];
         
     } else {
        
@@ -540,7 +541,7 @@
             
             if ( error == nil) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId etag:nil permissions:nil serverUrl:folderPathName richWorkspace:nil account:appDelegate.activeAccount];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId fileId:fileId etag:nil permissions:nil serverUrl:folderPathName richWorkspace:nil account:appDelegate.activeAccount];
                 
             } else {
                 

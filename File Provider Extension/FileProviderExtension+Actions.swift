@@ -37,7 +37,7 @@ extension FileProviderExtension {
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
         NCCommunication.sharedInstance.createFolder(serverUrlFileName, account: fileProviderData.sharedInstance.account) { (account, ocId, date, errorCode, errorDescription) in
-            
+                        
             if errorCode == 0 {
                 
                 let metadata = tableMetadata()
@@ -45,6 +45,7 @@ extension FileProviderExtension {
                 metadata.account = account
                 metadata.directory = true
                 metadata.ocId = ocId!
+                metadata.fileId = ""
                 metadata.fileName = directoryName
                 metadata.fileNameView = directoryName
                 metadata.serverUrl = tableDirectory.serverUrl
@@ -55,7 +56,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account) else {
+                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: "", etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -186,7 +187,7 @@ extension FileProviderExtension {
                 
                 if metadata.directory {
                     
-                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, encrypted: directoryTable.e2eEncrypted, richWorkspace: nil, account: account)
+                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, fileId: nil, encrypted: directoryTable.e2eEncrypted, richWorkspace: nil, account: account)
                     
                 } else {
                     

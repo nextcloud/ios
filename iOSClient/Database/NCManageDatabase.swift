@@ -1188,7 +1188,7 @@ class NCManageDatabase: NSObject {
     //MARK: Table Directory
     
     @discardableResult
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1204,6 +1204,7 @@ class NCManageDatabase: NSObject {
         addObject.account = account
         addObject.e2eEncrypted = encrypted
         addObject.favorite = favorite
+        addObject.fileId = fileId
         if let etag = etag {
             addObject.etag = etag
         }
@@ -1251,7 +1252,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, ocId: String?, encrypted: Bool, richWorkspace: String?, account: String) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, ocId: String?, fileId: String?, encrypted: Bool, richWorkspace: String?, account: String) {
         
         let realm = try! Realm()
 
@@ -1272,6 +1273,9 @@ class NCManageDatabase: NSObject {
                 }
                 if let ocId = ocId {
                     directory.ocId = ocId
+                }
+                if let fileId = fileId {
+                    directory.fileId = fileId
                 }
                 if let serverUrlTo = serverUrlTo {
                     directory.serverUrl = serverUrlTo

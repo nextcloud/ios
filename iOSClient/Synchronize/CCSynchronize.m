@@ -94,7 +94,7 @@
     
     // Add metadata and update etag Directory
     [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId fileId:metadataFolder.fileId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
     
     // reload folder ../ *
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
