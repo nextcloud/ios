@@ -267,7 +267,7 @@ class tableDirectory: Object {
 class tableE2eEncryption: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var authenticationTag = ""
+    @objc dynamic var authenticationTag: String? = nil
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var fileNamePath = ""

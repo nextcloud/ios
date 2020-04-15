@@ -84,7 +84,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         91
+#define k_databaseSchemaVersion                         92
 
 // Intro selector
 #define k_intro_login                                   0
@@ -319,6 +319,7 @@
 #define k_nextcloud_version_16_0                        16
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
+#define k_nextcloud_version_19_0                        19
 
 // Notification Center
 
