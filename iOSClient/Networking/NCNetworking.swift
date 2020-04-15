@@ -479,7 +479,7 @@ import NCCommunication
             
             DispatchQueue.global().async {
                 
-                if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, account: metadata.account, user: user, userID: userID, password: password, url: url) as NSError? {
+                if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, unlock: false, account: metadata.account, user: user, userID: userID, password: password, url: url) as NSError? {
                     
                     self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                     
@@ -614,7 +614,7 @@ import NCCommunication
                         let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                         
                         // Send Metadata
-                        if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, account: account, user: user, userID: userID, password: password, url: url) as NSError? {
+                        if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, unlock: true, account: account, user: user, userID: userID, password: password, url: url) as NSError? {
                             self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                             return
                         }

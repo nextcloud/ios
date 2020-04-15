@@ -952,7 +952,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil unlock:false account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 

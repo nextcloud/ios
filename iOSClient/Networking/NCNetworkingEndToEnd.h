@@ -52,7 +52,7 @@
 - (NSError *)lockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl ocId:(NSString *)ocId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 - (NSError *)unlockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl ocId:(NSString *)ocId token:(NSString  *)token user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 
-- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
+- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew unlock:(BOOL)unlock account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 - (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 
 @end

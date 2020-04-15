@@ -787,7 +787,7 @@
     return returnError;
 }
 
-- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
+- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew unlock:(BOOL)unlock account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url 
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
     
@@ -818,9 +818,9 @@
     
     // send Metadata
     if (error == nil)
-        error = [self updateEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl ocId:directory.ocId unlock:NO user:user userID:userID password:password url:url];
+        error = [self updateEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl ocId:directory.ocId unlock:unlock user:user userID:userID password:password url:url];
     else if (error.code == kOCErrorServerPathNotFound)
-        error = [self storeEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl ocId:directory.ocId unlock:NO user:user userID:userID password:password url:url];
+        error = [self storeEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl ocId:directory.ocId unlock:unlock user:user userID:userID password:password url:url];
     
     return error;
 }
