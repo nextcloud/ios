@@ -127,6 +127,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                     }
                     
+                    if oldSchemaVersion < 94 {
+                        migration.deleteData(forType: tableE2eEncryptionLock.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -1619,7 +1623,7 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryptionLock.init(value: result)
     }
     
-    @objc func setE2ETokenLock(serverUrl: String, ocId: String, token: String) {
+    @objc func setE2ETokenLock(serverUrl: String, fileId: String, token: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1632,7 +1636,7 @@ class NCManageDatabase: NSObject {
         let addObject = tableE2eEncryptionLock()
                 
         addObject.account = tableAccount.account
-        addObject.ocId = ocId
+        addObject.fileId = fileId
         addObject.serverUrl = serverUrl
         addObject.token = token
                 

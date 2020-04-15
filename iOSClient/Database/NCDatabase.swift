@@ -289,12 +289,12 @@ class tableE2eEncryptionLock: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
-    @objc dynamic var ocId = ""
+    @objc dynamic var fileId = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var token = ""
     
     override static func primaryKey() -> String {
-        return "ocId"
+        return "fileId"
     }
 }
 
