@@ -1309,7 +1309,6 @@
             */
             
             // E2EE Is encrypted folder get metadata
-            
             if (isFolderEncrypted) {
                 NSString *metadataFolderFileId = metadataFolder.fileId;
                 // Read Metadata
