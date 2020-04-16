@@ -626,6 +626,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         let isPreview = CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
         let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
         let ext = CCUtility.getExtension(metadata.fileNameView)
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
         
         // Refresh self metadata && title
         if viewerImageViewController.index < metadatas.count {
@@ -653,7 +654,22 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
                 
-        // HEIC - GIF - SVG
+        // Automatic download for: Encripted - HEIC - GIF - SVG
+        } else if metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && isFolderEncrypted{
+            
+            let metadata = NCManageDatabase.sharedInstance.initNewMetadata(metadata)
+            
+            metadata.session = k_download_session
+            metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.status = Int(k_metadataStatusWaitDownload)
+            
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
+            appDelegate.startLoadAutoDownloadUpload()
+
+            completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
+            
+        // Automatic download for: HEIC - GIF - SVG
         } else if metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
