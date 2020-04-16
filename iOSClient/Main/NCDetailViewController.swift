@@ -657,16 +657,19 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         // Automatic download for: Encripted - HEIC - GIF - SVG
         } else if metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && isFolderEncrypted{
             
-            let metadata = NCManageDatabase.sharedInstance.initNewMetadata(metadata)
+            if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND session != ''", metadata.ocId)) == nil {
+                
+                let metadata = NCManageDatabase.sharedInstance.initNewMetadata(metadata)
+                                          
+                metadata.session = k_download_session
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.status = Int(k_metadataStatusWaitDownload)
+                                          
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
+                appDelegate.startLoadAutoDownloadUpload()
+            }
             
-            metadata.session = k_download_session
-            metadata.sessionError = ""
-            metadata.sessionSelector = ""
-            metadata.status = Int(k_metadataStatusWaitDownload)
-            
-            NCManageDatabase.sharedInstance.addMetadata(metadata)
-            appDelegate.startLoadAutoDownloadUpload()
-
             completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             
         // Automatic download for: HEIC - GIF - SVG
