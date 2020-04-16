@@ -427,10 +427,6 @@ class NCDetailViewController: UIViewController {
         
         closeAllSubView()
 
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) == false {
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-        }
-        
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
             NCViewerVideo.sharedInstance.removeObserver()
@@ -657,8 +653,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             }
                 
-        // HEIC
-        } else if metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF") {
+        // HEIC - GIF - SVG
+        } else if metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -676,8 +672,6 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
                     if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-                        
                         completion(index, image, metadata, ZoomScale.default, nil)
                     } else {
                         completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)

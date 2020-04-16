@@ -53,6 +53,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private let refreshControl = UIRefreshControl()
     private var loadingSearch = false
 
+    struct cacheImages {
+        static var cellPlayImage = UIImage()
+        static var cellFavouriteImage = UIImage()
+    }
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -146,6 +151,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        
+        cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
+        cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -516,9 +524,53 @@ extension NCMedia: UICollectionViewDataSource {
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+                            
+        cell.imageStatus.image = nil
+        cell.imageLocal.image = nil
+        cell.imageFavorite.image = nil
+                    
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+            cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        } else {
+            if metadata.iconName.count > 0 {
+                cell.imageItem.image = UIImage.init(named: metadata.iconName)
+            } else {
+                cell.imageItem.image = UIImage.init(named: "file")
+            }
+        }
+                    
+        // image status
+        if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            cell.imageStatus.image = cacheImages.cellPlayImage
+        }
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: true, downloadThumbnail: false, shares: nil, source: self)
+        // image Local
+        let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
+            else { cell.imageLocal.image = UIImage.init(named: "local") }
+        }
         
+        // image Favorite
+        if metadata.favorite {
+            cell.imageFavorite.image = cacheImages.cellFavouriteImage
+        }
+        
+        if isEditMode {
+            cell.imageSelect.isHidden = false
+            if selectocId.contains(metadata.ocId) {
+                cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
+                cell.imageVisualEffect.isHidden = false
+                cell.imageVisualEffect.alpha = 0.4
+            } else {
+                cell.imageSelect.isHidden = true
+                cell.imageVisualEffect.isHidden = true
+            }
+        } else {
+            cell.imageSelect.isHidden = true
+            cell.imageVisualEffect.isHidden = true
+        }
+       
         return cell
     }
 }

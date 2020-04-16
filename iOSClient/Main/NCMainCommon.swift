@@ -476,59 +476,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
                 cell.imageSelect.isHidden = true
                 cell.backgroundView = nil
             }
-            
-        } else if cell is NCGridMediaCell {
-            
-            let cell = cell as! NCGridMediaCell
-            
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-            
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)) {
-                cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName))
-//                NCUtility.sharedInstance.loadImage(ocId: metadata.ocId, fileNameView: metadata.fileNameView) { (image) in
-//                    cell.imageItem.image = image
-//                }
-            } else {
-                if metadata.iconName.count > 0 {
-                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                } else {
-                    cell.imageItem.image = UIImage.init(named: "file")
-                }
-            }
-            
-            // image status
-            if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-                cell.imageStatus.image = NCMainCommonImages.cellPlayImage
-            }
-            
-            // image Local
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-                else { cell.imageLocal.image = UIImage.init(named: "local") }
-            }
-            
-            // image Favorite
-            if metadata.favorite {
-                cell.imageFavorite.image = NCMainCommonImages.cellFavouriteImage
-            }
-            
-            if isEditMode {
-                cell.imageSelect.isHidden = false
-                if selectocId.contains(metadata.ocId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.imageVisualEffect.isHidden = false
-                    cell.imageVisualEffect.alpha = 0.4
-                } else {
-                    cell.imageSelect.isHidden = true
-                    cell.imageVisualEffect.isHidden = true
-                }
-            } else {
-                cell.imageSelect.isHidden = true
-                cell.imageVisualEffect.isHidden = true
-            }
         }
     }
     

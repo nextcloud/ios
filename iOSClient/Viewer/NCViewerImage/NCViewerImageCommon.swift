@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import SVGKit
 
 class NCViewerImageCommon: NSObject {
     @objc static let shared: NCViewerImageCommon = {
@@ -79,20 +80,48 @@ class NCViewerImageCommon: NSObject {
     
     func getImage(metadata: tableMetadata) -> UIImage? {
         
-        var image: UIImage?
         let ext = CCUtility.getExtension(metadata.fileNameView)
+        var image: UIImage?
         
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
            
+            let iconPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            if ext == "GIF" { image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath)) }
-            else { image = UIImage.init(contentsOfFile: imagePath) }
+            
+            if ext == "GIF" {
+                if !FileManager().fileExists(atPath: iconPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+                }
+                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+            } else if ext == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                    let scale = svgImage.size.height / svgImage.size.width
+                    svgImage.size = CGSize(width: CGFloat(k_sizePreview), height: (CGFloat(k_sizePreview) * scale))
+                    if let image = svgImage.uiImage {
+                        if !FileManager().fileExists(atPath: iconPath) {
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: iconPath), options: .atomic)
+                            } catch { }
+                        }
+                        return image
+                    } else {
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            } else {
+                if !FileManager().fileExists(atPath: iconPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+                }
+                image = UIImage.init(contentsOfFile: imagePath)
+            }
             
         } else {
             
             // AUTOMATIC DOWNLOAD FOR GIF
             
-            if ext == "GIF" && metadata.session == "" {
+            if (ext == "GIF" || ext == "SVG")  && metadata.session == "" {
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
                 }
