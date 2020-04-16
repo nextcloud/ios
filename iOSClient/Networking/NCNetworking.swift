@@ -228,7 +228,7 @@ import NCCommunication
     
     //MARK: - WebDav
     
-    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
             
@@ -252,7 +252,7 @@ import NCCommunication
 
                 // Add metadata
                 let metadataFolderInserted = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
-                NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                let metadatasInserted = NCManageDatabase.sharedInstance.addMetadatas(metadatas)
                  
                 if metadatasInDownload != nil {
                     NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
@@ -261,7 +261,7 @@ import NCCommunication
                     NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                 }
                 
-                completion(account, metadataFolderInserted, errorCode, "")
+                completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
                 
             } else {
                 
@@ -270,7 +270,7 @@ import NCCommunication
                 
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 
-                completion(account, nil, errorCode, errorDescription!)
+                completion(account, nil, nil, errorCode, errorDescription!)
             }
         }
     }

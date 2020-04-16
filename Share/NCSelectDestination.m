@@ -228,7 +228,7 @@
 
 - (void)readFolder
 {
-    [[NCNetworking sharedInstance] readFolderWithServerUrl:_serverUrl account:activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking sharedInstance] readFolderWithServerUrl:_serverUrl account:activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             self.move.enabled = true;
@@ -242,52 +242,6 @@
     
     _loadingFolder = YES;
     [self.tableView reloadData];
-    
-    /*
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSInteger errorCode, NSString *errorDecription) {
-        
-        if (errorCode == 0 && files != nil) {
-
-            // Metadata conversion
-            tableMetadata *metadataFolder = [tableMetadata new];
-            NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
-        
-            // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:account];
-            
-            // Delete metadata
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND status == %d", account, _serverUrl, k_metadataStatusNormal]];
-            
-            // In download
-            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
-            
-            // Insert in Database
-            [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-            
-            // reinsert metadatas in Download
-            if (metadatasInDownload) {
-                [[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
-            }
-                               
-        } else {
-            
-            self.move.enabled = NO;
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:errorDecription preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            }]];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-        
-        _loadingFolder = NO;
-        [self.tableView reloadData];
-    }];
-    
-    _loadingFolder = YES;
-    [self.tableView reloadData];
-    */
 }
 
     

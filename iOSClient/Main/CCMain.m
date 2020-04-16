@@ -1288,7 +1288,7 @@
 
     [self tableViewReloadData];
     
-    [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
         
         [refreshControl endRefreshing];
 
@@ -1300,13 +1300,9 @@
             
 
             // File is changed ??
-            /*
-            if (!self.searchController.isActive && metadatas) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                    [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:serverUrl account:account withDownload:NO];
-                });
-            }
-            */
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:serverUrl account:account withDownload:NO];
+            });
             
             // E2EE Is encrypted folder get metadata
             if (isFolderEncrypted) {

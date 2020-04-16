@@ -804,7 +804,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, errorCode, errorDescription) in
+        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
