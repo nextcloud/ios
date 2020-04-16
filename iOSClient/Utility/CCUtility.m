@@ -1446,6 +1446,7 @@
             NSURL *url = [NSURL URLWithString:serverUrl];
             serverUrl = [url URLByDeletingLastPathComponent].absoluteString;
             serverUrl = [serverUrl substringToIndex:[serverUrl length]-1];
+            if (serverUrl == nil) { return false; }
             directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
