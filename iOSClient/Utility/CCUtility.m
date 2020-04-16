@@ -1437,7 +1437,7 @@
         
     } else {
        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@  AND serverUrl == %@", account, serverUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         
         while (directory != nil) {
             if (directory.e2eEncrypted == true) {
@@ -1446,7 +1446,7 @@
             NSURL *url = [NSURL URLWithString:serverUrl];
             serverUrl = [url URLByDeletingLastPathComponent].absoluteString;
             serverUrl = [serverUrl substringToIndex:[serverUrl length]-1];
-            directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@  AND serverUrl == %@", account, serverUrl]];
+            directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
         return false;

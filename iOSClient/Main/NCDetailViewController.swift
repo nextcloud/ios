@@ -763,8 +763,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 
             } else {
                 
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
+                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                                 
                 _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, progressHandler: { (progress) in
                                     
