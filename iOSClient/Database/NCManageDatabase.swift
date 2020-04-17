@@ -122,7 +122,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
-                    if oldSchemaVersion < 94 {
+                    if oldSchemaVersion < 95 {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableMetadata.className())
