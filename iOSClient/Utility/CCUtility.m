@@ -1443,10 +1443,7 @@
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            NSURL *url = [NSURL URLWithString:serverUrl];
-            serverUrl = [url URLByDeletingLastPathComponent].absoluteString;
-            serverUrl = [serverUrl substringToIndex:[serverUrl length]-1];
-            if (serverUrl == nil) { return false; }
+            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
             directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
