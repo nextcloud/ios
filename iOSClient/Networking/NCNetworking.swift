@@ -155,47 +155,6 @@ import NCCommunication
     
     //MARK: - File <> Metadata
     
-    @objc func convertFileToMetadata(_ file: NCFile, isEncrypted: Bool) -> tableMetadata {
-        
-        let metadata = tableMetadata()
-        
-        metadata.account = account
-        metadata.commentsUnread = file.commentsUnread
-        metadata.contentType = file.contentType
-        metadata.creationDate = file.creationDate
-        metadata.date = file.date
-        metadata.directory = file.directory
-        metadata.e2eEncrypted = file.e2eEncrypted
-        metadata.etag = file.etag
-        metadata.favorite = file.favorite
-        metadata.fileId = file.fileId
-        metadata.fileName = file.fileName
-        metadata.fileNameView = file.fileName
-        metadata.hasPreview = file.hasPreview
-        metadata.iconName = file.iconName
-        metadata.mountType = file.mountType
-        metadata.ocId = file.ocId
-        metadata.ownerId = file.ownerId
-        metadata.ownerDisplayName = file.ownerDisplayName
-        metadata.permissions = file.permissions
-        metadata.quotaUsedBytes = file.quotaUsedBytes
-        metadata.quotaAvailableBytes = file.quotaAvailableBytes
-        metadata.richWorkspace = file.richWorkspace
-        metadata.resourceType = file.resourceType
-        metadata.serverUrl = file.serverUrl
-        metadata.size = file.size
-        metadata.typeFile = file.typeFile
-        
-        // E2EE find the fileName for fileNameView
-        if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
-                metadata.fileNameView = tableE2eEncryption.fileName
-            }
-        }
-        
-        return metadata
-    }
-    
     @objc func convertFilesToMetadatas(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
         
         var metadatas = [tableMetadata]()
@@ -212,7 +171,7 @@ import NCCommunication
                 listServerUrl[file.serverUrl] = isEncrypted
             }
             
-            let metadata = self.convertFileToMetadata(file, isEncrypted: isEncrypted)
+            let metadata =  NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
             
             if metadataFolder != nil && counter == 0 {
                 metadataFolder!.initialize(to: metadata)
@@ -233,36 +192,41 @@ import NCCommunication
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 && files != nil {
-                
-                var metadataFolder = tableMetadata()
-                let metadatas = self.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
-                
-                // Add directory
-                NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                
-                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
-                
-                // Save status transfer metadata
-                let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
-                
-                let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
+                              
+                NCManageDatabase.sharedInstance.convertNCFilesToMetadatas(files!, account: account) { (metadataFolder, metadataFolders, metadatas) in
+                    
+                    // Add directory
+                    NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                    NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
+                    
+                    // Add other directories
+                    for metadata in metadataFolders {
+                       let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                       NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                    }
+                    
+                    // Save status transfer metadata
+                    let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
+                    
+                    let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError), sorted: nil, ascending: false)
 
-                // Delete metadata
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-
-                // Add metadata
-                let metadataFolderInserted = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
-                let metadatasInserted = NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-                 
-                if metadatasInDownload != nil {
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                    // Delete metadata
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
+                    
+                    // Add metadata
+                    let metadataFolderInserted = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
+                    let metadatasInserted = NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                     
+                    if metadatasInDownload != nil {
+                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
+                    }
+                    if metadatasInUpload != nil {
+                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
+                    }
+                    
+                    completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
                 }
-                if metadatasInUpload != nil {
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                }
-                
-                completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
-                
+            
             } else {
                 
                 var errorDescription = errorDescription
@@ -283,7 +247,7 @@ import NCCommunication
              
                 let file = files![0]
                 let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account)
-                let metadata = self.convertFileToMetadata(file, isEncrypted: isEncrypted)
+                let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
                 completion(account, metadata, errorCode, "")
                 
             } else {

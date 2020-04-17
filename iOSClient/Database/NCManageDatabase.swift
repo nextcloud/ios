@@ -1903,6 +1903,83 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
+    @objc func convertNCFileToMetadata(_ file: NCFile, isEncrypted: Bool, account: String) -> tableMetadata {
+        
+        let metadata = tableMetadata()
+        
+        metadata.account = account
+        metadata.commentsUnread = file.commentsUnread
+        metadata.contentType = file.contentType
+        metadata.creationDate = file.creationDate
+        metadata.date = file.date
+        metadata.directory = file.directory
+        metadata.e2eEncrypted = file.e2eEncrypted
+        metadata.etag = file.etag
+        metadata.favorite = file.favorite
+        metadata.fileId = file.fileId
+        metadata.fileName = file.fileName
+        metadata.fileNameView = file.fileName
+        metadata.hasPreview = file.hasPreview
+        metadata.iconName = file.iconName
+        metadata.mountType = file.mountType
+        metadata.ocId = file.ocId
+        metadata.ownerId = file.ownerId
+        metadata.ownerDisplayName = file.ownerDisplayName
+        metadata.permissions = file.permissions
+        metadata.quotaUsedBytes = file.quotaUsedBytes
+        metadata.quotaAvailableBytes = file.quotaAvailableBytes
+        metadata.richWorkspace = file.richWorkspace
+        metadata.resourceType = file.resourceType
+        metadata.serverUrl = file.serverUrl
+        metadata.size = file.size
+        metadata.typeFile = file.typeFile
+        
+        // E2EE find the fileName for fileNameView
+        if isEncrypted || metadata.e2eEncrypted {
+            if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+                metadata.fileNameView = tableE2eEncryption.fileName
+            }
+        }
+        
+        return metadata
+    }
+    
+    @objc func convertNCFilesToMetadatas(_ files: [NCFile], account: String, completion: @escaping (_ metadataFolder: tableMetadata,_ metadataFolders: [tableMetadata], _ metadatas: [tableMetadata])->())  {
+    
+        var counter: Int = 0
+        var isEncrypted: Bool = false
+        var listServerUrl = [String:Bool]()
+        
+        var metadataFolder = tableMetadata()
+        var metadataFolders = [tableMetadata]()
+        var metadatas = [tableMetadata]()
+
+        for file in files {
+                        
+            if let key = listServerUrl[file.serverUrl] {
+                isEncrypted = key
+            } else {
+                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
+                listServerUrl[file.serverUrl] = isEncrypted
+            }
+            
+            let metadata = convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+            
+            if counter == 0 {
+                metadataFolder = tableMetadata.init(value: metadata)
+            } else {
+                metadatas.append(metadata)
+                if metadata.directory {
+                    metadataFolders.append(metadata)
+                }
+            }
+            
+            counter += 1
+        }
+        
+        completion(metadataFolder, metadataFolders, metadatas)
+    }
+    
     @discardableResult
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
