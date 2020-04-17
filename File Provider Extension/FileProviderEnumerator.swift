@@ -241,12 +241,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                     if errorCode == 0 && files != nil {
                         
-                        // Metadata conversion
-                        var metadataFolder = tableMetadata()
-                        let metadatas = NCNetworking.sharedInstance.convertFilesToMetadatas(files!, metadataFolder: &metadataFolder)
-                        
+                       let fileFolder = files![0]
+                                                
                         // Add directory
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: fileFolder.e2eEncrypted, favorite: fileFolder.favorite, ocId: fileFolder.ocId, fileId: fileFolder.fileId, etag: fileFolder.etag, permissions: fileFolder.permissions, serverUrl: serverUrl, richWorkspace: fileFolder.richWorkspace, account: account)
                         
                         // Save status transfer metadata
                         let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false)
@@ -257,8 +255,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
 
                         // Add metadata
-                        NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
-                        NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                        NCManageDatabase.sharedInstance.addMetadatas(files: files, account: account)
                          
                         if metadatasInDownload != nil {
                             NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
