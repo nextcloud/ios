@@ -1395,14 +1395,16 @@
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
              
-             NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
-             NSMutableArray *metadatasDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasDB];
-             _metadataFolder = nil;
+             [[NCManageDatabase sharedInstance] convertNCFilesToMetadatas:files useMetadataFolder:false account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
                  
-             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
-             [self tableViewReloadData];
-             [self setTitle];
+                 NSMutableArray *metadatasDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+                 _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasDB];
+                 _metadataFolder = nil;
+                 
+                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
+                 [self tableViewReloadData];
+                 [self setTitle];
+             }];
                           
          } else {
              

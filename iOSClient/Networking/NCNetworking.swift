@@ -153,38 +153,6 @@ import NCCommunication
         return result
     }
     
-    //MARK: - File <> Metadata
-    
-    @objc func convertFilesToMetadatas(_ files: [NCFile], metadataFolder: UnsafeMutablePointer<tableMetadata>?) -> [tableMetadata] {
-        
-        var metadatas = [tableMetadata]()
-        var counter: Int = 0
-        var isEncrypted: Bool = false
-        var listServerUrl = [String:Bool]()
-
-        for file in files {
-                        
-            if let key = listServerUrl[file.serverUrl] {
-                isEncrypted = key
-            } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
-                listServerUrl[file.serverUrl] = isEncrypted
-            }
-            
-            let metadata =  NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
-            
-            if metadataFolder != nil && counter == 0 {
-                metadataFolder!.initialize(to: metadata)
-            } else {
-                metadatas.append(metadata)
-            }
-            
-            counter += 1
-        }
-        
-        return metadatas
-    }
-    
     //MARK: - WebDav
     
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
@@ -193,14 +161,14 @@ import NCCommunication
             
             if errorCode == 0 && files != nil {
                               
-                NCManageDatabase.sharedInstance.convertNCFilesToMetadatas(files!, account: account) { (metadataFolder, metadataFolders, metadatas) in
+                NCManageDatabase.sharedInstance.convertNCFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Add directory
                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
                     NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
                     
                     // Add other directories
-                    for metadata in metadataFolders {
+                    for metadata in metadatasFolder {
                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                     }

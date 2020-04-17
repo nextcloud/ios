@@ -205,49 +205,50 @@
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
              
-             NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:nil];
-             
-             NSString *father = @"";
-             NSMutableArray *filesOcId = [NSMutableArray new];
-             
-             for (tableMetadata *metadata in metadatas) {
+             [[NCManageDatabase sharedInstance] convertNCFilesToMetadatas:files useMetadataFolder:false account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
                  
-                 // insert for test NOT favorite
-                 [filesOcId addObject:metadata.ocId];
+                 NSString *father = @"";
+                 NSMutableArray *filesOcId = [NSMutableArray new];
                  
-                 NSString *serverUrl = metadata.serverUrl;
-                 NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                 
-                 if (![serverUrlSon containsString:father]) {
+                 for (tableMetadata *metadata in metadatas) {
                      
-                     if (metadata.directory) {
+                     // insert for test NOT favorite
+                     [filesOcId addObject:metadata.ocId];
+                     
+                     NSString *serverUrl = metadata.serverUrl;
+                     NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                     
+                     if (![serverUrlSon containsString:father]) {
                          
-                         if ([CCUtility getFavoriteOffline])
-                             [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:account];
-                         else
-                             [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder account:account];
+                         if (metadata.directory) {
+                             
+                             if ([CCUtility getFavoriteOffline])
+                                 [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:account];
+                             else
+                                 [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder account:account];
+                             
+                         } else {
+                             
+                             if ([CCUtility getFavoriteOffline])
+                                 [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
+                             else
+                                 [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
+                         }
                          
-                     } else {
-                         
-                         if ([CCUtility getFavoriteOffline])
-                             [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
-                         else
-                             [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
+                         father = serverUrlSon;
                      }
-                     
-                     father = serverUrlSon;
                  }
-             }
-             
-             // Verify remove favorite
-             NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
-             
-             for (tableMetadata *metadata in allRecordFavorite)
-                 if (![filesOcId containsObject:metadata.ocId])
-                     [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
-             
-             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_clearDateReadDataSource object:nil];
-             
+                 
+                 // Verify remove favorite
+                 NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
+                 
+                 for (tableMetadata *metadata in allRecordFavorite)
+                     if (![filesOcId containsObject:metadata.ocId])
+                         [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
+                 
+                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_clearDateReadDataSource object:nil];
+             }];
+        
          } else if (errorCode != 0) {
              [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
          } else {

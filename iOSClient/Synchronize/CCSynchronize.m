@@ -384,14 +384,14 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
     [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:self.account completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
-       
-        tableMetadata *metadataFolder = [tableMetadata new];
-        NSArray *metadatas = [[NCNetworking sharedInstance] convertFilesToMetadatas:files metadataFolder:&metadataFolder];
-        
-        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
-            [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:errorDescription errorCode:errorCode];
-        
-        [self complete];
+               
+        [[NCManageDatabase sharedInstance] convertNCFilesToMetadatas:files useMetadataFolder:true account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
+            
+            if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
+                [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:errorDescription errorCode:errorCode];
+            
+            [self complete];
+        }];
     }];
 }
 

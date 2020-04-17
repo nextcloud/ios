@@ -1944,7 +1944,7 @@ class NCManageDatabase: NSObject {
         return metadata
     }
     
-    @objc func convertNCFilesToMetadatas(_ files: [NCFile], account: String, completion: @escaping (_ metadataFolder: tableMetadata,_ metadataFolders: [tableMetadata], _ metadatas: [tableMetadata])->())  {
+    @objc func convertNCFilesToMetadatas(_ files: [NCFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata,_ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata])->())  {
     
         var counter: Int = 0
         var isEncrypted: Bool = false
@@ -1965,7 +1965,7 @@ class NCManageDatabase: NSObject {
             
             let metadata = convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
             
-            if counter == 0 {
+            if counter == 0 && useMetadataFolder {
                 metadataFolder = tableMetadata.init(value: metadata)
             } else {
                 metadatas.append(metadata)
