@@ -316,10 +316,8 @@ class FileProviderExtension: NSFileProviderExtension {
                     return
                 }
                 
-                if fileURL.startAccessingSecurityScopedResource() == false {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
+                _ = fileURL.startAccessingSecurityScopedResource()
+                   
                 
                 // typefile directory ? (NOT PERMITTED)
                 do {
