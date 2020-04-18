@@ -251,7 +251,7 @@
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", _serverUrl, fileNameFolder];
      
-    [[NCCommunication sharedInstance] createFolder:serverUrlFileName addCustomHeaders:nil account:activeAccount completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSInteger errorCode, NSString *errorDecription) {
+    [[NCCommunication sharedInstance] createFolder:serverUrlFileName customUserAgent:nil addCustomHeaders:nil account:activeAccount completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSInteger errorCode, NSString *errorDecription) {
         if (errorCode == 0) {
            [self readFolder];
         } else {

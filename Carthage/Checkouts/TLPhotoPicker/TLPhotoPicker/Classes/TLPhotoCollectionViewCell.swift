@@ -52,6 +52,8 @@ open class TLPhotoCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    open internal(set) var asset: PHAsset?
+    
     @objc open var isCameraCell = false
     
     open var duration: TimeInterval? {

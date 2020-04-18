@@ -190,7 +190,7 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
         
-    [[NCCommunication sharedInstance] getServerStatusWithServerUrl:self.baseUrl.text addCustomHeaders:nil completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication sharedInstance] getServerStatusWithServerUrl:self.baseUrl.text customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *serverProductName, NSString *serverVersion, NSInteger versionMajor, NSInteger versionMinor, NSInteger versionMicro, BOOL extendedSupport, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             
@@ -198,7 +198,7 @@
             self.login.enabled = YES;
             
             // Login Flow V2
-            [[NCCommunication sharedInstance] getLoginFlowV2WithServerUrl:self.baseUrl.text addCustomHeaders:nil completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
+            [[NCCommunication sharedInstance] getLoginFlowV2WithServerUrl:self.baseUrl.text customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
                 // Login Flow V2
                 if (errorCode == 0 && [[NCBrandOptions sharedInstance] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {
