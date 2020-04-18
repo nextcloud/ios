@@ -1098,12 +1098,7 @@ TEST_CASE("SharedRealm: coordinator schema cache") {
     }
     r->update_schema(schema);
 
-    SECTION("is empty after calling update_schema()") {
-        REQUIRE_FALSE(coordinator->get_cached_schema(cache_schema, cache_sv, cache_tv));
-    }
-
-    Realm::get_shared_realm(config);
-    SECTION("is populated after getting another Realm without a schema specified") {
+    SECTION("is populated after calling update_schema()") {
         REQUIRE(coordinator->get_cached_schema(cache_schema, cache_sv, cache_tv));
         REQUIRE(cache_sv == 0);
         REQUIRE(cache_schema == schema);

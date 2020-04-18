@@ -80,7 +80,7 @@ class NCService: NSObject {
                     let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    NCCommunication.sharedInstance.downloadContent(serverUrl: avatarUrl, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.sharedInstance.downloadContent(serverUrl: avatarUrl, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 {
                             if let image = UIImage(data: data!) {
                                 try? FileManager.default.removeItem(atPath: fileNamePath)
@@ -124,7 +124,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        NCCommunication.sharedInstance.getServerStatus(serverUrl: appDelegate.activeUrl) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
+        NCCommunication.sharedInstance.getServerStatus(serverUrl: appDelegate.activeUrl, addCustomHeaders: nil) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
@@ -304,7 +304,7 @@ class NCService: NSObject {
                 
                 // NCTextObtainEditorDetails
                 if capabilities!.versionMajor >= k_nextcloud_version_18_0 {
-                    NCCommunication.sharedInstance.NCTextObtainEditorDetails(serverUrl: self.appDelegate.activeUrl, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
+                    NCCommunication.sharedInstance.NCTextObtainEditorDetails(serverUrl: self.appDelegate.activeUrl, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
                         }

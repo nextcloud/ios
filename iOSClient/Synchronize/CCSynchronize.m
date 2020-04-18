@@ -383,7 +383,7 @@
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] account:self.account completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] addCustomHeaders:nil account:self.account completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
                
         [[NCManageDatabase sharedInstance] convertNCFilesToMetadatas:files useMetadataFolder:true account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
             

@@ -157,7 +157,7 @@ import NCCommunication
     
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), addCustomHeaders: nil, account: account) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 && files != nil {
                               
@@ -209,7 +209,7 @@ import NCCommunication
     
     @objc func readFile(serverUrlFileName: String, account: String, completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ errorCode: Int, _ errorDescription: String)->()) {
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), account: account) { (account, files, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), addCustomHeaders: nil, account: account) { (account, files, errorCode, errorDescription) in
 
             if errorCode == 0 && files != nil {
              
@@ -263,7 +263,7 @@ import NCCommunication
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
         
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 
@@ -317,7 +317,7 @@ import NCCommunication
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: url)!
         let favorite = !metadata.favorite
         
-        NCCommunication.sharedInstance.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
     
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
@@ -363,7 +363,7 @@ import NCCommunication
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
                 
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
                     
             if errorCode == 0 {
                         
@@ -455,7 +455,7 @@ import NCCommunication
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
         
-        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
                     
             var metadataNew = tableMetadata()
             
@@ -489,7 +489,7 @@ import NCCommunication
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
         
-        NCCommunication.sharedInstance.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
                     
             self.NotificationPost(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
@@ -517,7 +517,7 @@ import NCCommunication
             fileNameFolderUrl = serverUrl + "/" + fileNameFolder
         }
         
-        NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, account: account) { (account, ocId, date, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, addCustomHeaders: nil, account: account) { (account, ocId, date, errorCode, errorDescription) in
             if errorCode == 0 {
                 
                 self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in

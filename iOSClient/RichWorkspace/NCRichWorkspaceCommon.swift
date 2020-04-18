@@ -41,7 +41,7 @@ import NCCommunication
         NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
-        NCCommunication.sharedInstance.NCTextCreateFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+        NCCommunication.sharedInstance.NCTextCreateFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "", customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
             
             NCUtility.sharedInstance.stopActivityIndicator()
             
@@ -76,7 +76,7 @@ import NCCommunication
                 NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-                NCCommunication.sharedInstance.NCTextOpenFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                NCCommunication.sharedInstance.NCTextOpenFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                     
                     NCUtility.sharedInstance.stopActivityIndicator()
                     
