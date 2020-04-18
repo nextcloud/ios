@@ -1274,38 +1274,20 @@
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
-    BOOL isE2EE = false;
     NSMutableArray *uploaded = [NSMutableArray new];
     
     long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
-    // Detect E2EE
-    NSString *saveserverUrl = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] sorted:@"serverUrl" ascending:NO];
-    for (tableMetadata *metadata in metadatasForE2EE) {
-        if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
-            saveserverUrl = metadata.serverUrl;
-            if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1", metadata.account, metadata.serverUrl]] != nil) {
-                isE2EE = true;
-                break;
-            }
-        }
-    }
-    
-    // E2EE : not in background
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && isE2EE) {
-        return;
-    }
-    
-    // E2EE : only 1 operation
-    if (isE2EE) {
-        maxConcurrentOperationDownloadUpload = 1;
-    }
-    
-    // Stop Timer
-    [_timerProcessAutoDownloadUpload invalidate];
     NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
     NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
+    
+    // E2EE only 1
+    for(tableMetadata *metadata in metadatasDownload) {
+        if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account]) return;
+    }
+    for(tableMetadata *metadata in metadatasUpload) {
+        if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account]) return;
+    }
     
     // Counter
     counterDownload = [metadatasDownload count];
@@ -1321,6 +1303,9 @@
     
     NSLog(@"%@", [NSString stringWithFormat:@"[LOG] PROCESS-AUTO-UPLOAD | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
     
+    // Stop Timer
+    [_timerProcessAutoDownloadUpload invalidate];
+    
     // ------------------------- <selector Download> -------------------------
     
     while (counterDownload < maxConcurrentOperationDownloadUpload) {
@@ -1328,13 +1313,29 @@
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusWaitDownload] sorted:@"date" ascending:YES];
         if (metadataForDownload) {
             
-            metadataForDownload.status = k_metadataStatusInDownload;
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
+            if ([CCUtility isFolderEncrypted:metadataForDownload.serverUrl e2eEncrypted:metadataForDownload.e2eEncrypted account:metadataForDownload.account]) {
+                
+                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
+                maxConcurrentOperationDownloadUpload = 1;
+                
+                metadataForDownload.status = k_metadataStatusInDownload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
+                
+                [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
+                
+                break;
+                                
+            } else {
+                
+                metadataForDownload.status = k_metadataStatusInDownload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
+                
+                [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
+                
+                counterDownload++;
+                sizeDownload = sizeDownload + metadata.size;
+            }
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
-            
-            counterDownload++;
-            sizeDownload = sizeDownload + metadata.size;
         } else {
             break;
         }
@@ -1366,16 +1367,32 @@
             }
             
             if (isAleadyInUpload == false) {
-                metadataForUpload.status = k_metadataStatusInUpload;
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
                 
-                counterUpload++;
-                sizeUpload = sizeUpload + metadata.size;
-                
-                // For verify modify file
-                [uploaded addObject:[NSString stringWithFormat:@"%@%@%@", metadata.account, metadata.serverUrl, metadata.fileName]];
+                    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
+                    maxConcurrentOperationDownloadUpload = 1;
+                    
+                    metadataForUpload.status = k_metadataStatusInUpload;
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    
+                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    
+                    break;
+                                        
+                } else {
+                    
+                    metadataForUpload.status = k_metadataStatusInUpload;
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    
+                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    
+                    counterUpload++;
+                    sizeUpload = sizeUpload + metadata.size;
+                    
+                    // For verify modify file
+                    [uploaded addObject:[NSString stringWithFormat:@"%@%@%@", metadata.account, metadata.serverUrl, metadata.fileName]];
+                }
                 
             } else {
                 break;
@@ -1390,20 +1407,35 @@
     
     while (counterUpload < maxConcurrentOperationDownloadUpload) {
         
-        if (sizeUpload > k_maxSizeOperationUpload) {
-            break;
-        }
+        if (sizeUpload > k_maxSizeOperationUpload) { break; }
         
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
         if (metadataForUpload) {
             
-            metadataForUpload.status = k_metadataStatusInUpload;
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
+                
+                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
+                maxConcurrentOperationDownloadUpload = 1;
+                
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                                          
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                
+                break;
+                
+            } else {
+                
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                           
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                           
+                counterUpload++;
+                sizeUpload = sizeUpload + metadata.size;
+            }
             
-            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
-            
-            counterUpload++;
-            sizeUpload = sizeUpload + metadata.size;
+           
         } else {
             break;
         }
@@ -1430,13 +1462,30 @@
             metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
             if (metadataForUpload) {
                 
-                metadataForUpload.status = k_metadataStatusInUpload;
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
+                    maxConcurrentOperationDownloadUpload = 1;
+                    
+                    metadataForUpload.status = k_metadataStatusInUpload;
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    
+                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    
+                    break;
+                    
+                } else {
+                    
+                    metadataForUpload.status = k_metadataStatusInUpload;
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    
+                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    
+                    counterUpload++;
+                    sizeUpload = sizeUpload + metadata.size;
+                    
+                }
                 
-                counterUpload++;
-                sizeUpload = sizeUpload + metadata.size;
             } else {
                 break;
             }
