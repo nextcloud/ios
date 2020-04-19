@@ -1286,30 +1286,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
     }
 #endif
     
-    // UPLOAD
-    
-    func uploadFileSuccessFailure(_ fileName: String!, ocId: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
-            return
-        }
-        
-        if metadata.account != appDelegate.activeAccount {
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-            return
-        }
-        
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-        
-        if errorCode == 0 {
-            appDelegate.startLoadAutoDownloadUpload()
-        } else {
-            if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
-                NCContentPresenter.shared.messageNotification("_upload_file_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
-        }
-    }
-    
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
     }

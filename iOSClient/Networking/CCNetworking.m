@@ -355,14 +355,6 @@
                     [self uploadFileSuccessFailure:metadata fileName:fileName ocId:ocId etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
                 });
             }
-            
-        } else {
-            NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate uploadFileSuccessFailure:fileName ocId:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" errorMessage:@"" errorCode:k_CCErrorInternalError];
-                }
-            });
         }
     }
 }
@@ -610,10 +602,13 @@
 {
     // Password nil
     if ([CCUtility getPassword:metadata.account].length == 0) {
-        [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
+                
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(kOCErrorServerUnauthorized), @"errorDescription": @"_bad_username_password_"}];
         return;
+        
     } else if ([CCUtility getCertificateError:metadata.account]) {
-        [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) errorCode:NSURLErrorServerCertificateUntrusted];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(NSURLErrorServerCertificateUntrusted), @"errorDescription": @"_ssl_certificate_untrusted_"}];
         return;
     }
     
@@ -621,9 +616,7 @@
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
-        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Upload error, account not found" errorCode:k_CCErrorInternalError];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
         return;
     }
     
@@ -634,10 +627,7 @@
         if (!result.count) {
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
             
-            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Error photo/video not found, remove from upload" errorCode:k_CCErrorInternalError];
-            }
-            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found, remove from upload"}];
             return;
         }
         
@@ -657,9 +647,7 @@
                 if (error) {
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                 
-                    if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                        [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description] errorCode:error.code];
-                    }
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
                 }
             };
             
@@ -688,9 +676,7 @@
                 if (error) {
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataForUpload.ocId]];
                     
-                    if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                        [self.delegate uploadFileSuccessFailure:metadataForUpload.fileName ocId:metadataForUpload.ocId assetLocalIdentifier:metadataForUpload.assetLocalIdentifier serverUrl:metadataForUpload.serverUrl selector:metadataForUpload.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
-                    }
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request failed [%@]", error.description]}];
                     
                 } else {
                     
@@ -717,9 +703,7 @@
                 if (error) {
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                     
-                    if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                        [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description] errorCode:error.code];
-                    }
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
                 }
             };
             
@@ -737,9 +721,7 @@
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                             
-                            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                                [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
-                            }
+                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
                         });
                     } else {
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -793,9 +775,7 @@
 
         if (fileSize > k_max_filesize_E2EE) {
             // Error for uploadFileFailure
-            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"E2E Error file too big" errorCode:k_CCErrorInternalError];
-            }
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"E2E Error file too big"}];
             return;
         }
         
@@ -847,9 +827,7 @@
             if (error == nil) {
                 if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eeMetadata privateKey:[CCUtility getEndToEndPrivateKey:tableAccount.account] serverUrl:metadata.serverUrl account:tableAccount.account url:tableAccount.url] == false) {
                     
-                    if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                        [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_decode_metadata_", nil) errorCode:k_CCErrorInternalError];
-                    }
+                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_e2e_error_decode_metadata_"}];
                     return;
                 }
             }
@@ -857,17 +835,13 @@
             // write new record e2ee
             if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO) {
                 
-                if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_create_encrypted_", nil) errorCode:k_CCErrorInternalError];
-                }
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_e2e_error_create_encrypted_"}];
                 return;
             }
             
         } else {
             
-            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_create_encrypted_", nil) errorCode:k_CCErrorInternalError];
-            }
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_e2e_error_create_encrypted_"}];
             return;
         }
 
@@ -938,9 +912,7 @@
         NSString *messageError = @"Serious internal error uploadTask not available";
         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
-        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate uploadFileSuccessFailure:metadata.fileNameView ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": messageError}];
         
     } else {
         
@@ -963,9 +935,7 @@
                         NSString *messageError = [NSString stringWithFormat:@"%@ (%d)", error.localizedDescription, (int)error.code];
                         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                         
-                        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                            [self.delegate uploadFileSuccessFailure:metadata.fileNameView ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
-                        }
+                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": messageError}];
                         
                     } else {
                     
@@ -1049,9 +1019,7 @@
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
 
-        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
         return;
     }
     
@@ -1228,18 +1196,12 @@
                 NSLog(@"Error unlock not found");
             }
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
-                }
-            });
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
         });
         
     } else {
         
-        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:ocId:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate uploadFileSuccessFailure:metadata.fileName ocId:metadata.ocId assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
     }
     
     // NSNotificationCenter

@@ -28,12 +28,15 @@ import Foundation
         let instance = NCNetworkingNotificationCenter()
         
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFileStart), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         
         return instance
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    //MARK: - Upload
+
     @objc func uploadFileStart(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
@@ -44,5 +47,26 @@ import Foundation
             }
         }
     }
+    
+    @objc func uploadedFile(_ notification: NSNotification) {
+    
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: Int32(k_action_MOD))
+                
+                if metadata.account == appDelegate.activeAccount {
+                    if errorCode == 0 {
+                        appDelegate.startLoadAutoDownloadUpload()
+                    } else {
+                        if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorDescription != "" {
+                            NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
