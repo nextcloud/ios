@@ -64,7 +64,6 @@
 
 #pragma mark ===== Upload delegate =====
 
-@optional - (void)uploadStart:(NSString *)ocId account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
 @optional - (void)uploadFileSuccessFailure:(NSString *)fileName ocId:(NSString *)ocId assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @end
