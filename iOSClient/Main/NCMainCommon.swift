@@ -1127,10 +1127,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     // DOWNLOAD
-    func downloadStart(_ ocId: String!, account: String!, task: URLSessionDownloadTask!, serverUrl: String!) {
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-        appDelegate.updateApplicationIconBadgeNumber()
-    }
     
     func downloadFileSuccessFailure(_ fileName: String!, ocId: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
         

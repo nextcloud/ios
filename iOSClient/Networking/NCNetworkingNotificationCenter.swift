@@ -27,6 +27,8 @@ import Foundation
     @objc public static let shared: NCNetworkingNotificationCenter = {
         let instance = NCNetworkingNotificationCenter()
         
+        NotificationCenter.default.addObserver(instance, selector: #selector(downloadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFileStart), object: nil)
+        
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFileStart), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         
@@ -35,12 +37,25 @@ import Foundation
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    //MARK: - Download
+
+    @objc func downloadFileStart(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionDownloadTask {
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
+                appDelegate.updateApplicationIconBadgeNumber()
+            }
+        }
+    }
+    
     //MARK: - Upload
 
     @objc func uploadFileStart(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["uploadTask"] as? URLSessionUploadTask {
+            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask {
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
                 appDelegate.updateApplicationIconBadgeNumber()

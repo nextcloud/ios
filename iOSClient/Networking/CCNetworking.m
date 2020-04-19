@@ -441,11 +441,7 @@
         
         NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", metadata.ocId, (unsigned long)downloadTask.taskIdentifier);
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
-                [self.delegate downloadStart:metadata.ocId account:metadata.account task:downloadTask serverUrl:metadata.serverUrl];
-            }
-        });
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFileStart object:nil userInfo:@{@"ocId": metadata.ocId, @"task": downloadTask, @"serverUrl": metadata.serverUrl, @"account": metadata.account}];
     }
 }
 
@@ -953,7 +949,7 @@
                         NSString *account = metadata.account;
                                                     
                         // NSNotificationCenter
-                        NSDictionary* userInfo = @{@"ocId": ocId, @"uploadTask": uploadTask, @"serverUrl": serverUrl, @"account": account};
+                        NSDictionary* userInfo = @{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account};
                         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:userInfo];
                     }
                 });
@@ -976,7 +972,7 @@
              NSString *serverUrl = metadata.serverUrl;
                               
             // NSNotificationCenter
-            NSDictionary* userInfo = @{@"ocId": ocId, @"uploadTask": uploadTask, @"serverUrl": serverUrl, @"account": account};
+            NSDictionary* userInfo = @{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account};
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:userInfo];
          }
     }

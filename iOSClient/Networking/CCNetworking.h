@@ -59,7 +59,6 @@
 
 #pragma mark ===== Download delegate =====
 
-@optional - (void)downloadStart:(NSString *)ocId account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
 @optional  - (void)downloadFileSuccessFailure:(NSString *)fileName ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @end
