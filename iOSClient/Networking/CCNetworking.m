@@ -591,7 +591,7 @@
     
     // NSNotificationCenter
     NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFile object:nil userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:userInfo];
 }
 
 #pragma --------------------------------------------------------------------------------------------

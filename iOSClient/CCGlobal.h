@@ -334,9 +334,10 @@
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
 #define k_notificationCenter_reloadDataNotification     @"reloadDataNotification"
 
-#define k_notificationCenter_uploadFileStart            @"uploadedFileStart"                // userInfo: ocId, uploadTask, serverUrl, account
+#define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, uploadTask, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_downloadFile               @"downloadFile"
+#define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: ocId, uploadTask, serverUrl, account
+#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_progressTask               @"progressTask"
 
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
