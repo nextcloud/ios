@@ -948,9 +948,7 @@
                         NSString *ocId = metadata.ocId;
                         NSString *account = metadata.account;
                                                     
-                        // NSNotificationCenter
-                        NSDictionary* userInfo = @{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account};
-                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:userInfo];
+                        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:@{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account}];
                     }
                 });
             });
@@ -971,9 +969,7 @@
              NSString *account = metadata.account;
              NSString *serverUrl = metadata.serverUrl;
                               
-            // NSNotificationCenter
-            NSDictionary* userInfo = @{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account};
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:userInfo];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:@{@"ocId": ocId, @"task": uploadTask, @"serverUrl": serverUrl, @"account": account}];
          }
     }
 }
@@ -1199,10 +1195,8 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
     }
-    
-    // NSNotificationCenter
-    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:userInfo];
+       
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
 }
 
 #pragma --------------------------------------------------------------------------------------------
