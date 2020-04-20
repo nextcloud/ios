@@ -286,7 +286,7 @@
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
-"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, Live Photo video";
+"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, Live Photo video and hide the mov file part";
 
 // Login
 
