@@ -174,8 +174,8 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
-+ (BOOL)getMOVLivePhoto;
-+ (void)setMOVLivePhoto:(BOOL)set;
++ (BOOL)getLivePhoto;
++ (void)setLivePhoto:(BOOL)set;
 
 // ===== Varius =====
 

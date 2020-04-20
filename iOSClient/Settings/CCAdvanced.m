@@ -70,7 +70,7 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"livePhoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_mov_livephoto_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    if ([CCUtility getMOVLivePhoto]) row.value = @"1";
+    if ([CCUtility getLivePhoto]) row.value = @"1";
     else row.value = @"0";
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -198,7 +198,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"livePhoto"]) {
         
-        [CCUtility setMOVLivePhoto:[[rowDescriptor.value valueData] boolValue]];
+        [CCUtility setLivePhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"disableLocalCacheAfterUpload"]) {

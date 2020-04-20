@@ -504,6 +504,7 @@ class NCUtility: NSObject {
     @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
         
         if metadata.typeFile != k_metadataTypeFile_image && metadata.typeFile != k_metadataTypeFile_video  { return nil }
+        if !CCUtility.getLivePhoto() {return nil }
         let ext = (metadata.fileNameView as NSString).pathExtension.lowercased()
         
         if ext == "mov" {

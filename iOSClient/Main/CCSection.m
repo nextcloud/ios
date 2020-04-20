@@ -89,7 +89,7 @@
      Live Photo
     */
     
-    if ([CCUtility getMOVLivePhoto]) {
+    if ([CCUtility getLivePhoto]) {
         arraySoprtedMetadatas = [arrayMetadatas sortedArrayUsingComparator:^NSComparisonResult(tableMetadata *obj1, tableMetadata *obj2) {
             return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
         }];

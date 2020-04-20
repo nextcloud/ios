@@ -687,15 +687,23 @@
     [UICKeyChainStore setString:sDisable forKey:@"darkModeDetect" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getMOVLivePhoto
++ (BOOL)getLivePhoto
 {
-    return [[UICKeyChainStore stringForKey:@"movLivePhoto" service:k_serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"livePhoto" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setLivePhoto:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
-+ (void)setMOVLivePhoto:(BOOL)set
++ (void)setLivePhoto:(BOOL)set
 {
     NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"movLivePhoto" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:k_serviceShareKeyChain];
 }
 
 
