@@ -952,8 +952,8 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
-            NCNetworkingMain.sharedInstance.downloadFileSuccessFailure(metadata.fileName, ocId: metadata.ocId, serverUrl: metadata.serverUrl, selector: selector, errorMessage: "", errorCode: 0)
-                        
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata": metadata, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+                                    
         } else {
             
             metadata.session = k_download_session
@@ -1111,7 +1111,7 @@ extension UITabBar {
 
 //MARK: - Networking Main
 
-class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelegate {
+class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
     @objc static let sharedInstance: NCNetworkingMain = {
         let instance = NCNetworkingMain()
         return instance
@@ -1126,132 +1126,6 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate, IMImagemeterViewerDelega
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    // DOWNLOAD
-    
-    func downloadFileSuccessFailure(_ fileName: String!, ocId: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
-            return
-        }
-        
-        if metadata.account != appDelegate.activeAccount {
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-            return
-        }
-        
-        if errorCode == 0 {
-            
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-            
-            // Synchronized
-            if selector == selectorDownloadSynchronize {
-                appDelegate.updateApplicationIconBadgeNumber()
-                appDelegate.startLoadAutoDownloadUpload()
-                return
-            }
-            
-            // Modify Photo
-            if selector == selectorDownloadEditPhoto {
-                NCMainCommon.sharedInstance.editPhoto(metadata, viewController: appDelegate.activeMain)
-                return
-            }
-            
-            // open View File
-            if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
-            
-                var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
-                if uti == nil {
-                    uti = ""
-                } else if uti!.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
-                    metadata.typeFile = k_metadataTypeFile_unknown
-                }
-                
-#if HC
-                if metadata.typeFile == k_metadataTypeFile_imagemeter {
-                    
-                    if !IMUtility.shared.IMUnzip(metadata: metadata) {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                        return
-                    }
-                    
-                    let storyboard = UIStoryboard(name: "IMImagemeter", bundle: nil)
-                    let imagemeterViewer = storyboard.instantiateInitialViewController() as! IMImagemeterViewer
-                    imagemeterViewer.metadata = metadata
-                    imagemeterViewer.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                    imagemeterViewer.imagemeterViewerDelegate = self
-                    
-                    self.appDelegate.window.rootViewController?.present(imagemeterViewer, animated: true, completion: nil)
-                    
-                    return
-                }
-#else
-                if metadata.typeFile == k_metadataTypeFile_imagemeter {
-                    NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
-                    
-                    return
-                }
-#endif
-                
-                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
-
-                    NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
-                    
-                } else {
-                    
-                    if appDelegate.activeMain.view.window != nil {
-                        appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
-                    }
-                    if appDelegate.activeFavorites.view.window != nil {
-                        appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
-                    }
-                }
-            }
-            
-            // Open in...
-            if (selector == selectorOpenIn || selector == selectorOpenInDetail) && UIApplication.shared.applicationState == UIApplication.State.active {
-
-                NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
-            }
-            
-            // Save to Photo Album
-            if selector == selectorSave {
-                
-                appDelegate.activeMain.save(toPhotoAlbum: metadata)
-            }
-            
-            // Copy File
-            if selector == selectorLoadCopy {
-                
-                appDelegate.activeMain.copyFile(toPasteboard: metadata)
-            }
-            
-            // Set as available offline
-            if selector == selectorLoadOffline {
-                
-                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
-            }
-                        
-            appDelegate.startLoadAutoDownloadUpload()
-            
-        } else {
-            
-            // File do not exists on server, remove in local
-            if (errorCode == kOCErrorServerPathNotFound || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
-                
-                do {
-                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_DEL))
-            }
-        }
-        
-        appDelegate.startLoadAutoDownloadUpload()
-    }
-    
 #if HC
     // IMImagemeterViewerDelegate
     func closeImagemeterViewer(metadata: tableMetadata?, bundleDirectory: String) {

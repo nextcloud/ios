@@ -428,9 +428,6 @@
     self.activePassword = activePassword;
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
 
-    // Setting Account to Networking
-    [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
-    
     [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
     (void)[NCNetworkingNotificationCenter shared];
 

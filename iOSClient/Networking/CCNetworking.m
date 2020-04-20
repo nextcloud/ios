@@ -305,22 +305,10 @@
             }
             
             if (fileName.length > 0 && serverUrl.length > 0) {
-                
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(errorCode), @"errorDescription": @""}];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self downloadFileSuccessFailure:fileName ocId:metadata.ocId etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector errorCode:errorCode];
+                });
             }
-            
-        } else {
-            
-            NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
-
-            
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate downloadFileSuccessFailure:fileName ocId:@"" serverUrl:serverUrl selector:@"" errorMessage:@"" errorCode:k_CCErrorInternalError];
-                }
-            });
         }
     }
     
@@ -368,10 +356,10 @@
 {
     // No Password
     if ([CCUtility getPassword:metadata.account].length == 0) {
-        [self.delegate downloadFileSuccessFailure:metadata.fileName ocId:metadata.ocId serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_bad_username_password_", nil) errorCode:kOCErrorServerUnauthorized];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(kOCErrorServerUnauthorized), @"errorDescription": @"_bad_username_password_"}];
         return;
     } else if ([CCUtility getCertificateError:metadata.account]) {
-        [self.delegate downloadFileSuccessFailure:metadata.fileName ocId:metadata.ocId serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) errorCode:NSURLErrorServerCertificateUntrusted];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(NSURLErrorServerCertificateUntrusted), @"errorDescription": @"_ssl_certificate_untrusted_"}];
         return;
     }
     
@@ -382,9 +370,7 @@
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
-        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:metadata.fileName ocId:metadata.ocId serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"" errorCode:0];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(0), @"errorDescription": @""}];
         return;
     }
     
@@ -401,9 +387,7 @@
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
 
-        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:metadata.fileName ocId:metadata.ocId serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Download error, account not found" errorCode:k_CCErrorInternalError];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Download error, account not found"}];
         return;
     }
     
@@ -427,9 +411,7 @@
         
         [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"Serious internal error downloadTask not available" sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
-        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:metadata.fileName ocId:metadata.ocId serverUrl:metadata.serverUrl selector:metadata.sessionSelector errorMessage:@"Serious internal error downloadTask not available" errorCode:k_CCErrorInternalError];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Serious internal error downloadTask not available"}];
         
     } else {
         
@@ -483,13 +465,6 @@
     if (!metadata) {
         
         NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", url);
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate downloadFileSuccessFailure:@"" ocId:@"" serverUrl:serverUrl selector:@"" errorMessage:@"Serious error internal download : metadata not found" errorCode:k_CCErrorInternalError];
-            }
-        });
-        
         return;
     }
     
@@ -531,21 +506,13 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
         }
         
-        
-        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
         
     } else {
         
         if (!metadata) {
             
             NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", fileName);
-            
-            if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
-            }
-
             return;
         }
         
@@ -564,10 +531,7 @@
             BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileName:metadata.fileName fileNameView:metadata.fileNameView ocId:metadata.ocId key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
             if (!result) {
                 
-                if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName] errorCode:k_CCErrorInternalError];
-                }
-                
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": [NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName]}];
                 return;
             }
         }
@@ -581,9 +545,7 @@
             [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
-        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {
-            [self.delegate downloadFileSuccessFailure:fileName ocId:ocId serverUrl:serverUrl selector:selector errorMessage:@"" errorCode:0];
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(0), @"errorDescription": @""}];
     }
     
     // NSNotificationCenter
