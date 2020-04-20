@@ -191,13 +191,13 @@ extension NCDetailNavigationController {
         }
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
-                if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataMov.ocId, fileNameView: metadataMov.fileNameView) > 0 {
+            if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+                if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataLive.ocId, fileNameView: metadataLive.fileNameView) > 0 {
                     actions.append(
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
-                                let userInfo: [String : Any] = ["metadata": metadata, "metadataMov": metadataMov]
+                                let userInfo: [String : Any] = ["metadata": metadata, "metadataMov": metadataLive]
                                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil, userInfo: userInfo)
                             }
                         )

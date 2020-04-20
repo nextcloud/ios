@@ -238,8 +238,8 @@ import NCCommunication
             
         } else {
             // Verify Live Photo
-            if let metadataMov = NCUtility.sharedInstance.hasMOV(metadata: metadata) {
-                self.deleteMetadataPlain(metadataMov) { (errorCode, errorDescription) in
+            if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+                self.deleteMetadataPlain(metadataLive) { (errorCode, errorDescription) in
                     if errorCode == 0 {
                         self.deleteMetadataPlain(metadata, completion: completion)
                     } else {

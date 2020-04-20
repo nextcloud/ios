@@ -820,7 +820,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         var colorStatus: UIColor = UIColor.white.withAlphaComponent(0.8)
         if view.backgroundColor?.isLight() ?? true { colorStatus = UIColor.black.withAlphaComponent(0.8) }
                 
-        if NCUtility.sharedInstance.hasMOV(metadata: metadata) != nil {
+        if NCUtility.sharedInstance.isLivePhoto(metadata: metadata) != nil {
             viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: colorStatus)
         } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             viewerImageViewController.statusView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: colorStatus)
