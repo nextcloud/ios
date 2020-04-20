@@ -305,15 +305,16 @@
             }
             
             if (fileName.length > 0 && serverUrl.length > 0) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self downloadFileSuccessFailure:fileName ocId:metadata.ocId etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector errorCode:errorCode];
-                });
+                
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(errorCode), @"errorDescription": @""}];
             }
             
         } else {
             
             NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
 
+            
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:ocId:serverUrl:selector:errorMessage:errorCode:)]) {

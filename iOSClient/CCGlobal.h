@@ -337,7 +337,7 @@
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: ocId, task, serverUrl, account
-#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
 #define k_notificationCenter_progressTask               @"progressTask"
 
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
