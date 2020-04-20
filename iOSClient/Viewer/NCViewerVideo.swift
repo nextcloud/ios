@@ -27,7 +27,7 @@ import KTVHTTPCache
 class NCViewerVideo: NSObject {
 
     var metadata: tableMetadata!
-    var videoURL: URL!
+    var videoURL: URL?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var safeAreaBottom: Int = 0
 
