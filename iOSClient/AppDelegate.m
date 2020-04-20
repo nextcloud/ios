@@ -70,10 +70,7 @@
     
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    
-    // Filter ocId
-    self.filterocId = [NSMutableArray new];
-    
+        
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     

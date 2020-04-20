@@ -76,18 +76,41 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterocId:(NSArray *)filterocId filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
+    NSArray *arraySoprtedMetadatas;
+    NSMutableArray *filterocId = [NSMutableArray new];
+    
+    /*
+     Live Photo
+    */
+    
+    if ([CCUtility getMOVLivePhoto]) {
+        arraySoprtedMetadatas = [arrayMetadatas sortedArrayUsingComparator:^NSComparisonResult(tableMetadata *obj1, tableMetadata *obj2) {
+            return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
+        }];
+        NSString *prevFileNameImage;
+        for (tableMetadata *metadata in arraySoprtedMetadatas) {
+            if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image]) {
+                prevFileNameImage = metadata.fileNameView.stringByDeletingPathExtension;
+            }
+            if ([metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
+                if ([metadata.fileNameView.stringByDeletingPathExtension isEqualToString:prevFileNameImage]) {
+                    [filterocId addObject:metadata.ocId];
+                }
+            }
+        }
+    }
     
     /*
      Metadata order
     */
     
-    NSArray *arraySoprtedMetadatas = [arrayMetadatas sortedArrayUsingComparator:^NSComparisonResult(tableMetadata *obj1, tableMetadata *obj2) {
+    arraySoprtedMetadatas = [arrayMetadatas sortedArrayUsingComparator:^NSComparisonResult(tableMetadata *obj1, tableMetadata *obj2) {
         // Sort with Locale
         if ([sorted isEqualToString:@"date"]) {
             if (ascending) return [obj1.date compare:obj2.date];
@@ -139,8 +162,9 @@
             }
         }
     }
-    if (directoryOnTop && metadataFilesFavorite.count > 0)
+    if (directoryOnTop && metadataFilesFavorite.count > 0) {
         [sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
+    }
     
     /*
      sectionArrayRow

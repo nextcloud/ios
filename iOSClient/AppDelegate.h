@@ -106,7 +106,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
-@property (nonatomic, strong) NSMutableArray *filterocId;
 
 @property (nonatomic, strong) NSMutableArray *arrayDeleteMetadata;
 @property (nonatomic, strong) NSMutableArray *arrayMoveMetadata;
