@@ -479,12 +479,21 @@ extension CCMain {
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
+                                
                                 metadata.session = k_download_session
                                 metadata.sessionError = ""
                                 metadata.sessionSelector = selectorLoadOffline
                                 metadata.status = Int(k_metadataStatusWaitDownload)
-
                                 NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                
+                                if let metadataLivePhoto = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+                                    metadataLivePhoto.session = k_download_session
+                                    metadataLivePhoto.sessionError = ""
+                                    metadataLivePhoto.sessionSelector = selectorLoadOffline
+                                    metadataLivePhoto.status = Int(k_metadataStatusWaitDownload)
+                                    NCManageDatabase.sharedInstance.addMetadata(metadataLivePhoto)
+                                }
+                                
                                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
                                 appDelegate.startLoadAutoDownloadUpload()
                             } else {
