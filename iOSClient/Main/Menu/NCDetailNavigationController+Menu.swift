@@ -169,8 +169,7 @@ extension NCDetailNavigationController {
                     NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:
-                                               k_notificationCenter_menuSearchTextPDF), object: nil)
+                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:k_notificationCenter_menuSearchTextPDF), object: nil)
                         }
                     )
                 )
@@ -197,8 +196,7 @@ extension NCDetailNavigationController {
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
-                                let userInfo: [String : Any] = ["metadata": metadata, "metadataMov": metadataLive]
-                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil, userInfo: userInfo)
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil, userInfo: ["metadata": metadata, "metadataMov": metadataLive])
                             }
                         )
                     )

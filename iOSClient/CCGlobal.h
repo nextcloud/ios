@@ -328,7 +328,7 @@
 #define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"
 #define k_notificationCenter_changeTheming              @"changeTheming"
 #define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
-#define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"
+#define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"             // userInfo: metadata, type
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
@@ -338,17 +338,17 @@
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
-#define k_notificationCenter_progressTask               @"progressTask"
-
+#define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
 #define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew, errorCode, errorDescription
 #define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo, errorCode, errorDescription
 #define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite, errorCode, errorDescription
+
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
-#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"
-#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"
+#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
+#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // UserInfo: metadata, metadataMov
 #define k_notificationCenter_menuDetailClose            @"menuDetailClose"
 
 
