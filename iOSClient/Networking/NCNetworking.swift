@@ -421,7 +421,6 @@ import NCCommunication
         } else {
             favoriteMetadataPlain(metadata, url: url, completion: completion)
         }
-        
     }
     
     @objc func favoriteMetadataPlain(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -445,17 +444,34 @@ import NCCommunication
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
-        
+        let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
+
         if isDirectoryEncrypted {
-            
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                
-                 renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+                if metadataLive == nil {
+                    renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+                } else {
+                    self.renameMetadataE2EE(metadataLive!, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url) { (errorCode, errorDescription) in
+                        if errorCode == 0 {
+                            self.renameMetadataE2EE(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+                        } else {
+                            completion(errorCode, errorDescription)
+                        }
+                    }
+                }
             }
-    
         } else {
-            
-            renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
+            if metadataLive == nil {
+                renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
+            } else {
+                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNew) { (errorCode, errorDescription) in
+                    if errorCode == 0 {
+                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
+                    } else {
+                        completion(errorCode, errorDescription)
+                    }
+                }
+            }
         }
     }
     
@@ -560,8 +576,23 @@ import NCCommunication
     }
     
     //MARK: - WebDav Move
-
+    
     @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+        
+        if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+            moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                if errorCode == 0 {
+                    self.moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
+                } else {
+                    completion(errorCode, errorDescription)
+                }
+            }
+        } else {
+            moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
+        }
+    }
+
+    @objc func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
@@ -596,8 +627,23 @@ import NCCommunication
     }
     
     //MARK: - WebDav Copy
-
+    
     @objc func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+        
+        if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+            copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                if errorCode == 0 {
+                    self.copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
+                } else {
+                    completion(errorCode, errorDescription)
+                }
+            }
+        } else {
+            copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
+        }
+    }
+
+    @objc func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
