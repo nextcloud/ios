@@ -34,8 +34,6 @@ class NCUtility: NSObject {
     }()
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
-    let cache = NSCache<NSString, UIImage>()
-   
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
@@ -431,27 +429,6 @@ class NCUtility: NSObject {
         } catch { }
         
         return imageAvatar
-    }
-    
-    func loadImage(ocId: String, fileNameView: String, completion: @escaping (UIImage?) -> Void) {
-        
-        if let image = cache.object(forKey: ocId as NSString) {
-            completion(image)
-            return
-        }
-        
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            
-            let loadedImage = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(ocId, fileNameView: fileNameView))
-            
-            DispatchQueue.main.async {
-                
-                if let loadedImage = loadedImage {
-                    self?.cache.setObject(loadedImage, forKey: ocId as NSString)
-                }
-                completion(loadedImage)
-            }
-        }
     }
     
     @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
