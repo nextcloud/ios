@@ -292,7 +292,11 @@
             
             if (errorCode == 0) {
             
-                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]] != nil) {
+                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                } else if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]] != nil) {
+                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]];
+                }
             
                 NSString *dateString = [fields objectForKey:@"Date"];
                 if (dateString) {
@@ -325,9 +329,18 @@
             
             if (errorCode == 0) {
             
-                ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-                etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-            
+                if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]] != nil) {
+                    ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+                } else if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"FileId"]] != nil) {
+                    ocId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"FileId"]];
+                }
+                
+                if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]] != nil) {
+                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+                } else if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]] != nil) {
+                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]];
+                }
+                
                 NSString *dateString = [fields objectForKey:@"Date"];
                 if (dateString) {
                     if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
