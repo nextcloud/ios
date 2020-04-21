@@ -2564,13 +2564,14 @@
 
 - (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    NSString *tokenParameter = @"token";
-    if (self.nextcloudVersion == k_nextcloud_version_19_0) { tokenParameter = @"e2e-token"; }
-    
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileId];
     if (token) {
-        serverPath = [NSString stringWithFormat:@"%@?%@=%@", serverPath, tokenParameter, token];
+        if (self.nextcloudVersion == k_nextcloud_version_19_0) {
+            serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
+        } else {
+            serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+        }
         serverPath = [serverPath stringByAppendingString:@"&format=json"];
     } else {
         serverPath = [serverPath stringByAppendingString:@"?format=json"];
@@ -2599,9 +2600,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:tokenParameter] && ![[data valueForKey:tokenParameter] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"token"] && ![[data valueForKey:@"token"] isKindOfClass:[NSNull class]]) {
                     
-                    token = [data valueForKey:tokenParameter];
+                    token = [data valueForKey:@"token"];
                     successRequest(response, token, request.redirectedServer);
                     
                 } else {
@@ -2762,14 +2763,15 @@
 
 - (void)updateEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    NSString *tokenParameter = @"token";
-    if (self.nextcloudVersion == k_nextcloud_version_19_0) { tokenParameter = @"e2e-token"; }
-    
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
 
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileId];
-    serverPath = [NSString stringWithFormat:@"%@?%@=%@", serverPath, tokenParameter, token];
+    if (self.nextcloudVersion == k_nextcloud_version_19_0) {
+        serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
+    } else {
+        serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+    }
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
