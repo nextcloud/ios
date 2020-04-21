@@ -598,7 +598,6 @@
         
     } else {
         
-        // create Metadata for Upload
         tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];        
         if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
             [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
