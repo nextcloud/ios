@@ -249,6 +249,8 @@
 
 + (NSString *)getTimeIntervalSince197;
 
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata completion:(void(^)(tableMetadata *metadataForUpload))completion;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

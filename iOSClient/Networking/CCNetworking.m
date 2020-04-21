@@ -583,152 +583,40 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(NSURLErrorServerCertificateUntrusted), @"errorDescription": @"_ssl_certificate_untrusted_"}];
         return;
     }
-    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-    if (tableAccount == nil) {
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
-        return;
-    }
-    
-    if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
-    
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
-        
-        if (!result.count) {
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found, remove from upload"}];
-            return;
-        }
-        
-        PHAsset *asset= result[0];
-        
-        // IMAGE
-        if (asset.mediaType == PHAssetMediaTypeImage) {
-            
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES; // iCloud
-            options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-            options.synchronous = YES;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description]}];
-                }
-            };
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-                NSError *error = nil;
-                NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
-                
-                if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
-                    
-                    CIImage *ciImage = [CIImage imageWithData:imageData];
-                    CIContext *context = [CIContext context];
-                    imageData = [context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}];
-                    NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
-                    metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
-                    metadata.fileNameView = metadata.fileName;
-                    
-                    // Change Metadata with new ocId, fileName, fileNameView
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                    metadata.ocId = [CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false];
-                }
-                
-                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
-                [imageData writeToFile:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
 
-                if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataForUpload.ocId]];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Image request failed [%@]", error.description]}];
-                    
-                } else {
-                    
-                    // OOOOOK
-                    if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-                        [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
-                    } else {
-                        [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
-                    }
-                }
-            }];
-        }
+    if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         
-        // VIDEO
-        if (asset.mediaType == PHAssetMediaTypeVideo) {
-            
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES;
-            options.version = PHVideoRequestOptionsVersionOriginal;
-            options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
-                
-                NSLog(@"cacheAsset: %f", progress);
-                
-                if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                    
-                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
+        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata completion:^(tableMetadata *metadataForUpload) {
+            if (metadataForUpload != nil) {
+                if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
+                    [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
+                } else {
+                    [self uploadURLSessionMetadata:metadataForUpload taskStatus:taskStatus];
                 }
-            };
-            
-            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                
-                if ([asset isKindOfClass:[AVURLAsset class]]) {
-                    
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
-                    NSError *error = nil;
-                    
-                    [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
-                    [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileURL error:&error];
-                    
-                    if (error) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                            
-                            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
-                        });
-                    } else {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            // create Metadata for Upload
-                            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
-                            
-                            // OOOOOK
-                            if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-                                [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
-                            } else {
-                                [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
-                            }
-                        });
-                    }
-                }
-            }];
-        }
+            }
+        }];
         
     } else {
         
         // create Metadata for Upload
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
-        
-        // OOOOOK
-        if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-            [self e2eEncryptedFile:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];        
+        if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
+            [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
         } else {
-            [self uploadURLSessionMetadata:metadataForUpload tableAccount:tableAccount taskStatus:taskStatus];
+            [self uploadURLSessionMetadata:metadataForUpload taskStatus:taskStatus];
         }
     }
 }
 
-- (void)e2eEncryptedFile:(tableMetadata *)metadata tableAccount:(tableAccount *)tableAccount taskStatus:(NSInteger)taskStatus
+- (void)e2eEncryptedFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+    if (tableAccount == nil) {
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
+        return;
+    }
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSError *error;
@@ -826,17 +714,25 @@
             // Update Metadata
             tableMetadata *metadataEncrypted = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
-            [self uploadURLSessionMetadata:metadataEncrypted tableAccount:tableAccount taskStatus:taskStatus];
+            [self uploadURLSessionMetadata:metadataEncrypted taskStatus:taskStatus];
         });
     });
 }
 
-- (void)uploadURLSessionMetadata:(tableMetadata *)metadata tableAccount:(tableAccount *)tableAccount taskStatus:(NSInteger)taskStatus
+- (void)uploadURLSessionMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
 {
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
     NSError *error;
+    
+    //
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
+    if (tableAccount == nil) {
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
+        return;
+    }
     
     // calculate and store file size
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:&error];
