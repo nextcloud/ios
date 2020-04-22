@@ -2541,7 +2541,7 @@
     }];
 }
 
-- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileId];
@@ -2550,7 +2550,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request deletemarkEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request deletemarkEndToEndFolderEncrypted:serverPath e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);
@@ -2562,16 +2562,12 @@
     }];
 }
 
-- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *e2eToken, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileId];
-    if (token) {
-        if (self.nextcloudVersion == k_nextcloud_version_19_0) {
-            serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
-        } else {
-            serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
-        }
+    if (e2eToken) {
+        serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, e2eToken];
         serverPath = [serverPath stringByAppendingString:@"&format=json"];
     } else {
         serverPath = [serverPath stringByAppendingString:@"?format=json"];
@@ -2580,7 +2576,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request lockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request lockEndToEndFolderEncrypted:serverPath e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *token = @"";
@@ -2627,7 +2623,7 @@
     }];
 }
 
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileId];
@@ -2636,7 +2632,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request unlockEndToEndFolderEncrypted:serverPath token:token onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request unlockEndToEndFolderEncrypted:serverPath e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);
@@ -2703,7 +2699,7 @@
     }];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)storeEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
     
@@ -2714,7 +2710,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request storeEndToEndMetadata:serverPath metadata:encryptedMetadata onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request storeEndToEndMetadata:serverPath metadata:encryptedMetadata e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *encryptedMetadata = @"";
@@ -2761,23 +2757,19 @@
     }];
 }
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)updateEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId encryptedMetadata:(NSString *)encryptedMetadata e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
 
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileId];
-    if (self.nextcloudVersion == k_nextcloud_version_19_0) {
-        serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, token];
-    } else {
-        serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
-    }
+    serverPath = [NSString stringWithFormat:@"%@?e2e-token=%@", serverPath, e2eToken];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request updateEndToEndMetadata:serverPath metadata:encryptedMetadata onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request updateEndToEndMetadata:serverPath metadata:encryptedMetadata e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *encryptedMetadata = @"";
@@ -2824,7 +2816,7 @@
     }];
 }
 
-- (void)deleteEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)deleteEndToEndMetadata:(NSString*)serverPath fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileId];
@@ -2833,7 +2825,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request deleteEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request deleteEndToEndMetadata:serverPath e2eToken:e2eToken onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);

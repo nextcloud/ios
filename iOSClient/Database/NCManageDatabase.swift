@@ -1620,7 +1620,7 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryptionLock.init(value: result)
     }
     
-    @objc func setE2ETokenLock(serverUrl: String, fileId: String, token: String) {
+    @objc func setE2ETokenLock(serverUrl: String, fileId: String, e2eToken: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1635,7 +1635,7 @@ class NCManageDatabase: NSObject {
         addObject.account = tableAccount.account
         addObject.fileId = fileId
         addObject.serverUrl = serverUrl
-        addObject.token = token
+        addObject.e2eToken = e2eToken
                 
         realm.add(addObject, update: .all)
         

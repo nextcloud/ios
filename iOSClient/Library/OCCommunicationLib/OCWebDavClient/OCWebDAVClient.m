@@ -1155,12 +1155,13 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void)deletemarkEndToEndFolderEncrypted:(NSString*)serverPath e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
         
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
@@ -1168,12 +1169,13 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"POST";
         
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
@@ -1181,15 +1183,16 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
         
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
-    
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
+
     // Add token
-    [request setValue:token forHTTPHeaderField:@"token"];
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
@@ -1212,7 +1215,7 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void)storeEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
@@ -1220,7 +1223,8 @@ NSString *const NCResource = @"<d:displayname/>"
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
-    
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
+
     _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
     [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
 
@@ -1230,7 +1234,7 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+- (void)updateEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
@@ -1238,6 +1242,7 @@ NSString *const NCResource = @"<d:displayname/>"
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
     _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
     [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
@@ -1248,7 +1253,7 @@ NSString *const NCResource = @"<d:displayname/>"
     [operation resume];
 }
 
-- (void)deleteEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+- (void)deleteEndToEndMetadata:(NSString*)serverPath e2eToken:(NSString *)e2eToken onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
     
     NSParameterAssert(success);
     
@@ -1256,6 +1261,7 @@ NSString *const NCResource = @"<d:displayname/>"
         
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil  timeout:k_timeout_webdav];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
