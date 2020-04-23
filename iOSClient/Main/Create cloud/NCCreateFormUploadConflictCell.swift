@@ -27,14 +27,14 @@ class NCCreateFormUploadConflictCell: UITableViewCell {
     
     @IBOutlet weak var labelFileName: UILabel!
 
-    @IBOutlet weak var imageFile: UIImageView!
-    @IBOutlet weak var imageFileNew: UIImageView!
+    @IBOutlet weak var imageAlreadyExistingFile: UIImageView!
+    @IBOutlet weak var imageNewFile: UIImageView!
 
-    @IBOutlet weak var labelDetail: UILabel!
-    @IBOutlet weak var labelDetailNew: UILabel!
+    @IBOutlet weak var labelDetailAlreadyExistingFile: UILabel!
+    @IBOutlet weak var labelDetailNewFile: UILabel!
 
-    @IBOutlet weak var switchNewFile: UISwitch!
     @IBOutlet weak var switchAlreadyExistingFile: UISwitch!
+    @IBOutlet weak var switchNewFile: UISwitch!
     
     var delegate: NCCreateFormUploadConflictCellDelegate?
     var ocId: String = ""

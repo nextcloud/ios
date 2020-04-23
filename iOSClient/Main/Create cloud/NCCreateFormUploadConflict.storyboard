@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="30l-Wp-khL">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="30l-Wp-khL">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -37,23 +37,23 @@
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="08D-oc-nWS">
                                         <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
                                         <connections>
-                                            <action selector="valueChangedSwitchNewFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="vG9-tl-Ybg"/>
+                                            <action selector="valueChangedSwitchAlreadyExistingFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="fpu-dJ-1gZ"/>
                                         </connections>
                                     </switch>
                                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ge9-Fi-Rb1">
                                         <rect key="frame" x="340" y="0.0" width="51" height="31"/>
                                         <connections>
-                                            <action selector="valueChangedSwitchAlreadyExistingFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="yFJ-Ri-2WX"/>
+                                            <action selector="valueChangedSwitchNewFiles:" destination="30l-Wp-khL" eventType="valueChanged" id="phX-dq-KR0"/>
                                         </connections>
                                     </switch>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New files" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7Y-Nu-nJ3">
-                                        <rect key="frame" x="0.0" y="36" width="63" height="24"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Already existing files" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7Y-Nu-nJ3">
+                                        <rect key="frame" x="0.0" y="36" width="141" height="24"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Already existing files" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Tf-oD-aTF">
-                                        <rect key="frame" x="248" y="36" width="141" height="24"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New files" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Tf-oD-aTF">
+                                        <rect key="frame" x="326" y="36" width="63" height="24"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -146,12 +146,12 @@
                     <connections>
                         <outlet property="buttonCancel" destination="5Nf-YT-2uq" id="cvi-cr-h7O"/>
                         <outlet property="buttonContinue" destination="RU9-v6-zSl" id="IXK-i8-oyK"/>
-                        <outlet property="labelAlreadyExistingFiles" destination="3Tf-oD-aTF" id="3j2-bX-Bgx"/>
-                        <outlet property="labelNewFiles" destination="H7Y-Nu-nJ3" id="NXn-Ip-DVP"/>
+                        <outlet property="labelAlreadyExistingFiles" destination="H7Y-Nu-nJ3" id="0QL-q7-GR8"/>
+                        <outlet property="labelNewFiles" destination="3Tf-oD-aTF" id="DEw-1r-2JB"/>
                         <outlet property="labelSubTitle" destination="bXc-v3-Lun" id="oUd-Zb-Yxc"/>
                         <outlet property="labelTitle" destination="amb-pM-6dC" id="gEU-4f-4Zu"/>
-                        <outlet property="switchAlreadyExistingFiles" destination="ge9-Fi-Rb1" id="QNa-gi-Q0V"/>
-                        <outlet property="switchNewFiles" destination="08D-oc-nWS" id="JLR-fr-6eI"/>
+                        <outlet property="switchAlreadyExistingFiles" destination="08D-oc-nWS" id="VxI-9Q-9YY"/>
+                        <outlet property="switchNewFiles" destination="ge9-Fi-Rb1" id="zy1-W2-UN8"/>
                         <outlet property="tableView" destination="wkN-gS-XKZ" id="rME-eq-aos"/>
                     </connections>
                 </viewController>

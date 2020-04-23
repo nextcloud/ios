@@ -202,7 +202,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 180
+        return 330
     }
 }
 
@@ -222,69 +222,74 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
             
-            let metadata = metadatasConflict[indexPath.row]
-            let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.lowercased()
-            let fileNameWithoutExtension = (metadata.fileNameView as NSString).deletingPathExtension
-            var fileNameConflict = metadata.fileNameView
+            let metadataNewFile = metadatasConflict[indexPath.row]
+            let fileNameExtension = (metadataNewFile.fileNameView as NSString).pathExtension.lowercased()
+            let fileNameWithoutExtension = (metadataNewFile.fileNameView as NSString).deletingPathExtension
+            var fileNameConflict = metadataNewFile.fileNameView
 
             if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
                 fileNameConflict = fileNameWithoutExtension + ".jpg"
             }
 
-            guard let metadataInConflict = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadata.account, metadata.serverUrl, fileNameConflict)) else { return UITableViewCell() }
-            
-            cell.ocId = metadata.ocId
+            cell.ocId = metadataNewFile.ocId
             cell.delegate = self
-            
-            cell.labelFileName.text = metadata.fileNameView
-            cell.labelDetail.text = ""
-            cell.labelDetailNew.text = ""
+            cell.labelFileName.text = metadataNewFile.fileNameView
+            cell.labelDetailAlreadyExistingFile.text = ""
+            cell.labelDetailNewFile.text = ""
 
-            // Image New
-            if metadata.iconName.count > 0 {
-                cell.imageFileNew.image = UIImage.init(named: metadata.iconName)
+            // -----> Already Existing File
+            
+            guard let metadataAlreadyExists = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadataNewFile.account, metadataNewFile.serverUrl, fileNameConflict)) else { return UITableViewCell() }
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) {
+                cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))
             } else {
-                cell.imageFileNew.image = UIImage.init(named: "file")
+                if metadataAlreadyExists.iconName.count > 0 {
+                    cell.imageAlreadyExistingFile.image = UIImage.init(named: metadataAlreadyExists.iconName)
+                } else {
+                    cell.imageAlreadyExistingFile.image = UIImage.init(named: "file")
+                }
             }
-            // Image New < Preview >
-            if metadata.assetLocalIdentifier.count > 0 {
-                let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
+                
+            if metadatasConflictAlreadyExistingFiles.contains(metadataNewFile.ocId) {
+                cell.switchAlreadyExistingFile.isOn = true
+            } else {
+                cell.switchAlreadyExistingFile.isOn = false
+            }
+            
+            
+            // -----> New File
+            
+            if metadataNewFile.iconName.count > 0 {
+                cell.imageNewFile.image = UIImage.init(named: metadataNewFile.iconName)
+            } else {
+                cell.imageNewFile.image = UIImage.init(named: "file")
+            }
+            if metadataNewFile.assetLocalIdentifier.count > 0 {
+                let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadataNewFile.assetLocalIdentifier], options: nil)
                 if result.count == 1 {
                     PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 200, height: 200), contentMode: PHImageContentMode.aspectFill, options: nil) { (image, info) in
-                        cell.imageFileNew.image = image
+                        cell.imageNewFile.image = image
                     }
                     
                     let resource = PHAssetResource.assetResources(for: result.firstObject!)
                     let size = resource.first?.value(forKey: "fileSize") as! Double
                     let date = result.firstObject!.modificationDate
                     
-                    cell.labelDetail.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(size)
+                    cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(size)
                 }                
             }
-        
-            // Image
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict.ocId, fileNameView: metadataInConflict.fileNameView)) {
-                cell.imageFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataInConflict.ocId, fileNameView: metadataInConflict.fileNameView))
-            } else {
-                if metadataInConflict.iconName.count > 0 {
-                    cell.imageFile.image = UIImage.init(named: metadataInConflict.iconName)
-                } else {
-                    cell.imageFile.image = UIImage.init(named: "file")
-                }
-            }
             
-            cell.labelDetailNew.text = CCUtility.dateDiff(metadataInConflict.date as Date) + "\n" + CCUtility.transformedSize(metadataInConflict.size)
-                        
-            if metadatasConflictNewFiles.contains(metadata.ocId) {
+            if metadatasConflictNewFiles.contains(metadataNewFile.ocId) {
                 cell.switchNewFile.isOn = true
             } else {
                 cell.switchNewFile.isOn = false
             }
-            
-            if metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
-                cell.switchAlreadyExistingFile.isOn = true
-            } else {
-                cell.switchAlreadyExistingFile.isOn = false
+        
+            // Hide switch if only one
+            if metadatasConflict.count == 1 {
+                cell.switchAlreadyExistingFile.isHidden = true
+                cell.switchNewFile.isHidden = true
             }
             
             return cell
