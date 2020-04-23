@@ -28,7 +28,7 @@ import Foundation
     func dismissFormUploadAssets()
 }
 
-class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEditorDelegate {
+class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     var serverUrl: String = ""
     var titleServerUrl: String?
@@ -108,25 +108,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
-        
-        // Section Photo Editor only for one photo
-        
-        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image && self.imagePreview != nil {
-            
-            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_modify_photo_", comment: ""))
-            form.addFormSection(section)
-            
-            row = XLFormRowDescriptor(tag: "ButtonPhotoEditor", rowType: XLFormRowDescriptorTypeButton, title: NSLocalizedString("_modify_photo_", comment: ""))
-            row.action.formSelector = #selector(photoEditor(_:))
-            row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
-            
-            row.cellConfig["imageView.image"] = self.imagePreview
-            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
-            row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            
-            section.addFormRow(row)
-        }
         
         // Section: Destination Folder
         
@@ -414,57 +395,5 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func photoEditor(_ sender: XLFormRowDescriptor) {
-        
-        self.deselectFormRow(sender)
-        
-        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.default, options: requestOptions, resultHandler: { (image, info) in
-            
-            let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
-
-            photoEditor.image = image
-            photoEditor.photoEditorDelegate = self
-            photoEditor.hiddenControls = [.save, .share, .sticker]
-            
-            photoEditor.cancelButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCancel")!, multiplier:2, color: .white)
-            photoEditor.cropButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCrop")!, multiplier:2, color: .white)
-            photoEditor.drawButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDraw")!, multiplier:2, color: .white)
-            photoEditor.textButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorText")!, multiplier:2, color: .white)
-            photoEditor.clearButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorClear")!, multiplier:2, color: .white)
-            photoEditor.continueButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDone")!, multiplier:2, color: .white)
-            
-            photoEditor.modalPresentationStyle = .fullScreen
-            
-            self.present(photoEditor, animated: true, completion: nil)
-        })
-    }
-    
-    // MARK: - Photo Editor Delegate
-
-    func doneEditing(image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(image, self, #selector(imageSaved(_:didFinishSavingWithError:contextInfo:)), nil)
-    }
-    
-    @objc func imageSaved(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
-        if let asset = fetchResult.firstObject {
-            self.assets = NSMutableArray(array: [asset])
-        }
-        
-        // Preview
-        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
-            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonPhotoEditor")!
-            row.cellConfig["imageView.image"] = image
-            self.updateFormRow(row)
-        })
-    }
-    
-    func canceledEditing() {
-        print("Canceled")
     }
 }

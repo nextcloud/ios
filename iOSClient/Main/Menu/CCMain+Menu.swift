@@ -447,23 +447,6 @@ extension CCMain {
                 )
             }
 
-            if (NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
-                actions.append(
-                    NCMenuAction(title: NSLocalizedString("_modify_photo_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            metadata.session = k_download_session
-                            metadata.sessionError = ""
-                            metadata.sessionSelector = selectorDownloadEditPhoto
-                            metadata.status = Int(k_metadataStatusWaitDownload)
-
-                            NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            appDelegate.startLoadAutoDownloadUpload()
-                        }
-                    )
-                )
-            }
-
             if (!metadataFolder.e2eEncrypted) {
                 let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 var title: String!

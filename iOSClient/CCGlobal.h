@@ -193,9 +193,8 @@
 
 // Selector
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
-#define selectorDownloadEditPhoto                       @"downloadEditPhoto"
 #define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadFileViewFavorite                            @"loadFileViewFavorite"
+#define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
 #define selectorLoadFileInternalView                    @"loadFileInternalView"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"

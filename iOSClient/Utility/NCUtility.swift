@@ -274,20 +274,7 @@ class NCUtility: NSObject {
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
-    
-    @objc func isEditImage(_ fileName: NSString) -> String? {
-        switch fileName.pathExtension.uppercased() {
-        case "PNG":
-            return "PNG";
-        case "JPG":
-            return "JPG";
-        case "JPEG":
-            return "JPG"
-        default:
-            return nil
-        }
-    }
-    
+
     @objc func formatSecondsToString(_ seconds: TimeInterval) -> String {
         if seconds.isNaN {
             return "00:00:00"

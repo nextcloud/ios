@@ -69,12 +69,6 @@ import Foundation
                         return
                     }
                     
-                    // Modify Photo
-                    if selector == selectorDownloadEditPhoto {
-                        NCMainCommon.sharedInstance.editPhoto(metadata, viewController: appDelegate.activeMain)
-                        return
-                    }
-                    
                     // open View File
                     if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
                     

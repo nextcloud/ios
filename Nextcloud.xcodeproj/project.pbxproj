@@ -278,41 +278,6 @@
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
-		F760F77B21F21F61006B1A73 /* icomoon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F760F75721F21F61006B1A73 /* icomoon.ttf */; };
-		F760F77C21F21F61006B1A73 /* StickersViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760F75821F21F61006B1A73 /* StickersViewController.xib */; };
-		F760F77D21F21F61006B1A73 /* ColorsCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75921F21F61006B1A73 /* ColorsCollectionViewDelegate.swift */; };
-		F760F77E21F21F61006B1A73 /* PhotoEditor+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75A21F21F61006B1A73 /* PhotoEditor+Keyboard.swift */; };
-		F760F77F21F21F61006B1A73 /* PhotoEditor+Controls.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75B21F21F61006B1A73 /* PhotoEditor+Controls.swift */; };
-		F760F78021F21F61006B1A73 /* PhotoEditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760F75C21F21F61006B1A73 /* PhotoEditorViewController.xib */; };
-		F760F78121F21F61006B1A73 /* PhotoEditor+StickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75D21F21F61006B1A73 /* PhotoEditor+StickersViewController.swift */; };
-		F760F78221F21F61006B1A73 /* PhotoEditor+UITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75E21F21F61006B1A73 /* PhotoEditor+UITextView.swift */; };
-		F760F78321F21F61006B1A73 /* UIImageView+Alpha.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F75F21F21F61006B1A73 /* UIImageView+Alpha.swift */; };
-		F760F78421F21F61006B1A73 /* ColorCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760F76021F21F61006B1A73 /* ColorCollectionViewCell.xib */; };
-		F760F78521F21F61006B1A73 /* EmojiCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760F76121F21F61006B1A73 /* EmojiCollectionViewCell.xib */; };
-		F760F78621F21F61006B1A73 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F760F76221F21F61006B1A73 /* LaunchScreen.storyboard */; };
-		F760F78721F21F61006B1A73 /* PhotoEditor+Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76421F21F61006B1A73 /* PhotoEditor+Font.swift */; };
-		F760F78821F21F61006B1A73 /* PhotoCropEditorBorder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F760F76521F21F61006B1A73 /* PhotoCropEditorBorder@2x.png */; };
-		F760F78921F21F61006B1A73 /* UIView+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76621F21F61006B1A73 /* UIView+Image.swift */; };
-		F760F78A21F21F61006B1A73 /* UIImage+Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76721F21F61006B1A73 /* UIImage+Size.swift */; };
-		F760F78B21F21F61006B1A73 /* UIImage+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76821F21F61006B1A73 /* UIImage+Crop.swift */; };
-		F760F78C21F21F61006B1A73 /* StickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76921F21F61006B1A73 /* StickersViewController.swift */; };
-		F760F78D21F21F61006B1A73 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76A21F21F61006B1A73 /* Protocols.swift */; };
-		F760F78E21F21F61006B1A73 /* PhotoEditor+Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76B21F21F61006B1A73 /* PhotoEditor+Drawing.swift */; };
-		F760F78F21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F760F76C21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png */; };
-		F760F79021F21F61006B1A73 /* PhotoCropEditorBorder.png in Resources */ = {isa = PBXBuildFile; fileRef = F760F76D21F21F61006B1A73 /* PhotoCropEditorBorder.png */; };
-		F760F79121F21F61006B1A73 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76E21F21F61006B1A73 /* EmojiCollectionViewCell.swift */; };
-		F760F79221F21F61006B1A73 /* EmojisCollectionViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F76F21F21F61006B1A73 /* EmojisCollectionViewDelegate.swift */; };
-		F760F79321F21F61006B1A73 /* CropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77021F21F61006B1A73 /* CropView.swift */; };
-		F760F79421F21F61006B1A73 /* ResizeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77121F21F61006B1A73 /* ResizeControl.swift */; };
-		F760F79521F21F61006B1A73 /* PhotoEditor+Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77221F21F61006B1A73 /* PhotoEditor+Gestures.swift */; };
-		F760F79621F21F61006B1A73 /* PhotoEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77321F21F61006B1A73 /* PhotoEditorViewController.swift */; };
-		F760F79721F21F61006B1A73 /* StickerCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F760F77421F21F61006B1A73 /* StickerCollectionViewCell.xib */; };
-		F760F79821F21F61006B1A73 /* StickerCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77521F21F61006B1A73 /* StickerCollectionViewCell.swift */; };
-		F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77621F21F61006B1A73 /* CropViewController.swift */; };
-		F760F79A21F21F61006B1A73 /* PhotoEditor+Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77721F21F61006B1A73 /* PhotoEditor+Crop.swift */; };
-		F760F79B21F21F61006B1A73 /* ColorCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77821F21F61006B1A73 /* ColorCollectionViewCell.swift */; };
-		F760F79C21F21F61006B1A73 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77921F21F61006B1A73 /* GradientView.swift */; };
-		F760F79D21F21F61006B1A73 /* CropRectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F760F77A21F21F61006B1A73 /* CropRectView.swift */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
 		F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA61EACB66200B38484 /* XLFormButtonCell.m */; };
 		F762CAF91EACB66200B38484 /* XLFormCheckCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA81EACB66200B38484 /* XLFormCheckCell.m */; };
@@ -906,41 +871,6 @@
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
-		F760F75721F21F61006B1A73 /* icomoon.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = icomoon.ttf; sourceTree = "<group>"; };
-		F760F75821F21F61006B1A73 /* StickersViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StickersViewController.xib; sourceTree = "<group>"; };
-		F760F75921F21F61006B1A73 /* ColorsCollectionViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorsCollectionViewDelegate.swift; sourceTree = "<group>"; };
-		F760F75A21F21F61006B1A73 /* PhotoEditor+Keyboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Keyboard.swift"; sourceTree = "<group>"; };
-		F760F75B21F21F61006B1A73 /* PhotoEditor+Controls.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Controls.swift"; sourceTree = "<group>"; };
-		F760F75C21F21F61006B1A73 /* PhotoEditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoEditorViewController.xib; sourceTree = "<group>"; };
-		F760F75D21F21F61006B1A73 /* PhotoEditor+StickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+StickersViewController.swift"; sourceTree = "<group>"; };
-		F760F75E21F21F61006B1A73 /* PhotoEditor+UITextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+UITextView.swift"; sourceTree = "<group>"; };
-		F760F75F21F21F61006B1A73 /* UIImageView+Alpha.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Alpha.swift"; sourceTree = "<group>"; };
-		F760F76021F21F61006B1A73 /* ColorCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ColorCollectionViewCell.xib; sourceTree = "<group>"; };
-		F760F76121F21F61006B1A73 /* EmojiCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EmojiCollectionViewCell.xib; sourceTree = "<group>"; };
-		F760F76321F21F61006B1A73 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F760F76421F21F61006B1A73 /* PhotoEditor+Font.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Font.swift"; sourceTree = "<group>"; };
-		F760F76521F21F61006B1A73 /* PhotoCropEditorBorder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PhotoCropEditorBorder@2x.png"; sourceTree = "<group>"; };
-		F760F76621F21F61006B1A73 /* UIView+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Image.swift"; sourceTree = "<group>"; };
-		F760F76721F21F61006B1A73 /* UIImage+Size.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Size.swift"; sourceTree = "<group>"; };
-		F760F76821F21F61006B1A73 /* UIImage+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Crop.swift"; sourceTree = "<group>"; };
-		F760F76921F21F61006B1A73 /* StickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickersViewController.swift; sourceTree = "<group>"; };
-		F760F76A21F21F61006B1A73 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
-		F760F76B21F21F61006B1A73 /* PhotoEditor+Drawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Drawing.swift"; sourceTree = "<group>"; };
-		F760F76C21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PhotoCropEditorBorder@3x.png"; sourceTree = "<group>"; };
-		F760F76D21F21F61006B1A73 /* PhotoCropEditorBorder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PhotoCropEditorBorder.png; sourceTree = "<group>"; };
-		F760F76E21F21F61006B1A73 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
-		F760F76F21F21F61006B1A73 /* EmojisCollectionViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojisCollectionViewDelegate.swift; sourceTree = "<group>"; };
-		F760F77021F21F61006B1A73 /* CropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropView.swift; sourceTree = "<group>"; };
-		F760F77121F21F61006B1A73 /* ResizeControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResizeControl.swift; sourceTree = "<group>"; };
-		F760F77221F21F61006B1A73 /* PhotoEditor+Gestures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Gestures.swift"; sourceTree = "<group>"; };
-		F760F77321F21F61006B1A73 /* PhotoEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoEditorViewController.swift; sourceTree = "<group>"; };
-		F760F77421F21F61006B1A73 /* StickerCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StickerCollectionViewCell.xib; sourceTree = "<group>"; };
-		F760F77521F21F61006B1A73 /* StickerCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerCollectionViewCell.swift; sourceTree = "<group>"; };
-		F760F77621F21F61006B1A73 /* CropViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropViewController.swift; sourceTree = "<group>"; };
-		F760F77721F21F61006B1A73 /* PhotoEditor+Crop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PhotoEditor+Crop.swift"; sourceTree = "<group>"; };
-		F760F77821F21F61006B1A73 /* ColorCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorCollectionViewCell.swift; sourceTree = "<group>"; };
-		F760F77921F21F61006B1A73 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
-		F760F77A21F21F61006B1A73 /* CropRectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropRectView.swift; sourceTree = "<group>"; };
 		F762CAA31EACB66200B38484 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
 		F762CAA41EACB66200B38484 /* XLFormBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XLFormBaseCell.m; sourceTree = "<group>"; };
 		F762CAA51EACB66200B38484 /* XLFormButtonCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormButtonCell.h; sourceTree = "<group>"; };
@@ -1824,48 +1754,6 @@
 			path = ScanDocument;
 			sourceTree = "<group>";
 		};
-		F760F75621F21F61006B1A73 /* PhotoEditor */ = {
-			isa = PBXGroup;
-			children = (
-				F760F77821F21F61006B1A73 /* ColorCollectionViewCell.swift */,
-				F760F76021F21F61006B1A73 /* ColorCollectionViewCell.xib */,
-				F760F75921F21F61006B1A73 /* ColorsCollectionViewDelegate.swift */,
-				F760F77A21F21F61006B1A73 /* CropRectView.swift */,
-				F760F77021F21F61006B1A73 /* CropView.swift */,
-				F760F77621F21F61006B1A73 /* CropViewController.swift */,
-				F760F76E21F21F61006B1A73 /* EmojiCollectionViewCell.swift */,
-				F760F76121F21F61006B1A73 /* EmojiCollectionViewCell.xib */,
-				F760F76F21F21F61006B1A73 /* EmojisCollectionViewDelegate.swift */,
-				F760F77921F21F61006B1A73 /* GradientView.swift */,
-				F760F75721F21F61006B1A73 /* icomoon.ttf */,
-				F760F76221F21F61006B1A73 /* LaunchScreen.storyboard */,
-				F760F76D21F21F61006B1A73 /* PhotoCropEditorBorder.png */,
-				F760F76521F21F61006B1A73 /* PhotoCropEditorBorder@2x.png */,
-				F760F76C21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png */,
-				F760F75B21F21F61006B1A73 /* PhotoEditor+Controls.swift */,
-				F760F77721F21F61006B1A73 /* PhotoEditor+Crop.swift */,
-				F760F76B21F21F61006B1A73 /* PhotoEditor+Drawing.swift */,
-				F760F76421F21F61006B1A73 /* PhotoEditor+Font.swift */,
-				F760F77221F21F61006B1A73 /* PhotoEditor+Gestures.swift */,
-				F760F75A21F21F61006B1A73 /* PhotoEditor+Keyboard.swift */,
-				F760F75D21F21F61006B1A73 /* PhotoEditor+StickersViewController.swift */,
-				F760F75E21F21F61006B1A73 /* PhotoEditor+UITextView.swift */,
-				F760F77321F21F61006B1A73 /* PhotoEditorViewController.swift */,
-				F760F75C21F21F61006B1A73 /* PhotoEditorViewController.xib */,
-				F760F76A21F21F61006B1A73 /* Protocols.swift */,
-				F760F77121F21F61006B1A73 /* ResizeControl.swift */,
-				F760F77521F21F61006B1A73 /* StickerCollectionViewCell.swift */,
-				F760F77421F21F61006B1A73 /* StickerCollectionViewCell.xib */,
-				F760F76921F21F61006B1A73 /* StickersViewController.swift */,
-				F760F75821F21F61006B1A73 /* StickersViewController.xib */,
-				F760F76821F21F61006B1A73 /* UIImage+Crop.swift */,
-				F760F76721F21F61006B1A73 /* UIImage+Size.swift */,
-				F760F75F21F21F61006B1A73 /* UIImageView+Alpha.swift */,
-				F760F76621F21F61006B1A73 /* UIView+Image.swift */,
-			);
-			path = PhotoEditor;
-			sourceTree = "<group>";
-		};
 		F762CA9F1EACB66200B38484 /* XLForm */ = {
 			isa = PBXGroup;
 			children = (
@@ -2500,7 +2388,6 @@
 				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
 				F754EEC321772B6100BB1CDF /* DropdownMenu */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
-				F760F75621F21F61006B1A73 /* PhotoEditor */,
 				F762CA9F1EACB66200B38484 /* XLForm */,
 			);
 			path = Library;
@@ -2894,7 +2781,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */,
-				F760F78421F21F61006B1A73 /* ColorCollectionViewCell.xib in Resources */,
 				F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */,
 				F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */,
 				F77D49A91DC238E500CDC568 /* loading.gif in Resources */,
@@ -2909,10 +2795,8 @@
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */,
-				F760F78821F21F61006B1A73 /* PhotoCropEditorBorder@2x.png in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
-				F760F78521F21F61006B1A73 /* EmojiCollectionViewCell.xib in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
@@ -2923,20 +2807,17 @@
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
 				F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
-				F760F78621F21F61006B1A73 /* LaunchScreen.storyboard in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
 				F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */,
 				F749C10E23C4A5340027D966 /* NCIntroCollectionViewCell.xib in Resources */,
 				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
-				F760F77C21F21F61006B1A73 /* StickersViewController.xib in Resources */,
 				F762CB1B1EACB66200B38484 /* XLForm.bundle in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
-				F760F79721F21F61006B1A73 /* StickerCollectionViewCell.xib in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
 				F73B4EF31F470D9100BBEE4B /* GB2312Freq.tab in Resources */,
@@ -2946,7 +2827,6 @@
 				F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */,
 				F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
-				F760F78F21F21F61006B1A73 /* PhotoCropEditorBorder@3x.png in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
 				F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */,
@@ -2960,7 +2840,6 @@
 				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
 				F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
-				F760F79021F21F61006B1A73 /* PhotoCropEditorBorder.png in Resources */,
 				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
@@ -2968,8 +2847,6 @@
 				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
 				F73B4EF41F470D9100BBEE4B /* JISFreq.tab in Resources */,
-				F760F77B21F21F61006B1A73 /* icomoon.ttf in Resources */,
-				F760F78021F21F61006B1A73 /* PhotoEditorViewController.xib in Resources */,
 				F70006FA24164F8D00F214A5 /* NCViewerImageVideo.storyboard in Resources */,
 				F774DF101FCC26BE002AF9FC /* iTunesArtwork@2x.png in Resources */,
 				F73B4EF11F470D9100BBEE4B /* EUCKRFreq.tab in Resources */,
@@ -3211,12 +3088,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F760F79521F21F61006B1A73 /* PhotoEditor+Gestures.swift in Sources */,
 				F70022D71EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F762CAFD1EACB66200B38484 /* XLFormInlineSelectorCell.m in Sources */,
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
 				F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */,
-				F760F78221F21F61006B1A73 /* PhotoEditor+UITextView.swift in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
@@ -3227,7 +3102,6 @@
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F73B4F041F470D9100BBEE4B /* nsBig5Prober.cpp in Sources */,
-				F760F78321F21F61006B1A73 /* UIImageView+Alpha.swift in Sources */,
 				F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
@@ -3246,7 +3120,6 @@
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
-				F760F79921F21F61006B1A73 /* CropViewController.swift in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
@@ -3254,7 +3127,6 @@
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
-				F760F79C21F21F61006B1A73 /* GradientView.swift in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */,
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
@@ -3262,10 +3134,8 @@
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F762CB0C1EACB66200B38484 /* XLFormSectionDescriptor.m in Sources */,
-				F760F79421F21F61006B1A73 /* ResizeControl.swift in Sources */,
 				F7DFB7F2219C5C0000680748 /* NCCreateFormUploadFileText.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
-				F760F79121F21F61006B1A73 /* EmojiCollectionViewCell.swift in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
@@ -3275,14 +3145,12 @@
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
-				F760F77E21F21F61006B1A73 /* PhotoEditor+Keyboard.swift in Sources */,
 				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
 				F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
-				F760F79D21F21F61006B1A73 /* CropRectView.swift in Sources */,
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
@@ -3298,7 +3166,6 @@
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
-				F760F78B21F21F61006B1A73 /* UIImage+Crop.swift in Sources */,
 				F73B4F101F470D9100BBEE4B /* nsSBCharSetProber.cpp in Sources */,
 				F762CB0E1EACB66200B38484 /* NSExpression+XLFormAdditions.m in Sources */,
 				F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */,
@@ -3325,23 +3192,18 @@
 				F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */,
 				F7B6ACDB22FC2D15008AB646 /* NCComments.m in Sources */,
 				F73B4F121F470D9100BBEE4B /* nsSJISProber.cpp in Sources */,
-				F760F78121F21F61006B1A73 /* PhotoEditor+StickersViewController.swift in Sources */,
-				F760F78D21F21F61006B1A73 /* Protocols.swift in Sources */,
 				F762CAFF1EACB66200B38484 /* XLFormPickerCell.m in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
 				F762CB191EACB66200B38484 /* XLFormValidator.m in Sources */,
-				F760F78C21F21F61006B1A73 /* StickersViewController.swift in Sources */,
 				F762CB0D1EACB66200B38484 /* NSArray+XLFormAdditions.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
-				F760F77D21F21F61006B1A73 /* ColorsCollectionViewDelegate.swift in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
-				F760F78721F21F61006B1A73 /* PhotoEditor+Font.swift in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,
@@ -3385,7 +3247,6 @@
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
-				F760F79821F21F61006B1A73 /* StickerCollectionViewCell.swift in Sources */,
 				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
@@ -3395,13 +3256,11 @@
 				F73B4EF91F470D9100BBEE4B /* LangEsperantoModel.cpp in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
-				F760F79B21F21F61006B1A73 /* ColorCollectionViewCell.swift in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
-				F760F77F21F21F61006B1A73 /* PhotoEditor+Controls.swift in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
@@ -3416,10 +3275,8 @@
 				F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F762CB031EACB66200B38484 /* XLFormStepCounterCell.m in Sources */,
-				F760F79321F21F61006B1A73 /* CropView.swift in Sources */,
 				F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */,
 				F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */,
-				F760F78A21F21F61006B1A73 /* UIImage+Size.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
 				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F7E09CE723E308AD00FB3E9E /* NCMasterNavigationController.swift in Sources */,
@@ -3449,13 +3306,9 @@
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */,
 				F73B4F021F470D9100BBEE4B /* LangTurkishModel.cpp in Sources */,
-				F760F79A21F21F61006B1A73 /* PhotoEditor+Crop.swift in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
-				F760F78E21F21F61006B1A73 /* PhotoEditor+Drawing.swift in Sources */,
 				F762CB0B1EACB66200B38484 /* XLFormRowDescriptor.m in Sources */,
-				F760F78921F21F61006B1A73 /* UIView+Image.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
-				F760F79221F21F61006B1A73 /* EmojisCollectionViewDelegate.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
@@ -3467,7 +3320,6 @@
 				F73B4F0A1F470D9100BBEE4B /* nsEUCTWProber.cpp in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F762CB091EACB66200B38484 /* XLFormViewController.m in Sources */,
-				F760F79621F21F61006B1A73 /* PhotoEditorViewController.swift in Sources */,
 				F762CB161EACB66200B38484 /* XLFormTextView.m in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
@@ -3511,14 +3363,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		F760F76221F21F61006B1A73 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F760F76321F21F61006B1A73 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 		F7E70DE91A24DE4100E1B66A /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (

@@ -1191,9 +1191,8 @@ NSString *const NCResource = @"<d:displayname/>"
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
 
-    // Add token
-    [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
-
+    NSLog(@"%@", [request allHTTPHeaderFields]);
+    
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
 

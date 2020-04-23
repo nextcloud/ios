@@ -28,7 +28,7 @@ import NCCommunication
 
 //MARK: - Main Common
 
-class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
+class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
     @objc static let sharedInstance: NCMainCommon = {
         let instance = NCMainCommon()
@@ -873,69 +873,6 @@ class NCMainCommon: NSObject, PhotoEditorDelegate, NCAudioRecorderViewController
         }
         
         return true
-    }
-    
-    @objc func editPhoto(_ metadata: tableMetadata, viewController: UIViewController) {
-        guard let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
-            return
-        }
-        guard let image = UIImage(contentsOfFile: path) else {
-            return
-        }
-        
-        self.metadataEditPhoto = metadata
-
-        let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
-        
-        photoEditor.image = image
-        photoEditor.photoEditorDelegate = self
-        photoEditor.hiddenControls = [.save, .share, .sticker]
-        
-        photoEditor.cancelButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCancel")!, multiplier:2, color: .white)
-        photoEditor.cropButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCrop")!, multiplier:2, color: .white)
-        photoEditor.drawButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDraw")!, multiplier:2, color: .white)
-        photoEditor.textButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorText")!, multiplier:2, color: .white)
-        photoEditor.clearButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorClear")!, multiplier:2, color: .white)
-        photoEditor.continueButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDone")!, multiplier:2, color: .white)
-        
-        photoEditor.modalPresentationStyle = .fullScreen
-        
-        viewController.present(photoEditor, animated: true, completion: nil)
-    }
-    
-    func doneEditing(image: UIImage) {
-        guard let metadata = self.metadataEditPhoto else {
-            return
-        }
-        guard let path = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
-            return
-        }
-        guard let filetype = NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) else {
-            return
-        }
-        if filetype == "PNG" {
-            do {
-                try image.pngData()?.write(to: NSURL(fileURLWithPath:path) as URL, options: .atomic)
-            } catch { return }
-        } else if filetype == "JPG" {
-            let imageData = image.jpegData(compressionQuality: 1)
-            do {
-                try imageData?.write(to: NSURL(fileURLWithPath:path) as URL)
-            } catch { return }
-        }
-        // write icon
-        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-
-        // upload
-        metadata.session = k_upload_session
-        metadata.sessionSelector = selectorUploadFile
-        metadata.status = Int(k_metadataStatusWaitUpload)
-        
-        NCManageDatabase.sharedInstance.addMetadata(metadata)
-    }
-    
-    func canceledEditing() {
-        print("Canceled")
     }
     
     //MARK: - download Open Selector
