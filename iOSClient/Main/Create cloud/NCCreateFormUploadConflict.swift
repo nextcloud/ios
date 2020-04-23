@@ -205,7 +205,7 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 330
+        return 260
     }
 }
 
@@ -252,7 +252,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     cell.imageAlreadyExistingFile.image = UIImage.init(named: "file")
                 }
             }
-            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
+            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date)
                 
             if metadatasConflictAlreadyExistingFiles.contains(metadataNewFile.ocId) {
                 cell.switchAlreadyExistingFile.isOn = true
@@ -271,16 +271,14 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             if metadataNewFile.assetLocalIdentifier.count > 0 {
                 let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadataNewFile.assetLocalIdentifier], options: nil)
                 if result.count == 1 {
-                    PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 200, height: 200), contentMode: PHImageContentMode.aspectFill, options: nil) { (image, info) in
-                        cell.imageNewFile.image = image
-                    }
-                    
-                    let resource = PHAssetResource.assetResources(for: result.firstObject!)
-                    let size = resource.first?.value(forKey: "fileSize") as! Double
                     let date = result.firstObject!.modificationDate
-                    
-                    cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(size)
-                }                
+                    PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 400, height: 400), contentMode: .aspectFill, options: nil) { (image, info) in
+                        cell.imageNewFile.image = image
+                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date)
+                    }
+                }
+            } else {
+                CCUtility.dateDiff(metadataNewFile.date as Date)
             }
             
             if metadatasConflictNewFiles.contains(metadataNewFile.ocId) {
