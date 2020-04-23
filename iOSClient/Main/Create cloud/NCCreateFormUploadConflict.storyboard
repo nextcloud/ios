@@ -103,6 +103,7 @@
                                             <constraint firstAttribute="width" constant="120" id="WPF-n7-YZM"/>
                                             <constraint firstAttribute="height" constant="40" id="tQn-bn-hx6"/>
                                         </constraints>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                         <state key="normal" title="Continue">
                                             <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </state>
