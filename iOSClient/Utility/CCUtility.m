@@ -1518,9 +1518,8 @@
                 
                 NSArray *resources = [PHAssetResource assetResourcesForAsset:asset];
                 NSString *orgFilename = ((PHAssetResource*)resources[0]).originalFilename;
-                NSURL *tmpDirURL = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
-                NSURL *fileURL = [tmpDirURL URLByAppendingPathComponent:orgFilename];
-                [imageData writeToFile:fileURL.absoluteString options:NSDataWritingAtomic error:&error];
+                NSURL *fileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:orgFilename]];
+                [imageData writeToFile:fileURL.path options:NSDataWritingAtomic error:&error];
                 completion(nil, fileURL);
             }
         }];
@@ -1569,7 +1568,9 @@
                         }
                     });
                 } else {
-                    completion(nil, [(AVURLAsset *)asset URL]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(nil, [(AVURLAsset *)asset URL]);
+                    });
                 }
             }
         }];

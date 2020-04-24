@@ -52,6 +52,7 @@ import Foundation
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
+    var fileNameURL = [String:URL]()
 
     // MARK: - Cicle
 
@@ -205,7 +206,11 @@ import Foundation
 extension NCCreateFormUploadConflict: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 260
+        if metadatasConflict.count == 1 {
+            return 250
+        } else {
+            return 280
+        }
     }
 }
 
@@ -252,7 +257,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     cell.imageAlreadyExistingFile.image = UIImage.init(named: "file")
                 }
             }
-            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date)
+            cell.labelDetailAlreadyExistingFile.text = CCUtility.dateDiff(metadataAlreadyExists.date as Date) + "\n" + CCUtility.transformedSize(metadataAlreadyExists.size)
                 
             if metadatasConflictAlreadyExistingFiles.contains(metadataNewFile.ocId) {
                 cell.switchAlreadyExistingFile.isOn = true
@@ -269,14 +274,46 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 cell.imageNewFile.image = UIImage.init(named: "file")
             }
             if metadataNewFile.assetLocalIdentifier.count > 0 {
+                
                 let result = PHAsset.fetchAssets(withLocalIdentifiers: [metadataNewFile.assetLocalIdentifier], options: nil)
-                if result.count == 1 {
-                    let date = result.firstObject!.modificationDate
-                    PHImageManager.default().requestImage(for: result.firstObject!, targetSize: CGSize(width: 400, height: 400), contentMode: .aspectFill, options: nil) { (image, info) in
-                        cell.imageNewFile.image = image
-                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date)
+                let date = result.firstObject!.modificationDate
+                let mediaType = result.firstObject!.mediaType
+                
+                if let url = self.fileNameURL[metadataNewFile.fileNameView] {
+                    
+                    do {
+                        if mediaType == PHAssetMediaType.image {
+                            let data = try Data(contentsOf: url)
+                            cell.imageNewFile.image = UIImage(data: data)
+                        }
+                        
+                        let fileDictionary = try FileManager.default.attributesOfItem(atPath: url.path)
+                        let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                        
+                        cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                        
+                    } catch { print("Error: \(error)") }
+                    
+                } else {
+                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: nil, assetLocalIdentifier: metadataNewFile.assetLocalIdentifier) { (metadata, url) in
+                        if url != nil {
+                            self.fileNameURL[metadataNewFile.fileNameView] = url!
+                            do {
+                                if mediaType == PHAssetMediaType.image {
+                                    let data = try Data(contentsOf: url!)
+                                    cell.imageNewFile.image = UIImage(data: data)
+                                }
+                                
+                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: url!.path)
+                                let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                                
+                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                
+                            } catch { print("Error: \(error)") }
+                        }
                     }
                 }
+                      
             } else {
                 CCUtility.dateDiff(metadataNewFile.date as Date)
             }
