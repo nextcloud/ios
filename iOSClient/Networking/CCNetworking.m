@@ -586,7 +586,7 @@
 
     if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         
-        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata completion:^(tableMetadata *metadataForUpload) {
+        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata assetLocalIdentifier:nil completion:^(tableMetadata *metadataForUpload, NSURL *url) {
             if (metadataForUpload != nil) {
                 if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
                     [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
