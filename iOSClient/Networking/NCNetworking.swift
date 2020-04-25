@@ -212,7 +212,7 @@ import NCCommunication
         NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, files, errorCode, errorDescription) in
 
             if errorCode == 0 && files != nil {
-                if files?.count ?? 0 >= 1 {
+                if files?.count ?? 0 == 1 {
                     let file = files![0]
                     let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account)
                     let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
