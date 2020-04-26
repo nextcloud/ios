@@ -42,6 +42,7 @@ class NCDetailViewController: UIViewController {
     @objc var metadatas = [tableMetadata]()
     
     private let progressHeight: CGFloat = 1.5
+    private var maxProgress: Float = 0
     private var videoLayer: AVPlayerLayer?
     private var viewerImageViewControllerLongPressInProgress = false
         
@@ -115,7 +116,7 @@ class NCDetailViewController: UIViewController {
         guard let navigationController = splitViewController?.viewControllers.last as? UINavigationController else { return }
                         
         appDelegate.progressViewDetail.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height - (progressHeight*2), width: navigationController.navigationBar.frame.width, height: progressHeight)
-        appDelegate.progressViewDetail.setProgress(0, animated: false)
+        progress(0)
         
         if NCBrandColor.sharedInstance.brand.isLight() {
             appDelegate.progressViewDetail.tintColor = NCBrandColor.sharedInstance.brand.darker(by: 10)
@@ -131,7 +132,13 @@ class NCDetailViewController: UIViewController {
     
     @objc func progress(_ progress: Float) {
         DispatchQueue.main.async {
-            self.appDelegate.progressViewDetail.progress = progress
+            if progress == 0 {
+                self.maxProgress = 0
+                self.appDelegate.progressViewDetail.progress = 0
+            } else if progress > self.maxProgress {
+                self.appDelegate.progressViewDetail.progress = progress
+                self.maxProgress = progress
+            }
         }
     }
     
