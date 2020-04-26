@@ -38,11 +38,17 @@ class NCMasterNavigationController: UINavigationController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        if self.splitViewController?.isCollapsed == false {
-            if (self.splitViewController != nil) {
-                if let navigationController = self.splitViewController!.viewControllers[self.splitViewController!.viewControllers.count-1] as? UINavigationController {
-                    navigationController.topViewController!.navigationItem.leftBarButtonItem = self.splitViewController!.displayModeButtonItem
-                }
+        guard let splitViewController = self.splitViewController else { return }
+        
+        if let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as? UINavigationController {
+            
+            if splitViewController.isCollapsed {
+                
+                navigationController.topViewController?.navigationItem.backBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: UIBarButtonItem.Style.plain, target: nil, action: nil)
+                
+            } else {
+                
+                navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
             }
         }
     }
