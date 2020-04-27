@@ -746,19 +746,18 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
-    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
-                        
-        if metadata.typeFile == k_metadataTypeFile_image && !view.isLoading {
-            DispatchQueue.global().async {
-                if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
-                        view.image = image
-                    }
-                }
-            }
-        }
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, willChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
         
         statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
+    }
+    
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
+        
+        if metadata.typeFile == k_metadataTypeFile_image && !view.isLoading {
+            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
+                view.image = image
+            }
+        }
     }
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {

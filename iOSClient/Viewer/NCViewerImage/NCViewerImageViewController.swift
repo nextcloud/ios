@@ -39,8 +39,9 @@ extension NCViewerImageViewControllerDataSource {
 
 protocol NCViewerImageViewControllerDelegate: class {
 
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, willChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata)
-    
+
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
     func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata)
@@ -51,6 +52,8 @@ protocol NCViewerImageViewControllerDelegate: class {
 extension NCViewerImageViewControllerDelegate {
 
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {}
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, willChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {}
+
 }
 
 public class NCViewerImageViewController: UIViewController {
@@ -568,7 +571,7 @@ extension NCViewerImageViewController {
                 mediaContainerView.sendSubviewToBack(previousView)
             }
 
-            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: nextView, metadata: nextView.metadata)
+            delegate?.viewerImageViewController(self, willChangeFocusTo: index, view: nextView, metadata: nextView.metadata)
 
         } else if middleView.position > (1 + normalizedGap - normalizedCenter) {
 
@@ -589,7 +592,11 @@ extension NCViewerImageViewController {
                 mediaContainerView.bringSubviewToFront(nextView)
             }
 
-            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: previousView, metadata: previousView.metadata)
+            delegate?.viewerImageViewController(self, willChangeFocusTo: index, view: previousView, metadata: previousView.metadata)
+            
+        } else if middleView.position == 0 {
+            
+            delegate?.viewerImageViewController(self, didChangeFocusTo: index, view: middleView, metadata: middleView.metadata)
         }
     }
 
