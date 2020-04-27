@@ -57,8 +57,22 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
             textColorOpponent = .black
         }
         
+        if #available(iOS 13.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithTransparentBackground()
+            navBarAppearance.shadowColor = .clear
+            navBarAppearance.shadowImage = UIImage()
+            self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+        } else {
+            self.navigationController?.navigationBar.isTranslucent = true
+            self.navigationController?.navigationBar.shadowImage = UIImage()
+            self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            self.navigationController?.navigationBar.backgroundColor = .clear
+            self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
+        }
         self.navigationController?.navigationBar.tintColor = textColor
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
+
+        
         self.pageControl.currentPageIndicatorTintColor = textColor
         self.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
 
@@ -83,6 +97,18 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.pageControl.numberOfPages = self.titles.count
         self.view.backgroundColor = NCBrandColor.sharedInstance.customer
         self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if #available(iOS 13.0, *) {
+            if traitCollection.userInterfaceStyle == .light {
+                return .lightContent
+            } else {
+                return .darkContent
+            }
+        } else {
+            return .lightContent
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -154,5 +180,10 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         if let browserWebVC = browserWebVC {
             appDelegate?.window.rootViewController?.present(browserWebVC, animated: true)
         }
+    }
+}
+extension UINavigationController {
+    open override var childForStatusBarStyle: UIViewController? {
+        return topViewController?.childForStatusBarStyle ?? topViewController
     }
 }

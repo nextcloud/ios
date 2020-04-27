@@ -110,10 +110,6 @@
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    // APPEARANCE: How to hide UINavigationBar 1px bottom line < iOS 11
-    [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-    [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-    [UINavigationBar appearance].translucent = NO;
     
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
@@ -1003,24 +999,18 @@
         
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
-        viewController.navigationController.navigationBar.translucent = NO;
-        viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-        viewController.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
-        if ([self.reachability isReachable]) {
-            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
-        } else {
-            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
+        if (![self.reachability isReachable]) {
+           [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
         }
-        viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-        [viewController.navigationController.navigationBar setAlpha:1];
     }
+    
+    [self configureNavBarForViewController:viewController];
     
     //tabBar
     if (viewController.tabBarController.tabBar) {
         viewController.tabBarController.tabBar.translucent = NO;
-        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
         viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-        [viewController.tabBarController.tabBar setAlpha:1];
     }
     
     //tabBar button Plus

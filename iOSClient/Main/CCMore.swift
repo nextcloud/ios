@@ -186,10 +186,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc func changeTheming() {
-        
         appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
 
-        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
         themingBackground.backgroundColor = NCBrandColor.sharedInstance.backgroundView;

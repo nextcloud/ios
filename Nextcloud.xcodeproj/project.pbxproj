@@ -30,6 +30,8 @@
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */; };
 		3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */; };
+		37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */; };
+		37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C83A0E24532BA600618A3B /* CCMain+Swift.swift */; };
 		37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */; };
 		F70006FA24164F8D00F214A5 /* NCViewerImageVideo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70006F924164F8D00F214A5 /* NCViewerImageVideo.storyboard */; };
 		F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */; };
@@ -600,6 +602,8 @@
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Menu.swift"; sourceTree = "<group>"; };
 		3781B9B323DB2BC9006B4B1D /* CCFavorites+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCFavorites+Menu.swift"; sourceTree = "<group>"; };
+		37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Swift.swift"; sourceTree = "<group>"; };
+		37C83A0E24532BA600618A3B /* CCMain+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Swift.swift"; sourceTree = "<group>"; };
 		37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuAction.swift; sourceTree = "<group>"; };
 		F70006F924164F8D00F214A5 /* NCViewerImageVideo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImageVideo.storyboard; sourceTree = "<group>"; };
 		F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageVideo.swift; sourceTree = "<group>"; };
@@ -1423,6 +1427,8 @@
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				371B5A2F23D0B04B00FAFAE9 /* Menu */,
 				F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */,
+				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
+				37C83A0E24532BA600618A3B /* CCMain+Swift.swift */,
 				F710D1F824057C9D00A6033D /* NCDetailViewController.swift */,
 				F7D6650620FF341600BFBA9E /* NCMainCommon.swift */,
 				F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */,
@@ -3098,6 +3104,7 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
 				F73B4F0D1F470D9100BBEE4B /* nsLatin1Prober.cpp in Sources */,
+				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F762CB071EACB66200B38484 /* XLFormOptionsObject.m in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
@@ -3334,6 +3341,7 @@
 				F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
+				37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */,
 				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */,

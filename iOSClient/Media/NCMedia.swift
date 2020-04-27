@@ -114,8 +114,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewWillAppear(animated)
         
         // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.tintColor = .lightGray
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
         
         // get auto upload folder
@@ -151,6 +151,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        
+        refreshControl.tintColor = .lightGray
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
