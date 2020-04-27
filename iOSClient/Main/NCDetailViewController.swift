@@ -754,8 +754,12 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
         
         if metadata.typeFile == k_metadataTypeFile_image && !view.isLoading {
-            if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                view.image = image
+            DispatchQueue.global().async {
+                if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
+                    DispatchQueue.main.async {
+                        view.image = image
+                    }
+                }
             }
         }
     }
