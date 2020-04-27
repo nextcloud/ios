@@ -697,13 +697,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
             
+            metadata.session = k_download_session_foreground
+            
             _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
                                 
                 self.progress(Float(progress.fractionCompleted))
                 
             }) { (account, etag, date, length, errorCode, errorDescription) in
-                
-                self.progress(0)
                 
                 if errorCode == 0 && account == metadata.account {
                     
@@ -717,6 +717,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 } else if errorCode != 0 {
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
+                
+                metadata.session = ""
+                self.progress(0)
             }
         
         // Preview
