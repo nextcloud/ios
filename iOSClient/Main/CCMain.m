@@ -34,7 +34,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate, NCCreateFormUploadConflictDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -862,7 +862,7 @@
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] serverUrl:serverUrl account:appDelegate.activeAccount];
+            NSString *fileName =  [url lastPathComponent];
             NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
@@ -883,11 +883,22 @@
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                    if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+                       
+                        NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
+                        conflict.serverUrl = self.serverUrl;
+                        conflict.metadatasUploadInConflict = @[metadataForUpload];
                         
-                    [appDelegate startLoadAutoDownloadUpload];
-                    
+                        [self presentViewController:conflict animated:YES completion:nil];
+                        
+                    } else {
+                        
+                        [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                            
+                        [appDelegate startLoadAutoDownloadUpload];
+                    }
+
                 } else {
                                         
                     [[NCContentPresenter shared] messageNotification:@"_error_" description:error.description delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
@@ -1140,9 +1151,9 @@
 
 - (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    NSMutableArray *metadatas = [NSMutableArray new];
+    NSMutableArray *metadatasNOConflict = [NSMutableArray new];
     NSMutableArray *metadatasMOV = [NSMutableArray new];
-    NSMutableArray *metadatasConflict = [NSMutableArray new];
+    NSMutableArray *metadatasUploadInConflict = [NSMutableArray new];
 
     for (PHAsset *asset in assets) {
         
@@ -1183,22 +1194,13 @@
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
         [CCUtility insertTypeFileIconName:fileName metadata:metadataForUpload];
-        
-        // verify exists conflict
-        NSString *fileNameExtension = [fileName pathExtension].lowercaseString;
-        NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
-        NSString *fileNameConflict = fileName;
-        
-        if ([fileNameExtension isEqualToString:@"heic"] && [CCUtility getFormatCompatibility]) {
-            fileNameConflict = [fileNameWithoutExtension stringByAppendingString:@".jpg"];
-        }
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameConflict]];
-        if (metadata) {
-            [metadatasConflict addObject:metadataForUpload];
+                        
+        if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+            [metadatasUploadInConflict addObject:metadataForUpload];
         } else {
-            [metadatas addObject:metadataForUpload];
+            [metadatasNOConflict addObject:metadataForUpload];
         }
-                    
+        
         // Add Medtadata MOV LIVE PHOTO for upload
         if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto && urls.count == assets.count) {
                 
@@ -1228,19 +1230,19 @@
     }
     
     // Verify if file(s) exists
-    if (metadatasConflict.count > 0) {
+    if (metadatasUploadInConflict.count > 0) {
         
         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
-        conflict.delegate = self;
-        conflict.metadatas = metadatas;
+        conflict.serverUrl = self.serverUrl;
+        conflict.metadatasNOConflict = metadatasNOConflict;
         conflict.metadatasMOV = metadatasMOV;
-        conflict.metadatasConflict = metadatasConflict;
+        conflict.metadatasUploadInConflict = metadatasUploadInConflict;
         
         [self presentViewController:conflict animated:YES completion:nil];
         
     } else {
         
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
         [appDelegate startLoadAutoDownloadUpload];
@@ -1248,19 +1250,6 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== NCCreateFormUploadConflictDelegate ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)dismissCreateFormUploadConflictWithMetadatas:(NSArray *)metadatas
-{
-    if (metadatas.count > 0) {
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-        
-        [appDelegate startLoadAutoDownloadUpload];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    }
-}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====
