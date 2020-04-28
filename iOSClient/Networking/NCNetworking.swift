@@ -316,9 +316,11 @@ import NCCommunication
                         self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
                             if errorCode == 0 {
                                 // Add Metadata
+                                metadataFolder?.fileNameView = fileNameFolder
+                                metadataFolder?.e2eEncrypted = true
                                 NCManageDatabase.sharedInstance.addMetadata(metadataFolder!)
                                 // Add folder
-                                NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder!.e2eEncrypted, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
+                                NCManageDatabase.sharedInstance.addDirectory(encrypted: true, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
                                 
                                 let fileId = metadataFolder?.fileId
                                 
