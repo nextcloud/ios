@@ -782,6 +782,10 @@
                     
                 } else {
                 
+                    // Add Header e2e-token
+                    tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:metadata.serverUrl];
+                    [request setValue:tableLock.e2eToken forHTTPHeaderField:@"e2e-token"];
+                    
                     // NSURLSession
                     NSURLSession *sessionUpload;
                     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
