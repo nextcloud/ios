@@ -2261,7 +2261,34 @@ class NCManageDatabase: NSObject {
         // Update Date Read Directory
         setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
-    
+   
+    @objc func setMetadataEncrypted(ocId: String, encrypted: Bool) {
+           
+        let realm = try! Realm()
+
+        realm.beginWrite()
+
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
+            realm.cancelWrite()
+            return
+        }
+           
+        result.e2eEncrypted = encrypted
+
+        let account = result.account
+        let serverUrl = result.serverUrl
+           
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+           
+        // Update Date Read Directory
+        setDateReadDirectory(serverUrl: serverUrl, account: account)
+    }
+       
     @objc func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
         
         let realm = try! Realm()
