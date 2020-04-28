@@ -338,7 +338,7 @@ import NCCommunication
                                     object.authenticationTag = nil
                                     object.fileName = fileNameFolder
                                     object.fileNameIdentifier = fileNameIdentifier
-                                    object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileNameFolder, serverUrl: serverUrl, activeUrl: url)
+                                    object.fileNamePath = ""
                                     object.key = key! as String
                                     object.initializationVector = initializationVector! as String
                                     object.metadataKey = metadataKey!
