@@ -431,6 +431,13 @@
         
         [[NCManageDatabase sharedInstance] setE2ETokenLockWithServerUrl:serverUrl fileId:fileId e2eToken:e2eToken];
             
+        // DELETE METADATA
+        [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileId:fileId e2eToken:e2eToken onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+            NSLog(@"[LOG] Found metadata and delete");
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            NSLog(@"[LOG] %@", [NSString stringWithFormat:@"Remove metadata error %d", (int)response.statusCode]);
+        }];
+        
         // DELETE MARK
         [communication deletemarkEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileId:fileId e2eToken:e2eToken onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
