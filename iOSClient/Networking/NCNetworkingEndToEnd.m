@@ -362,7 +362,7 @@
 #pragma --------------------------------------------------------------------------------------------
 // E2EE
 
-- (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
+- (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
 
@@ -376,35 +376,13 @@
     // MARK
     [communication markEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileId:fileId onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
-        if (e2eToken) {
-            // UNLOCK
-            [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileId:fileId e2eToken:e2eToken onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                [[NCManageDatabase sharedInstance] deteleE2ETokenLockWithServerUrl:serverUrl];
-                dispatch_semaphore_signal(semaphore);
-            } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
-                dispatch_semaphore_signal(semaphore);
-            }];
-        } else {
-            dispatch_semaphore_signal(semaphore);
-        }
+        dispatch_semaphore_signal(semaphore);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
         returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_mark_folder_"];
-
-        if (e2eToken) {
-            // UNLOCK
-            [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileId:fileId e2eToken:e2eToken onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                [[NCManageDatabase sharedInstance] deteleE2ETokenLockWithServerUrl:serverUrl];
-                dispatch_semaphore_signal(semaphore);
-            } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
-                dispatch_semaphore_signal(semaphore);
-            }];
-        } else {
-            dispatch_semaphore_signal(semaphore);
-        }
+        dispatch_semaphore_signal(semaphore);
+        
     }];
       
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))

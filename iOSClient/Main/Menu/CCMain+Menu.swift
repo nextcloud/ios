@@ -319,7 +319,7 @@ extension CCMain {
                         action: { menuAction in
                             DispatchQueue.global(qos: .userInitiated).async {
                                 let serverUrl = self.serverUrl + "/" + metadata.fileName
-                                let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: serverUrl, fileId: metadata.fileId, e2eToken: nil, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
+                                let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: serverUrl, fileId: metadata.fileId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
                                 DispatchQueue.main.async {
                                     if (error != nil) {
                                         NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
