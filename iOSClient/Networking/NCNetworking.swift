@@ -297,7 +297,7 @@ import NCCommunication
                 return
             }
             
-            if let error = NCNetworkingEndToEnd.sharedManager()?.lockFolderEncrypted(onServerUrl: serverUrl, fileId: directory?.ocId, user: user, userID: userID, password: password, url: url) as NSError? {
+            if let error = NCNetworkingEndToEnd.sharedManager()?.lockFolderEncrypted(onServerUrl: serverUrl, fileId: directory?.fileId, user: user, userID: userID, password: password, url: url) as NSError? {
                 self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": error.code], errorDescription: error.localizedDescription, completion: completion)
                 return
             }
