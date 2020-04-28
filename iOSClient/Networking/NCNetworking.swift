@@ -332,11 +332,11 @@ import NCCommunication
             }
         } else {
             if metadataLive == nil {
-                self.deleteMetadataPlain(metadata, completion: completion)
+                self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
             } else {
-                self.deleteMetadataPlain(metadataLive!) { (errorCode, errorDescription) in
+                self.deleteMetadataPlain(metadataLive!, addCustomHeaders: nil) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        self.deleteMetadataPlain(metadata, completion: completion)
+                        self.deleteMetadataPlain(metadata, addCustomHeaders: nil, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }
@@ -345,7 +345,7 @@ import NCCommunication
         }
     }
     
-    private func deleteMetadataPlain(_ metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String:String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
@@ -356,7 +356,7 @@ import NCCommunication
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders, account: metadata.account) { (account, errorCode, errorDescription) in
         
             if errorCode == 0 || errorCode == kOCErrorServerPathNotFound {
                 
@@ -385,7 +385,11 @@ import NCCommunication
             
             DispatchQueue.main.async {
                 if error == nil {
-                    self.deleteMetadataPlain(metadata) { (errorCode, errorDescription) in
+                    guard let lock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: directory.serverUrl) else {
+                        self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": k_CCErrorInternalError], errorDescription: "Lock not found", completion: completion)
+                        return
+                    }
+                    self.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token" : lock.e2eToken]) { (errorCode, errorDescription) in
                         
                         if errorCode == 0 {
                             NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, directory.serverUrl, metadata.fileName))
