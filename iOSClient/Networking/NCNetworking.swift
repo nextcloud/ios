@@ -231,6 +231,49 @@ import NCCommunication
 
     @objc func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account)
+               
+        if isDirectoryEncrypted {
+            createFolderE2EE(fileName: fileName, serverUrl: serverUrl, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+        } else {
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+        }
+    }
+    
+    @objc func createFolderPlain(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
+        var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
+        
+        fileNameFolder = NCUtility.sharedInstance.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
+        if fileNameFolder.count == 0 {
+            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            return
+        }
+        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+        
+        NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, ocId, date, errorCode, errorDescription) in
+            if errorCode == 0 {
+                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
+                    if errorCode == 0 {
+                        // Add Metadata
+                        NCManageDatabase.sharedInstance.addMetadata(metadataFolder!)
+                        // Add folder
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder!.e2eEncrypted, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
+                        
+                        self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        
+                    } else {
+                        self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                    }
+                }
+            } else {
+                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            }
+        }
+    }
+    
+    @objc func createFolderE2EE(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
         var fileNameIdentifier = ""

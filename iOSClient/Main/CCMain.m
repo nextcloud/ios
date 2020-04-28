@@ -572,7 +572,7 @@
     NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (errorCode == 0) {
-        [self readFolder:self.serverUrl];
+        [self reloadDatasource:self.serverUrl ocId:nil action:k_action_NULL];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
