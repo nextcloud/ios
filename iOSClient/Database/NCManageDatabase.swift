@@ -1938,6 +1938,10 @@ class NCManageDatabase: NSObject {
         if isEncrypted || metadata.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
+                let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
+                metadata.contentType = results.contentType
+                metadata.iconName = results.iconName
+                metadata.typeFile = results.typeFile
             }
         }
         
