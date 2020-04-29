@@ -369,6 +369,7 @@ extension CCMain {
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
             }
+            let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
 
             actions.append(
                 NCMenuAction(
@@ -388,7 +389,7 @@ extension CCMain {
                 )
             )
 
-            if (!metadataFolder.e2eEncrypted) {
+            if (!isEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
@@ -441,7 +442,7 @@ extension CCMain {
                 )
             )
             
-            if (!metadataFolder.e2eEncrypted) {
+            if (!isEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_move_or_copy_", comment: ""),
@@ -453,7 +454,7 @@ extension CCMain {
                 )
             }
 
-            if (!metadataFolder.e2eEncrypted) {
+            if (!isEncrypted) {
                 let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 var title: String!
                 if (localFile == nil || localFile!.offline == false) {

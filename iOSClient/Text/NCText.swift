@@ -110,7 +110,7 @@ class NCText: UIViewController, UITextViewDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        if appDelegate.activeDetail != nil && appDelegate.activeDetail.backgroundView.subviews.first != nil {
+        if appDelegate.activeDetail != nil && appDelegate.activeDetail.backgroundView?.subviews.first != nil {
             if appDelegate.activeDetail.backgroundView.subviews.first is WKWebView {
                 appDelegate.activeDetail.viewUnload()
             }
