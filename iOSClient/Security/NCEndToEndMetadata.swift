@@ -142,7 +142,7 @@ class NCEndToEndMetadata : NSObject  {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
-        //let dataQuickLook = (data as! NSData)
+        let dataQuickLook = (data as! NSData)
                 
         do {
             
