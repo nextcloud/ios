@@ -47,6 +47,7 @@
     XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
+    NSInteger versionServer = [[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount];
     
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
@@ -134,20 +135,23 @@
         [section addFormRow:row];
     }
     
-    // Section : E2EEncryption --------------------------------------------------------------
+    // Section : E2EEncryption From Nextcloud 19 --------------------------------------------------------------
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
-    [form addFormSection:section];
-    
-    // EndToEnd Encryption
-    NSString *title = [NSString stringWithFormat:@"%@ (%@)",NSLocalizedString(@"_e2e_settings_", nil), NSLocalizedString(@"_experimental_", nil)];
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
-    row.action.viewControllerClass = [NCManageEndToEndEncryption class];
-    [section addFormRow:row];
+    if (versionServer >= k_nextcloud_version_19_0) {
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
+        [form addFormSection:section];
+        
+        // EndToEnd Encryption
+        NSString *title = [NSString stringWithFormat:@"%@ (%@)",NSLocalizedString(@"_e2e_settings_", nil), NSLocalizedString(@"_experimental_", nil)];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
+        row.action.viewControllerClass = [NCManageEndToEndEncryption class];
+        
+        [section addFormRow:row];
+    }
     
     // Section Advanced -------------------------------------------------
     
