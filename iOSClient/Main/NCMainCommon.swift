@@ -604,31 +604,33 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             }
             
             // Share image
-            if (isShare) {
-                cell.shared.image = NCMainCommonImages.cellSharedImage
-            } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
-                cell.shared.image = NCMainCommonImages.cellShareByLinkImage
-            } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
-                cell.shared.image = NCMainCommonImages.cellSharedImage
-            } else {
-                cell.shared.image = NCMainCommonImages.cellCanShareImage
-            }
-            if metadata.ownerId != appDelegate.activeUserID {
-                // Load avatar
-                let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
-                let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
-                if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
-                    if let avatar = UIImage(contentsOfFile: fileNameSourceAvatar) {
-                        cell.shared.image = avatar
-                    }
-                } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    if let avatar = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar) {
-                        cell.shared.image = avatar
-                    }
+            if !(metadataFolder?.e2eEncrypted ?? false) && !metadata.e2eEncrypted {
+                if (isShare) {
+                    cell.shared.image = NCMainCommonImages.cellSharedImage
+                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                    cell.shared.image = NCMainCommonImages.cellShareByLinkImage
+                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                    cell.shared.image = NCMainCommonImages.cellSharedImage
                 } else {
-                    NCCommunication.sharedInstance.downloadAvatar(serverUrl: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                    cell.shared.image = NCMainCommonImages.cellCanShareImage
+                }
+                if metadata.ownerId != appDelegate.activeUserID {
+                    // Load avatar
+                    let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata.ownerId + ".png"
+                    let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar-" + metadata.ownerId + ".png"
+                    if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
+                        if let avatar = UIImage(contentsOfFile: fileNameSourceAvatar) {
+                            cell.shared.image = avatar
+                        }
+                    } else if FileManager.default.fileExists(atPath: fileNameSource) {
+                        if let avatar = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar) {
+                            cell.shared.image = avatar
+                        }
+                    } else {
+                        NCCommunication.sharedInstance.downloadAvatar(serverUrl: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                                cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                            }
                         }
                     }
                 }
