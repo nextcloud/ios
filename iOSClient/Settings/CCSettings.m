@@ -138,6 +138,7 @@
     // Section : E2EEncryption From Nextcloud 19 --------------------------------------------------------------
 
     if (versionServer >= k_nextcloud_version_19_0) {
+        
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
         [form addFormSection:section];
         
