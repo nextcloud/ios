@@ -145,6 +145,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
         }
         
         tableView.reloadData()
