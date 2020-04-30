@@ -29,7 +29,7 @@ import WeScan
 import GoogleMobileVision
 #endif
 
-class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
     enum typeDpiQuality {
         case low
@@ -406,26 +406,37 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
-        if (metadata != nil) {
+        let ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!
+        
+        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
             
-            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
+            guard let metadata = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: ocId, serverUrl: serverUrl, fileName: fileNameSave, etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
             
-            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
-            }
+            guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+            conflictViewController.hideLabelNewFiles = true
+            conflictViewController.serverUrl = self.serverUrl
+            conflictViewController.metadatasUploadInConflict = [metadata]
+            conflictViewController.delegate = self
             
-            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
-            }
-            
-            alertController.addAction(cancelAction)
-            alertController.addAction(overwriteAction)
-            
-            self.present(alertController, animated: true, completion:nil)
+            self.present(conflictViewController, animated: true, completion: nil)
             
         } else {
-            dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
+                            
+            dismissAndUpload(fileNameSave, ocId: ocId, serverUrl: serverUrl)
+        }
+    }
+    
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        
+        if metadatas != nil && metadatas!.count > 0 {
+                        
+            let fileName = metadatas![0].fileName
+            let ocId = metadatas![0].ocId
+            let serverUrl = metadatas![0].serverUrl
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.dismissAndUpload(fileName, ocId: ocId, serverUrl: serverUrl)
+            }
         }
     }
     

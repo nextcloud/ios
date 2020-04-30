@@ -55,6 +55,7 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var serverUrl: String?
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     @objc var alwaysNewFileNameNumber: Bool = false
+    @objc var hideLabelNewFiles: Bool = false
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
@@ -380,6 +381,9 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 cell.switchAlreadyExistingFile.isHidden = true
                 cell.switchNewFile.isHidden = true
             }
+            
+            // Hide Detail new file
+            cell.labelDetailNewFile.isHidden = hideLabelNewFiles
             
             return cell
         }
