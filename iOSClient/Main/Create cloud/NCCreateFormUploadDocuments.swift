@@ -26,11 +26,12 @@ import NCCommunication
 
 // MARK: -
 
-class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+@objc class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
     
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
+    var templateIdentifier = ""
     var serverUrl = ""
     var fileNameFolder = ""
     var fileName = ""
@@ -255,20 +256,48 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         guard let selectTemplate = self.selectTemplate else {
             return
         }
+        templateIdentifier = selectTemplate.identifier
+
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         guard var fileNameForm = rowFileName.value else {
             return
         }
+        
         if fileNameForm as! String == "" {
             return
         } else {
             
-            fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
-            fileName = NCUtility.sharedInstance.createFileName(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount)
-            fileNameForm = fileName
-            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        }
+            fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             
+            if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+                
+                guard let metadata = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: "", serverUrl: serverUrl, fileName: String(describing: fileNameForm), etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
+                
+                guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+                conflict.serverUrl = serverUrl
+                conflict.metadatasUploadInConflict = [metadata]
+                conflict.delegate = self
+                
+                self.present(conflict, animated: true, completion: nil)
+                
+            } else {
+                                
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+                createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
+            }
+        }
+    }
+    
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]) {
+        
+        let fileName = metadatas[0].fileName
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+        
+        createDocument(fileNamePath: fileNamePath, fileName: fileName)
+    }
+    
+    func createDocument(fileNamePath: String, fileName: String) {
+        
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
              
             var customUserAgent: String?
@@ -277,7 +306,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                 customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
             }
             
-            NCCommunication.sharedInstance.NCTextCreateFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileName, editorId: editorId, creatorId: creatorId, templateId: selectTemplate.identifier, customUserAgent: customUserAgent, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+            NCCommunication.sharedInstance.NCTextCreateFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
@@ -293,7 +322,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                         }
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
+                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
                             
                             self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
@@ -311,14 +340,14 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.editorId == k_editor_collabora {
             
-            OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: selectTemplate.identifier, completion: { (account, url, message, errorCode) in
+            OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileNamePath, serverUrl: serverUrl, templateID: templateIdentifier, completion: { (account, url, message, errorCode) in
                        
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                    
                    if url != nil && url!.count > 0 {
                        
                        self.dismiss(animated: true, completion: {
-                           let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: "")
+                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: "")
                            
                            self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                        })
