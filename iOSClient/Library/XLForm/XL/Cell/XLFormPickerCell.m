@@ -25,6 +25,7 @@
 
 #import "UIView+XLFormAdditions.h"
 #import "XLFormPickerCell.h"
+#import "NCBridgeSwift.h"
 
 @interface XLFormPickerCell() <UIPickerViewDelegate, UIPickerViewDataSource>
 
@@ -103,7 +104,7 @@
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, pickerView.frame.size.width, 50)];
     label.backgroundColor = [UIColor clearColor];
-    label.textColor = [UIColor blackColor];
+    label.textColor = NCBrandColor.sharedInstance.textView;
     label.font = [UIFont systemFontOfSize:13];
     label.textAlignment = NSTextAlignmentCenter;
     [label setText:[self.rowDescriptor.selectorOptions objectAtIndex:row]];
