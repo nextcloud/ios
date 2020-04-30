@@ -413,7 +413,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             guard let metadata = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: ocId, serverUrl: serverUrl, fileName: fileNameSave, etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
             
             guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-            conflictViewController.nowLabelNewFiles = true
+            conflictViewController.textLabelNewFiles = NSLocalizedString("_now_", comment: "")
             conflictViewController.serverUrl = self.serverUrl
             conflictViewController.metadatasUploadInConflict = [metadata]
             conflictViewController.delegate = self

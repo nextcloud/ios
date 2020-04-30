@@ -274,7 +274,7 @@ import NCCommunication
                 guard let metadata = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: "", serverUrl: serverUrl, fileName: String(describing: fileNameForm), etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
                 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
-                conflictViewController.nowLabelNewFiles = true
+                conflictViewController.textLabelNewFiles = NSLocalizedString("_now_", comment: "")
                 conflictViewController.alwaysNewFileNameNumber = true
                 conflictViewController.serverUrl = serverUrl
                 conflictViewController.metadatasUploadInConflict = [metadata]
