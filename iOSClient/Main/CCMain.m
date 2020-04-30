@@ -141,8 +141,6 @@
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
     self.searchController.searchBar.translucent = NO;
-    self.automaticallyAdjustsScrollViewInsets = false;
-    [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
@@ -154,7 +152,6 @@
         searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
     
-    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, self.searchController.searchBar.frame.size.height + 40)];
             
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
@@ -175,6 +172,7 @@
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
     [self.viewRichWorkspace.searchViewHolder addSubview:self.searchController.searchBar];
+    [self.searchController.searchBar sizeToFit];
     // Table Header View
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
 
@@ -206,10 +204,16 @@
     [self changeTheming];
 }
 
+- (void)willDismissSearchController:(UISearchController *)searchController
+{
+    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    [self updateNavBarShadow:self.tableView];
+
     // test
     if (appDelegate.activeAccount.length == 0)
         return;
@@ -282,20 +286,9 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
-            
-            // Portrait
-            
-        } else {
-            
-            // Landscape
-        }
-        
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self setTableViewHeader];
-    }];
+    } completion:nil];
 }
 
 - (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController
@@ -318,7 +311,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    [self updateNavBarShadow:scrollView.contentOffset.y > 0];
+    [self updateNavBarShadow:scrollView];
 }
 
 - (void)changeTheming
@@ -1473,10 +1466,7 @@
         
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self setTableViewHeader];
-    });
+
 }
 
 #pragma mark -
@@ -2899,7 +2889,7 @@
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
-    self.searchController.searchBar.frame = self.viewRichWorkspace.searchViewHolder.frame;
+    [self.searchController.searchBar sizeToFit];
     [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
     [self.tableView reloadData];
 }

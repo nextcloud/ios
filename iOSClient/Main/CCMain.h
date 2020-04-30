@@ -52,7 +52,6 @@
 @property (nonatomic, strong) tableMetadata *metadataForPushDetail;
 @property (nonatomic, strong) NSString *selectorForPushDetail;
 
-@property (nonatomic, strong) UIView *headerView;
 @property (nonatomic, strong) UIButton *sortButton;
 
 @property (nonatomic, strong) NSString *serverUrl;

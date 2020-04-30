@@ -18,10 +18,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="97"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uNy-ff-uKP">
-                            <rect key="frame" x="0.0" y="4" width="320" height="44"/>
+                            <rect key="frame" x="0.0" y="-2" width="320" height="50"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="44" id="66u-iM-EEA"/>
+                                <constraint firstAttribute="height" constant="50" id="66u-iM-EEA"/>
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whP-vX-7tm">

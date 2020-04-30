@@ -31,7 +31,7 @@ import MarkdownKit
     @IBOutlet weak var sortButton: UIButton!
     @IBOutlet weak var searchViewHolder: UIView!
     @objc @IBOutlet weak var textView: UITextView!
-
+    
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
