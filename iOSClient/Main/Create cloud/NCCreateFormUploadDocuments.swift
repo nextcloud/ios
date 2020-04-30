@@ -288,12 +288,21 @@ import NCCommunication
         }
     }
     
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]) {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         
-        let fileName = metadatas[0].fileName
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
-        
-        createDocument(fileNamePath: fileNamePath, fileName: fileName)
+        if metadatas == nil || metadatas?.count == 0 {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.cancel()
+            }
+            
+        } else {
+            
+            let fileName = metadatas![0].fileName
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+            
+            createDocument(fileNamePath: fileNamePath, fileName: fileName)
+        }
     }
     
     func createDocument(fileNamePath: String, fileName: String) {

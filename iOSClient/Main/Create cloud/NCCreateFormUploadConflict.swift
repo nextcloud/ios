@@ -24,11 +24,11 @@
 import Foundation
 
 @objc protocol NCCreateFormUploadConflictDelegate {
-    @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata])
+    @objc func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?)
 }
 
 extension NCCreateFormUploadConflictDelegate {
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]) {}
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {}
 }
 
 @objc class NCCreateFormUploadConflict: UIViewController {
@@ -135,6 +135,8 @@ extension NCCreateFormUploadConflictDelegate {
     }
     
     @IBAction func buttonCancelTouch(_ sender: Any) {
+        
+        delegate?.dismissCreateFormUploadConflict(metadatas: nil)
         dismiss(animated: true)
     }
     
