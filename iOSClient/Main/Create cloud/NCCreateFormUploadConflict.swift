@@ -133,7 +133,7 @@ extension NCCreateFormUploadConflictDelegate {
     
     func verifySwith() {
         
-        if alwaysNewFileNameNumber && (switchNewFiles.isOn || switchAlreadyExistingFiles.isOn) {
+        if alwaysNewFileNameNumber && switchNewFiles.isOn {
             metadatasConflictNewFiles.removeAll()
             metadatasConflictAlreadyExistingFiles.removeAll()
             
@@ -143,6 +143,8 @@ extension NCCreateFormUploadConflictDelegate {
             for metadata in metadatasUploadInConflict {
                 metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
             }
+            
+            switchAlreadyExistingFiles.isOn = true
         }
         
         tableView.reloadData()
