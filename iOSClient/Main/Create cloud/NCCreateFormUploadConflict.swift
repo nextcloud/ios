@@ -55,7 +55,7 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var serverUrl: String?
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
     @objc var alwaysNewFileNameNumber: Bool = false
-    @objc var textLabelNewFiles: String?
+    @objc var textLabelDetailNewFile: String?
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
@@ -383,8 +383,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             }
             
             // text label new file
-            if textLabelNewFiles != nil {
-                cell.labelDetailNewFile.text = textLabelNewFiles
+            if textLabelDetailNewFile != nil {
+                cell.labelDetailNewFile.text = textLabelDetailNewFile! + "\n"
             }
             
             return cell
