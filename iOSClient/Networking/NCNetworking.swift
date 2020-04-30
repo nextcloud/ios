@@ -279,7 +279,6 @@ import NCCommunication
         var fileNameIdentifier = ""
         var key: NSString?
         var initializationVector: NSString?
-        let object = tableE2eEncryption()
         
         fileNameFolder = NCUtility.sharedInstance.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
@@ -331,22 +330,30 @@ import NCCommunication
                                         return
                                     }
 
-                                    NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
-                                    let metadataKey = NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []) // AES_KEY_128_LENGTH
+                                    let newobject = tableE2eEncryption()
                                     
-                                    object.account = account
-                                    object.authenticationTag = nil
-                                    object.fileName = fileNameFolder
-                                    object.fileNameIdentifier = fileNameIdentifier
-                                    object.fileNamePath = ""
-                                    object.key = key! as String
-                                    object.initializationVector = initializationVector! as String
-                                    object.metadataKey = metadataKey!
-                                    object.metadataKeyIndex = 0
-                                    object.mimeType = "application/directory"
-                                    object.serverUrl = serverUrl
-                                    object.version = Int(NCManageDatabase.sharedInstance.getEndToEndEncryptionVersion(account: account))
-                                    let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
+                                    NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
+                                    
+                                    newobject.account = account
+                                    newobject.authenticationTag = nil
+                                    newobject.fileName = fileNameFolder
+                                    newobject.fileNameIdentifier = fileNameIdentifier
+                                    newobject.fileNamePath = ""
+                                    newobject.key = key! as String
+                                    newobject.initializationVector = initializationVector! as String
+                                    
+                                    if let object = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                                        newobject.metadataKey = object.metadataKey
+                                        newobject.metadataKeyIndex = object.metadataKeyIndex
+                                    } else {
+                                        newobject.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+                                        newobject.metadataKeyIndex = 0
+                                    }
+                                    newobject.mimeType = "application/directory"
+                                    newobject.serverUrl = serverUrl
+                                    newobject.version = Int(NCManageDatabase.sharedInstance.getEndToEndEncryptionVersion(account: account))
+                                    
+                                    let _ = NCManageDatabase.sharedInstance.addE2eEncryption(newobject)
 
                                     // Send Metadata
                                     if let error = NCNetworkingEndToEnd.sharedManager()?.sendMetadata(onServerUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, unlock: true, account: account, user: user, userID: userID, password: password, url: url) as NSError? {
