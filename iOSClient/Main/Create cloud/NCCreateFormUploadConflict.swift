@@ -54,6 +54,7 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var metadatasMOV: [tableMetadata]
     @objc var serverUrl: String?
     @objc weak var delegate: NCCreateFormUploadConflictDelegate?
+    @objc var alwaysNewFileNameNumber: Bool = false
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
@@ -115,9 +116,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
         }
         
-        tableView.reloadData()
-        
-        canContinue()
+       verifySwith()
     }
     
     @IBAction func valueChangedSwitchAlreadyExistingFiles(_ sender: Any) {
@@ -129,10 +128,27 @@ extension NCCreateFormUploadConflictDelegate {
             }
         }
         
-        tableView.reloadData()
+        verifySwith()
+    }
+    
+    func verifySwith() {
         
+        if alwaysNewFileNameNumber && (switchNewFiles.isOn || switchAlreadyExistingFiles.isOn) {
+            metadatasConflictNewFiles.removeAll()
+            metadatasConflictAlreadyExistingFiles.removeAll()
+            
+            for metadata in metadatasUploadInConflict {
+                metadatasConflictNewFiles.append(metadata.ocId)
+            }
+            for metadata in metadatasUploadInConflict {
+                metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
+            }
+        }
+        
+        tableView.reloadData()
         canContinue()
     }
+    
     
     @IBAction func buttonCancelTouch(_ sender: Any) {
         
