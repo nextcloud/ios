@@ -1180,7 +1180,7 @@
             continue;
         
         // Prepare record metadata
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false] serverUrl:serverUrl url:@"" contentType:@""];
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
         
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
         metadataForUpload.session = session;
@@ -1199,17 +1199,12 @@
                 
             NSUInteger index = [assets indexOfObject:asset];
             NSURL *url = [urls objectAtIndex:index];
-            tableMetadata *metadataMOVForUpload = [tableMetadata new];
             NSString *fileNameNoExt = [fileName stringByDeletingPathExtension];
             NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameNoExt];
             unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
 
-            metadataMOVForUpload.account = appDelegate.activeAccount;
-            metadataMOVForUpload.date = [NSDate new];
-            metadataMOVForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-            metadataMOVForUpload.fileName = fileName;
-            metadataMOVForUpload.fileNameView = fileName;
-            metadataMOVForUpload.serverUrl = serverUrl;
+            tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
+            
             metadataMOVForUpload.session = session;
             metadataMOVForUpload.sessionSelector = selectorUploadFile;
             metadataMOVForUpload.size = fileSize;

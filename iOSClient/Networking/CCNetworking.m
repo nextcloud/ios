@@ -991,23 +991,13 @@
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
             metadata.status = k_metadataStatusNormal;
             
+            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+            
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
-            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];            
             
             NSLog(@"[LOG] Insert new upload : %@ - ocId : %@", metadata.fileName, ocId);
-            
-            if ([tempocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:metadata.directory]]) {
-                
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
-                
-                // adjust file system Directory Provider Storage
-                if ([tempSession isEqualToString:k_upload_session_extension]) {
-                    // this is for File Provider Extension [Apple Works and ... ?]
-                    [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
-                } else {
-                    [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
-                }
-            }
         }
 #ifndef EXTENSION
         
