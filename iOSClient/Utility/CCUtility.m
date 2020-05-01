@@ -1632,62 +1632,14 @@
     metadata.status = status;
     metadata.url = url;
     
-    [self insertTypeFileIconName:fileName metadata:metadata];
+    NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:fileName contentType:@"" directory:directory];
     
-    return metadata;
-}
+    metadata.contentType = results[@"contentType"];
+    metadata.iconName = results[@"iconName"];
+    metadata.typeFile = results[@"typeFile"];
 
-/*
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl  account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted
-{
-    tableMetadata *metadata = [tableMetadata new];
-    NSString *fileNameView;
-    
-    fileName = [CCUtility removeForbiddenCharactersServer:fileName];
-    fileNameView = fileName;
-    
-    // E2EE find the fileName for fileNameView
-    if (isFolderEncrypted) {
-        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, serverUrl, fileName]];
-        if (tableE2eEncryption)
-            fileNameView = tableE2eEncryption.fileName;
-    }
-    
-    metadata.account = account;
-    metadata.commentsUnread = itemDto.commentsUnread;
-    metadata.contentType = itemDto.contentType;
-    metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-    metadata.directory = itemDto.isDirectory;
-    metadata.e2eEncrypted = itemDto.isEncrypted;
-    metadata.etag = itemDto.etag;
-    metadata.fileId = itemDto.fileId;
-    metadata.favorite = itemDto.isFavorite;
-    metadata.fileName = fileName;
-    metadata.fileNameView = fileNameView;
-    metadata.hasPreview = itemDto.hasPreview;
-    metadata.iconName = @"";
-    metadata.mountType = itemDto.mountType;
-    metadata.ocId = itemDto.ocId;
-    metadata.ownerId = itemDto.ownerId;
-    metadata.ownerDisplayName = itemDto.ownerDisplayName;
-    metadata.permissions = itemDto.permissions;
-    metadata.quotaUsedBytes = itemDto.quotaUsedBytes;
-    metadata.quotaAvailableBytes = itemDto.quotaAvailableBytes;
-    metadata.resourceType = itemDto.resourceType;
-    metadata.serverUrl = serverUrl;
-    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-    metadata.size = itemDto.size;
-    metadata.status = k_metadataStatusNormal;
-    metadata.typeFile = @"";
-    metadata.trashbinFileName = itemDto.trashbinFileName;
-    metadata.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
-    metadata.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
-    
-    [self insertTypeFileIconName:fileNameView metadata:metadata];
- 
     return metadata;
 }
-*/
 
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
