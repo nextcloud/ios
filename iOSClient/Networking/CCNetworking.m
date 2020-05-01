@@ -994,8 +994,7 @@
             [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
-            
-            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];            
+            metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             NSLog(@"[LOG] Insert new upload : %@ - ocId : %@", metadata.fileName, ocId);
         }
