@@ -863,21 +863,15 @@
             
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
             NSString *fileName =  [url lastPathComponent];
-            NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
+            NSString *ocId = [[NSUUID UUID] UUIDString];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
             if (data && error == nil) {
                 
                 if ([data writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
-                    tableMetadata *metadataForUpload = [tableMetadata new];
+                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:serverUrl url:@"" contentType:@""];
                     
-                    metadataForUpload.account = appDelegate.activeAccount;
-                    metadataForUpload.date = [NSDate new];
-                    metadataForUpload.ocId = ocId;
-                    metadataForUpload.fileName = fileName;
-                    metadataForUpload.fileNameView = fileName;
-                    metadataForUpload.serverUrl = serverUrl;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.size = data.length;
@@ -2147,18 +2141,13 @@
             if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                 
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
-                NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:self.serverUrl fileNameView:fileName directory:false];
+                NSString *ocId = [[NSUUID UUID] UUIDString];
                 
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
                     
-                tableMetadata *metadataForUpload = [tableMetadata new];
-                        
-                metadataForUpload.account = appDelegate.activeAccount;
-                metadataForUpload.date = [NSDate new];
-                metadataForUpload.ocId = ocId;
-                metadataForUpload.fileName = fileName;
-                metadataForUpload.fileNameView = fileName;
-                metadataForUpload.serverUrl = self.serverUrl;
+                // Prepare record metadata
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
+            
                 metadataForUpload.session = k_upload_session;
                 metadataForUpload.sessionSelector = selectorUploadFile;
                 metadataForUpload.size = metadata.size;

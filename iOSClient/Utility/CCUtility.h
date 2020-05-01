@@ -251,16 +251,12 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata assetLocalIdentifier:(NSString *)assetLocalIdentifier completion:(void(^)(tableMetadata *metadataForUpload, NSURL *url))completion;
 
++ (NSString *)convertOcIdToFileId:(NSString *)ocId;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account;
-
-// ===== CCMetadata =====
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
-
-+ (NSString *)convertOcIdToFileId:(NSString *)ocId;
 
 // ===== Third parts =====
 

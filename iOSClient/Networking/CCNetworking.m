@@ -654,11 +654,15 @@
         }
         
         // if new file upload create a new encrypted filename
+        fileNameIdentifier = [CCUtility generateRandomIdentifier];
+        
+        /*
         if ([metadata.ocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false]]) {
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         } else {
             fileNameIdentifier = metadata.fileName;
         }
+        */
         
         if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
             

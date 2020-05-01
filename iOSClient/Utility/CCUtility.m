@@ -1493,9 +1493,8 @@
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.fileNameView = metadata.fileName;
                     
-                    // Change Metadata with new ocId, fileName, fileNameView
+                    // Change Metadata with new fileName, fileNameView
                     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                    metadata.ocId = [CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false];
                 }
             }
             
@@ -1597,6 +1596,15 @@
     }
 }
 
++ (NSString *)convertOcIdToFileId:(NSString *)ocId
+{
+    NSArray *components = [ocId componentsSeparatedByString:@"oc"];
+    NSInteger numFileId = [components.firstObject intValue];
+    NSString *fileId = [@(numFileId) stringValue];
+    
+    return fileId;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1629,41 +1637,6 @@
         
         return false;
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== CCMetadata =====
-#pragma --------------------------------------------------------------------------------------------
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
-{
-    NSArray *arrayForbiddenCharacters = [NSArray arrayWithObjects:@"\\",@"<",@">",@":",@"\"",@"|",@"?",@"*",@"/", nil];
-    
-    for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        account = [account stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
-    }
-    
-    for (NSString *currentCharacter in arrayForbiddenCharacters) {
-        serverUrl = [serverUrl stringByReplacingOccurrencesOfString:currentCharacter withString:@""];
-    }
-    
-    NSString *uniqueID = [[account stringByAppendingString:serverUrl] lowercaseString];
-    NSString *metadataID =  [[uniqueID stringByAppendingString:fileNameView] lowercaseString];
-    
-    if (directory) {
-        return [metadataID stringByAppendingString:@"-dir"];
-    }
-    
-    return metadataID;
-}
-
-+ (NSString *)convertOcIdToFileId:(NSString *)ocId
-{
-    NSArray *components = [ocId componentsSeparatedByString:@"oc"];
-    NSInteger numFileId = [components.firstObject intValue];
-    NSString *fileId = [@(numFileId) stringValue];
-    
-    return fileId;
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -170,8 +170,7 @@ extension NCCreateFormUploadConflictDelegate {
                 let fileNameMOV = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
                 
                 let newFileName = NCUtility.sharedInstance.createFileName(metadata.fileNameView, serverUrl: metadata.serverUrl, account: metadata.account)
-                let ocId = CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: newFileName, directory: false)!
-                metadata.ocId = ocId
+                metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
                 
@@ -184,12 +183,11 @@ extension NCCreateFormUploadConflictDelegate {
                         let oldPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: metadataMOV.fileNameView)
                         let newFileNameMOV = (newFileName as NSString).deletingPathExtension + ".mov"
                         
-                        let ocId = CCUtility.createMetadataID(fromAccount: metadataMOV.account, serverUrl: metadataMOV.serverUrl, fileNameView: newFileNameMOV, directory: false)!
-                        metadataMOV.ocId = ocId
+                        metadataMOV.ocId = UUID().uuidString
                         metadataMOV.fileName = newFileNameMOV
                         metadataMOV.fileNameView = newFileNameMOV
                         
-                        let newPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileNameMOV)
+                        let newPath = CCUtility.getDirectoryProviderStorageOcId(metadataMOV.ocId, fileNameView: newFileNameMOV)
                         CCUtility.moveFile(atPath: oldPath, toPath: newPath)
                         
                         break
