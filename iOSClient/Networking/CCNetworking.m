@@ -598,7 +598,21 @@
         
     } else {
         
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+        NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:metadata.fileNameView contentType:metadata.contentType directory:metadata.directory];
+        metadata.contentType = results[@"contentType"];
+        metadata.iconName = results[@"iconName"];
+        metadata.typeFile = results[@"typeFile"];
+
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:nil];
+        
+        if (attributes[NSFileModificationDate]) {
+            metadata.date = attributes[NSFileModificationDate];
+        } else {
+            metadata.date = [NSDate date];
+        }
+        metadata.size = [attributes[NSFileSize] longValue];
+        
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
             [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
