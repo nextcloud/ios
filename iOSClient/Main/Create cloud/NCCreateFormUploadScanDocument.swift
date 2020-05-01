@@ -24,6 +24,7 @@
 
 import Foundation
 import WeScan
+import NCCommunication
 
 #if GOOGLEMOBILEVISION
 import GoogleMobileVision
@@ -418,6 +419,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         metadataForUpload.session = k_upload_session
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: fileNameSave, contentType: "", directory: false)
+        metadataForUpload.contentType = results.contentType
+        metadataForUpload.iconName = results.iconName
+        metadataForUpload.typeFile = results.typeFile
                 
         if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         
