@@ -314,7 +314,9 @@
             
             NSDictionary *fields = [response allHeaderFields];
             returnOcId = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-            returnFileId = [CCUtility convertOcIdToFileId:returnOcId];
+            NSArray *components = [returnOcId componentsSeparatedByString:@"oc"];
+            NSInteger numFileId = [components.firstObject intValue];
+            returnFileId = [@(numFileId) stringValue];
             
             if (encrypted) {
                 

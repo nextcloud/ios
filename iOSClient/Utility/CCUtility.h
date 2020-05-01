@@ -251,8 +251,6 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata assetLocalIdentifier:(NSString *)assetLocalIdentifier completion:(void(^)(tableMetadata *metadataForUpload, NSURL *url))completion;
 
-+ (NSString *)convertOcIdToFileId:(NSString *)ocId;
-
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

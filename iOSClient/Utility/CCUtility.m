@@ -1596,15 +1596,6 @@
     }
 }
 
-+ (NSString *)convertOcIdToFileId:(NSString *)ocId
-{
-    NSArray *components = [ocId componentsSeparatedByString:@"oc"];
-    NSInteger numFileId = [components.firstObject intValue];
-    NSString *fileId = [@(numFileId) stringValue];
-    
-    return fileId;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
