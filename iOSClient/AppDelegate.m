@@ -1635,10 +1635,9 @@
                                                 if ([path containsString:@"/"]) {
                                                     
                                                     // Push
-                                                    NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                                                    NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                                     NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                                    tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-                                                    
+                                                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
                                                     [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {

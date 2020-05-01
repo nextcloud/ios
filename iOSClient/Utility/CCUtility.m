@@ -1615,36 +1615,6 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url contentType:(NSString *)contentType
-{
-    tableMetadata *metadata = [tableMetadata new];
-    
-    metadata.account = account;
-    metadata.contentType = contentType;
-    metadata.date = date;
-    metadata.directory = directory;
-    metadata.etag = etag;
-    metadata.ocId = ocId;
-    metadata.fileName = fileName;
-    metadata.fileNameView = fileName;
-    metadata.serverUrl = serverUrl;
-    metadata.size = size;
-    metadata.status = status;
-    metadata.url = url;
-    
-    [self insertTypeFileIconName:fileName metadata:metadata];
-    
-    /*
-    NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:fileName contentType:@"" directory:directory];
-    
-    metadata.contentType = results[@"contentType"];
-    metadata.iconName = results[@"iconName"];
-    metadata.typeFile = results[@"typeFile"];
-    */
-    
-    return metadata;
-}
-
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
     CFStringRef fileUTI = nil;

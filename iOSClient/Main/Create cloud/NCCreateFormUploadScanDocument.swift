@@ -409,7 +409,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         //Create metadata for upload
         let ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!
-        guard let metadataForUpload = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: ocId, serverUrl: serverUrl, fileName: fileNameSave, etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
+        
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: ocId, serverUrl: serverUrl, url: appDelegate.activeUrl, contentType: "")
         
         metadataForUpload.session = k_upload_session
         metadataForUpload.sessionSelector = selectorUploadFile

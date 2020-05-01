@@ -1984,6 +1984,22 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
+    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, url: String, contentType: String) -> tableMetadata {
+        
+        let metadata = tableMetadata()
+        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
+        
+        metadata.account = account
+        metadata.contentType = results.contentType
+        metadata.date = Date() as NSDate
+        metadata.ocId = ocId
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        metadata.serverUrl = serverUrl
+        metadata.url = url
+        return metadata
+    }
+    
     @discardableResult
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             

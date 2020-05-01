@@ -271,7 +271,7 @@ import NCCommunication
             
             if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
-                guard let metadataForUpload = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: "", serverUrl: serverUrl, fileName: String(describing: fileNameForm), etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
+                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, url: "", contentType: "")
                 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
                 conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -333,8 +333,7 @@ import NCCommunication
                         }
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
-                            
+                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url ?? "", contentType: contentType)
                             self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
@@ -358,8 +357,9 @@ import NCCommunication
                    if url != nil && url!.count > 0 {
                        
                        self.dismiss(animated: true, completion: {
-                        let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: "")
-                           
+                        
+                        let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url!, contentType: "")
+                        
                            self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                        })
                    }
