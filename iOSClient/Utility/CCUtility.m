@@ -1501,7 +1501,17 @@
             
             if (metadata) {
                 
-                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+                NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:nil];
+                
+                if (attributes[NSFileModificationDate]) {
+                    metadata.date = attributes[NSFileModificationDate];
+                } else {
+                    metadata.date = [NSDate date];
+                }
+                metadata.size = [attributes[NSFileSize] longValue];
+                
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                
                 [imageData writeToFile:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
                 
                 if (error) {
@@ -1562,8 +1572,18 @@
                             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(error.code), @"errorDescription": [NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description]}];
                             completion(nil, nil);
                         } else {
-                            // create Metadata for Upload
-                            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+                            
+                            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:nil];
+                            
+                            if (attributes[NSFileModificationDate]) {
+                                metadata.date = attributes[NSFileModificationDate];
+                            } else {
+                                metadata.date = [NSDate date];
+                            }
+                            metadata.size = [attributes[NSFileSize] longValue];
+                            
+                            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                            
                             completion(metadataForUpload, [(AVURLAsset *)asset URL]);
                         }
                     });
@@ -1614,22 +1634,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
-
-+ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
-{
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-    
-    NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
-    
-    if (attributes[NSFileModificationDate]) {
-        metadata.date = attributes[NSFileModificationDate];
-    } else {
-        metadata.date = [NSDate date];
-    }
-    metadata.size = [attributes[NSFileSize] longValue];
-        
-    return metadata;
-}
 
 + (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory
 {
