@@ -1864,8 +1864,12 @@
                         trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
                         trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
 
-                        [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
-
+                        NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:trash.trashbinFileName contentType:@"" directory:itemDto.isDirectory];
+                        
+                        trash.contentType = results[@"contentType"];
+                        trash.iconName = results[@"iconName"];
+                        trash.typeFile = results[@"typeFile"];
+                        
                         [listTrash addObject:trash];
                     }
                 }

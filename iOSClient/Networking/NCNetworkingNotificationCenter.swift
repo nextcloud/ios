@@ -72,10 +72,7 @@ import Foundation
                     // open View File
                     if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
                     
-                        var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
-                        if uti == nil {
-                            uti = ""
-                        } else if uti!.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
+                        if metadata.contentType.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
                             metadata.typeFile = k_metadataTypeFile_unknown
                         }
                         

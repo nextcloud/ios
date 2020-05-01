@@ -1992,10 +1992,12 @@ class NCManageDatabase: NSObject {
         metadata.account = account
         metadata.contentType = results.contentType
         metadata.date = Date() as NSDate
+        metadata.iconName = results.iconName
         metadata.ocId = ocId
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.serverUrl = serverUrl
+        metadata.typeFile = results.typeFile
         metadata.url = url
         return metadata
     }

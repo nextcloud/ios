@@ -281,18 +281,13 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [tableMetadata new];
-               
-                metadata.account = self.activeAccount;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
+                               
                 metadata.date = date;
                 metadata.etag = etag;
-                metadata.ocId = ocId;
-                metadata.fileName = fileNameForUpload;
-                metadata.fileNameView = fileNameForUpload;
                 metadata.serverUrl = self.serverUrl;
                 metadata.size = size;
-                (void)[CCUtility insertTypeFileIconName:fileNameForUpload metadata:metadata];
-               
+                
                 metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                

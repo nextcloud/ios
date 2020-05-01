@@ -259,7 +259,6 @@
 // ===== CCMetadata =====
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
-+ (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
 
 + (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
 

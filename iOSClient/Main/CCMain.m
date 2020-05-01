@@ -1180,20 +1180,13 @@
             continue;
         
         // Prepare record metadata
-        tableMetadata *metadataForUpload = [tableMetadata new];
-
-        metadataForUpload.account = appDelegate.activeAccount;
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false] serverUrl:serverUrl url:@"" contentType:@""];
+        
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-        metadataForUpload.date = [NSDate new];
-        metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-        metadataForUpload.fileName = fileName;
-        metadataForUpload.fileNameView = fileName;
-        metadataForUpload.serverUrl = serverUrl;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
-        [CCUtility insertTypeFileIconName:fileName metadata:metadataForUpload];
                         
         if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
             [metadatasUploadInConflict addObject:metadataForUpload];

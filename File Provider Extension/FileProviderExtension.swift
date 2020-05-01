@@ -309,7 +309,6 @@ class FileProviderExtension: NSFileProviderExtension {
             
                 var size = 0 as Double
                 var error: NSError?
-                let metadata = tableMetadata()
                 
                 guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -342,18 +341,10 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                metadata.account = fileProviderData.sharedInstance.account
-                metadata.date = NSDate()
-                metadata.directory = false
-                metadata.etag = ""
-                metadata.fileName = fileName
-                metadata.fileNameView = fileName
-                metadata.ocId = ocIdTemp
-                metadata.serverUrl = tableDirectory.serverUrl
+                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "")
                 metadata.session = k_upload_session_extension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)
-                CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
                 
                 guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))

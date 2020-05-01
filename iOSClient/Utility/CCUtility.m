@@ -1615,116 +1615,6 @@
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
-{
-    CFStringRef fileUTI = nil;
-    NSString *returnFileUTI = nil;
-    
-    if ([fileNameView isEqualToString:@"."]) {
-        
-        metadata.typeFile = k_metadataTypeFile_unknown;
-        metadata.iconName = @"file";
-        
-    } else if (metadata.directory) {
-        
-        metadata.typeFile = k_metadataTypeFile_directory;
-        fileUTI = kUTTypeFolder;
-        
-        // Add contentType
-        if ([metadata.contentType isEqualToString:@""]) {
-            metadata.contentType = @"application/directory";
-        }
-        
-    } else {
-        
-        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
-        NSString *ext = (__bridge NSString *)fileExtension;
-        ext = ext.uppercaseString;
-        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
-        // Add contentType
-        if ([metadata.contentType isEqualToString:@""]) {
-            CFStringRef mimeUTI = UTTypeCopyPreferredTagWithClass(fileUTI, kUTTagClassMIMEType);
-            metadata.contentType = (__bridge NSString *)mimeUTI;
-        }
-        
-        // Type image
-        if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
-            metadata.typeFile = k_metadataTypeFile_image;
-            metadata.iconName = @"file_photo";
-        }
-        // Type Video
-        else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
-            metadata.typeFile = k_metadataTypeFile_video;
-            metadata.iconName = @"file_movie";
-        }
-        // Type Audio
-        else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) {
-            metadata.typeFile = k_metadataTypeFile_audio;
-            metadata.iconName = @"file_audio";
-        }
-        // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") + isDocumentModifiableExtension
-        else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [CCUtility isDocumentModifiableExtension:ext]) {
-            
-            metadata.typeFile = k_metadataTypeFile_document;
-            metadata.iconName = @"document";
-            
-            NSString *typeFile = (__bridge NSString *)fileUTI;
-            
-            if ([typeFile isEqualToString:@"com.adobe.pdf"]) {
-                metadata.iconName = @"file_pdf";
-            }
-            
-            if ([typeFile isEqualToString:@"org.openxmlformats.spreadsheetml.sheet"]) {
-                metadata.iconName = @"file_xls";
-            }
-            
-            if ([typeFile isEqualToString:@"com.microsoft.excel.xls"]) {
-                metadata.iconName = @"file_xls";
-            }
-            
-            if ([typeFile isEqualToString:@"public.plain-text"] || [CCUtility isDocumentModifiableExtension:ext]) {
-                metadata.iconName = @"file_txt";
-            }
-            
-            if ([typeFile isEqualToString:@"public.html"]) {
-                metadata.iconName = @"file_code";
-            }
-        }
-        // Type compress
-        else if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
-            metadata.typeFile = k_metadataTypeFile_compress;
-            metadata.iconName = @"file_compress";
-        } else {
-            
-            // Type unknown
-            metadata.typeFile = k_metadataTypeFile_unknown;
-            
-            // icon uTorrent
-            if ([ext isEqualToString:@"TORRENT"]) {
-                
-                metadata.iconName = @"utorrent";
-                
-            } else if ([ext isEqualToString:@"IMI"]) {
-                
-                metadata.typeFile = k_metadataTypeFile_imagemeter;
-                metadata.iconName = @"imagemeter";
-            
-            } else {
-            
-                metadata.iconName = @"file";
-            }
-        }
-    }
-    
-    if (fileUTI != nil) {
-        returnFileUTI = (__bridge NSString *)fileUTI;
-        CFRelease(fileUTI);
-    }
-    
-    return returnFileUTI;
-}
-
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
@@ -1737,9 +1627,7 @@
         metadata.date = [NSDate date];
     }
     metadata.size = [attributes[NSFileSize] longValue];
-    
-    [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
-    
+        
     return metadata;
 }
 
