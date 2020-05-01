@@ -47,7 +47,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         metadata.iconName = results.iconName
         metadata.typeFile = results.typeFile
         
-        return results.contentType
+        return results.typeIdentifier
     }
     
     var contentModificationDate: Date? {
