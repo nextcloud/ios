@@ -408,21 +408,12 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         //Create metadata for upload
-        let metadataForUpload = tableMetadata()
+        let ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!
+        guard let metadataForUpload = CCUtility.createMetadata(withAccount: appDelegate.activeAccount, date: Date(), directory: false, ocId: ocId, serverUrl: serverUrl, fileName: fileNameSave, etag: "", size: 0, status: 0, url: appDelegate.activeUrl, contentType: "") else { return }
         
-        metadataForUpload.account = self.appDelegate.activeAccount
-        metadataForUpload.date = NSDate()
-        metadataForUpload.fileName = fileNameSave
-        metadataForUpload.fileNameView = fileNameSave
-        metadataForUpload.ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!
-        metadataForUpload.serverUrl = serverUrl
         metadataForUpload.session = k_upload_session
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
-        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: fileNameSave, contentType: "", directory: false)
-        metadataForUpload.contentType = results.contentType
-        metadataForUpload.iconName = results.iconName
-        metadataForUpload.typeFile = results.typeFile
                 
         if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         

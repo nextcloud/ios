@@ -1632,12 +1632,16 @@
     metadata.status = status;
     metadata.url = url;
     
+    [self insertTypeFileIconName:fileName metadata:metadata];
+    
+    /*
     NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:fileName contentType:@"" directory:directory];
     
     metadata.contentType = results[@"contentType"];
     metadata.iconName = results[@"iconName"];
     metadata.typeFile = results[@"typeFile"];
-
+    */
+    
     return metadata;
 }
 
