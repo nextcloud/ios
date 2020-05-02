@@ -325,6 +325,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                             if let image = UIImage(data: data) {
                                 cell.imageNewFile.image = image
                             }
+                        } else if mediaType == PHAssetMediaType.video {
+                            if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath), atTime: 1) {
+                                cell.imageNewFile.image = image
+                            }
                         }
                         
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
@@ -344,6 +348,10 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                 if mediaType == PHAssetMediaType.image {
                                     let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
+                                        cell.imageNewFile.image = image
+                                    }
+                                } else if mediaType == PHAssetMediaType.video {
+                                    if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath!), atTime: 1) {
                                         cell.imageNewFile.image = image
                                     }
                                 }
