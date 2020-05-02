@@ -1427,7 +1427,7 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
 {
-    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
+    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
@@ -1494,18 +1494,18 @@
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
             
             if (attributes[NSFileModificationDate]) {
-                metadataForUpload.date = attributes[NSFileModificationDate];
+                newMetadata.date = attributes[NSFileModificationDate];
             }
-            metadataForUpload.size = [attributes[NSFileSize] longValue];
+            newMetadata.size = [attributes[NSFileSize] longValue];
             
-            if (metadata.e2eEncrypted) {
-                metadataForUpload.fileNameView = fileName;
+            if (newMetadata.e2eEncrypted) {
+                newMetadata.fileNameView = fileName;
             } else {
-                metadataForUpload.fileNameView = fileName;
-                metadataForUpload.fileName = fileName;
+                newMetadata.fileNameView = fileName;
+                newMetadata.fileName = fileName;
             }
                                 
-            completion(metadataForUpload, fileNamePath);
+            completion(newMetadata, fileNamePath);
         }];
     }
     
@@ -1532,7 +1532,7 @@
             
             if ([asset isKindOfClass:[AVURLAsset class]]) {
                                    
-                NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadataForUpload.fileNameView];
+                NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:newMetadata.fileNameView];
                 NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
                 NSError *error = nil;
                                    
@@ -1554,11 +1554,11 @@
                         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                         
                         if (attributes[NSFileModificationDate]) {
-                            metadataForUpload.date = attributes[NSFileModificationDate];
+                            newMetadata.date = attributes[NSFileModificationDate];
                         }
-                        metadataForUpload.size = [attributes[NSFileSize] longValue];
+                        newMetadata.size = [attributes[NSFileSize] longValue];
                         
-                        completion(metadataForUpload, fileNamePath);
+                        completion(newMetadata, fileNamePath);
                     }
                 });
             }
