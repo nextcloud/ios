@@ -108,6 +108,8 @@ extension NCCreateFormUploadConflictDelegate {
         buttonContinue.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
     }
     
+    // MARK: - Action
+
     @IBAction func valueChangedSwitchNewFiles(_ sender: Any) {
         metadatasConflictNewFiles.removeAll()
 
@@ -152,8 +154,7 @@ extension NCCreateFormUploadConflictDelegate {
         tableView.reloadData()
         canContinue()
     }
-    
-    
+        
     @IBAction func buttonCancelTouch(_ sender: Any) {
         
         delegate?.dismissCreateFormUploadConflict(metadatas: nil)
@@ -230,9 +231,7 @@ extension NCCreateFormUploadConflictDelegate {
             appDelegate.startLoadAutoDownloadUpload()
             NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: Int32(k_action_NULL))
         }
-        
-        
-        
+                
         dismiss(animated: true)
     }
 }
