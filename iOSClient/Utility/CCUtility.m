@@ -1425,7 +1425,7 @@
     return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 }
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *metadataForUpload, NSString* fileNamePath))completion
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
 {
     tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];

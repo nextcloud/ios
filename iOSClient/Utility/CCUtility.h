@@ -249,7 +249,7 @@
 
 + (NSString *)getTimeIntervalSince197;
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *metadataForUpload, NSString* fileNamePath))completion;
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
 
 // ===== E2E Encrypted =====
 
