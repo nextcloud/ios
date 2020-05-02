@@ -59,7 +59,7 @@ extension NCCreateFormUploadConflictDelegate {
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
-    var fileNameURL = [String:URL]()
+    var fileNamesPath = [String:String]()
 
     // MARK: - Cicle
 
@@ -317,17 +317,17 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 let date = result.firstObject!.modificationDate
                 let mediaType = result.firstObject!.mediaType
                 
-                if let url = self.fileNameURL[metadataNewFile.fileNameView] {
+                if let fileNamePath = self.fileNamesPath[metadataNewFile.fileNameView] {
                     
                     do {
                         if mediaType == PHAssetMediaType.image {
-                            let data = try Data(contentsOf: url)
+                            let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
                             if let image = UIImage(data: data) {
                                 cell.imageNewFile.image = image
                             }
                         }
                         
-                        let fileDictionary = try FileManager.default.attributesOfItem(atPath: url.path)
+                        let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
                         let fileSize = fileDictionary[FileAttributeKey.size] as! Double
                         
                         cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
@@ -336,19 +336,19 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     
                 } else {
                     
-                    /*
-                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: nil, assetLocalIdentifier: metadataNewFile.assetLocalIdentifier) { (metadata, url) in
-                        if url != nil {
-                            self.fileNameURL[metadataNewFile.fileNameView] = url!
+                    CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
+                        
+                        if metadataNew != nil {
+                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
                             do {
                                 if mediaType == PHAssetMediaType.image {
-                                    let data = try Data(contentsOf: url!)
+                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
                                     if let image = UIImage(data: data) {
                                         cell.imageNewFile.image = image
                                     }
                                 }
                                 
-                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: url!.path)
+                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
                                 let fileSize = fileDictionary[FileAttributeKey.size] as! Double
                                 
                                 cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
@@ -356,7 +356,6 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                             } catch { print("Error: \(error)") }
                         }
                     }
-                    */
                 }
                       
             } else if FileManager().fileExists(atPath: filePathNewFile) {
