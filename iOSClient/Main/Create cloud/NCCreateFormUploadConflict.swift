@@ -335,6 +335,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     } catch { print("Error: \(error)") }
                     
                 } else {
+                    
+                    /*
                     CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: nil, assetLocalIdentifier: metadataNewFile.assetLocalIdentifier) { (metadata, url) in
                         if url != nil {
                             self.fileNameURL[metadataNewFile.fileNameView] = url!
@@ -354,6 +356,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                             } catch { print("Error: \(error)") }
                         }
                     }
+                    */
                 }
                       
             } else if FileManager().fileExists(atPath: filePathNewFile) {

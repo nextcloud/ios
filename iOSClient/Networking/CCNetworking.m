@@ -586,8 +586,19 @@
 
     if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         
-        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata assetLocalIdentifier:nil completion:^(tableMetadata *metadataForUpload, NSURL *url) {
-            if (metadataForUpload != nil) {
+        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata notification:true completion:^(tableMetadata *newMetadata, NSString *fileNamePath) {
+            
+            if (newMetadata == nil) {
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                
+            } else {
+                
+                NSString *toPath = [CCUtility getDirectoryProviderStorageOcId:newMetadata.ocId fileNameView:newMetadata.fileNameView];
+                [CCUtility moveFileAtPath:fileNamePath toPath:toPath];
+                
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:newMetadata];
+                
                 if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
                     [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
                 } else {
