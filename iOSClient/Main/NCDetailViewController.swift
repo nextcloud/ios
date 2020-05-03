@@ -580,6 +580,8 @@ class NCDetailViewController: UIViewController {
                     let richDocument = NCViewerRichdocument.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
                     richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: backgroundView, viewController: self)
                 }
+                
+                return
             }
         }
         
