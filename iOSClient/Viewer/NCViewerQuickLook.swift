@@ -21,34 +21,27 @@ import QuickLook
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             
-            guard let data = data, error == nil else {
-                self.presentAlertController(with: error?.localizedDescription ?? "Failed to download the pdf!!!")
+            guard let _ = data, error == nil else {
+                self.presentAlertController(with: error?.localizedDescription ?? "Failed to look the file")
                 return
             }
                         
-            let httpURLResponse = response as? HTTPURLResponse
+            //let httpURLResponse = response as? HTTPURLResponse
             //let mimeType = httpURLResponse?.mimeType
             
-            do {
-                // rename the temporary file or save it to the document or library directory if you want to keep the file
-                let suggestedFilename = httpURLResponse?.suggestedFilename ?? "quicklook.pdf"
-                var previewURL = FileManager.default.temporaryDirectory.appendingPathComponent(suggestedFilename)
-                try data.write(to: previewURL, options: .atomic)   // atomic option overwrites it if needed
-                previewURL.hasHiddenExtension = true
-                let previewItem = PreviewItem()
-                previewItem.previewItemURL = previewURL
-                self.previewItems.append(previewItem)
-                DispatchQueue.main.async {
-                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
-                    self.previewController.delegate = self
-                    self.previewController.dataSource = self
-                    self.previewController.currentPreviewItemIndex = 0
-                    self.viewController?.present(self.previewController, animated: true)
-                 }
-            } catch {
-                print(error)
-                return
+            var previewURL = url
+            previewURL.hasHiddenExtension = true
+            let previewItem = PreviewItem()
+            previewItem.previewItemURL = previewURL
+            self.previewItems.append(previewItem)
+            DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                self.previewController.delegate = self
+                self.previewController.dataSource = self
+                self.previewController.currentPreviewItemIndex = 0
+                self.viewController?.present(self.previewController, animated: true)
             }
+            
         }.resume()
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
