@@ -458,6 +458,7 @@ class NCDetailViewController: UIViewController {
             return
         }
         
+        /*
         // DOCUMENT - INTERNAL VIEWER
         if metadata.typeFile == k_metadataTypeFile_document && selector != nil && selector == selectorLoadFileInternalView {
             
@@ -467,6 +468,7 @@ class NCDetailViewController: UIViewController {
             viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
             return
         }
+        */
         
         // DOCUMENT
         if metadata.typeFile == k_metadataTypeFile_document {

@@ -1912,7 +1912,7 @@
             [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinTouchFile:)]];
         }
         if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_internal_view_", nil) action:@selector(openInternalViewerTouch:)]];
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_quicklook_", nil) action:@selector(openInternalViewerTouch:)]];
         }
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteTouchFile:)]];
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteTouchFiles:)]];
@@ -2108,7 +2108,7 @@
 /************************************ OPEN INTERNAL VIEWER ... ******************************/
 - (void)openInternalViewerTouch:(id)sender
 {
-    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
+    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
 }
 
 /************************************ PASTE ************************************/

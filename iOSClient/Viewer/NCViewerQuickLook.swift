@@ -27,7 +27,7 @@ import QuickLook
             }
                         
             let httpURLResponse = response as? HTTPURLResponse
-            let mimeType = httpURLResponse?.mimeType
+            //let mimeType = httpURLResponse?.mimeType
             
             do {
                 // rename the temporary file or save it to the document or library directory if you want to keep the file
@@ -50,6 +50,7 @@ import QuickLook
                 return
             }
         }.resume()
+        
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
     }
     
