@@ -400,7 +400,11 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func viewUnload() {
-        if self.view?.window == nil { return }
+        self.unload(checkWindow: true)
+    }
+    
+    private func unload(checkWindow: Bool) {
+        if checkWindow && self.view?.window == nil { return }
 
         metadata = nil
         selector = nil
@@ -483,6 +487,10 @@ class NCDetailViewController: UIViewController {
                     CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
                     quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.unload(checkWindow: false)
+                    }
                 }
                 
                 return
@@ -582,6 +590,10 @@ class NCDetailViewController: UIViewController {
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
         quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.unload(checkWindow: false)
+        }
     }
 }
 
