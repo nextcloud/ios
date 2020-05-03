@@ -28,8 +28,6 @@ extension NCDetailNavigationController {
 
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
-        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
-        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -204,24 +202,6 @@ extension NCDetailNavigationController {
             }
         }
                 
-        if CCUtility.isDocumentModifiableExtension(fileNameExtension) && (directEditingCreators == nil || !appDelegate.reachability.isReachable()) {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_internal_modify_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        if let navigationController = UIStoryboard(name: "NCText", bundle: nil).instantiateViewController(withIdentifier: "NCText") as? UINavigationController {
-                            navigationController.modalPresentationStyle = .pageSheet
-                            navigationController.modalTransitionStyle = .crossDissolve
-                            if let textViewController = navigationController.topViewController as? NCText {
-                                textViewController.metadata = metadata;
-                                viewController.present(navigationController, animated: true, completion: nil)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-        
         // CLOSE
         
         actions.append(

@@ -88,33 +88,6 @@ class NCViewerDocumentWeb: WKWebView {
                 print("error")
             }
             
-        } else if CCUtility.isDocumentModifiableExtension(fileNameExtension) {
-            
-            let session = URLSession(configuration: URLSessionConfiguration.default)
-            var request = URLRequest(url: url)
-            request.httpMethod = "HEAD"
-            
-            let task = session.dataTask(with: request) { (data, response, error) in
-                
-                guard let data = data else {
-                    return
-                }
-                guard let response = response else {
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    
-                    guard let encodingName = NCUchardet.sharedNUCharDet()?.encodingStringDetect(with: data) else {
-                        return
-                    }
-                    self.mimeType = response.mimeType
-                    self.load(data, mimeType: response.mimeType!, characterEncodingName: encodingName, baseURL: url)
-                }
-            }
-            
-            task.resume()
-            
         } else {
             
             load(URLRequest(url: url))

@@ -1359,13 +1359,6 @@
     return (NSArray *)datesSubFolder;
 }
 
-+ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension
-{
-    // Use UPPERCASE extension :
-    
-    return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
-}
-
 + (NSString *)getMimeType:(NSString *)fileNameView
 {
     CFStringRef fileUTI = nil;

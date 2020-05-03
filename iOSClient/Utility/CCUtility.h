@@ -237,8 +237,6 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
-+ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
-
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;

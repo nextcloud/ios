@@ -226,8 +226,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             if (ext == "") {
                 fileNameSave = name as! String + ".m4a"
-            } else if (CCUtility.isDocumentModifiableExtension(ext)) {
-                fileNameSave = name as! String
             } else {
                 fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
             }

@@ -84,16 +84,7 @@ extension AppDelegate {
                     appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
                 })
             )
-        } else {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_upload_file_text_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
-                    let storyboard = UIStoryboard(name: "NCText", bundle: nil)
-                    let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
-                    controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                    appDelegate.activeMain.present(controller, animated: true, completion: nil)
-                })
-            )
-        }
+        } 
         
         #if !targetEnvironment(simulator)
             if #available(iOS 11.0, *) {
