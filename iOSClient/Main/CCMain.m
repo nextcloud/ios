@@ -1067,9 +1067,7 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = true;
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            viewController.showOpenInternalViewer = true;
-        }
+        viewController.showOpenQuickLook = [[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:metadata];
         
         return viewController;
     }
