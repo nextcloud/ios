@@ -477,10 +477,12 @@ class NCDetailViewController: UIViewController {
                     
                 } else {
                     
-                    let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-                    let viewerDocumentWeb = NCViewerDocumentWeb.init(frame: frame, configuration: WKWebViewConfiguration())
-                    
-                    viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
+                    let quicklook = NCViewerQuickLook.init()
+                    let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+                    CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+                    quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
                 }
                 
                 return
@@ -573,10 +575,13 @@ class NCDetailViewController: UIViewController {
         }
         
         // OTHER
-        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-        let viewerDocumentWeb = NCViewerDocumentWeb.init(frame: frame, configuration: WKWebViewConfiguration())
         
-        viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
+        let quicklook = NCViewerQuickLook.init()
+        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+        quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
     }
 }
 
