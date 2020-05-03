@@ -1899,9 +1899,7 @@
         
         if ([self indexPathIsValid:indexPath])
             self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-        else
-            self.metadata = nil;
-        
+       
         [self becomeFirstResponder];
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
@@ -1911,8 +1909,8 @@
         if ([NCBrandOptions sharedInstance].disable_openin_file == false) {
             [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinTouchFile:)]];
         }
-        if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_quicklook_", nil) action:@selector(openInternalViewerTouch:)]];
+        if ([[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:self.metadata]) {
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_quicklook_", nil) action:@selector(openQuickLookTouch:)]];
         }
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteTouchFile:)]];
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteTouchFiles:)]];
@@ -1937,7 +1935,7 @@
     // NO In Session mode (download/upload)
     // NO Template
     
-    if (@selector(copyTouchFile:) == action || @selector(openinTouchFile:) == action || @selector(openInternalViewerTouch:) == action) {
+    if (@selector(copyTouchFile:) == action || @selector(openinTouchFile:) == action || @selector(openQuickLookTouch:) == action) {
         
         if (_isSelectedMode == NO && self.metadata && !self.metadata.directory && self.metadata.status == k_metadataStatusNormal) return YES;
         else return NO;
@@ -2105,8 +2103,9 @@
     [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
-/************************************ OPEN INTERNAL VIEWER ... ******************************/
-- (void)openInternalViewerTouch:(id)sender
+/************************************ OPEN QUICK LOOK ******************************/
+
+- (void)openQuickLookTouch:(id)sender
 {
     [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
 }

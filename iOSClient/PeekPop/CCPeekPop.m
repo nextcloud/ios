@@ -78,7 +78,7 @@
         [items addObject:item];
     }
     
-    if (self.showOpenInternalViewer) {
+    if (self.showOpenQuickLook) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_quicklook_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
             [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
         }];

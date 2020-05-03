@@ -32,7 +32,7 @@
 @property (nonatomic, strong) UIImage *imageFile;
 @property BOOL showShare;
 @property BOOL showOpenIn;
-@property BOOL showOpenInternalViewer;
+@property BOOL showOpenQuickLook;
 
 @property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;

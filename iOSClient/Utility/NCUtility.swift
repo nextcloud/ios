@@ -515,5 +515,9 @@ class NCUtility: NSObject {
         }
         return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
+    
+    @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
+        return true
+    }
 }
 

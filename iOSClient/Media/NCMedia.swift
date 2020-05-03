@@ -421,7 +421,7 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         viewController.imageFile = cell.imageItem.image
         viewController.showOpenIn = true
         viewController.showShare = false
-        viewController.showOpenInternalViewer = false
+        viewController.showOpenQuickLook = false
 
         return viewController
     }
