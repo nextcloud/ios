@@ -45,7 +45,9 @@ class NCDetailViewController: UIViewController {
     private var maxProgress: Float = 0
     private var videoLayer: AVPlayerLayer?
     private var viewerImageViewControllerLongPressInProgress = false
-        
+    
+    private let quicklook = NCViewerQuickLook.init()
+
     //MARK: -
 
     required init?(coder: NSCoder) {
@@ -481,7 +483,6 @@ class NCDetailViewController: UIViewController {
                     
                 } else {
                     
-                    let quicklook = NCViewerQuickLook.init()
                     let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
 
                     CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
@@ -584,7 +585,6 @@ class NCDetailViewController: UIViewController {
         
         // OTHER
         
-        let quicklook = NCViewerQuickLook.init()
         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
