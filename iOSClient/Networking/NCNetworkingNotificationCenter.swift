@@ -72,6 +72,19 @@ import Foundation
                     // open View File
                     if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
                     
+                        //
+                        let quicklook = NCViewerQuickLook.init()
+                        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+                        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+                        quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
+                        
+                        return
+                        
+                        //
+                        
+                        
                         if metadata.contentType.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
                             metadata.typeFile = k_metadataTypeFile_unknown
                         }
