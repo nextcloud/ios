@@ -990,6 +990,13 @@
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
+    
+    // Appearance
+    UINavigationBar.appearance.tintColor = NCBrandColor.sharedInstance.brandText;
+    UINavigationBar.appearance.barTintColor = NCBrandColor.sharedInstance.brand;
+    [UINavigationBar.appearance setBackgroundImage:[[NCUtility sharedInstance] fromColorWithColor:NCBrandColor.sharedInstance.brand] forBarMetrics: UIBarMetricsDefault];
+    UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText};
+    UINavigationBar.appearance.translucent = false;
 }
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
