@@ -27,6 +27,21 @@ import FloatingPanel
 
 extension CCMain {
 
+    // MARK: - Sort Menu
+    
+    @objc func toggleMenu(viewController: UIViewController) {
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initSortMenu()
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+
     private func initSortMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
 
@@ -106,20 +121,10 @@ extension CCMain {
         return actions
     }
 
-    @objc func toggleMenu(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initSortMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-
+    // MARK: - Select Menu
+    
     @objc func toggleSelectMenu(viewController: UIViewController) {
+           
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSelectMenu()
 
@@ -131,8 +136,7 @@ extension CCMain {
 
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
-
-
+    
     private func initSelectMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
 
@@ -189,6 +193,22 @@ extension CCMain {
         return actions
     }
 
+    // MARK: - More Menu ...
+
+    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
+           
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
     private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [NCMenuAction] {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -510,18 +530,4 @@ extension CCMain {
 
         return actions
     }
-
-    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-
 }
