@@ -171,8 +171,8 @@
     
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
-    [self.viewRichWorkspace.searchViewHolder addSubview:self.searchController.searchBar];
-    [self.searchController.searchBar sizeToFit];
+    self.navigationItem.searchController = self.searchController;
+
     // Table Header View
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
 

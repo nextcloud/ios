@@ -11,7 +11,6 @@ import Foundation
 extension CCMain {
 
     @objc func updateNavBarShadow(_ scrollView: UIScrollView) {
-        print(scrollView.contentOffset.y)
         if(self.searchController.isActive && scrollView.contentOffset.y > 44) {
             let searchBar = self.searchController.searchBar
             if(searchBar.layer.sublayers!.count < 2) {

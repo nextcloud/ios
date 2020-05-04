@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment version="4112" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,17 +15,10 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HlU-kk-zSG">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="97"/>
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="41"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uNy-ff-uKP">
-                            <rect key="frame" x="0.0" y="-2" width="320" height="50"/>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="50" id="66u-iM-EEA"/>
-                            </constraints>
-                        </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whP-vX-7tm">
-                            <rect key="frame" x="0.0" y="56" width="320" height="32"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="32"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="32" id="zgp-GM-5ua"/>
                             </constraints>
@@ -34,7 +27,7 @@
                             <state key="normal" title="Order by"/>
                         </button>
                         <view alpha="0.59999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iLg-Pa-y0u">
-                            <rect key="frame" x="0.0" y="96" width="320" height="1"/>
+                            <rect key="frame" x="0.0" y="40" width="320" height="1"/>
                             <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="1" id="3hR-TI-kRk"/>
@@ -44,19 +37,16 @@
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="iLg-Pa-y0u" secondAttribute="bottom" id="7GT-SF-5YZ"/>
-                        <constraint firstItem="whP-vX-7tm" firstAttribute="top" secondItem="uNy-ff-uKP" secondAttribute="bottom" constant="8" id="9ER-B7-f33"/>
-                        <constraint firstItem="uNy-ff-uKP" firstAttribute="leading" secondItem="HlU-kk-zSG" secondAttribute="leading" id="Bbi-i9-gn0"/>
                         <constraint firstItem="iLg-Pa-y0u" firstAttribute="leading" secondItem="HlU-kk-zSG" secondAttribute="leading" id="CXc-YZ-5Po"/>
                         <constraint firstItem="whP-vX-7tm" firstAttribute="leading" secondItem="HlU-kk-zSG" secondAttribute="leading" id="CZf-VB-F7L"/>
-                        <constraint firstAttribute="trailing" secondItem="uNy-ff-uKP" secondAttribute="trailing" id="DhX-iq-PKr"/>
                         <constraint firstItem="iLg-Pa-y0u" firstAttribute="top" secondItem="whP-vX-7tm" secondAttribute="bottom" constant="8" id="GaZ-ao-ygn"/>
-                        <constraint firstAttribute="height" constant="97" id="INp-JG-dK9"/>
                         <constraint firstAttribute="trailing" secondItem="iLg-Pa-y0u" secondAttribute="trailing" id="WMv-Zi-7Yu"/>
                         <constraint firstAttribute="trailing" secondItem="whP-vX-7tm" secondAttribute="trailing" id="bBp-TM-j1W"/>
+                        <constraint firstItem="whP-vX-7tm" firstAttribute="top" secondItem="HlU-kk-zSG" secondAttribute="top" id="oXj-DQ-Zjb"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="orF-i7-sVP">
-                    <rect key="frame" x="0.0" y="97" width="320" height="383"/>
+                    <rect key="frame" x="0.0" y="41" width="320" height="439"/>
                     <subviews>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="wri-16-tQY">
                             <rect key="frame" x="8" y="8" width="304" height="379"/>
@@ -83,7 +73,6 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="richView" destination="orF-i7-sVP" id="sWH-ON-Cum"/>
-                <outlet property="searchViewHolder" destination="uNy-ff-uKP" id="YnQ-Z1-Q5r"/>
                 <outlet property="sortButton" destination="whP-vX-7tm" id="4Yt-90-Nnj"/>
                 <outlet property="textView" destination="wri-16-tQY" id="pwA-gm-dfK"/>
                 <outlet property="topView" destination="HlU-kk-zSG" id="KBp-vo-AWI"/>

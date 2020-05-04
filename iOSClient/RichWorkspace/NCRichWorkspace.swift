@@ -29,7 +29,6 @@ import MarkdownKit
     @IBOutlet weak var topView: UIView!
     @IBOutlet weak var richView: UIView!
     @IBOutlet weak var sortButton: UIButton!
-    @IBOutlet weak var searchViewHolder: UIView!
     @objc @IBOutlet weak var textView: UITextView!
     
     private var markdownParser = MarkdownParser()
