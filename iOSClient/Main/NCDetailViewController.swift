@@ -46,7 +46,7 @@ class NCDetailViewController: UIViewController {
     private var videoLayer: AVPlayerLayer?
     private var viewerImageViewControllerLongPressInProgress = false
     
-    private let viewerQuickLook = NCViewerQuickLook.init()
+    private var viewerQuickLook: NCViewerQuickLook?
 
     //MARK: -
 
@@ -487,7 +487,8 @@ class NCDetailViewController: UIViewController {
 
                     CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-                    viewerQuickLook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+                    viewerQuickLook = NCViewerQuickLook.init()
+                    viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
                     
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.unload(checkWindow: false)
@@ -591,7 +592,8 @@ class NCDetailViewController: UIViewController {
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-        viewerQuickLook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+        viewerQuickLook = NCViewerQuickLook.init()
+        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.unload(checkWindow: false)

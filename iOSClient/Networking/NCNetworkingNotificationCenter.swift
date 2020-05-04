@@ -37,6 +37,7 @@ import Foundation
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var viewerQuickLook: NCViewerQuickLook?
     
     //MARK: - Download
 
@@ -72,12 +73,13 @@ import Foundation
                     // Quick Look
                     if selector == selectorLoadFileQuickLook {
                         
-                        let quicklook = NCViewerQuickLook.init()
+                        
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
 
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
-                        quicklook.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
+                        viewerQuickLook = NCViewerQuickLook.init()
+                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
                         return
                     }
                     
