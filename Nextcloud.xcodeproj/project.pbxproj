@@ -342,7 +342,6 @@
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
-		F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
@@ -443,7 +442,6 @@
 		F7D4B69A2295666E000C2C86 /* FirebaseMLCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6932295666E000C2C86 /* FirebaseMLCommon.framework */; };
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
-		F7D91AAA23FBDED60038FC09 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
@@ -2871,9 +2869,7 @@
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
-				F7D91AAA23FBDED60038FC09 /* NCContentPresenter.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
-				F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */,
 				2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
