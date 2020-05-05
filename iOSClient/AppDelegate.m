@@ -991,6 +991,12 @@
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
+}
+
+- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
+{
+    // Dark Mode
+    [NCBrandColor.sharedInstance setDarkMode];
     
     // Appearance
     UINavigationBar.appearance.tintColor = NCBrandColor.sharedInstance.brandText;
@@ -998,12 +1004,14 @@
     [UINavigationBar.appearance setBackgroundImage:[[NCUtility sharedInstance] fromColorWithColor:NCBrandColor.sharedInstance.brand] forBarMetrics: UIBarMetricsDefault];
     UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText};
     UINavigationBar.appearance.translucent = false;
-}
-
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
-{
-    // Dark Mode
-    [NCBrandColor.sharedInstance setDarkMode];
+    // Refresh UIAppearance after application loaded
+    NSArray *windows = [UIApplication sharedApplication].windows;
+    for (UIWindow *window in windows) {
+        for (UIView *view in window.subviews) {
+            [view removeFromSuperview];
+            [window addSubview:view];
+        }
+    }
     
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
