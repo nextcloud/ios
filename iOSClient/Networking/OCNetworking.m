@@ -1720,7 +1720,8 @@
                 } else {
                     
                     if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                        [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %ld password re-entry is required", function, (long)errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
+                        NSString *description = [NSString stringWithFormat: NSLocalizedString(@"_error_check_remote_user_", nil), tableAccount.user, tableAccount.url];
+                        [[NCContentPresenter shared] messageNotification:@"_error_" description:description delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                         [CCUtility setPassword:account password:nil];
                     }
                 }
@@ -1731,7 +1732,8 @@
         } else if ([CCUtility getPassword:account] != nil) {
             
             if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:[NSString stringWithFormat:@"During the function request: %@ the server responded with error %ld password re-entry is required", function, (long)errorCode] delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
+                NSString *description = [NSString stringWithFormat: NSLocalizedString(@"_error_check_remote_user_", nil), tableAccount.user, tableAccount.url];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:description delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
                 [CCUtility setPassword:account password:nil];
             }
         }
