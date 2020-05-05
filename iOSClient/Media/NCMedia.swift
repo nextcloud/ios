@@ -639,7 +639,7 @@ extension NCMedia {
         }
         if let metadata = appDelegate.arrayDeleteMetadata.firstObject {
             appDelegate.arrayDeleteMetadata.removeObject(at: 0)
-            NCNetworking.sharedInstance.deleteMetadata(metadata as! tableMetadata, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+            NCNetworking.sharedInstance.deleteMetadata(metadata as! tableMetadata, account: appDelegate.activeAccount, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
         }
     }
     

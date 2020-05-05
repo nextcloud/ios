@@ -680,7 +680,7 @@
         [self.arrayDeleteMetadata removeObjectAtIndex:0];
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
-            [[NCNetworking sharedInstance] deleteMetadata:metadata user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+            [[NCNetworking sharedInstance] deleteMetadata:metadata account:metadata.account user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self deleteFile:[NSNotification new]];
         }
