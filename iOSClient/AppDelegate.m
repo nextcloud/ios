@@ -111,10 +111,12 @@
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
+    /*
     // APPEARANCE: How to hide UINavigationBar 1px bottom line < iOS 11
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     [UINavigationBar appearance].translucent = NO;
+    */
     
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
@@ -834,11 +836,7 @@
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
+    CGFloat safeAreaBottom = safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
    
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];

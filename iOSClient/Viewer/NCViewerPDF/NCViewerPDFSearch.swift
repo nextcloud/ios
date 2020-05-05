@@ -24,13 +24,9 @@
 import Foundation
 import PDFKit
 
-@available(iOS 11, *)
-
 @objc protocol NCViewerPDFSearchDelegate : class {
     func searchPdfSelection(_ pdfSelection: PDFSelection)
 }
-
-@available(iOS 11, *)
 
 class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocumentDelegate {
     

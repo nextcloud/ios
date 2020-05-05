@@ -29,7 +29,7 @@ class FileProviderDomain: NSObject {
         return instance
     }()
 
-    @available(iOS 11.0, *) @objc func registerDomain() {
+    @objc func registerDomain() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             
@@ -70,7 +70,7 @@ class FileProviderDomain: NSObject {
         }
     }
     
-    @available(iOS 11.0, *) @objc func removeAllDomain() {
+    @objc func removeAllDomain() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             

@@ -461,6 +461,7 @@ class NCDetailViewController: UIViewController {
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
             viewImage()
+            
             return
         }
     
@@ -469,32 +470,18 @@ class NCDetailViewController: UIViewController {
             
             // PDF
             if metadata.contentType == "application/pdf" {
-                if #available(iOS 11.0, *) {
                     
-                    let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-                    let viewerPDF = NCViewerPDF.init(frame: frame)
+                let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                let viewerPDF = NCViewerPDF.init(frame: frame)
                     
-                    let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
-                        return
-                    }
+                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
                     
-                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
-                    
-                } else {
-                    
-                    let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-
-                    CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
-
-                    viewerQuickLook = NCViewerQuickLook.init()
-                    viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
-                    
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.unload(checkWindow: false)
-                    }
+                    return
                 }
-                
+                    
+                viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+
                 return
             }
             

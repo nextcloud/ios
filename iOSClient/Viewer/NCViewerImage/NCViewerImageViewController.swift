@@ -326,22 +326,13 @@ extension NCViewerImageViewController {
         view.addSubview(statusView)
         statusView.translatesAutoresizingMaskIntoConstraints = false
         
-        if #available(iOS 11, *) {
-            NSLayoutConstraint.activate([
-                statusView.widthAnchor.constraint(equalToConstant: 30),
-                statusView.heightAnchor.constraint(equalToConstant: 30),
-                statusView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
-                statusView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 2)
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                statusView.widthAnchor.constraint(equalToConstant: 30),
-                statusView.heightAnchor.constraint(equalToConstant: 30),
-                statusView.topAnchor.constraint(equalTo: view.topAnchor, constant: 2),
-                statusView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 2)
-            ])
-        }
-        
+        NSLayoutConstraint.activate([
+            statusView.widthAnchor.constraint(equalToConstant: 30),
+            statusView.heightAnchor.constraint(equalToConstant: 30),
+            statusView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
+            statusView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 2)
+        ])
+       
         statusView.setNeedsLayout()
         statusView.layoutIfNeeded()
 

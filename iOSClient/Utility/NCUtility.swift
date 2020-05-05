@@ -485,22 +485,19 @@ class NCUtility: NSObject {
     }
     
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
-        if #available(iOS 11.0, *) {
-            guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
-                return nil
-            }
-
-            let pageSize = page.bounds(for: .mediaBox)
-            let pdfScale = width / pageSize.width
-
-            // Apply if you're displaying the thumbnail on screen
-            let scale = UIScreen.main.scale * pdfScale
-            let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
-
-            return page.thumbnail(of: screenSize, for: .mediaBox)
-        } else {
+       
+        guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
+
+        let pageSize = page.bounds(for: .mediaBox)
+        let pdfScale = width / pageSize.width
+
+        // Apply if you're displaying the thumbnail on screen
+        let scale = UIScreen.main.scale * pdfScale
+        let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
+
+        return page.thumbnail(of: screenSize, for: .mediaBox)
     }
     
     @objc func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {

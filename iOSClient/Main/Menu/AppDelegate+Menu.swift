@@ -100,17 +100,15 @@ extension AppDelegate {
         } 
         
         #if !targetEnvironment(simulator)
-            if #available(iOS 11.0, *) {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_scans_document_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
-                        }
-                    )
-                )
-            }
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_scans_document_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+                }
+            )
+        )
         #endif
 
         actions.append(
@@ -132,19 +130,18 @@ extension AppDelegate {
             )
         )
 
-        if #available(iOS 11.0, *) {
-            if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
-                if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) && !isEncrypted {
-                    actions.append(
-                        NCMenuAction(
-                            title: NSLocalizedString("_add_folder_info_", comment: ""),
-                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                            action: { menuAction in
-                                self.activeMain.createRichWorkspace()
-                            }
-                        )
+        
+        if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
+            if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) && !isEncrypted {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_add_folder_info_", comment: ""),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        action: { menuAction in
+                            self.activeMain.createRichWorkspace()
+                        }
                     )
-                }
+                )
             }
         }
         

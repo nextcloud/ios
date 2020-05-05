@@ -53,10 +53,7 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     }
     
     @objc func keyboardDidShow(notification: Notification) {
-        var safeAreaInsetsBottom: CGFloat = 0
-        if #available(iOS 11.0, *) {
-            safeAreaInsetsBottom = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-        }
+        let safeAreaInsetsBottom = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue

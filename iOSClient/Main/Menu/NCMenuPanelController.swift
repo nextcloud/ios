@@ -36,11 +36,6 @@ class NCMenuPanelController: FloatingPanelController {
             self.surfaceView.backgroundColor = .systemBackground
         }
         self.isRemovalInteractionEnabled = true
-        if #available(iOS 11, *) {
-            self.surfaceView.cornerRadius = 16
-        } else {
-            self.surfaceView.cornerRadius = 0
-        }
+        self.surfaceView.cornerRadius = 16
     }
-
 }

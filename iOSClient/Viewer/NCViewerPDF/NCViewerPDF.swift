@@ -24,8 +24,6 @@
 import Foundation
 import PDFKit
 
-@available(iOS 11, *)
-
 @objc class NCViewerPDF: PDFView, NCViewerPDFSearchDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate

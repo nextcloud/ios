@@ -85,12 +85,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
         
-        // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        // Refresh Control
+        collectionView.addSubview(refreshControl)
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText

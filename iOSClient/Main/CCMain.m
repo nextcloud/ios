@@ -159,12 +159,10 @@
     
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
-    if (@available(iOS 11, *)) {
-        UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
-        viewRichWorkspaceTapped.numberOfTapsRequired = 1;
-        viewRichWorkspaceTapped.delegate = self;
-        [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
-    }
+    UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
+    viewRichWorkspaceTapped.numberOfTapsRequired = 1;
+    viewRichWorkspaceTapped.delegate = self;
+    [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/4 + heightSearchBar;
     self.viewRichWorkspace.textViewTopConstraint.constant = heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
@@ -424,12 +422,10 @@
     [appDelegate pushNotification];
     
     // Registeration domain File Provider
-    if (@available(iOS 11, *) ) {
-        if (k_fileProvider_domain) {
-            [FileProviderDomain.sharedInstance registerDomain];
-        } else {
-            [FileProviderDomain.sharedInstance removeAllDomain];
-        }        
+    if (k_fileProvider_domain) {
+        [FileProviderDomain.sharedInstance registerDomain];
+    } else {
+        [FileProviderDomain.sharedInstance removeAllDomain];
     }
 }
 
@@ -702,10 +698,6 @@
     for (UIView *subview in [_tableView subviews]) {
         if (subview == refreshControl)
             [subview removeFromSuperview];
-    }
-    
-    if (@available(iOS 10, *)) {
-        self.tableView.refreshControl = nil;
     }
     
     refreshControl = nil;
@@ -1843,9 +1835,7 @@
     CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
     CGFloat safeAreaTop = 0;
     CGFloat offsetY = 35;
-    if (@available(iOS 11, *)) {
-        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
-    }
+    safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
     rect.origin.y = locationY + safeAreaTop + offsetY;
     rect.size.height = rect.size.height - locationY - safeAreaTop - offsetY;
     

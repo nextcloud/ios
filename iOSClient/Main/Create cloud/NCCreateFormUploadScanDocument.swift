@@ -643,8 +643,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     }
 }
 
-@available(iOS 11, *)
-
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     @objc static let sharedInstance: NCCreateScanDocument = {

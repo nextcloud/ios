@@ -29,7 +29,6 @@ class NCViewerVideo: NSObject {
     var metadata: tableMetadata!
     var videoURL: URL?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var safeAreaBottom: Int = 0
 
     @objc static let sharedInstance: NCViewerVideo = {
         let viewVideo = NCViewerVideo()
@@ -42,14 +41,6 @@ class NCViewerVideo: NSObject {
         var videoURLProxy: URL!
 
         self.metadata = metadata
-        
-        guard let rootView = UIApplication.shared.keyWindow else {
-            return
-        }
-        
-        if #available(iOS 11.0, *) {
-            safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
-        }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
         
@@ -84,7 +75,7 @@ class NCViewerVideo: NSObject {
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
             let player = notification.object as! AVPlayerItem
-            player.seek(to: CMTime.zero)
+            player.seek(to: CMTime.zero, completionHandler: nil)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
