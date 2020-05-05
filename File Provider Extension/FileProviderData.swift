@@ -84,7 +84,7 @@ class fileProviderData: NSObject {
             homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
             
             NCCommunicationCommon.sharedInstance.setup(user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-            NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+            NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
             
             return true
         }
@@ -107,7 +107,7 @@ class fileProviderData: NSObject {
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
                 NCCommunicationCommon.sharedInstance.setup(user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+                NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
 
                 foundAccount = true
             }
@@ -136,7 +136,7 @@ class fileProviderData: NSObject {
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
                 NCCommunicationCommon.sharedInstance.setup(user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+                NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
                 
                 foundAccount = true
             }

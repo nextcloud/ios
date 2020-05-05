@@ -37,19 +37,10 @@ import NCCommunication
         let instance = NCNetworking()
         return instance
     }()
-    
-    var account = ""
-    
+        
     // Protocol
     var delegate: NCNetworkingDelegate?
-    
-    //MARK: - Setup
-    
-    @objc public func setup(account: String, delegate: NCNetworkingDelegate?) {
-        self.account = account
-        self.delegate = delegate
-    }
-    
+        
     //MARK: - Communication Delegate
        
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

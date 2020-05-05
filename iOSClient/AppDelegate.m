@@ -434,7 +434,6 @@
     self.activePassword = activePassword;
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
 
-    [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
     (void)[NCNetworkingNotificationCenter shared];
 
     [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];

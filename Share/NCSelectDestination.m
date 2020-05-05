@@ -53,9 +53,7 @@
         
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
-        
-        [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
-        
+                
     } else {
         
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"_no_active_account_", nil) preferredStyle:UIAlertControllerStyleAlert];
