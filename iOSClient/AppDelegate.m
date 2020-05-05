@@ -1565,7 +1565,7 @@
 
 - (void)verifyTaskLos
 {
-    // Verify internal error download (lost task)
+    // DOWNLOAD
     //
     NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusDownloading] sorted:nil ascending:true];
     for (tableMetadata *metadata in matadatasInDownloading) {
@@ -1592,7 +1592,7 @@
         }];
     }
 
-    // Verify internal error upload (lost task)
+    // UPLOAD
     //
     NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasUploading) {
