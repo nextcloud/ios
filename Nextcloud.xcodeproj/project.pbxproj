@@ -85,9 +85,6 @@
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
-		F70CEF5723E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
-		F70CEF5823E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
-		F70CEF5923E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */; };
@@ -116,9 +113,6 @@
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F716FE7A23795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F716FE7923795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift */; };
-		F720FA9C242CA3EC00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
-		F720FA9D242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
-		F720FA9E242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
 		F72382C02295856A005B8A07 /* FirebaseMLVisionTextModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72382BB22958569005B8A07 /* FirebaseMLVisionTextModel.framework */; };
@@ -205,7 +199,6 @@
 		F7434B3720E23FF200417916 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F7434B5D20E241E800417916 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F7434B6020E2445200417916 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
@@ -283,7 +276,6 @@
 		F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F765608A23BF80A400765969 /* SwiftEntryKit.framework */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765609023BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
-		F765609123BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EF22C90433007ED366 /* FileProviderUtility.swift */; };
@@ -347,7 +339,6 @@
 		F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F61BAC56E9003FC03E /* CCCellMain.xib */; };
 		F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */; };
 		F77D49A91DC238E500CDC568 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading.gif */; };
-		F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
@@ -358,6 +349,7 @@
 		F785EEA02461A13500B3F945 /* NCAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E7064219F096B006F23E4 /* NCAvatar.swift */; };
 		F785EEA12461A13A00B3F945 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
 		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
@@ -2880,11 +2872,9 @@
 			files = (
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */,
-				F70CEF5923E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
-				F720FA9E242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F7D91AAA23FBDED60038FC09 /* NCContentPresenter.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
 				F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */,
@@ -2899,12 +2889,12 @@
 				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
 				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
+				F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
-				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F7E87CC3241A559E005E8C6F /* NCNetworkingEndToEnd.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -2937,7 +2927,6 @@
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */,
-				F720FA9C242CA3EC00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
@@ -2952,7 +2941,6 @@
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
 				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F70CEF5723E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
@@ -2973,18 +2961,14 @@
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
 				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
-				F70CEF5823E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F716FE7A23795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift in Sources */,
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
-				F720FA9D242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F785EEA12461A13A00B3F945 /* CCGraphics.m in Sources */,
-				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
 				F785EEA02461A13500B3F945 /* NCAvatar.swift in Sources */,
-				F765609123BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -191,7 +191,9 @@ import NCCommunication
                 var errorDescription = errorDescription
                 if errorDescription == nil { errorDescription = "Internal error. Error not found" }
                 
+                #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                #endif
                 
                 completion(account, nil, nil, errorCode, errorDescription!)
             }
