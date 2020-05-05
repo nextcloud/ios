@@ -544,6 +544,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    #if !EXTENSION
     @objc func setAccountUserProfile(_ userProfile: OCUserProfile, HCProperties: Bool) -> tableAccount? {
      
         let realm = try! Realm()
@@ -600,7 +601,9 @@ class NCManageDatabase: NSObject {
         
         return tableAccount.init(value: returnAccount)
     }
+    #endif
     
+    #if !EXTENSION
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
         
         let realm = try! Realm()
@@ -652,6 +655,7 @@ class NCManageDatabase: NSObject {
         
         return tableAccount.init(value: returnAccount)
     }
+    #endif
     
     @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
         
@@ -723,6 +727,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Activity
 
+    #if !EXTENSION
     @objc func addActivity(_ listOfActivity: [OCActivity], account: String) {
     
         let realm = try! Realm()
@@ -808,6 +813,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
+    #endif
     
     func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
         
@@ -884,6 +890,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Capabilities
     
+    #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
         let realm = try! Realm()
@@ -969,6 +976,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
+    #endif
     
     @objc func getCapabilites(account: String) -> tableCapabilities? {
         
@@ -1046,6 +1054,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Comments
     
+    #if !EXTENSION
     @objc func addComments(_ listOfComments: [NCComments], account: String, objectId: String) {
         
         let realm = try! Realm()
@@ -1079,6 +1088,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
+    #endif
     
     @objc func getComments(account: String, objectId: String) -> [tableComments] {
         
@@ -1672,6 +1682,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table External Sites
     
+    #if !EXTENSION
     @objc func addExternalSites(_ externalSites: OCExternalSites, account: String) {
         
         let realm = try! Realm()
@@ -1695,7 +1706,8 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
-
+    #endif
+    
     @objc func deleteExternalSites(account: String) {
         
         let realm = try! Realm()
@@ -2834,6 +2846,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
+    #if !EXTENSION
     @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) -> [tableShare] {
         
         let realm = try! Realm()
@@ -2893,7 +2906,8 @@ class NCManageDatabase: NSObject {
         
         return self.getTableShares(account: account)
     }
-
+    #endif
+    
     @objc func getTableShares(account: String) -> [tableShare] {
         
         let realm = try! Realm()
@@ -2905,6 +2919,7 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableShare.init(value:$0) })
     }
     
+    #if !EXTENSION
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
         
         let realm = try! Realm()
@@ -2921,6 +2936,7 @@ class NCManageDatabase: NSObject {
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         }
     }
+    #endif
     
     func getTableShare(account: String, idRemoteShared: Int) -> tableShare? {
         

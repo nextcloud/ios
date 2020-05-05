@@ -10,17 +10,9 @@
 		2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		2C1D5D7A23E2DEBF00334ABB /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
-		2C1D5D7B23E2DED200334ABB /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		2C59AC5823E2DFEE00733BE8 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
-		2C59AC5923E2E00F00733BE8 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
-		2C59AC5A23E2E01A00733BE8 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
-		2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
-		2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
 		2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* NCMenu.storyboard */; };
@@ -212,37 +204,8 @@
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3720E23FF200417916 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F7434B3A20E2403500417916 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
-		F7434B3B20E2403900417916 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
-		F7434B3C20E2403D00417916 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
-		F7434B3D20E2404300417916 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
-		F7434B3E20E2404700417916 /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
-		F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
-		F7434B4020E2404E00417916 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
-		F7434B4120E2405200417916 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
-		F7434B4220E2405500417916 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
-		F7434B4320E2405900417916 /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
-		F7434B4420E2405C00417916 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
-		F7434B4B20E2408000417916 /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
-		F7434B4C20E2408300417916 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
-		F7434B4D20E2408600417916 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
-		F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
-		F7434B5120E2409500417916 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
-		F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
-		F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
-		F7434B5420E240A300417916 /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
-		F7434B5520E240A900417916 /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
-		F7434B5620E2412900417916 /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
-		F7434B5820E241B100417916 /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
-		F7434B5920E241B600417916 /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
-		F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
-		F7434B5B20E241D100417916 /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
-		F7434B5C20E241D500417916 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F7434B5D20E241E800417916 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7434B6020E2445200417916 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
-		F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
-		F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F745B250222D871800346520 /* QRCodeReader.framework */; };
 		F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F745B252222D88AE00346520 /* NCLoginQRCode.swift */; };
 		F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F747BA1E22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard */; };
@@ -269,7 +232,6 @@
 		F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* ScanCollectionView.swift */; };
 		F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
-		F75A9EE823796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */; };
@@ -390,9 +352,12 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
 		F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
-		F781996B22636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
+		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
+		F785EEA02461A13500B3F945 /* NCAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78E7064219F096B006F23E4 /* NCAvatar.swift */; };
+		F785EEA12461A13A00B3F945 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
 		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
@@ -441,10 +406,8 @@
 		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
 		F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
 		F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
-		F7B6ACD822FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
 		F7B6ACDB22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		F7B6ACDC22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
-		F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
@@ -475,7 +438,6 @@
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
-		F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */; };
 		F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */; };
 		F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67F2295663D000C2C86 /* FirebaseAnalytics.framework */; };
@@ -496,12 +458,10 @@
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
 		F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
-		F7DBC38123325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DBD82B23E46A4700ECB7C6 /* MarkdownKit.framework */; };
 		F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */; };
 		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7E1219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
-		F7DFB7E2219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
 		F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */; };
@@ -2921,21 +2881,14 @@
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
 				2CB7D1C923E2E40B00376EF9 /* NCUtility.swift in Sources */,
 				F70CEF5923E9C7E50007035B /* UIColor+adjust.swift in Sources */,
-				2C59AC5A23E2E01A00733BE8 /* OCCapabilities.m in Sources */,
 				2C1D5D7723E2DE5F00334ABB /* CCUtility.m in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
-				2C1D5D7823E2DE6A00334ABB /* CCGraphics.m in Sources */,
-				2C59AC5B23E2E02700733BE8 /* OCExternalSites.m in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
 				F720FA9E242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
 				F7D91AAA23FBDED60038FC09 /* NCContentPresenter.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
-				2C59AC5C23E2E03400733BE8 /* OCSharedDto.m in Sources */,
-				2C59AC5923E2E00F00733BE8 /* OCActivity.m in Sources */,
+				F785EEA22461A14100B3F945 /* CCGraphics.m in Sources */,
 				2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */,
-				2C1D5D7B23E2DED200334ABB /* NCComments.m in Sources */,
-				2C59AC5823E2DFEE00733BE8 /* OCUserProfile.m in Sources */,
-				2C1D5D7A23E2DEBF00334ABB /* HCFeatures.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3012,60 +2965,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F781996B22636BFA00EBDF6A /* HCFeatures.m in Sources */,
-				F7434B3C20E2403D00417916 /* OCCommunication.m in Sources */,
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
 				F7434B3720E23FF200417916 /* NCUtility.swift in Sources */,
-				F7B6ACD822FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
-				F7434B5120E2409500417916 /* OCXMLServerErrorsParser.m in Sources */,
-				F7DFB7E2219C312D00680748 /* NCRichDocumentTemplate.m in Sources */,
-				F7434B3A20E2403500417916 /* OCActivity.m in Sources */,
-				F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */,
-				F7434B3B20E2403900417916 /* OCCapabilities.m in Sources */,
-				F7434B4B20E2408000417916 /* NSDate+ISO8601.m in Sources */,
-				F7434B4C20E2408300417916 /* NSDate+RFC1123.m in Sources */,
-				F7434B5920E241B600417916 /* OCNetworking.m in Sources */,
-				F7434B5520E240A900417916 /* UtilsFramework.m in Sources */,
-				F75A9EE823796C6F0044CFCE /* NCNetworking.swift in Sources */,
-				F7434B4120E2405200417916 /* OCRichObjectStrings.m in Sources */,
 				F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */,
 				F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */,
-				F7434B4020E2404E00417916 /* OCNotificationsAction.m in Sources */,
-				F7434B5320E2409E00417916 /* OCXMLSharedParser.m in Sources */,
-				F7434B4320E2405900417916 /* OCShareUser.m in Sources */,
-				F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */,
 				F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
-				F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */,
-				F7434B5620E2412900417916 /* CCError.m in Sources */,
-				F7434B5C20E241D500417916 /* NCEndToEndEncryption.m in Sources */,
-				F7434B3E20E2404700417916 /* OCFileDto.m in Sources */,
-				F7434B3D20E2404300417916 /* OCExternalSites.m in Sources */,
-				F7D2D129230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
-				F7434B4420E2405C00417916 /* OCUserProfile.m in Sources */,
-				F7DBC38123325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */,
-				F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */,
+				F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F70CEF5823E9C7E50007035B /* UIColor+adjust.swift in Sources */,
-				F7434B5B20E241D100417916 /* NCEndToEndMetadata.swift in Sources */,
-				F7B6ACDD22FC2D15008AB646 /* NCComments.m in Sources */,
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
-				F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F716FE7A23795EC500FABE50 /* FileProviderExtension+NetworkingDelegate.swift in Sources */,
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
-				F7434B4220E2405500417916 /* OCSharedDto.m in Sources */,
 				F720FA9D242CA3ED00AA988A /* UIImage+fixedOrientation.swift in Sources */,
-				F7434B3F20E2404B00417916 /* OCNotifications.m in Sources */,
+				F785EEA12461A13A00B3F945 /* CCGraphics.m in Sources */,
 				F7434B6020E2445200417916 /* CCExifGeo.m in Sources */,
-				F7434B5420E240A300417916 /* NSString+Encode.m in Sources */,
+				F785EEA02461A13500B3F945 /* NCAvatar.swift in Sources */,
 				F765609123BF813600765969 /* NCContentPresenter.swift in Sources */,
-				F7434B4E20E2408A00417916 /* OCWebDAVClient.m in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
-				F7434B4D20E2408600417916 /* OCHTTPRequestOperation.m in Sources */,
-				F7434B5820E241B100417916 /* CCNetworking.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
