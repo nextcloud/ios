@@ -390,6 +390,7 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
+    #if !EXTENSION
     @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
@@ -417,6 +418,7 @@ class NCUtility: NSObject {
         
         return imageAvatar
     }
+    #endif
     
     @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
         return UIColor(
