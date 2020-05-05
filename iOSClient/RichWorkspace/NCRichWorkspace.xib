@@ -23,7 +23,7 @@
                                 <constraint firstAttribute="height" constant="32" id="zgp-GM-5ua"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="16" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="24" minY="0.0" maxX="16" maxY="0.0"/>
                             <state key="normal" title="Order by"/>
                         </button>
                         <view alpha="0.59999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iLg-Pa-y0u">

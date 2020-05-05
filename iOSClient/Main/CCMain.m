@@ -140,9 +140,6 @@
     self.definesPresentationContext = YES;
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.translucent = NO;
-    self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.searchController.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
         [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
@@ -172,6 +169,10 @@
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
     self.navigationItem.searchController = self.searchController;
+    self.searchController.hidesNavigationBarDuringPresentation = true;
+    self.navigationController.navigationBar.prefersLargeTitles = true;
+    self.navigationItem.hidesSearchBarWhenScrolling = false;
+    [self.navigationController.navigationBar sizeToFit];
 
     // Table Header View
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
@@ -209,11 +210,15 @@
     [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 }
 
+- (void)willPresentSearchController:(UISearchController *)searchController
+{
+    [self updateNavBarShadow:self.tableView force:true];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self updateNavBarShadow:self.tableView];
-
+    [self updateNavBarShadow:self.tableView force:false];
     // test
     if (appDelegate.activeAccount.length == 0)
         return;
@@ -241,7 +246,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    self.navigationItem.hidesSearchBarWhenScrolling = true;
+
     // Active Main
     appDelegate.activeMain = self;
     
@@ -311,7 +317,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    [self updateNavBarShadow:scrollView];
+    [self updateNavBarShadow:self.tableView force:false];
 }
 
 - (void)changeTheming
@@ -327,7 +333,6 @@
 
     [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
     // color searchbar
-    self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brand;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
@@ -2880,7 +2885,7 @@
 {
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
   
-    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspaceText.length == 0 || self.searchController.isActive) {
+    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspaceText.length == 0) {
                 
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
@@ -2889,9 +2894,12 @@
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
-    [self.searchController.searchBar sizeToFit];
+    if (self.searchController.isActive == true) {
+        [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, 0)];
+    }
+    
+    [self.viewRichWorkspace setNeedsLayout];
     [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
-    [self.tableView reloadData];
 }
 
 - (void)setTableViewFooter
