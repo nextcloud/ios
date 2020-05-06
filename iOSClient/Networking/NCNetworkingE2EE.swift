@@ -95,7 +95,7 @@ import NCCommunication
                                         newobject.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
                                         newobject.metadataKeyIndex = 0
                                     }
-                                    newobject.mimeType = "application/directory"
+                                    newobject.mimeType = "httpd/unix-directory"
                                     newobject.serverUrl = serverUrl
                                     newobject.version = Int(NCManageDatabase.sharedInstance.getEndToEndEncryptionVersion(account: account))
                                     
