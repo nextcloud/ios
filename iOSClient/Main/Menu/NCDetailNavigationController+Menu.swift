@@ -31,16 +31,19 @@ extension NCDetailNavigationController {
             return
         }
         
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
 
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+            let menuPanelController = NCMenuPanelController()
+            menuPanelController.parentPresenter = viewController
+            menuPanelController.delegate = mainMenuViewController
+            menuPanelController.set(contentViewController: mainMenuViewController)
+            menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
-        viewController.present(menuPanelController, animated: true, completion: nil)
+            viewController.present(menuPanelController, animated: true, completion: nil)
+        }
     }
     
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
