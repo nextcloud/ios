@@ -764,7 +764,6 @@
 "_no_nextcloud_found_"                  = "Nextcloud server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
-"_error_check_remote_user_"             = "The user: %@ in %@ is not authenticated anymore. Please authenticate again.";
 
 // BKPasscode
 
