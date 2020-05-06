@@ -54,6 +54,7 @@ class NCContentPresenter: NSObject {
         // No notification message
         if errorCode == -999 { return }         // Cancelled transfer
         else if errorCode == -1001 { return }   // Time out
+        else if errorCode == -1005 { return }   // Connection lost
         else if errorCode == 0 { return }
         
         // No repeat message 
