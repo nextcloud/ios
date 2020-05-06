@@ -75,15 +75,17 @@ extension NCDetailNavigationController {
             )
         )
         
-        actions.append(
-            NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
-                }
+        if metadata.session == "" {
+            actions.append(
+                NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
+                    }
+                )
             )
-        )
-
+        }
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_rename_", comment: ""),
