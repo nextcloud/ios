@@ -375,6 +375,7 @@ import NCCommunication
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
         let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
+        let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
         if isDirectoryEncrypted {
             #if !EXTENSION
@@ -382,7 +383,7 @@ import NCCommunication
                 if metadataLive == nil {
                     NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
                 } else {
-                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url) { (errorCode, errorDescription) in
+                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, directory: directory, user: user, userID: userID, password: password, url: url) { (errorCode, errorDescription) in
                         if errorCode == 0 {
                             NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
                         } else {
@@ -396,7 +397,7 @@ import NCCommunication
             if metadataLive == nil {
                 renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
             } else {
-                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNew) { (errorCode, errorDescription) in
+                renameMetadataPlain(metadataLive!, fileNameNew: fileNameNewLive) { (errorCode, errorDescription) in
                     if errorCode == 0 {
                         self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
                     } else {
