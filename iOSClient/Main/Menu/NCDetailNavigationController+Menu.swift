@@ -31,19 +31,16 @@ extension NCDetailNavigationController {
             return
         }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-        
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
 
-            let menuPanelController = NCMenuPanelController()
-            menuPanelController.parentPresenter = viewController
-            menuPanelController.delegate = mainMenuViewController
-            menuPanelController.set(contentViewController: mainMenuViewController)
-            menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
-            viewController.present(menuPanelController, animated: true, completion: nil)
-        }
+        viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
@@ -51,6 +48,7 @@ extension NCDetailNavigationController {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let metadataUpdated = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         var titleOffline = ""
         if (localFile == nil || localFile!.offline == false) {
             titleOffline = NSLocalizedString("_set_available_offline_", comment: "")
@@ -78,7 +76,7 @@ extension NCDetailNavigationController {
             )
         )
         
-        if metadata.session == "" {
+        if metadataUpdated == nil || metadataUpdated?.session == "" {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -138,29 +136,31 @@ extension NCDetailNavigationController {
             )
         )
         
-        actions.append(
-            NCMenuAction(
-                title: titleOffline,
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
-                        
-                        metadata.session = k_download_session
-                        metadata.sessionError = ""
-                        metadata.sessionSelector = selectorLoadOffline
-                        metadata.status = Int(k_metadataStatusWaitDownload)
+        if metadataUpdated == nil || metadataUpdated?.session == "" {
+            actions.append(
+                NCMenuAction(
+                    title: titleOffline,
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
+                            
+                            metadata.session = k_download_session
+                            metadata.sessionError = ""
+                            metadata.sessionSelector = selectorLoadOffline
+                            metadata.status = Int(k_metadataStatusWaitDownload)
 
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
-                        self.appDelegate.startLoadAutoDownloadUpload()
-                        
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue:
-                        k_notificationCenter_clearDateReadDataSource), object: nil)
+                            NCManageDatabase.sharedInstance.addMetadata(metadata)
+                            self.appDelegate.startLoadAutoDownloadUpload()
+                            
+                        } else {
+                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                            NotificationCenter.default.post(name: Notification.Name.init(rawValue:
+                            k_notificationCenter_clearDateReadDataSource), object: nil)
+                        }
                     }
-                }
+                )
             )
-        )
+        }
         
         actions.append(
             NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
@@ -196,15 +196,17 @@ extension NCDetailNavigationController {
         
         // IMAGE - VIDEO - AUDIO
         
-        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
-                    }
+        if metadataUpdated == nil || metadataUpdated?.session == "" {
+            if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
+                actions.append(
+                    NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        action: { menuAction in
+                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
+                        }
+                    )
                 )
-            )
+            }
         }
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
