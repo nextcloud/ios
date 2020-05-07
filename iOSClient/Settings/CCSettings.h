@@ -23,8 +23,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
-#import "XLFormViewController.h"
-#import "XLForm.h"
+#import <XLForm/XLForm.h>
 #import "BKPasscodeViewController.h"
 #import "CCUtility.h"
 #import "CCHud.h"

@@ -20,3 +20,4 @@ github "ivanbruel/MarkdownKit"
 
 github "https://github.com/marinofaggiana/AFNetworking" "master"
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
+github "https://github.com/marinofaggiana/XLForm" "master"

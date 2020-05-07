@@ -21,8 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "XLFormViewController.h"
-#import "XLForm.h"
+#import <XLForm/XLForm.h>
 #import "BKPasscodeViewController.h"
 #import "OCNetworking.h"
 
