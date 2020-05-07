@@ -119,13 +119,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
         
         // ITEM : Scan
-        if #available(iOS 11.0, *) {
-            item = OCExternalSites.init()
-            item.name = "_scanned_images_"
-            item.icon = "scan"
-            item.url = "openStoryboardScan"
-            functionMenu.append(item)
-        }
+        item = OCExternalSites.init()
+        item.name = "_scanned_images_"
+        item.icon = "scan"
+        item.url = "openStoryboardScan"
+        functionMenu.append(item)
         
         // ITEM : Trash
         let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount)

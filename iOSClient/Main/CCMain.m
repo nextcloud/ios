@@ -34,7 +34,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate, NCCreateFormUploadConflictDelegate>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -152,12 +152,10 @@
             
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
-    if (@available(iOS 11, *)) {
-        UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
-        viewRichWorkspaceTapped.numberOfTapsRequired = 1;
-        viewRichWorkspaceTapped.delegate = self;
-        [self.viewRichWorkspace.richView addGestureRecognizer:viewRichWorkspaceTapped];
-    }
+    UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
+    viewRichWorkspaceTapped.numberOfTapsRequired = 1;
+    viewRichWorkspaceTapped.delegate = self;
+    [self.viewRichWorkspace.richView addGestureRecognizer:viewRichWorkspaceTapped];
     
     self.sortButton = self.viewRichWorkspace.sortButton;
     heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
@@ -430,12 +428,10 @@
     [appDelegate pushNotification];
     
     // Registeration domain File Provider
-    if (@available(iOS 11, *) ) {
-        if (k_fileProvider_domain) {
-            [FileProviderDomain.sharedInstance registerDomain];
-        } else {
-            [FileProviderDomain.sharedInstance removeAllDomain];
-        }        
+    if (k_fileProvider_domain) {
+        [FileProviderDomain.sharedInstance registerDomain];
+    } else {
+        [FileProviderDomain.sharedInstance removeAllDomain];
     }
 }
 
@@ -578,7 +574,7 @@
     NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (errorCode == 0) {
-        [self readFolder:self.serverUrl];
+        [self reloadDatasource:self.serverUrl ocId:nil action:k_action_NULL];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
@@ -707,10 +703,6 @@
     for (UIView *subview in [_tableView subviews]) {
         if (subview == refreshControl)
             [subview removeFromSuperview];
-    }
-    
-    if (@available(iOS 10, *)) {
-        self.tableView.refreshControl = nil;
     }
     
     refreshControl = nil;
@@ -846,32 +838,37 @@
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] serverUrl:serverUrl account:appDelegate.activeAccount];
-            NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
+            NSString *fileName =  [url lastPathComponent];
+            NSString *ocId = [[NSUUID UUID] UUIDString];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
             if (data && error == nil) {
                 
                 if ([data writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
-                    tableMetadata *metadataForUpload = [tableMetadata new];
+                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:serverUrl url:@"" contentType:@""];
                     
-                    metadataForUpload.account = appDelegate.activeAccount;
-                    metadataForUpload.date = [NSDate new];
-                    metadataForUpload.ocId = ocId;
-                    metadataForUpload.fileName = fileName;
-                    metadataForUpload.fileNameView = fileName;
-                    metadataForUpload.serverUrl = serverUrl;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                    if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+                       
+                        NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
+                        conflict.serverUrl = self.serverUrl;
+                        conflict.metadatasUploadInConflict = @[metadataForUpload];
                         
-                    [appDelegate startLoadAutoDownloadUpload];
-                    
+                        [self presentViewController:conflict animated:YES completion:nil];
+                        
+                    } else {
+                        
+                        [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                            
+                        [appDelegate startLoadAutoDownloadUpload];
+                    }
+
                 } else {
                                         
                     [[NCContentPresenter shared] messageNotification:@"_error_" description:error.description delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
@@ -1046,9 +1043,7 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = true;
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            viewController.showOpenInternalViewer = true;
-        }
+        viewController.showOpenQuickLook = [[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:metadata];
         
         return viewController;
     }
@@ -1124,9 +1119,9 @@
 
 - (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    NSMutableArray *metadatas = [NSMutableArray new];
+    NSMutableArray *metadatasNOConflict = [NSMutableArray new];
     NSMutableArray *metadatasMOV = [NSMutableArray new];
-    NSMutableArray *metadatasConflict = [NSMutableArray new];
+    NSMutableArray *metadatasUploadInConflict = [NSMutableArray new];
 
     for (PHAsset *asset in assets) {
         
@@ -1153,52 +1148,31 @@
             continue;
         
         // Prepare record metadata
-        tableMetadata *metadataForUpload = [tableMetadata new];
-
-        metadataForUpload.account = appDelegate.activeAccount;
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
+        
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-        metadataForUpload.date = [NSDate new];
-        metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-        metadataForUpload.fileName = fileName;
-        metadataForUpload.fileNameView = fileName;
-        metadataForUpload.serverUrl = serverUrl;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
-        [CCUtility insertTypeFileIconName:fileName metadata:metadataForUpload];
-        
-        // verify exists conflict
-        NSString *fileNameExtension = [fileName pathExtension].lowercaseString;
-        NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
-        NSString *fileNameConflict = fileName;
-        
-        if ([fileNameExtension isEqualToString:@"heic"] && [CCUtility getFormatCompatibility]) {
-            fileNameConflict = [fileNameWithoutExtension stringByAppendingString:@".jpg"];
-        }
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileNameConflict]];
-        if (metadata) {
-            [metadatasConflict addObject:metadataForUpload];
+                        
+        if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+            [metadatasUploadInConflict addObject:metadataForUpload];
         } else {
-            [metadatas addObject:metadataForUpload];
+            [metadatasNOConflict addObject:metadataForUpload];
         }
-                    
+        
         // Add Medtadata MOV LIVE PHOTO for upload
         if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto && urls.count == assets.count) {
                 
             NSUInteger index = [assets indexOfObject:asset];
             NSURL *url = [urls objectAtIndex:index];
-            tableMetadata *metadataMOVForUpload = [tableMetadata new];
             NSString *fileNameNoExt = [fileName stringByDeletingPathExtension];
             NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameNoExt];
             unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
 
-            metadataMOVForUpload.account = appDelegate.activeAccount;
-            metadataMOVForUpload.date = [NSDate new];
-            metadataMOVForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-            metadataMOVForUpload.fileName = fileName;
-            metadataMOVForUpload.fileNameView = fileName;
-            metadataMOVForUpload.serverUrl = serverUrl;
+            tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
+            
             metadataMOVForUpload.session = session;
             metadataMOVForUpload.sessionSelector = selectorUploadFile;
             metadataMOVForUpload.size = fileSize;
@@ -1212,19 +1186,19 @@
     }
     
     // Verify if file(s) exists
-    if (metadatasConflict.count > 0) {
+    if (metadatasUploadInConflict.count > 0) {
         
         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
-        conflict.delegate = self;
-        conflict.metadatas = metadatas;
+        conflict.serverUrl = self.serverUrl;
+        conflict.metadatasNOConflict = metadatasNOConflict;
         conflict.metadatasMOV = metadatasMOV;
-        conflict.metadatasConflict = metadatasConflict;
+        conflict.metadatasUploadInConflict = metadatasUploadInConflict;
         
         [self presentViewController:conflict animated:YES completion:nil];
         
     } else {
         
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+        [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
         [appDelegate startLoadAutoDownloadUpload];
@@ -1232,19 +1206,6 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== NCCreateFormUploadConflictDelegate ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)dismissCreateFormUploadConflictWithMetadatas:(NSArray *)metadatas
-{
-    if (metadatas.count > 0) {
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-        
-        [appDelegate startLoadAutoDownloadUpload];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    }
-}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====
@@ -1490,7 +1451,7 @@
         [appDelegate.arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
@@ -1699,7 +1660,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:1];
     }
 }
@@ -1711,7 +1672,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }
@@ -1855,9 +1816,7 @@
     CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
     CGFloat safeAreaTop = 0;
     CGFloat offsetY = 35;
-    if (@available(iOS 11, *)) {
-        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
-    }
+    safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
     rect.origin.y = locationY + safeAreaTop + offsetY;
     rect.size.height = rect.size.height - locationY - safeAreaTop - offsetY;
     
@@ -1909,9 +1868,7 @@
         
         if ([self indexPathIsValid:indexPath])
             self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-        else
-            self.metadata = nil;
-        
+       
         [self becomeFirstResponder];
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
@@ -1921,8 +1878,8 @@
         if ([NCBrandOptions sharedInstance].disable_openin_file == false) {
             [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinTouchFile:)]];
         }
-        if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document]) {
-            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_internal_view_", nil) action:@selector(openInternalViewerTouch:)]];
+        if ([[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:self.metadata]) {
+            [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_quicklook_", nil) action:@selector(openQuickLookTouch:)]];
         }
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteTouchFile:)]];
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteTouchFiles:)]];
@@ -1947,7 +1904,7 @@
     // NO In Session mode (download/upload)
     // NO Template
     
-    if (@selector(copyTouchFile:) == action || @selector(openinTouchFile:) == action || @selector(openInternalViewerTouch:) == action) {
+    if (@selector(copyTouchFile:) == action || @selector(openinTouchFile:) == action || @selector(openQuickLookTouch:) == action) {
         
         if (_isSelectedMode == NO && self.metadata && !self.metadata.directory && self.metadata.status == k_metadataStatusNormal) return YES;
         else return NO;
@@ -2115,10 +2072,11 @@
     [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
-/************************************ OPEN INTERNAL VIEWER ... ******************************/
-- (void)openInternalViewerTouch:(id)sender
+/************************************ OPEN QUICK LOOK ******************************/
+
+- (void)openQuickLookTouch:(id)sender
 {
-    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
+    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
 }
 
 /************************************ PASTE ************************************/
@@ -2151,18 +2109,13 @@
             if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                 
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
-                NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:self.serverUrl fileNameView:fileName directory:false];
+                NSString *ocId = [[NSUUID UUID] UUIDString];
                 
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
                     
-                tableMetadata *metadataForUpload = [tableMetadata new];
-                        
-                metadataForUpload.account = appDelegate.activeAccount;
-                metadataForUpload.date = [NSDate new];
-                metadataForUpload.ocId = ocId;
-                metadataForUpload.fileName = fileName;
-                metadataForUpload.fileNameView = fileName;
-                metadataForUpload.serverUrl = self.serverUrl;
+                // Prepare record metadata
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
+            
                 metadataForUpload.session = k_upload_session;
                 metadataForUpload.sessionSelector = selectorUploadFile;
                 metadataForUpload.size = metadata.size;
@@ -2884,8 +2837,10 @@
 - (void)setTableViewHeader
 {
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-  
-    if (capabilities.versionMajor < k_nextcloud_version_18_0 || self.richWorkspaceText.length == 0) {
+
+    NSString *trimmedRichWorkspaceText = [self.richWorkspaceText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    if (capabilities.versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
                 
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         

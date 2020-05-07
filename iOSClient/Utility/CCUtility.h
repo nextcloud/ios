@@ -237,8 +237,6 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
-+ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
-
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
@@ -249,25 +247,12 @@
 
 + (NSString *)getTimeIntervalSince197;
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata completion:(void(^)(tableMetadata *metadataForUpload))completion;
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
 
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account;
-
-// ===== CCMetadata =====
-
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url contentType:(NSString *)contentType;
-
-//+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl  account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted;
-
-+ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
-+ (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
-
-+ (NSString *)convertOcIdToFileId:(NSString *)ocId;
 
 // ===== Third parts =====
 

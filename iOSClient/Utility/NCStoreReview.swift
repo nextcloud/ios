@@ -56,9 +56,7 @@ class NCStoreReview: NSObject {
         let runs = getRunCounts()
         
         if (runs > minimumRunCount) {
-            if #available(iOS 10.3, *) {
-                SKStoreReviewController.requestReview()
-            }
+            SKStoreReviewController.requestReview()
         }
     }
 }

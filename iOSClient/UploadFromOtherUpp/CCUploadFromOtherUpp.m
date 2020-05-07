@@ -170,14 +170,8 @@
 {
     NSString *fileName = [[NCUtility sharedInstance] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.activeAccount];
     
-    tableMetadata *metadataForUpload = [tableMetadata new];
+    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal url:@"" contentType:@""];
     
-    metadataForUpload.account = appDelegate.activeAccount;
-    metadataForUpload.date = [NSDate new];
-    metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
-    metadataForUpload.fileName = fileName;
-    metadataForUpload.fileNameView = fileName;
-    metadataForUpload.serverUrl = serverUrlLocal;
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;

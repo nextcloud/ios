@@ -24,12 +24,13 @@
 
 import Foundation
 import WeScan
+import NCCommunication
 
 #if GOOGLEMOBILEVISION
 import GoogleMobileVision
 #endif
 
-class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
     enum typeDpiQuality {
         case low
@@ -406,32 +407,42 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
-        if (metadata != nil) {
+        //Create metadata for upload
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, url: appDelegate.activeUrl, contentType: "")
+        
+        metadataForUpload.session = k_upload_session
+        metadataForUpload.sessionSelector = selectorUploadFile
+        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                
+        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+                        
+            guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+            conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflictViewController.serverUrl = serverUrl
+            conflictViewController.metadatasUploadInConflict = [metadataForUpload]
+            conflictViewController.delegate = self
             
-            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
-            
-            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
-            }
-            
-            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
-            }
-            
-            alertController.addAction(cancelAction)
-            alertController.addAction(overwriteAction)
-            
-            self.present(alertController, animated: true, completion:nil)
+            self.present(conflictViewController, animated: true, completion: nil)
             
         } else {
-            dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
+                            
+            dismissAndUpload(metadataForUpload)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         
-        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave) else {
+        if metadatas != nil && metadatas!.count > 0 {
+                                
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.dismissAndUpload(metadatas![0])
+            }
+        }
+    }
+    
+    func dismissAndUpload(_ metadata: tableMetadata) {
+        
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return
         }
@@ -549,21 +560,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             }
         }
         
-        //Create metadata for upload
-        let metadataForUpload = tableMetadata()
-        
-        metadataForUpload.account = self.appDelegate.activeAccount
-        metadataForUpload.date = NSDate()
-        metadataForUpload.ocId = ocId
-        metadataForUpload.fileName = fileNameSave
-        metadataForUpload.fileNameView = fileNameSave
-        metadataForUpload.serverUrl = serverUrl
-        metadataForUpload.session = k_upload_session
-        metadataForUpload.sessionSelector = selectorUploadFile
-        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
-        
-        NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
         self.appDelegate.startLoadAutoDownloadUpload()
                         
@@ -644,8 +642,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         return image
     }
 }
-
-@available(iOS 11, *)
 
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     

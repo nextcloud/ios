@@ -404,15 +404,9 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileName]];
         if (!metadata) {
         
-            tableMetadata *metadataForUpload = [tableMetadata new];
+            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
             
-            metadataForUpload.account = appDelegate.activeAccount;
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-            metadataForUpload.date = [NSDate new];
-            metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-            metadataForUpload.fileName = fileName;
-            metadataForUpload.fileNameView = fileName;
-            metadataForUpload.serverUrl = serverUrl;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
@@ -422,7 +416,7 @@
             if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
                 
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
-                NSString *ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileNameMove directory:false];
+                NSString *ocId = [[NSUUID UUID] UUIDString];
                 NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
                 
                 dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
@@ -431,14 +425,8 @@
                     if (url != nil) {
                         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
                         
-                        tableMetadata *metadataMOVForUpload = [tableMetadata new];
+                        tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl url:@"" contentType:@""];
                         
-                        metadataMOVForUpload.account = appDelegate.activeAccount;
-                        metadataMOVForUpload.date = [NSDate new];
-                        metadataMOVForUpload.ocId = ocId;
-                        metadataMOVForUpload.fileName = fileNameMove;
-                        metadataMOVForUpload.fileNameView = fileNameMove;
-                        metadataMOVForUpload.serverUrl = serverUrl;
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;

@@ -49,7 +49,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
             titleServerUrl = "/"
         } else {
-            titleServerUrl = (serverUrl as NSString).lastPathComponent
+            if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl)) {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tableDirectory.ocId)) {
+                    titleServerUrl = metadata.fileNameView
+                } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
+            } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
         }
         
         self.serverUrl = serverUrl
@@ -305,7 +309,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
                 self.titleServerUrl = "/"
             } else {
-                self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
+                if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl)) {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tableDirectory.ocId)) {
+                        titleServerUrl = metadata.fileNameView
+                    } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }
+                } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }                
             }
             
             // Update

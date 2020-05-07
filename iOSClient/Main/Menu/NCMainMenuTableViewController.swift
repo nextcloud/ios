@@ -81,11 +81,7 @@ class NCMainMenuTableViewController: UITableViewController {
 extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
     func floatingPanel(_ vc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout? {
-        if #available(iOS 11.0, *) {
-            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
-        } else {
-            return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60)
-        }
+        return NCMainMenuFloatingPanelLayout(height: self.actions.count * 60 + Int((UIApplication.shared.keyWindow?.rootViewController!.view.safeAreaInsets.bottom)!))
     }
 
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {

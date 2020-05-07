@@ -22,6 +22,7 @@
 //
 
 import FileProvider
+import NCCommunication
 
 class FileProviderItem: NSObject, NSFileProviderItem {
 
@@ -41,7 +42,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var typeIdentifier: String {
-        return CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
+        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: metadata.fileNameView, contentType: "", directory: metadata.directory)
+        metadata.contentType = results.contentType
+        metadata.iconName = results.iconName
+        metadata.typeFile = results.typeFile
+        
+        return results.typeIdentifier
     }
     
     var contentModificationDate: Date? {

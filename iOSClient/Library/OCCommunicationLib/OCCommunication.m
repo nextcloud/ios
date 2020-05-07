@@ -2596,9 +2596,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"token"] && ![[data valueForKey:@"token"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"e2e-token"] && ![[data valueForKey:@"e2e-token"] isKindOfClass:[NSNull class]]) {
                     
-                    token = [data valueForKey:@"token"];
+                    token = [data valueForKey:@"e2e-token"];
                     successRequest(response, token, request.redirectedServer);
                     
                 } else {

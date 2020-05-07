@@ -586,8 +586,19 @@
 
     if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView] == NO) {
         
-        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata completion:^(tableMetadata *metadataForUpload) {
-            if (metadataForUpload != nil) {
+        [CCUtility extractImageVideoFromAssetLocalIdentifierForUpload:metadata notification:true completion:^(tableMetadata *newMetadata, NSString *fileNamePath) {
+            
+            if (newMetadata == nil) {
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                
+            } else {
+                
+                NSString *toPath = [CCUtility getDirectoryProviderStorageOcId:newMetadata.ocId fileNameView:newMetadata.fileNameView];
+                [CCUtility moveFileAtPath:fileNamePath toPath:toPath];
+                
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:newMetadata];
+                
                 if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
                     [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
                 } else {
@@ -598,7 +609,22 @@
         
     } else {
         
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];        
+        NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:metadata.fileNameView contentType:metadata.contentType directory:metadata.directory];
+        metadata.contentType = results[@"contentType"];
+        metadata.iconName = results[@"iconName"];
+        metadata.typeFile = results[@"typeFile"];
+
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName] error:nil];
+        
+        if (attributes[NSFileModificationDate]) {
+            metadata.date = attributes[NSFileModificationDate];
+        } else {
+            metadata.date = [NSDate date];
+        }
+        metadata.size = [attributes[NSFileSize] longValue];
+        
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+        
         if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account] && [CCUtility isEndToEndEnabled:metadataForUpload.account]) {
             [self e2eEncryptedFile:metadataForUpload taskStatus:taskStatus];
         } else {
@@ -639,11 +665,15 @@
         }
         
         // if new file upload create a new encrypted filename
+        fileNameIdentifier = [CCUtility generateRandomIdentifier];
+        
+        /*
         if ([metadata.ocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:false]]) {
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         } else {
             fileNameIdentifier = metadata.fileName;
         }
+        */
         
         if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
             
@@ -724,8 +754,8 @@
     NSMutableURLRequest *request;
     PHAsset *asset;
     NSError *error;
+    NSString *serverUrl = metadata.serverUrl;
     
-    //
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
@@ -769,7 +799,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             // Send Metadata
-            NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:metadata.serverUrl fileNameRename:nil fileNameNewRename:nil unlock:false account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
+            NSError *error = [[NCNetworkingEndToEnd sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl fileNameRename:nil fileNameNewRename:nil unlock:false account:tableAccount.account user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url];
             
             dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -782,6 +812,10 @@
                     
                 } else {
                 
+                    // Add Header e2e-token
+                    tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:metadata.serverUrl];
+                    [request setValue:tableLock.e2eToken forHTTPHeaderField:@"e2e-token"];
+                    
                     // NSURLSession
                     NSURLSession *sessionUpload;
                     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
@@ -860,7 +894,6 @@
 - (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
 {
     NSString *tempocId = metadata.ocId;
-    NSString *tempSession = metadata.session;
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
 
@@ -972,23 +1005,12 @@
             metadata.sessionTaskIdentifier = k_taskIdentifierDone;
             metadata.status = k_metadataStatusNormal;
             
+            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
+            
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName]];
             metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             NSLog(@"[LOG] Insert new upload : %@ - ocId : %@", metadata.fileName, ocId);
-            
-            if ([tempocId isEqualToString:[CCUtility createMetadataIDFromAccount:metadata.account serverUrl:metadata.serverUrl fileNameView:metadata.fileNameView directory:metadata.directory]]) {
-                
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
-                
-                // adjust file system Directory Provider Storage
-                if ([tempSession isEqualToString:k_upload_session_extension]) {
-                    // this is for File Provider Extension [Apple Works and ... ?]
-                    [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
-                } else {
-                    [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempocId] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.ocId]];
-                }
-            }
         }
 #ifndef EXTENSION
         

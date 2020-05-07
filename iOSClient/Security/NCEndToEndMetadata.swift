@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCEndToEndMetadata : NSObject  {
 
@@ -219,7 +220,13 @@ class NCEndToEndMetadata : NSObject  {
                         
                         // Update metadata on tableMetadata
                         metadata?.fileNameView = encryptedFileAttributes.filename
-                        CCUtility.insertTypeFileIconName(encryptedFileAttributes.filename, metadata: metadata)
+                        
+                        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: encryptedFileAttributes.filename, contentType: metadata!.contentType, directory: metadata!.directory)
+                        
+                        metadata?.contentType = results.contentType
+                        metadata?.iconName = results.iconName
+                        metadata?.typeFile = results.typeFile
+                                                
                         DispatchQueue.main.async {
                             NCManageDatabase.sharedInstance.addMetadata(metadata!)
                         }

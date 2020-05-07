@@ -109,8 +109,8 @@
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    
+
+
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
     
@@ -233,6 +233,9 @@
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
+    
+    // verify task (download/upload) lost
+    [self verifyTaskLos];
     
     // Brand
 #if defined(HC)
@@ -424,7 +427,6 @@
     self.activePassword = activePassword;
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
 
-    [[NCNetworking sharedInstance] setupWithAccount:activeAccount delegate:nil];
     (void)[NCNetworkingNotificationCenter shared];
 
     [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
@@ -670,7 +672,7 @@
         [self.arrayDeleteMetadata removeObjectAtIndex:0];
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
-            [[NCNetworking sharedInstance] deleteMetadata:metadata user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+            [[NCNetworking sharedInstance] deleteMetadata:metadata account:metadata.account user:account.user userID:account.userID password:[CCUtility getPassword:metadata.account] url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self deleteFile:[NSNotification new]];
         }
@@ -826,11 +828,7 @@
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
+    CGFloat safeAreaBottom = safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
    
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -992,6 +990,21 @@
 {
     // Dark Mode
     [NCBrandColor.sharedInstance setDarkMode];
+    
+    // Appearance
+    UINavigationBar.appearance.tintColor = NCBrandColor.sharedInstance.brandText;
+    UINavigationBar.appearance.barTintColor = NCBrandColor.sharedInstance.brand;
+    [UINavigationBar.appearance setBackgroundImage:[[NCUtility sharedInstance] fromColorWithColor:NCBrandColor.sharedInstance.brand] forBarMetrics: UIBarMetricsDefault];
+    UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText};
+    UINavigationBar.appearance.translucent = false;
+    // Refresh UIAppearance after application loaded
+    NSArray *windows = [UIApplication sharedApplication].windows;
+    for (UIWindow *window in windows) {
+        for (UIView *view in window.subviews) {
+            [view removeFromSuperview];
+            [window addSubview:view];
+        }
+    }
     
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
@@ -1262,6 +1275,7 @@
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     NSMutableArray *uploaded = [NSMutableArray new];
+    NSPredicate *predicate;
     
     long maxConcurrentOperationDownloadUpload = k_maxConcurrentOperation;
     
@@ -1336,7 +1350,13 @@
             break;
         }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadFile, k_metadataStatusWaitUpload, k_metadataTypeFile_video];
+        } else {
+            predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload];
+        }
+                
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:predicate sorted:@"date" ascending:YES];
         
         // Verify modify file
         if ([uploaded containsObject:[NSString stringWithFormat:@"%@%@%@", metadataForUpload.account, metadataForUpload.serverUrl, metadataForUpload.fileName]]) {
@@ -1394,9 +1414,17 @@
     
     while (counterUpload < maxConcurrentOperationDownloadUpload) {
         
-        if (sizeUpload > k_maxSizeOperationUpload) { break; }
+        if (sizeUpload > k_maxSizeOperationUpload) {
+            break;
+        }
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload] sorted:@"date" ascending:YES];
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadAutoUpload, k_metadataStatusWaitUpload, k_metadataTypeFile_video];
+        } else {
+            predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload];
+        }
+        
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:predicate sorted:@"date" ascending:YES];
         if (metadataForUpload) {
             
             if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
@@ -1446,7 +1474,13 @@
                 break;
             }
             
-            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload] sorted:@"session" ascending:YES];
+            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+                predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload, k_metadataTypeFile_video];
+            } else {
+                predicate = [NSPredicate predicateWithFormat:@"sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload];
+            }
+            
+            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:predicate sorted:@"session" ascending:YES];
             if (metadataForUpload) {
                 
                 if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
@@ -1495,6 +1529,21 @@
         }
     }
     
+    // Upload in pending
+    //
+    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasInUpload) {
+        if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
+            metadata.status = k_metadataStatusWaitUpload;
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        } else {
+            [self.sessionPendingStatusInUpload addObject:metadata.ocId];
+        }
+    }
+    if (metadatasInUpload.count == 0) {
+        [self.sessionPendingStatusInUpload removeAllObjects];
+    }
+    
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
@@ -1503,6 +1552,63 @@
 {
     if (self.timerProcessAutoDownloadUpload.isValid) {
         [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+    }
+}
+
+- (void)verifyTaskLos
+{
+    // DOWNLOAD
+    //
+    NSArray *matadatasInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusDownloading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in matadatasInDownloading) {
+        
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+        
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+            
+            NSURLSessionTask *findTask;
+            
+            for (NSURLSessionTask *task in downloadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
+                }
+            }
+            
+            if (!findTask) {
+                
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitDownload;
+                
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
+    }
+
+    // UPLOAD
+    //
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in metadatasUploading) {
+        
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+        
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+            
+            NSURLSessionTask *findTask;
+            
+            for (NSURLSessionTask *task in uploadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
+                }
+            }
+            
+            if (!findTask) {
+                
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitUpload;
+                
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
     }
 }
 
@@ -1604,10 +1710,9 @@
                                                 if ([path containsString:@"/"]) {
                                                     
                                                     // Push
-                                                    NSString *directoryName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                                                    NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                                     NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
-                                                    tableMetadata *metadata = [CCUtility createMetadataWithAccount:matchedAccount.account date:[NSDate date] directory:NO ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl fileName:directoryName etag:@"" size:0 status:k_metadataStatusNormal url:@"" contentType:@""];
-                                                    
+                                                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
                                                     [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {

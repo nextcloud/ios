@@ -26,10 +26,28 @@ import NCCommunication
 
 extension NCDetailNavigationController {
 
+    @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+        if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
+            return
+        }
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+
+            let menuPanelController = NCMenuPanelController()
+            menuPanelController.parentPresenter = viewController
+            menuPanelController.delegate = mainMenuViewController
+            menuPanelController.set(contentViewController: mainMenuViewController)
+            menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+            viewController.present(menuPanelController, animated: true, completion: nil)
+        }
+    }
+    
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
-        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
-        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -60,15 +78,17 @@ extension NCDetailNavigationController {
             )
         )
         
-        actions.append(
-            NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
-                }
+        if metadata.session == "" {
+            actions.append(
+                NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
+                    }
+                )
             )
-        )
-
+        }
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_rename_", comment: ""),
@@ -151,7 +171,7 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
-                        NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     })
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
@@ -163,17 +183,15 @@ extension NCDetailNavigationController {
         
         // PDF
         
-        if #available(iOS 11.0, *) {
-            if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
-                actions.append(
-                    NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:k_notificationCenter_menuSearchTextPDF), object: nil)
-                        }
-                    )
+        if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
+            actions.append(
+                NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue:k_notificationCenter_menuSearchTextPDF), object: nil)
+                    }
                 )
-            }
+            )
         }
         
         // IMAGE - VIDEO - AUDIO
@@ -204,24 +222,6 @@ extension NCDetailNavigationController {
             }
         }
                 
-        if CCUtility.isDocumentModifiableExtension(fileNameExtension) && (directEditingCreators == nil || !appDelegate.reachability.isReachable()) {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_internal_modify_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        if let navigationController = UIStoryboard(name: "NCText", bundle: nil).instantiateViewController(withIdentifier: "NCText") as? UINavigationController {
-                            navigationController.modalPresentationStyle = .pageSheet
-                            navigationController.modalTransitionStyle = .crossDissolve
-                            if let textViewController = navigationController.topViewController as? NCText {
-                                textViewController.metadata = metadata;
-                                viewController.present(navigationController, animated: true, completion: nil)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-        
         // CLOSE
         
         actions.append(
@@ -234,23 +234,6 @@ extension NCDetailNavigationController {
         )
         
         return actions
-    }
-
-    @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
-        if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
-            return
-        }
-        
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }
 

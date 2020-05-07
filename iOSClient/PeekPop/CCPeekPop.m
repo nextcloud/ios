@@ -78,9 +78,9 @@
         [items addObject:item];
     }
     
-    if (self.showOpenInternalViewer) {
-        UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_internal_view_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileInternalView];
+    if (self.showOpenQuickLook) {
+        UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_quicklook_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
+            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
         }];
         [items addObject:item];
     }

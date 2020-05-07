@@ -85,12 +85,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
         
-        // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        // Refresh Control
+        collectionView.addSubview(refreshControl)
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
@@ -397,7 +393,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
-                        NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
                     }
                 )
             )
@@ -582,9 +578,7 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
         }
         
         viewController.showOpenIn = true
-        if metadata.typeFile == k_metadataTypeFile_document {
-            viewController.showOpenInternalViewer = true
-        }
+        viewController.showOpenQuickLook = NCUtility.sharedInstance.isQuickLookDisplayable(metadata: metadata)
         viewController.showShare = false
         
         return viewController

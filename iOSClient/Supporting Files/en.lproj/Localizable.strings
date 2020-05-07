@@ -126,15 +126,14 @@
 "_livephoto_save_"          = "Save Live Photo to photo album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
 "_file_conflict_num_"       = "file conflict";
-"_files_conflict_num_"      = "file conflicts";
-"_file_conflict_desc_"      = "Which file do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
-"_files_conflict_desc_"     = "Which files do you want to keep?\nIf you select both versions, the copied files will have a number added to its name.";
-"_file_conflict_new_"       = "New file";
-"_files_conflict_new_"      = "New files";
-"_file_conflict_exists_"    = "Already existing file";
-"_files_conflict_exists_"   = "Already existing files";
+"_file_conflicts_num_"      = "file conflicts";
+"_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
+"_file_conflict_new_"       = "New files";
+"_file_conflict_exists_"    = "Already existing files";
+"_file_not_rewite_doc_"     = "It is not possible to overwrite a document but only to create a new one";
 "_move_or_copy_"            = "Move or copy";
 "_copy_"                    = "Copy";
+"_now_"                     = "Now";
 
 // App
 
@@ -446,7 +445,7 @@
 "_copy_files_"                  = "Copy files";
 "_paste_file_"                  = "Paste file";
 "_paste_files_"                 = "Paste files";
-"_open_internal_view_"          = "Open with internal viewer";
+"_open_quicklook_"              = "Open with Quick Look";
 
 "_search_this_folder_"          = "Search in this folder";
 "_search_all_folders_"          = "Search in all folders";

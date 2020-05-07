@@ -195,7 +195,7 @@
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
-#define selectorLoadFileInternalView                    @"loadFileInternalView"
+#define selectorLoadFileQuickLook                       @"loadFileQuickLook"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"

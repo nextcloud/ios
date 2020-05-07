@@ -42,9 +42,12 @@ class NCDetailViewController: UIViewController {
     @objc var metadatas = [tableMetadata]()
     
     private let progressHeight: CGFloat = 1.5
+    private var maxProgress: Float = 0
     private var videoLayer: AVPlayerLayer?
     private var viewerImageViewControllerLongPressInProgress = false
-        
+    
+    private var viewerQuickLook: NCViewerQuickLook?
+
     //MARK: -
 
     required init?(coder: NSCoder) {
@@ -115,7 +118,7 @@ class NCDetailViewController: UIViewController {
         guard let navigationController = splitViewController?.viewControllers.last as? UINavigationController else { return }
                         
         appDelegate.progressViewDetail.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height - (progressHeight*2), width: navigationController.navigationBar.frame.width, height: progressHeight)
-        appDelegate.progressViewDetail.setProgress(0, animated: false)
+        progress(0)
         
         if NCBrandColor.sharedInstance.brand.isLight() {
             appDelegate.progressViewDetail.tintColor = NCBrandColor.sharedInstance.brand.darker(by: 10)
@@ -131,7 +134,13 @@ class NCDetailViewController: UIViewController {
     
     @objc func progress(_ progress: Float) {
         DispatchQueue.main.async {
-            self.appDelegate.progressViewDetail.progress = progress
+            if progress == 0 {
+                self.maxProgress = 0
+                self.appDelegate.progressViewDetail.progress = 0
+            } else if progress > self.maxProgress {
+                self.appDelegate.progressViewDetail.progress = progress
+                self.maxProgress = progress
+            }
         }
     }
     
@@ -403,7 +412,11 @@ class NCDetailViewController: UIViewController {
     }
     
     @objc func viewUnload() {
-        if self.view?.window == nil { return }
+        self.unload(checkWindow: true)
+    }
+    
+    private func unload(checkWindow: Bool) {
+        if checkWindow && self.view?.window == nil { return }
 
         metadata = nil
         selector = nil
@@ -458,44 +471,27 @@ class NCDetailViewController: UIViewController {
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
             viewImage()
+            
             return
         }
-        
-        // DOCUMENT - INTERNAL VIEWER
-        if metadata.typeFile == k_metadataTypeFile_document && selector != nil && selector == selectorLoadFileInternalView {
-            
-            let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-            let viewerDocumentWeb = NCViewerDocumentWeb.init(frame: frame, configuration: WKWebViewConfiguration())
-            
-            viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
-            return
-        }
-        
+    
         // DOCUMENT
         if metadata.typeFile == k_metadataTypeFile_document {
             
             // PDF
             if metadata.contentType == "application/pdf" {
-                if #available(iOS 11.0, *) {
                     
-                    let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-                    let viewerPDF = NCViewerPDF.init(frame: frame)
+                let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                let viewerPDF = NCViewerPDF.init(frame: frame)
                     
-                    let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                    if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
-                        return
-                    }
+                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
                     
-                    viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
-                    
-                } else {
-                    
-                    let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-                    let viewerDocumentWeb = NCViewerDocumentWeb.init(frame: frame, configuration: WKWebViewConfiguration())
-                    
-                    viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
+                    return
                 }
-                
+                    
+                viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+
                 return
             }
             
@@ -582,14 +578,23 @@ class NCDetailViewController: UIViewController {
                     let richDocument = NCViewerRichdocument.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
                     richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: backgroundView, viewController: self)
                 }
+                
+                return
             }
         }
         
         // OTHER
-        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-        let viewerDocumentWeb = NCViewerDocumentWeb.init(frame: frame, configuration: WKWebViewConfiguration())
         
-        viewerDocumentWeb.viewDocumentWebAt(metadata, view: backgroundView)
+        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+        viewerQuickLook = NCViewerQuickLook.init()
+        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.unload(checkWindow: false)
+        }
     }
 }
 
@@ -700,13 +705,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
             
+            metadata.session = k_download_session_foreground
+            
             _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
                                 
                 self.progress(Float(progress.fractionCompleted))
                 
             }) { (account, etag, date, length, errorCode, errorDescription) in
-                
-                self.progress(0)
                 
                 if errorCode == 0 && account == metadata.account {
                     
@@ -720,6 +725,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 } else if errorCode != 0 {
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
+                
+                metadata.session = ""
+                self.progress(0)
             }
         
         // Preview
@@ -749,19 +757,22 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         }
     }
     
+    func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, willChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
+        
+        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
+    }
+    
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {
-                
-        if metadata.typeFile == k_metadataTypeFile_image {
+        
+        if metadata.typeFile == k_metadataTypeFile_image && !view.isLoading {
             DispatchQueue.global().async {
                 if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400)) {
+                    DispatchQueue.main.async {
                         view.image = image
                     }
                 }
             }
         }
-        
-        statusViewImage(metadata: metadata, viewerImageViewController: viewerImageViewController)
     }
     
     func viewerImageViewControllerTap(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {

@@ -37,6 +37,7 @@ import Foundation
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var viewerQuickLook: NCViewerQuickLook?
     
     //MARK: - Download
 
@@ -69,13 +70,23 @@ import Foundation
                         return
                     }
                     
-                    // open View File
-                    if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite || selector == selectorLoadFileInternalView) && UIApplication.shared.applicationState == UIApplication.State.active {
+                    // Quick Look
+                    if selector == selectorLoadFileQuickLook {
+                        
+                        
+                        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+                        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+                        viewerQuickLook = NCViewerQuickLook.init()
+                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
+                        return
+                    }
                     
-                        var uti = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
-                        if uti == nil {
-                            uti = ""
-                        } else if uti!.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
+                    // open View File
+                    if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite) && UIApplication.shared.applicationState == UIApplication.State.active {
+                    
+                        if metadata.contentType.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
                             metadata.typeFile = k_metadataTypeFile_unknown
                         }
                         

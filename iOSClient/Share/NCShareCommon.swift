@@ -53,9 +53,7 @@ class NCShareCommon: NSObject {
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
 //        var constantBottomAnchor: CGFloat = 10
-//        if #available(iOS 11.0, *) {
-//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-//        }
+//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -99,9 +97,7 @@ class NCShareCommon: NSObject {
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
 //        var constantBottomAnchor: CGFloat = 10
-//        if #available(iOS 11.0, *) {
-//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-//        }
+//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]

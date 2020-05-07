@@ -390,6 +390,7 @@ class NCUtility: NSObject {
         CCUtility.deleteAllChainStore()
     }
     
+    #if !EXTENSION
     @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
@@ -417,6 +418,7 @@ class NCUtility: NSObject {
         
         return imageAvatar
     }
+    #endif
     
     @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
         return UIColor(
@@ -485,22 +487,50 @@ class NCUtility: NSObject {
     }
     
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
-        if #available(iOS 11.0, *) {
-            guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
-                return nil
-            }
-
-            let pageSize = page.bounds(for: .mediaBox)
-            let pdfScale = width / pageSize.width
-
-            // Apply if you're displaying the thumbnail on screen
-            let scale = UIScreen.main.scale * pdfScale
-            let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
-
-            return page.thumbnail(of: screenSize, for: .mediaBox)
-        } else {
+       
+        guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
+
+        let pageSize = page.bounds(for: .mediaBox)
+        let pdfScale = width / pageSize.width
+
+        // Apply if you're displaying the thumbnail on screen
+        let scale = UIScreen.main.scale * pdfScale
+        let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
+
+        return page.thumbnail(of: screenSize, for: .mediaBox)
+    }
+    
+    @objc func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+        
+        // verify exists conflict
+        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+        var fileNameConflict = fileName
+        
+        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+            fileNameConflict = fileNameWithoutExtension + ".jpg"
+        }
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
+    }
+    
+    @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
+        return true
+    }
+    
+    @objc func fromColor(color: UIColor) -> UIImage {
+        
+        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        
+        UIGraphicsBeginImageContext(rect.size)
+        let context: CGContext? = UIGraphicsGetCurrentContext()
+        context?.setFillColor(color.cgColor)
+        context?.fill(rect)
+        let image: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image ?? UIImage()
     }
 }
 

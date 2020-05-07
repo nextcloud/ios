@@ -51,6 +51,13 @@ class NCContentPresenter: NSObject {
     
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
                        
+        // No notification message
+        if errorCode == -999 { return }         // Cancelled transfer
+        else if errorCode == -1001 { return }   // Time out
+        else if errorCode == -1005 { return }   // Connection lost
+        else if errorCode == 0 { return }
+        
+        // No repeat message 
         if errorCode == lastErrorCode {
             if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
         } else {
