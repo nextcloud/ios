@@ -597,7 +597,7 @@ class NCManageDatabase: NSObject {
         return tableAccount.init(value: returnAccount)
     }
     
-    @objc func setAccountUserProfileHWC(businessSize: String, businessType: String, city: String, company: String, country: String, role: String, zip: String) -> tableAccount? {
+    @objc func setAccountUserProfileHC(businessSize: String, businessType: String, city: String, company: String, country: String, role: String, zip: String) -> tableAccount? {
      
         let realm = try! Realm()
 
