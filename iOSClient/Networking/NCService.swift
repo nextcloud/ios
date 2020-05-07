@@ -143,6 +143,12 @@ class NCService: NSObject {
             return
         }
         
+        /*
+        NCCommunication.sharedInstance.getCapabilities(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, capabilities, errorCode, errorDescription) in
+            
+        }
+        */
+        
         OCNetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
