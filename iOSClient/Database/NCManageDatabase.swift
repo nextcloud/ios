@@ -548,8 +548,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    #if !EXTENSION
-    @objc func setAccountUserProfile(_ userProfile: OCUserProfile, HCProperties: Bool) -> tableAccount? {
+    @objc func setAccountUserProfile(_ userProfile: NCUserProfile) -> tableAccount? {
      
         let realm = try! Realm()
 
@@ -566,36 +565,28 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                // Update userID
-                if userProfile.id.count == 0 { // for old config.
-                    result.userID = result.user
-                } else {
-                    result.userID = userProfile.id
-                }
-                
-                result.enabled = userProfile.enabled
                 result.address = userProfile.address
+                result.backend = userProfile.backend
+                result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
+                result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
                 result.displayName = userProfile.displayName
                 result.email = userProfile.email
+                result.enabled = userProfile.enabled
+                result.groups = userProfile.groups.joined(separator: ",")
+                result.language = userProfile.language
+                result.lastLogin = userProfile.lastLogin
+                result.locale = userProfile.locale
                 result.phone = userProfile.phone
-                result.twitter = userProfile.twitter
-                result.webpage = userProfile.webpage
-                
-                if HCProperties {
-                    result.businessSize = userProfile.businessSize
-                    result.businessType = userProfile.businessType
-                    result.city = userProfile.city
-                    result.country = userProfile.country
-                    result.company = userProfile.company
-                    result.role = userProfile.role
-                    result.zip = userProfile.zip
-                }
-                
                 result.quota = userProfile.quota
                 result.quotaFree = userProfile.quotaFree
                 result.quotaRelative = userProfile.quotaRelative
                 result.quotaTotal = userProfile.quotaTotal
                 result.quotaUsed = userProfile.quotaUsed
+                result.storageLocation = userProfile.storageLocation
+                result.subadmin = userProfile.subadmin.joined(separator: ",")
+                result.twitter = userProfile.twitter
+                result.userID = userProfile.userID
+                result.webpage = userProfile.webpage
                 
                 returnAccount = result
             }
@@ -605,7 +596,40 @@ class NCManageDatabase: NSObject {
         
         return tableAccount.init(value: returnAccount)
     }
-    #endif
+    
+    @objc func setAccountUserProfileHWC(businessSize: String, businessType: String, city: String, company: String, country: String, role: String, zip: String) -> tableAccount? {
+     
+        let realm = try! Realm()
+
+        var returnAccount = tableAccount()
+
+        do {
+            guard let activeAccount = self.getAccountActive() else {
+                return nil
+            }
+            
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
+                    return
+                }
+                
+                result.businessSize = businessSize
+                result.businessType = businessType
+                result.city = city
+                result.company = company
+                result.country = country
+                result.role = role
+                result.zip = zip
+                
+                returnAccount = result
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
+        return tableAccount.init(value: returnAccount)
+    }
     
     #if !EXTENSION
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {

@@ -55,12 +55,12 @@ class NCService: NSObject {
             return
         }
         
-        OCNetworking.sharedManager().getUserProfile(withAccount: appDelegate.activeAccount, completion: { (account, userProfile, message, errorCode) in
-            
+        NCCommunication.sharedInstance.getUserProfile(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, userProfile, errorCode, errorDescription) in
+                 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
                 // Update User (+ userProfile.id) & active account & account network
-                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: false) else {
+                guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
                     NCContentPresenter.shared.messageNotification("Accopunt", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     return
                 }
@@ -119,7 +119,7 @@ class NCService: NSObject {
                 
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
     
     private func requestServerStatus() {
@@ -346,7 +346,7 @@ class NCService: NSObject {
                     CCUtility.setHCBusinessType(nil)
                     OCNetworking.sharedManager()?.getHCUserProfile(withAccount: self.appDelegate.activeAccount, serverUrl: self.appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            _ = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: true)
+                            _ = NCManageDatabase.sharedInstance.setAccountUserProfileHWC(businessSize: userProfile!.businessSize, businessType: userProfile!.businessType, city: userProfile!.city, company: userProfile!.company, country: userProfile!.country, role: userProfile!.role, zip: userProfile!.zip)
                         }
                     })
                 }
@@ -354,7 +354,7 @@ class NCService: NSObject {
         } else {
             OCNetworking.sharedManager()?.getHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    _ = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!, HCProperties: true)
+                    _ = NCManageDatabase.sharedInstance.setAccountUserProfileHWC(businessSize: userProfile!.businessSize, businessType: userProfile!.businessType, city: userProfile!.city, company: userProfile!.company, country: userProfile!.country, role: userProfile!.role, zip: userProfile!.zip)
                 }
             })
         }

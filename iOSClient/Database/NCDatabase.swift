@@ -38,6 +38,9 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
+    @objc dynamic var backend = ""
+    @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
+    @objc dynamic var backendCapabilitiesSetPassword: Bool = false
     @objc dynamic var businessSize: String = ""
     @objc dynamic var businessType = ""
     @objc dynamic var dateSearchContentTypeImageVideo = NSDate.distantPast
@@ -47,6 +50,10 @@ class tableAccount: Object {
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
+    @objc dynamic var groups = ""
+    @objc dynamic var language = ""
+    @objc dynamic var lastLogin: Double = 0
+    @objc dynamic var locale = ""
     @objc dynamic var optimization = NSDate()
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
@@ -57,6 +64,8 @@ class tableAccount: Object {
     @objc dynamic var quotaUsed: Double = 0
     @objc dynamic var role = ""
     @objc dynamic var startDirectoryPhotosTab = ""
+    @objc dynamic var storageLocation = ""
+    @objc dynamic var subadmin = ""
     @objc dynamic var twitter = ""
     @objc dynamic var url = ""
     @objc dynamic var user = ""
