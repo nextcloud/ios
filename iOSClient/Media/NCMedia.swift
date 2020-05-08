@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var collectionView : UICollectionView!
     
@@ -276,16 +276,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_select_media_folder_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        self.selectStartDirectoryPhotosTab()
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
                     title: NSLocalizedString(filterTypeFileImage ? "_media_viewimage_show_" : "_media_viewimage_hide_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
@@ -341,43 +331,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
         self.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    // MARK: Select Directory
-    
-    func selectStartDirectoryPhotosTab() {
-        
-        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-        let viewController = navigationController.topViewController as! NCSelect
-        
-        viewController.delegate = self
-        viewController.hideButtonCreateFolder = true
-        viewController.includeDirectoryE2EEncryption = false
-        viewController.includeImages = false
-        viewController.layoutViewSelect = k_layout_view_move
-        viewController.selectFile = false
-        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
-        viewController.type = "mediaFolder"
-        
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-        self.present(navigationController, animated: true, completion: nil)
-        
-    }
-    
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
-        
-        let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
-        
-        if serverUrl != nil && serverUrl != oldStartDirectoryMediaTabView {
-            
-            // Save Start Directory
-            NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
-            //
-            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionDataSourceMetadata()
-            //
-            loadNetworkDatasource()
-        }
     }
     
     // MARK: SEGUE

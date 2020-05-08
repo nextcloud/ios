@@ -63,7 +63,6 @@ class tableAccount: Object {
     @objc dynamic var quotaTotal: Double = 0
     @objc dynamic var quotaUsed: Double = 0
     @objc dynamic var role = ""
-    @objc dynamic var startDirectoryPhotosTab = ""
     @objc dynamic var storageLocation = ""
     @objc dynamic var subadmin = ""
     @objc dynamic var twitter = ""
