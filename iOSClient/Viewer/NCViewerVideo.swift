@@ -25,17 +25,16 @@ import Foundation
 import KTVHTTPCache
 
 class NCViewerVideo: NSObject {
-
-    var metadata: tableMetadata!
-    var videoURL: URL?
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     @objc static let sharedInstance: NCViewerVideo = {
         let viewVideo = NCViewerVideo()
         viewVideo.setupHTTPCache()
         return viewVideo
     }()
-
+    
+    var metadata: tableMetadata!
+    var videoURL: URL?
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+   
     @objc func viewMedia(_ metadata: tableMetadata, view: UIView, frame: CGRect) {
         
         var videoURLProxy: URL!

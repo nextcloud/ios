@@ -25,7 +25,6 @@ import RealmSwift
 import NCCommunication
 
 class NCManageDatabase: NSObject {
-        
     @objc static let sharedInstance: NCManageDatabase = {
         let instance = NCManageDatabase()
         return instance
