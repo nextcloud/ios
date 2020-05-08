@@ -242,8 +242,11 @@
     }
     
     // verify task (download/upload) lost
-    [self verifyTaskLos];
+    [self verifyTaskLost];
     
+    // verify delete Asset Local Identifiers
+    [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount];
+   
     // Brand
 #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -1568,7 +1571,7 @@
     }
 }
 
-- (void)verifyTaskLos
+- (void)verifyTaskLost
 {
     // DOWNLOAD
     //

@@ -2532,6 +2532,38 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        var assetLocalIdentifiers = [String]()
+        
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND session == '' AND sessionError == ''", account)
+        for result in results {
+            assetLocalIdentifiers.append(result.assetLocalIdentifier)
+        }
+       
+        return assetLocalIdentifiers
+    }
+    
+    @objc func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+            
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
+
+                for result in results {
+                    result.assetLocalIdentifier = ""
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Media
  

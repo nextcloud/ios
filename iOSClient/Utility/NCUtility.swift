@@ -532,5 +532,20 @@ class NCUtility: NSObject {
         
         return image ?? UIImage()
     }
+    
+    @objc func deleteAssetLocalIdentifiers(account: String) {
+        
+        let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account)
+        if localIdentifiers.count == 0 { return }
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+        
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+        }, completionHandler: { success, error in
+            DispatchQueue.main.async {
+                NCManageDatabase.sharedInstance.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+            }
+        })
+    }
 }
 
