@@ -244,8 +244,8 @@
     // verify task (download/upload) lost
     [self verifyTaskLost];
     
-    // verify delete Asset Local Identifiers
-    [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount];
+    // verify delete Asset Local Identifiers in auto upload
+    [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
    
     // Brand
 #if defined(HC)

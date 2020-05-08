@@ -2532,13 +2532,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAssetLocalIdentifiersUploaded(account: String) -> [String] {
+    @objc func getAssetLocalIdentifiersUploaded(account: String, sessionSelector: String) -> [String] {
         
         let realm = try! Realm()
         realm.refresh()
         var assetLocalIdentifiers = [String]()
         
-        let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND session == '' AND sessionError == ''", account)
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND session == '' AND sessionError == '' AND sessionSelector == %@", account, sessionSelector)
         for result in results {
             assetLocalIdentifiers.append(result.assetLocalIdentifier)
         }
