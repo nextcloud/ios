@@ -872,6 +872,130 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Capabilities
     
+    @objc func addCapabilitiesT(_ capabilities: NCCapabilities, account: String) {
+    
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+            
+                let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first
+
+                var resultCapabilities = tableCapabilities()
+            
+                if let result = result {
+                    resultCapabilities = result
+                }
+                
+                resultCapabilities.account = account
+                // Version
+                resultCapabilities.versionMajor = capabilities.versionMajor
+                resultCapabilities.versionMinor = capabilities.versionMinor
+                resultCapabilities.versionMicro = capabilities.versionMicro
+                resultCapabilities.versionString = capabilities.versionString
+//                resultCapabilities.versionEdition = capabilities.versionEdition
+//                resultCapabilities.versionExtendedSupport = capabilities.versionExtendedSupport
+                // Core
+                resultCapabilities.corePollInterval = capabilities.corePollInterval
+                resultCapabilities.coreWebDavRoot = capabilities.coreWebDavRoot
+                // Files sharing
+                resultCapabilities.isFilesSharingAPIEnabled = capabilities.isFilesSharingAPIEnabled
+                resultCapabilities.filesSharingDefaulPermissions = capabilities.filesSharingDefaulPermissions
+                resultCapabilities.isFilesSharingGroupSharing = capabilities.isFilesSharingGroupSharing
+                resultCapabilities.isFilesSharingReSharing = capabilities.isFilesSharingReSharing
+                // Files sharing Public
+                resultCapabilities.isFilesSharingPublicShareLinkEnabled = capabilities.isFilesSharingPublicShareLinkEnabled
+                resultCapabilities.isFilesSharingAllowPublicUploadsEnabled = capabilities.isFilesSharingAllowPublicUploadsEnabled
+                resultCapabilities.isFilesSharingAllowPublicUserSendMail = capabilities.isFilesSharingAllowPublicUserSendMail
+                resultCapabilities.isFilesSharingAllowPublicUploadFilesDrop = capabilities.isFilesSharingAllowPublicUploadFilesDrop
+                resultCapabilities.isFilesSharingAllowPublicMultipleLinks = capabilities.isFilesSharingAllowPublicMultipleLinks
+                resultCapabilities.isFilesSharingPublicExpireDateByDefaultEnabled = capabilities.isFilesSharingPublicExpireDateByDefaultEnabled
+                resultCapabilities.isFilesSharingPublicExpireDateEnforceEnabled = capabilities.isFilesSharingPublicExpireDateEnforceEnabled
+                resultCapabilities.filesSharingPublicExpireDateDays = capabilities.filesSharingPublicExpireDateDays
+                resultCapabilities.isFilesSharingPublicPasswordEnforced = capabilities.isFilesSharingPublicPasswordEnforced
+//                resultCapabilities.isFilesSharingPublicPasswordAskForOptionalPassword = capabilities.isFilesSharingPublicPasswordAskForOptionalPassword
+//                resultCapabilities.isFilesSharingPublicExpireDateInternal = capabilities.isFilesSharingPublicExpireDateInternal
+                // Files sharing User
+                resultCapabilities.isFilesSharingAllowUserSendMail = capabilities.isFilesSharingAllowUserSendMail
+                resultCapabilities.isFilesSharingUserExpireDate = capabilities.isFilesSharingUserExpireDate
+                // Files sharing Group
+                resultCapabilities.isFilesSharingGroupEnabled = capabilities.isFilesSharingGroupEnabled
+                resultCapabilities.isFilesSharingGroupExpireDate = capabilities.isFilesSharingGroupExpireDate
+                // Files sharing Federation
+                resultCapabilities.isFilesSharingFederationAllowUserSendShares = capabilities.isFilesSharingFederationAllowUserSendShares
+                resultCapabilities.isFilesSharingFederationAllowUserReceiveShares = capabilities.isFilesSharingFederationAllowUserReceiveShares
+                resultCapabilities.isFilesSharingFederationExpireDate = capabilities.isFilesSharingFederationExpireDate
+                // Files sharing share by mail
+                resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
+//                resultCapabilities.isFileSharingShareByMailExpireDate = capabilities.isFileSharingShareByMailExpireDate
+                resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
+                resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
+                // External sites
+//                isExternalSitesServerEnabled: Bool = false
+//                externalSiteV1 = [String]()
+                // Notification
+//                isNotificationEnabled
+//                notificationAdminNotification
+//                notificationOcsEndpoints
+//                notificationPush
+                // Files
+//                isFilesBigFileChunkingEnabled
+//                filesBlacklistedFile
+//                filesDirectEditingEtag
+//                filesDirectEditingUrl
+//                isFilesUndeleteEnabled
+//                isFilesVersioningEnabled
+                // Theming
+                resultCapabilities.themingBackground = capabilities.themingBackground
+                resultCapabilities.themingBackgroundDefault = capabilities.themingBackgroundDefault
+                resultCapabilities.themingBackgroundPlain = capabilities.themingBackgroundPlain
+                resultCapabilities.themingColor = capabilities.themingColor
+                resultCapabilities.themingColorElement = capabilities.themingColorElement
+                resultCapabilities.themingColorText = capabilities.themingColorText
+//                resultCapabilities.themingFavicon = capabilities.themingFavicon
+                resultCapabilities.themingLogo = capabilities.themingLogo
+//                resultCapabilities.themingLogoHeader = capabilities.themingLogoHeader
+                resultCapabilities.themingName = capabilities.themingName
+                resultCapabilities.themingSlogan = capabilities.themingSlogan
+                resultCapabilities.themingUrl = capabilities.themingUrl
+                // E2EE
+                resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
+                resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
+                // Richdocuments
+                resultCapabilities.richdocumentsMimetypes.removeAll()
+                for mimeType in capabilities.richdocumentsMimetypes {
+                    resultCapabilities.richdocumentsMimetypes.append(mimeType)
+                }
+//                richdocumentsMimetypesNoDefaultOpen
+                resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
+//                richdocumentsProductName
+//                richdocumentsTemplates
+//                isRichdocumentsCollaboraConvertToAvailable
+//                isRichdocumentsCollaboraHasMobileSupport
+//                isRichdocumentsCollaboraHasTemplateSaveAs
+//                isRichdocumentsCollaboraHasTemplateSource
+//                isRichdocumentsCollaboraProductName
+                // Activity
+//                isActivityV2Enabled
+//                activityV2
+                // HC
+                resultCapabilities.isHandwerkcloudEnabled = capabilities.isHandwerkcloudEnabled
+                resultCapabilities.HCShopUrl = capabilities.HCShopUrl
+                // Imagemeter
+                resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
+                // Pagination iOS Helper
+                resultCapabilities.isPaginationEnabled = capabilities.isPaginationEnabled
+                resultCapabilities.paginationEndponit = capabilities.paginationEndponit
+                                
+                if result == nil {
+                    realm.add(resultCapabilities)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
@@ -899,22 +1023,27 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.themingName = capabilities.themingName
                 resultCapabilities.themingSlogan = capabilities.themingSlogan
                 resultCapabilities.themingUrl = capabilities.themingUrl
+                
                 resultCapabilities.versionMajor = capabilities.versionMajor
                 resultCapabilities.versionMinor = capabilities.versionMinor
                 resultCapabilities.versionMicro = capabilities.versionMicro
                 resultCapabilities.versionString = capabilities.versionString
+                
                 resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
                 resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
+                
                 resultCapabilities.richdocumentsMimetypes.removeAll()
                 for mimeType in capabilities.richdocumentsMimetypes {
                     resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
                 resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
+                
                 // FILES SHARING
                 resultCapabilities.isFilesSharingAPIEnabled = capabilities.isFilesSharingAPIEnabled
                 resultCapabilities.filesSharingDefaulPermissions = capabilities.filesSharingDefaulPermissions
                 resultCapabilities.isFilesSharingGroupSharing = capabilities.isFilesSharingGroupSharing
                 resultCapabilities.isFilesSharingReSharing = capabilities.isFilesSharingReSharing
+                
                 resultCapabilities.isFilesSharingPublicShareLinkEnabled = capabilities.isFilesSharingPublicShareLinkEnabled
                 resultCapabilities.isFilesSharingAllowPublicUploadsEnabled = capabilities.isFilesSharingAllowPublicUploadsEnabled
                 resultCapabilities.isFilesSharingAllowPublicUserSendMail = capabilities.isFilesSharingAllowPublicUserSendMail
@@ -924,28 +1053,38 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.isFilesSharingPublicExpireDateEnforceEnabled = capabilities.isFilesSharingPublicExpireDateEnforceEnabled
                 resultCapabilities.filesSharingPublicExpireDateDays = capabilities.filesSharingPublicExpireDateDays
                 resultCapabilities.isFilesSharingPublicPasswordEnforced = capabilities.isFilesSharingPublicPasswordEnforced
+                
                 resultCapabilities.isFilesSharingAllowUserSendMail = capabilities.isFilesSharingAllowUserSendMail
                 resultCapabilities.isFilesSharingUserExpireDate = capabilities.isFilesSharingUserExpireDate
+                
                 resultCapabilities.isFilesSharingGroupEnabled = capabilities.isFilesSharingGroupEnabled
                 resultCapabilities.isFilesSharingGroupExpireDate = capabilities.isFilesSharingGroupExpireDate
+                
                 resultCapabilities.isFilesSharingFederationAllowUserSendShares = capabilities.isFilesSharingFederationAllowUserSendShares
                 resultCapabilities.isFilesSharingFederationAllowUserReceiveShares = capabilities.isFilesSharingFederationAllowUserReceiveShares
                 resultCapabilities.isFilesSharingFederationExpireDate = capabilities.isFilesSharingFederationExpireDate
+                
                 resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
                 resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
                 resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
+                
                 // HC
                 resultCapabilities.isHandwerkcloudEnabled = capabilities.isHandwerkcloudEnabled
                 resultCapabilities.HCShopUrl = capabilities.hcShopUrl
+                
                 // Imagemeter
                 resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
+                
                 // Fulltextsearch
                 resultCapabilities.isFulltextsearchEnabled = capabilities.isFulltextsearchEnabled
+                
                 // Extended Support
                 resultCapabilities.isExtendedSupportEnabled = capabilities.isExtendedSupportEnabled
+                
                 // Pagination iOS Helper
                 resultCapabilities.isPaginationEnabled = capabilities.isPaginationEnabled
                 resultCapabilities.paginationEndponit = capabilities.paginationEndponit
+                
                 // Core
                 resultCapabilities.corePollInterval = capabilities.corePollInterval
                 resultCapabilities.coreWebDavRoot = capabilities.coreWebDavRoot
