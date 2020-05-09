@@ -955,6 +955,11 @@
         
     } else {
     
+        // Delete Asset
+        if ([CCUtility getDeleteAssetLocalIdentifiersforAutoUpload] && ![metadata.assetLocalIdentifier isEqualToString:@""] && [metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
+            metadata.deleteAssetLocalIdentifier = true;
+        }
+        
         // Edited file, remove tempocId and adjust the directory provider storage
         if (metadata.edited) {
             

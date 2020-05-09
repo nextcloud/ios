@@ -177,6 +177,9 @@
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
 
++ (BOOL)getDeleteAssetLocalIdentifiersforAutoUpload;
++ (void)setDeleteAssetLocalIdentifiersforAutoUpload:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

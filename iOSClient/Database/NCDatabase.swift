@@ -357,6 +357,7 @@ class tableMedia: Object {
     @objc dynamic var creationDate = NSDate()
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
+    @objc dynamic var deleteAssetLocalIdentifier: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
@@ -402,6 +403,7 @@ class tableMetadata: Object {
     @objc dynamic var creationDate = NSDate()
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
+    @objc dynamic var deleteAssetLocalIdentifier: Bool = false
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""

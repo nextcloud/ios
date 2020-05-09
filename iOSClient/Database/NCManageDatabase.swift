@@ -2538,7 +2538,7 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         var assetLocalIdentifiers = [String]()
         
-        let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND session == '' AND sessionError == '' AND sessionSelector == %@", account, sessionSelector)
+        let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true AND sessionSelector == %@", account, sessionSelector)
         for result in results {
             assetLocalIdentifiers.append(result.assetLocalIdentifier)
         }
@@ -2557,6 +2557,7 @@ class NCManageDatabase: NSObject {
 
                 for result in results {
                     result.assetLocalIdentifier = ""
+                    result.deleteAssetLocalIdentifier = false
                 }
             }
         } catch let error {
