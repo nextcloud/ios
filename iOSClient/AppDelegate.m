@@ -724,11 +724,13 @@
 
 - (void)uploadedFile:(NSNotification *)notification
 {
-    NSArray *metadatasSessionUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session CONTAINS[cd] %@", self.activeAccount, @"upload"] sorted:nil ascending:true];
-    if (metadatasSessionUpload.count == 0) {
-        
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+   
+    if (errorCode == 0) {
         // verify delete Asset Local Identifiers in auto upload
-        [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
+        [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:metadata.account sessionSelector:selectorUploadAutoUpload];
     }
 }
 
