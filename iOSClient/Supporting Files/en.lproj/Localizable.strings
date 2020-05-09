@@ -336,8 +336,8 @@
 "_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
-"_remove_photo_CameraRoll_"                 = "Remove from camera roll after successful upload";
-"_remove_photo_CameraRoll_desc_"            = "In case of successful auto upload a message will require the deletion of the photo or video from the camera roll, remember that the deleted photos will be available for 30 days in the trash";
+"_remove_photo_CameraRoll_"                 = "Remove from camera roll";
+"_remove_photo_CameraRoll_desc_"            = "In case of successful auto upload a message will require the deletion of the photos or videos from the camera roll, remember that the deleted photos or videos will be available for 30 days in the trash";
 
 // Utility
 
