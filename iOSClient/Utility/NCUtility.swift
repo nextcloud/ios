@@ -535,6 +535,7 @@ class NCUtility: NSObject {
     
     @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String) {
         
+        if UIApplication.shared.applicationState != .active { return }
         let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
         if localIdentifiers.count == 0 { return }
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)

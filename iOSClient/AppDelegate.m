@@ -185,7 +185,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
+    
     return YES;
 }
 
@@ -718,6 +719,16 @@
         } else {
             [self copyFile:[NSNotification new]];
         }
+    }
+}
+
+- (void)uploadedFile:(NSNotification *)notification
+{
+    NSArray *metadatasSessionUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session CONTAINS[cd] %@", self.activeAccount, @"upload"] sorted:nil ascending:true];
+    if (metadatasSessionUpload.count == 0) {
+        
+        // verify delete Asset Local Identifiers in auto upload
+        [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
     }
 }
 
