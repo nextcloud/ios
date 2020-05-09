@@ -956,7 +956,7 @@
     } else {
     
         // Delete Asset
-        if ([CCUtility getDeleteAssetLocalIdentifiersforAutoUpload] && ![metadata.assetLocalIdentifier isEqualToString:@""] && [metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
+        if (tableAccount.autoUploadDeleteAssetLocalIdentifier && ![metadata.assetLocalIdentifier isEqualToString:@""] && [metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             metadata.deleteAssetLocalIdentifier = true;
         }
         

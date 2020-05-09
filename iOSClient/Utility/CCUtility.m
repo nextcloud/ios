@@ -706,17 +706,6 @@
     [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getDeleteAssetLocalIdentifiersforAutoUpload
-{
-    return [[UICKeyChainStore stringForKey:@"deleteAssetLocalIdentifiersforAutoUpload" service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (void)setDeleteAssetLocalIdentifiersforAutoUpload:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"deleteAssetLocalIdentifiersforAutoUpload" service:k_serviceShareKeyChain];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
