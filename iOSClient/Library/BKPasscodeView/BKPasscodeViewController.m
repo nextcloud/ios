@@ -132,13 +132,13 @@ typedef enum : NSUInteger {
 {
     [super viewWillAppear:animated];
     
-    if (self.passcodeInputView.isEnabled) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
-        //TWS
-        [self performSelector:@selector(startTouchIDAuthenticationIfPossible) withObject:nil afterDelay:0.2];
-    }
-
-    [self.passcodeInputView becomeFirstResponder];
+        if (self.passcodeInputView.isEnabled) {
+            [self startTouchIDAuthenticationIfPossible];
+        }
+        [self.passcodeInputView becomeFirstResponder];
+    });
 }
 
 - (void)viewWillDisappear:(BOOL)animated
