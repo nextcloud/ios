@@ -150,10 +150,11 @@
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
         [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
     }
-    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
-    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
-        searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
+    UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextField && [searchTextField isKindOfClass:[UITextField class]]) {
+        searchTextField.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+        searchTextField.textColor = NCBrandColor.sharedInstance.textView;
+        searchTextField.delegate = self;
     }
     heightSearchBar = self.searchController.searchBar.frame.size.height;
     
