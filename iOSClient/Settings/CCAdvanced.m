@@ -241,11 +241,11 @@
     
     [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeAccount:false];
     
-    [CCUtility emptyGroupDirectoryProviderStorage];
-    [CCUtility emptyGroupLibraryDirectory];
+    [CCUtility removeGroupDirectoryProviderStorage];
+    [CCUtility removeGroupLibraryDirectory];
     
-    [CCUtility emptyDocumentsDirectory];
-    [CCUtility emptyTemporaryDirectory];
+    [CCUtility removeDocumentsDirectory];
+    [CCUtility removeTemporaryDirectory];
     
     [CCUtility createDirectoryStandard];
 
@@ -298,11 +298,11 @@
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
         [KTVHTTPCache cacheDeleteAllCaches];
 
-        [CCUtility emptyGroupDirectoryProviderStorage];
-        [CCUtility emptyGroupApplicationSupport];
+        [CCUtility removeGroupDirectoryProviderStorage];
+        [CCUtility removeGroupApplicationSupport];
         
-        [CCUtility emptyDocumentsDirectory];
-        [CCUtility emptyTemporaryDirectory];
+        [CCUtility removeDocumentsDirectory];
+        [CCUtility removeTemporaryDirectory];
         
         [CCUtility deleteAllChainStore];
         

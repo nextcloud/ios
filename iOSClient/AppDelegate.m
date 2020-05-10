@@ -50,6 +50,7 @@
     }
     
     [CCUtility createDirectoryStandard];
+    [CCUtility emptyTemporaryDirectory];
     
     // Networking
     [[NCCommunicationCommon sharedInstance] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];

@@ -1189,7 +1189,7 @@
     else return false;
 }
 
-+ (void)emptyGroupApplicationSupport
++ (void)removeGroupApplicationSupport
 {
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
     NSString *path = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
@@ -1197,28 +1197,28 @@
     [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
 }
 
-+ (void)emptyGroupLibraryDirectory
++ (void)removeGroupLibraryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
 }
 
-+ (void)emptyGroupDirectoryProviderStorage
++ (void)removeGroupDirectoryProviderStorage
 {
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
 }
 
-+ (void)emptyDocumentsDirectory
++ (void)removeDocumentsDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryDocuments] error:nil];
 }
 
-+ (void)emptyTemporaryDirectory
++ (void)removeTemporaryDirectory
 {
     [[NSFileManager defaultManager] removeItemAtPath:NSTemporaryDirectory() error:nil];
 }
 
-+ (void)clearTmpDirectory
++ (void)emptyTemporaryDirectory
 {
     NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
     for (NSString *file in tmpDirectory) {

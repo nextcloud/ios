@@ -215,12 +215,12 @@
 + (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 
-+ (void)emptyGroupApplicationSupport;
-+ (void)emptyGroupLibraryDirectory;
-+ (void)emptyGroupDirectoryProviderStorage;
-+ (void)emptyDocumentsDirectory;
++ (void)removeGroupApplicationSupport;
++ (void)removeGroupLibraryDirectory;
++ (void)removeGroupDirectoryProviderStorage;
++ (void)removeDocumentsDirectory;
++ (void)removeTemporaryDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)clearTmpDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

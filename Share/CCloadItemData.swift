@@ -31,7 +31,7 @@ class CCloadItemData: NSObject {
         var filesName: [String] = []
         var conuter = 0
         
-        CCUtility.clearTmpDirectory()
+        CCUtility.emptyTemporaryDirectory()
                 
         if let inputItems : [NSExtensionItem] = extensionContext.inputItems as? [NSExtensionItem] {
             

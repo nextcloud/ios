@@ -379,11 +379,11 @@ class NCUtility: NSObject {
         
         NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
         
-        CCUtility.emptyGroupDirectoryProviderStorage()
-        CCUtility.emptyGroupLibraryDirectory()
+        CCUtility.removeGroupDirectoryProviderStorage()
+        CCUtility.removeGroupLibraryDirectory()
         
-        CCUtility.emptyDocumentsDirectory()
-        CCUtility.emptyTemporaryDirectory()
+        CCUtility.removeDocumentsDirectory()
+        CCUtility.removeTemporaryDirectory()
         
         CCUtility.createDirectoryStandard()
         
