@@ -153,11 +153,13 @@ typedef enum : NSUInteger {
     [super viewDidLayoutSubviews];
     
     CGRect frame = self.view.bounds;
-    
     CGFloat topBarOffset = 0;
+    
+    /*
     if ([self respondsToSelector:@selector(topLayoutGuide)]) {
         topBarOffset = [self.topLayoutGuide length];
     }
+    */
     
     frame.origin.y += topBarOffset;
     frame.size.height -= (topBarOffset + self.keyboardHeight);
