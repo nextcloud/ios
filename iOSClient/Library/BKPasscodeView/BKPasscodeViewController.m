@@ -128,9 +128,9 @@ typedef enum : NSUInteger {
     [self lockIfNeeded];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
@@ -153,13 +153,7 @@ typedef enum : NSUInteger {
     [super viewDidLayoutSubviews];
     
     CGRect frame = self.view.bounds;
-    CGFloat topBarOffset = 0;
-    
-    /*
-    if ([self respondsToSelector:@selector(topLayoutGuide)]) {
-        topBarOffset = [self.topLayoutGuide length];
-    }
-    */
+    CGFloat topBarOffset = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
     
     frame.origin.y += topBarOffset;
     frame.size.height -= (topBarOffset + self.keyboardHeight);
