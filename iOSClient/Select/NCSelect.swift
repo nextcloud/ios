@@ -131,6 +131,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
         buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+        overwriteLabel.text = NSLocalizedString("_overwrite_", comment: "")
         
         // button
         buttonCreateFolder.layer.cornerRadius = 15
