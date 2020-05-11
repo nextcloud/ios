@@ -27,7 +27,8 @@ import NCCommunication
 class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var listOfNotifications = [OCNotifications]()
+    static var notifications = [OCNotifications]()
+    static var notificationsAccount = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,14 +44,8 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         self.tableView.emptyDataSetSource = self
         self.tableView.emptyDataSetDelegate = self
         
-        // Register to receive notification reload data
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDatasource), name: Notification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
-
-        // Theming view
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        changeTheming()
-        
-        reloadDatasource()
+        changeTheming()        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,10 +59,6 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     }
 
     @objc func viewClose() {
-        
-        // Stop listening notification reload data
-        NotificationCenter.default.removeObserver(self, name: Notification.Name(k_notificationCenter_reloadDataNotification), object: nil);
-        
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -98,9 +89,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    
-        let numRecord = listOfNotifications.count
-        return numRecord
+        return CCNotification.notifications.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -108,7 +97,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         cell.delegate = self
         
-        let notification = listOfNotifications[indexPath.row] // object(at: indexPath.row) //as! OCNotifications
+        let notification = CCNotification.notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
         var image : UIImage?
         
@@ -248,8 +237,8 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
                 
                 //let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                 
-                if let index = self.listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                    self.listOfNotifications.remove(at: index)
+                if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                    CCNotification.self.notifications.remove(at: index)
                 }
                 
                 self.reloadDatasource()
@@ -272,8 +261,8 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
                     
                     if errorCode == 0 && account == self.appDelegate.activeAccount {
                                                 
-                        if let index = self.listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                            self.listOfNotifications.remove(at: index)
+                        if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                            CCNotification.self.notifications.remove(at: index)
                         }
                         
                         self.reloadDatasource()
@@ -290,14 +279,21 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     
     // MARK: Load notification networking
     func getNetwokingNotification() {
+    
+        // Verify User
+        if appDelegate.activeAccount != CCNotification.notificationsAccount {
+            CCNotification.notifications.removeAll()
+            reloadDatasource()
+            CCNotification.notificationsAccount = appDelegate.activeAccount
+        }
         
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
-        
-        OCNetworking.sharedManager().getNotificationWithAccount(appDelegate.activeAccount, completion: { (account, listOfNotifications, message, errorCode) in
+    
+        OCNetworking.sharedManager().getNotificationWithAccount(CCNotification.notificationsAccount, completion: { (account, listOfNotifications, message, errorCode) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == CCNotification.self.notificationsAccount {
                     
-                self.listOfNotifications.removeAll()
+                CCNotification.self.notifications.removeAll()
                 let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                     
                 for notification in sortedListOfNotifications {
@@ -306,7 +302,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
                         NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
                     }
                     
-                    self.listOfNotifications.append(notification as! OCNotifications)
+                    CCNotification.self.notifications.append(notification as! OCNotifications)
                 }
                 
                 self.reloadDatasource()
