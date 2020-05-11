@@ -363,11 +363,17 @@
 "_file_not_present_"            = "Error: File not present, please reload.";
 "_order_by_"                    = "Sort by";
 "_order_by_name_a_z_"           = "Sort by name (from A to Z)";
+"_sorted_by_name_a_z_"          = "Sorted by name (from A to Z)";
 "_order_by_name_z_a_"           = "Sort by name (from Z to A)";
+"_sorted_by_name_z_a_"          = "Sorted by name (from Z to A)";
 "_order_by_date_more_recent_"   = "Sort from the most recent";
+"_sorted_by_date_more_recent_"  = "Sorted from the most recent";
 "_order_by_date_less_recent_"   = "Sort from the less recent";
+"_sorted_by_date_less_recent_"  = "Sorted from the less recent";
 "_order_by_size_smallest_"      = "Sort from the smallest";
+"_sorted_by_size_smallest_"     = "Sorted from the smallest";
 "_order_by_size_largest_"       = "Sort from the largest";
+"_sorted_by_size_largest_"      = "Sorted from the largest";
 "_delete_selected_files_"       = "Delete files";
 "_move_selected_files_"         = "Move files";
 "_move_or_copy_selected_files_" = "Move or copy files";
