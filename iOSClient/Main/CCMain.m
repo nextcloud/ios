@@ -741,6 +741,7 @@
     [self SetSortButtonText];
 }
 
+/*
 - (UIImage *)getImageLogoHome
 {
     UIImage *image = [UIImage imageNamed:@"themingLogo"];
@@ -765,6 +766,7 @@
         return image;
     }
 }
+*/
 
 - (void)setUINavigationBarDefault
 {
@@ -1006,6 +1008,7 @@
     [self tableViewSelect:false];
 }
 
+/*
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== View Notification  ====
 #pragma --------------------------------------------------------------------------------------------
@@ -1021,6 +1024,7 @@
         [self presentViewController:notificationVC animated:YES completion:nil];
     }
 }
+*/
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------

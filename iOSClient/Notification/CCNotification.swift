@@ -29,12 +29,10 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         
-        self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
-        self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
-        
+        self.title = NSLocalizedString("_notification_", comment: "")
+                
         self.tableView.tableFooterView = UIView()
         self.tableView.rowHeight = UITableView.automaticDimension
         self.tableView.estimatedRowHeight = 50.0
@@ -50,9 +48,9 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         reloadDatasource()
     }
     
-     @objc func changeTheming() {
-           appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
-       }
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+    }
 
     @objc func viewClose() {
         
