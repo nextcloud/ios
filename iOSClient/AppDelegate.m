@@ -86,7 +86,6 @@
     self.arrayMoveServerUrlTo = [NSMutableArray new];
     self.arrayCopyMetadata = [NSMutableArray new];
     self.arrayCopyServerUrlTo = [NSMutableArray new];
-    self.sessionPendingStatusInUpload = [NSMutableArray new];
     
     // Push Notification
     [application registerForRemoteNotifications];
@@ -111,14 +110,8 @@
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    /*
-    // APPEARANCE: How to hide UINavigationBar 1px bottom line < iOS 11
-    [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-    [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-    [UINavigationBar appearance].translucent = NO;
-    */
-    
+
+
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
     
@@ -1015,45 +1008,24 @@
     // Dark Mode
     [NCBrandColor.sharedInstance setDarkMode];
     
-    // Appearance
-    UINavigationBar.appearance.tintColor = NCBrandColor.sharedInstance.brandText;
-    UINavigationBar.appearance.barTintColor = NCBrandColor.sharedInstance.brand;
-    [UINavigationBar.appearance setBackgroundImage:[[NCUtility sharedInstance] fromColorWithColor:NCBrandColor.sharedInstance.brand] forBarMetrics: UIBarMetricsDefault];
-    UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText};
-    UINavigationBar.appearance.translucent = false;
-    // Refresh UIAppearance after application loaded
-    NSArray *windows = [UIApplication sharedApplication].windows;
-    for (UIWindow *window in windows) {
-        for (UIView *view in window.subviews) {
-            [view removeFromSuperview];
-            [window addSubview:view];
-        }
-    }
-    
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
-        viewController.navigationController.navigationBar.translucent = NO;
-        viewController.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-        viewController.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
-        if ([self.reachability isReachable]) {
-            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brandText}];
-        } else {
-            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
+        if (![self.reachability isReachable]) {
+           [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
         }
-        viewController.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:NCBrandColor.sharedInstance.brand];
-        [viewController.navigationController.navigationBar setAlpha:1];
     }
+    
+    [self configureNavBarForViewController:viewController];
     
     //tabBar
     if (viewController.tabBarController.tabBar) {
         viewController.tabBarController.tabBar.translucent = NO;
-        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
         viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-        [viewController.tabBarController.tabBar setAlpha:1];
     }
     
     //tabBar button Plus
