@@ -770,39 +770,21 @@
 
 - (void)setUINavigationBarDefault
 {
-    UIBarButtonItem *buttonNotification, *buttonSelect;
+    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_select_", @"") style:UIBarButtonItemStylePlain target:self action:@selector(tableViewToggle)];
     
-    buttonSelect = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_select_", @"") style:UIBarButtonItemStylePlain target:self action:@selector(tableViewToggle)];
-    buttonSelect.enabled = true;
-    
-    // <
     self.navigationController.navigationBar.hidden = NO;
-    
-    // Notification
-    if ([appDelegate.listOfNotifications count] > 0) {
-        
-        buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notification"] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
-        buttonNotification.tintColor = NCBrandColor.sharedInstance.brandText;
-        buttonNotification.enabled = true;
-    }
-    
-    if (buttonNotification)
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, buttonNotification, nil];
-    else
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
-    
+
+    self.navigationItem.rightBarButtonItem = buttonSelect;
     self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)setUINavigationBarSelected
 {    
-    UIImage *icon = [UIImage imageNamed:@"navigationMore"];
-    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
-
+    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationMore"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
     
     self.navigationItem.leftBarButtonItem = leftButton;
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
+    self.navigationItem.rightBarButtonItem = buttonMore; //[[NSArray alloc] initWithObjects:buttonMore, nil];
 }
 
 - (void)cancelSelect
