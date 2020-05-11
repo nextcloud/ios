@@ -144,11 +144,10 @@
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
         [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
     }
-    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
-    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
-        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
+    UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextField && [searchTextField isKindOfClass:[UITextField class]]) {
+        searchTextField.textColor = NCBrandColor.sharedInstance.textView;
     }
-    
             
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
