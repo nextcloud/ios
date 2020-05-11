@@ -45,11 +45,15 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         self.tableView.emptyDataSetDelegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        changeTheming()        
+        changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         getNetwokingNotification()
     }
@@ -280,15 +284,15 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     // MARK: Load notification networking
     func getNetwokingNotification() {
     
+        NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
+
         // Verify User
         if appDelegate.activeAccount != CCNotification.notificationsAccount {
             CCNotification.notifications.removeAll()
             reloadDatasource()
             CCNotification.notificationsAccount = appDelegate.activeAccount
         }
-        
-        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 0)
-    
+                
         OCNetworking.sharedManager().getNotificationWithAccount(CCNotification.notificationsAccount, completion: { (account, listOfNotifications, message, errorCode) in
             
             if errorCode == 0 && account == CCNotification.self.notificationsAccount {
