@@ -33,6 +33,7 @@
     UIView *rootView;
     UIColor *textColor;
     UIColor *textColorOpponent;
+    UIBarButtonItem *cancelButton;
 }
 @end
 
@@ -78,8 +79,8 @@
     self.imageBrand.image = [UIImage imageNamed:@"logo"];
     
     // Annulla
-    [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
-    self.annulla.tintColor = textColor;
+    cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(handleAnnulla:)];
+    cancelButton.tintColor = textColor;
     
     // Base URL
     _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:textColor];
@@ -141,12 +142,12 @@
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
-        _annulla.hidden = YES;
     } else {
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
         _password.hidden = YES;
+        self.navigationItem.leftBarButtonItem = cancelButton;
     }
 }
 
