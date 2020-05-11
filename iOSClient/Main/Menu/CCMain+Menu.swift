@@ -41,6 +41,20 @@ extension CCMain {
 
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
+    
+    @objc func SetSortButtonText() {
+        
+        let orderSettings = CCUtility.getOrderSettings()
+        
+        if orderSettings == "fileName" {
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_name_a_z_", comment: "") : NSLocalizedString("_order_by_name_z_a_", comment: "")), for: .normal)
+        } else if orderSettings == "date" {
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_date_less_recent_", comment: "") : NSLocalizedString("_order_by_date_more_recent_", comment: "")), for: .normal)
+        } else if orderSettings == "size" {
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_size_largest_", comment: "") : NSLocalizedString("_order_by_size_smallest_", comment: "")), for: .normal)
+        }
+    }
+    
 
     private func initSortMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
@@ -59,7 +73,7 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("fileName")
                     }
-                    self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_name_a_z_", comment: "") : NSLocalizedString("_order_by_name_z_a_", comment: "")) + " ▽", for: .normal)
+                    self.SetSortButtonText()
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
@@ -79,7 +93,7 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("date")
                     }
-                    self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_date_less_recent_", comment: "") : NSLocalizedString("_order_by_date_more_recent_", comment: "")) + " ▽", for: .normal)
+                    self.SetSortButtonText()
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )
@@ -99,7 +113,7 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("size")
                     }
-                    self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_order_by_size_largest_", comment: "") : NSLocalizedString("_order_by_size_smallest_", comment: "")) + " ▽", for: .normal)
+                    self.SetSortButtonText()
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
                 }
             )

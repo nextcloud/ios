@@ -160,7 +160,6 @@
     heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
 
     [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
-    [self.sortButton setTitle: [NSString stringWithFormat:@"Sorted by %@ ", [CCUtility getOrderSettings]] forState:UIControlStateNormal];
     [self.sortButton addTarget:self action:@selector(toggleReMainMenu) forControlEvents:UIControlEventTouchUpInside];
     
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
@@ -738,6 +737,8 @@
             }
         }
     }
+    
+    [self SetSortButtonText];
 }
 
 - (UIImage *)getImageLogoHome
