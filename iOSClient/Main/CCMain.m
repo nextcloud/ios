@@ -48,7 +48,7 @@
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 
-    NCMainRefreshControl *refreshControl;
+    UIRefreshControl *refreshControl;
 
     CCHud *_hud;
     
@@ -140,38 +140,41 @@
     self.definesPresentationContext = YES;
     self.searchController.searchResultsUpdater = self;
     self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.translucent = NO;
-    [self.searchController.searchBar sizeToFit];
-    self.searchController.searchBar.delegate = self;
-    self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
-    self.searchController.searchBar.backgroundImage = [UIImage new];
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
     }
-    UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"searchField"];
-    if (searchTextField && [searchTextField isKindOfClass:[UITextField class]]) {
-        searchTextField.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        searchTextField.textColor = NCBrandColor.sharedInstance.textView;
-        searchTextField.delegate = self;
+    UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
+    if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
+        searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
-    heightSearchBar = self.searchController.searchBar.frame.size.height;
     
+            
     // Load Rich Workspace
     self.viewRichWorkspace = [[[NSBundle mainBundle] loadNibNamed:@"NCRichWorkspace" owner:self options:nil] firstObject];
     UITapGestureRecognizer *viewRichWorkspaceTapped = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(viewRichWorkspaceTapAction:)];
     viewRichWorkspaceTapped.numberOfTapsRequired = 1;
     viewRichWorkspaceTapped.delegate = self;
-    [self.viewRichWorkspace addGestureRecognizer:viewRichWorkspaceTapped];
-    heightRichWorkspace = UIScreen.mainScreen.bounds.size.height/4 + heightSearchBar;
-    self.viewRichWorkspace.textViewTopConstraint.constant = heightSearchBar;
-    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
+    [self.viewRichWorkspace.richView addGestureRecognizer:viewRichWorkspaceTapped];
     
+    self.sortButton = self.viewRichWorkspace.sortButton;
+    heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
+
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+    [self.sortButton setTitle: [NSString stringWithFormat:@"Sorted by %@ ", [CCUtility getOrderSettings]] forState:UIControlStateNormal];
+    [self.sortButton addTarget:self action:@selector(toggleReMainMenu) forControlEvents:UIControlEventTouchUpInside];
+    
+    heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
+    [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
+    self.navigationItem.searchController = self.searchController;
+    self.searchController.hidesNavigationBarDuringPresentation = true;
+    self.navigationController.navigationBar.prefersLargeTitles = true;
+    self.navigationItem.hidesSearchBarWhenScrolling = false;
+    [self.navigationController.navigationBar sizeToFit];
+
     // Table Header View
     [self.tableView setTableHeaderView:self.viewRichWorkspace];
-    [self.tableView.tableHeaderView addSubview:self.searchController.searchBar];
-    
+
     // Register cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
@@ -196,15 +199,24 @@
     
     // Title
     [self setTitle];
-
     // changeTheming
     [self changeTheming];
+}
+
+- (void)willDismissSearchController:(UISearchController *)searchController
+{
+    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+}
+
+- (void)willPresentSearchController:(UISearchController *)searchController
+{
+    [self updateNavBarShadow:self.tableView force:true];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+    [self updateNavBarShadow:self.tableView force:false];
     // test
     if (appDelegate.activeAccount.length == 0)
         return;
@@ -232,7 +244,8 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+    self.navigationItem.hidesSearchBarWhenScrolling = true;
+
     // Active Main
     appDelegate.activeMain = self;
     
@@ -277,20 +290,9 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
-            
-            // Portrait
-            
-        } else {
-            
-            // Landscape
-        }
-        
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self setTableViewHeader];
-    }];
+    } completion:nil];
 }
 
 - (void)presentationControllerWillDismiss:(UIPresentationController *)presentationController
@@ -312,6 +314,10 @@
     }
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self updateNavBarShadow:self.tableView force:false];
+}
+
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
@@ -320,21 +326,20 @@
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
     // Refresh control
-    refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
-    refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;
+    refreshControl.tintColor = UIColor.lightGrayColor;
+    refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
     // color searchbar
-    self.searchController.searchBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.searchController.searchBar.backgroundColor = NCBrandColor.sharedInstance.brand;
+    self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brand;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandText forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
     }
     // color textview searchbbar
     UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
     if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
-        searchTextView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
         searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
     
@@ -686,9 +691,8 @@
     
     self.tableView.refreshControl = refreshControl;
     
-    refreshControl.tintColor = NCBrandColor.sharedInstance.brandText;
-    refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand;
-    
+    refreshControl.tintColor = UIColor.lightGrayColor;
+    refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     [refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
 }
 
@@ -723,33 +727,16 @@
         self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)selezionati, (unsigned long)totali];
 
     } else {
-        
-        // we are in home : LOGO BRAND
-        if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
-            
-            self.navigationItem.title = nil;
-
-            UIImage *image = [self getImageLogoHome];
-
-            _imageTitleHome = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 30)]; // IMAGE = 120 x 60
-            _imageTitleHome.contentMode = UIViewContentModeScaleAspectFill;
-            _imageTitleHome.translatesAutoresizingMaskIntoConstraints = NO;
-            _imageTitleHome.image = image;
-            
-            // backbutton
-            self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain target:nil action:nil];
-            
-            [_imageTitleHome setUserInteractionEnabled:YES];
-            UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];
-            [singleTap setNumberOfTapsRequired:1];
-            [_imageTitleHome addGestureRecognizer:singleTap];
-            
-            self.navigationItem.titleView = _imageTitleHome;
-            
-        } else {
-            
-            self.navigationItem.title = _titleMain;
-            self.navigationItem.titleView = nil;
+        if (@available(iOS 11.0, *)) {
+            if (_isRoot) {
+                    self.navigationController.navigationBar.prefersLargeTitles = true;
+                    self.navigationItem.title = NCBrandOptions.sharedInstance.brand;
+                
+                    self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+                
+            } else {
+                self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
+            }
         }
     }
 }
@@ -781,13 +768,9 @@
 
 - (void)setUINavigationBarDefault
 {
-    UIBarButtonItem *buttonMore, *buttonNotification, *buttonSelect;
+    UIBarButtonItem *buttonNotification, *buttonSelect;
     
-    // =
-    buttonMore = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationSort"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
-    buttonMore.enabled = true;
-    
-    buttonSelect = [[UIBarButtonItem alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] width:50 height:50 color:NCBrandColor.sharedInstance.textView] style:UIBarButtonItemStylePlain target:self action:@selector(tableViewToggle)];
+    buttonSelect = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_select_", @"") style:UIBarButtonItemStylePlain target:self action:@selector(tableViewToggle)];
     buttonSelect.enabled = true;
     
     // <
@@ -802,9 +785,9 @@
     }
     
     if (buttonNotification)
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, buttonNotification, nil];
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, buttonNotification, nil];
     else
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, buttonSelect, nil];
+        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
     
     self.navigationItem.leftBarButtonItem = nil;
 }
@@ -1388,7 +1371,7 @@
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     // Color text "Cancel"
-    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brandText];
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brand];
     
     if (searchController.isActive) {
         [self deleteRefreshControl];
@@ -1449,10 +1432,7 @@
         
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self setTableViewHeader];
-    });
+
 }
 
 #pragma mark -
@@ -2857,10 +2837,10 @@
 - (void)setTableViewHeader
 {
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-  
+
     NSString *trimmedRichWorkspaceText = [self.richWorkspaceText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    
-    if (capabilities.versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 || self.searchController.isActive) {
+
+    if (capabilities.versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
                 
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
@@ -2869,9 +2849,12 @@
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
+    if (self.searchController.isActive == true) {
+        [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, 0)];
+    }
+    
+    [self.viewRichWorkspace setNeedsLayout];
     [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
-    self.searchController.searchBar.frame = CGRectMake(self.searchController.searchBar.frame.origin.x, self.searchController.searchBar.frame.origin.y, self.tableView.frame.size.width, heightSearchBar);
-    [self.tableView reloadData];
 }
 
 - (void)setTableViewFooter

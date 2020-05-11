@@ -51,12 +51,12 @@ class NCDetailNavigationController: UINavigationController {
     
     //MARK: - NotificationCenter
     
+
     @objc func changeTheming() {
-        navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.brandText]
+
     }
     
+
     //MARK: - Button
 
     @objc func openMenuMore() {

@@ -144,6 +144,14 @@ class NCDetailViewController: UIViewController {
         }
     }
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if isNavigationBarHidden {
+            return .lightContent
+        } else {
+            return .default
+        }
+    }
+    
     //MARK: - Utility
 
     @objc func navigateControllerBarHidden(_ state: Bool) {
@@ -156,11 +164,13 @@ class NCDetailViewController: UIViewController {
         
         navigationController?.setNavigationBarHidden(state, animated: false)
         isNavigationBarHidden = state
+        self.setNeedsStatusBarAppearanceUpdate()
     }
     
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
         if backgroundView.image != nil {
             backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
