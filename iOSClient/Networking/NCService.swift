@@ -205,71 +205,7 @@ class NCService: NSObject {
                 }
                 
                 // ------ GET OTHER SERVICE -------------------------------------------------------------
-                
-                // Get Notification
-                if (capabilities!.isNotificationServerEnabled) {
-                    
-                    OCNetworking.sharedManager().getNotificationWithAccount(account!, completion: { (account, listOfNotifications, message, errorCode) in
-                        
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            
-                            DispatchQueue.global().async {
                                 
-                                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [
-                                    NSSortDescriptor(key: "date", ascending: false)
-                                    ])
-                                
-                                var old = ""
-                                var new = ""
-                                
-                                for notification in listOfNotifications! {
-                                    // download icon
-                                    let id = (notification as! OCNotifications).idNotification
-                                    if let icon = (notification as! OCNotifications).icon {
-                                        
-                                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })                                        
-                                    }
-                                    new = new + String(describing: id)
-                                }
-                                for notification in self.appDelegate.listOfNotifications! {
-                                    let id = (notification as! OCNotifications).idNotification
-                                    old = old + String(describing: id)
-                                }
-                                
-                                DispatchQueue.main.async {
-                                    
-                                    if (new != old) {
-                                        self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
-                                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
-                                    }
-                                    
-                                    // Update Main NavigationBar
-                                    if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
-                                        self.appDelegate.activeMain.setUINavigationBarDefault()
-                                    }
-                                }
-                            }
-                            
-                        } else {
-                            
-                            // Update Main NavigationBar
-                            if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
-                                self.appDelegate.activeMain.setUINavigationBarDefault()
-                            }
-                        }
-                    })
-                    
-                } else {
-                    
-                    // Remove all Notification
-                    self.appDelegate.listOfNotifications.removeAllObjects()
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
-                    // Update Main NavigationBar
-                    if (self.appDelegate.activeMain != nil && self.appDelegate.activeMain.isSelectedMode == false) {
-                        self.appDelegate.activeMain.setUINavigationBarDefault()
-                    }
-                }
-                
                 // Get External Sites
                 if (capabilities!.isExternalSitesServerEnabled) {
                     

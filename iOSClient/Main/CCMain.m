@@ -396,10 +396,7 @@
             [appDelegate.player pause];
         }
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
-                
-        // remove all Notification Messages
-        [appDelegate.listOfNotifications removeAllObjects];
-        
+                        
         // Not Photos Video in library ? then align and Init Auto Upload
         NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", appDelegate.activeAccount]];
         if ([recordsPhotoLibrary count] == 0) {
@@ -989,24 +986,6 @@
     
     [self tableViewSelect:false];
 }
-
-/*
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== View Notification  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewNotification
-{
-    if ([appDelegate.listOfNotifications count] > 0) {
-        
-        CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
-        
-        [notificationVC setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-        [self presentViewController:notificationVC animated:YES completion:nil];
-    }
-}
-*/
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------

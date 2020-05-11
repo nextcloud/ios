@@ -72,9 +72,6 @@
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
         
-    // Initialization Notification
-    self.listOfNotifications = [NSMutableArray new];
-    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 

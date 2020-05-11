@@ -617,6 +617,7 @@
 // Notification
 
 "_notification_"                    = "Notification";
+"_no_notification_"                 = "No notification yet";
 
 // Photo Browser
 

@@ -64,9 +64,6 @@
 @property double currentLatitude;
 @property double currentLongitude;
 
-// Notification
-@property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 

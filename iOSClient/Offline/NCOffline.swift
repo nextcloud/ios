@@ -94,8 +94,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;
+        self.collectionView.emptyDataSetDelegate = self
+        self.collectionView.emptyDataSetSource = self
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
