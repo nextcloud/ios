@@ -27,7 +27,6 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
 #import "CCLogin.h"
 #import "CCCellMain.h"

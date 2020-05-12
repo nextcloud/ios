@@ -128,17 +128,17 @@ typedef enum : NSUInteger {
     [self lockIfNeeded];
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewWillAppear:animated];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+    if (self.passcodeInputView.isEnabled) {
         
-        if (self.passcodeInputView.isEnabled) {
-            [self startTouchIDAuthenticationIfPossible];
-        }
-        [self.passcodeInputView becomeFirstResponder];
-    });
+        //TWS
+        [self performSelector:@selector(startTouchIDAuthenticationIfPossible) withObject:nil afterDelay:0.2];
+    }
+
+    [self.passcodeInputView becomeFirstResponder];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -153,7 +153,11 @@ typedef enum : NSUInteger {
     [super viewDidLayoutSubviews];
     
     CGRect frame = self.view.bounds;
-    CGFloat topBarOffset = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+    
+    CGFloat topBarOffset = 0;
+    if ([self respondsToSelector:@selector(topLayoutGuide)]) {
+        topBarOffset = [self.topLayoutGuide length];
+    }
     
     frame.origin.y += topBarOffset;
     frame.size.height -= (topBarOffset + self.keyboardHeight);

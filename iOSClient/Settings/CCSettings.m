@@ -332,6 +332,7 @@
 
 - (void)changeSimplyPassword
 {
+    /*
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
     viewController.delegate = self;
     viewController.type = BKPasscodeViewControllerCheckPasscodeType;
@@ -360,10 +361,12 @@
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navigationController animated:YES completion:nil];
+     */
 }
 
 - (void)bloccoPassword
 {
+    /*
     // ATTIVAZIONE LOCK PASSWORD
     if ([[CCUtility getBlockCode] length] == 0) {
         
@@ -430,7 +433,7 @@
         navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navigationController animated:YES completion:nil];
     }
-    
+    */
 }
 
 - (void)synchronizeFavorites
@@ -499,6 +502,7 @@
 #pragma mark === BKPasscodeViewController ===
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
 {
     [aViewController dismissViewControllerAnimated:YES completion:nil];
@@ -593,6 +597,6 @@
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
+*/
 
 @end

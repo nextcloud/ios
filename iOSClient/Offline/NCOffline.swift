@@ -54,11 +54,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
 
-    private let refreshControl = UIRefreshControl()
-    
-    //BKPasscodeViewController
-    private var failedAttempts: Double = 0
-    private var lockUntilDate: NSDate?
+    private let refreshControl = UIRefreshControl()    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

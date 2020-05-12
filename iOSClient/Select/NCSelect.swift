@@ -91,11 +91,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var shares: [tableShare]?
     
     private let refreshControl = UIRefreshControl()
-    
-    //BKPasscodeViewController
-    private var failedAttempts: Double = 0
-    private var lockUntilDate: NSDate?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         

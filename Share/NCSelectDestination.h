@@ -46,10 +46,6 @@
 @property (nonatomic, strong) tableMetadata *passMetadata;
 @property (nonatomic, strong) NSString *type;
 
-//BKPasscodeViewController
-@property (nonatomic) NSUInteger failedAttempts;
-@property (nonatomic, strong) NSDate *lockUntilDate;
-
 // Color
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *tintColor;

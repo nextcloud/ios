@@ -26,9 +26,7 @@
 #import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
 
-#import "BKPasscodeLockScreenManager.h"
 #import "Reachability.h"
-#import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCSettings.h"
