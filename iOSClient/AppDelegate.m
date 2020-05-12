@@ -31,9 +31,12 @@
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
+#import "TOPasscodeViewController.h"
 
 @class NCViewerRichdocument;
 
+@interface AppDelegate() <TOPasscodeViewControllerDelegate>
+@end
 
 @implementation AppDelegate
 
@@ -225,6 +228,14 @@
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
+    }
+    
+    // Passcode
+    if ([[CCUtility getBlockCode] length] > 0) {
+        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentDark passcodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = false;
+        [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
     }
     
     // verify task (download/upload) lost
@@ -1659,6 +1670,20 @@
     }
     
     return YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Passcode Delegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
+{
+    return [code isEqualToString:[CCUtility getBlockCode]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -30,11 +30,13 @@
 #import "CCManageAccount.h"
 #import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
+#import "TOPasscodeSettingsViewController.h"
+#import "TOPasscodeViewController.h"
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
 
-@interface CCSettings ()
+@interface CCSettings () <TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
 }
@@ -89,14 +91,7 @@
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-    row.action.formSelector = @selector(bloccoPassword);
-    [section addFormRow:row];
-    
-    // Passcode simply
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"simplypasscode" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_simply_", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
-    [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+    row.action.formSelector = @selector(passcode);
     [section addFormRow:row];
     
     // Lock no screen
@@ -261,14 +256,6 @@
         }
     }
     
-    if ([rowDescriptor.tag isEqualToString:@"simplypasscode"]) {
-        
-        if ([[CCUtility getBlockCode] length] == 0)
-            [CCUtility setSimplyBlockCode:[[rowDescriptor.value valueData] boolValue]];
-        else
-            [self changeSimplyPassword];
-    }
-    
     if ([rowDescriptor.tag isEqualToString:@"favoriteoffline"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
@@ -330,110 +317,52 @@
     }
 }
 
-- (void)changeSimplyPassword
+#pragma mark - Passcode -
+
+- (void)passcodeSettingsViewController:(TOPasscodeSettingsViewController *)passcodeSettingsViewController didChangeToNewPasscode:(NSString *)passcode ofType:(TOPasscodeType)type
 {
-    /*
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.delegate = self;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    viewController.fromType = CCBKPasscodeFromSimply;
-    viewController.title = NSLocalizedString(@"_change_simply_passcode_", nil);
-    viewController.inputViewTitlePassword = YES;
+    [CCUtility setBlockCode:passcode];
+    [passcodeSettingsViewController dismissViewControllerAnimated:YES completion:nil];
     
-    if ([CCUtility getSimplyBlockCode]) {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 6;
-        
-    } else {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 64;
-    }
-    
-    BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-    touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-    viewController.touchIDManager = touchIDManager;
-    
-    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:navigationController animated:YES completion:nil];
-     */
+    [self reloadForm];
 }
 
-- (void)bloccoPassword
+- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
-    /*
-    // ATTIVAZIONE LOCK PASSWORD
+    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
+{
+    if ([code isEqualToString:[CCUtility getBlockCode]]) {
+        [CCUtility setBlockCode:@""];
+        [self reloadForm];
+        
+        return YES;
+    }
+         
+    return NO;
+}
+
+- (void)passcode
+{
     if ([[CCUtility getBlockCode] length] == 0) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.type = BKPasscodeViewControllerNewPasscodeType;
-        viewController.fromType = CCBKPasscodeFromSettingsPasscode;
-        viewController.inputViewTitlePassword = YES;
+        TOPasscodeSettingsViewController *settingsController = [[TOPasscodeSettingsViewController alloc] init];
+        settingsController.requireCurrentPasscode = NO;
+        settingsController.passcodeType = TOPasscodeTypeSixDigits;
+        settingsController.delegate = self;
         
-        if ([CCUtility getSimplyBlockCode]) {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-            
-        } else {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-
-        viewController.title = NSLocalizedString(@"_passcode_activate_", nil);
-        
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-               
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self presentViewController:settingsController animated:YES completion:nil];
         
     } else {
-            
-        // OFF LOCK PASSWORD
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        viewController.fromType = CCBKPasscodeFromSettingsPasscode;
-        viewController.inputViewTitlePassword = YES;
+     
+        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentDark passcodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = true;
         
-        if ([CCUtility getSimplyBlockCode]) {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-            
-        } else {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_disabling_passcode_", nil);
-            
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self presentViewController:passcodeViewController animated:YES completion:nil];
     }
-    */
 }
 
 - (void)synchronizeFavorites
@@ -497,106 +426,5 @@
     }
     return sectionName;
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === BKPasscodeViewController ===
-#pragma --------------------------------------------------------------------------------------------
-
-/*
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    switch (aViewController.type) {
-            
-        case BKPasscodeViewControllerNewPasscodeType: {
-            
-            // enable passcode
-            [CCUtility setBlockCode:aPasscode];
-        }
-        break;
-            
-        case BKPasscodeViewControllerCheckPasscodeType: {
-            
-            // disable passcode
-            if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode) {
-                
-                [CCUtility setBlockCode:@""];
-                [appDelegate.activeMain.tableView reloadData];
-            }
-            
-            // change simply
-            if (aViewController.fromType == CCBKPasscodeFromSimply) {
-                
-                // disable passcode
-                [CCUtility setBlockCode:@""];
-                [appDelegate.activeMain.tableView reloadData];
-                
-                [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];
-                
-                //  Call new passcode
-                [self bloccoPassword];
-            }
-        }
-        break;
-            
-        default:
-        break;
-    }
-    
-    [self reloadForm];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode || aViewController.fromType == CCBKPasscodeFromSimply) {
-        
-        if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-            self.lockUntilDate = nil;
-            self.failedAttempts = 0;
-            aResultHandler(YES);
-        } else aResultHandler(NO);
-        
-    }
-}
-
-- (void)passcodeViewControllerDidFailAttempt:(CCBKPasscode *)aViewController
-{
-    self.failedAttempts++;
-    
-    if (self.failedAttempts > 5) {
-        
-        NSTimeInterval timeInterval = 60;
-        
-        if (self.failedAttempts > 6) {
-            
-            NSUInteger multiplier = self.failedAttempts - 6;
-            
-            timeInterval = (5 * 60) * multiplier;
-            
-            if (timeInterval > 3600 * 24) {
-                timeInterval = 3600 * 24;
-            }
-        }
-        
-        self.lockUntilDate = [NSDate dateWithTimeIntervalSinceNow:timeInterval];
-    }
-}
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return self.failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return self.lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-*/
 
 @end
