@@ -1016,13 +1016,6 @@
     UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brand};
     UINavigationBar.appearance.translucent = false;
     // Refresh UIAppearance after application loaded
-    NSArray *windows = [UIApplication sharedApplication].windows;
-    for (UIWindow *window in windows) {
-        for (UIView *view in window.subviews) {
-            [view removeFromSuperview];
-            [window addSubview:view];
-        }
-    }
     
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
