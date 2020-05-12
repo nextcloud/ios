@@ -91,7 +91,7 @@
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-    row.action.formSelector = @selector(passcode);
+    row.action.formSelector = @selector(passcode:);
     [section addFormRow:row];
     
     // Lock no screen
@@ -344,8 +344,10 @@
     return NO;
 }
 
-- (void)passcode
+- (void)passcode:(XLFormRowDescriptor *)sender
 {
+    [self deselectFormRow:sender];
+
     if ([[CCUtility getBlockCode] length] == 0) {
         
         TOPasscodeSettingsViewController *settingsController = [[TOPasscodeSettingsViewController alloc] init];
