@@ -229,10 +229,7 @@
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
-    
-    // Passcode
-    [self passcode];
-   
+
     // verify task (download/upload) lost
     [self verifyTaskLost];
     
@@ -258,7 +255,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"[LOG] Enter in Background");
-        
+            
     if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
         
         __block UIBackgroundTaskIdentifier background_task;
