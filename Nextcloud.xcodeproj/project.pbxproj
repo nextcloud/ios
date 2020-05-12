@@ -152,15 +152,7 @@
 		F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */; };
 		F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */; };
 		F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD48246AC9B80009B204 /* nsEscSM.cpp */; };
-		F711CD8B246ACF440009B204 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD78246ACF430009B204 /* BKPasscodeDummyViewController.m */; };
-		F711CD8C246ACF440009B204 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD79246ACF430009B204 /* BKPasscodeInputView.m */; };
-		F711CD8D246ACF440009B204 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD7C246ACF430009B204 /* BKShiftingView.m */; };
-		F711CD8E246ACF440009B204 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD7D246ACF430009B204 /* BKPasscodeField.m */; };
-		F711CD8F246ACF440009B204 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD7E246ACF430009B204 /* BKTouchIDManager.m */; };
-		F711CD90246ACF440009B204 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD81246ACF430009B204 /* BKPasscodeLockScreenManager.m */; };
-		F711CD91246ACF440009B204 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD84246ACF430009B204 /* BKPasscodeViewController.m */; };
-		F711CD92246ACF440009B204 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD85246ACF430009B204 /* BKTouchIDSwitchView.m */; };
-		F711CD93246ACF440009B204 /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD89246ACF440009B204 /* AFViewShaker.m */; };
+		F711CD97246AD0970009B204 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD7E246ACF430009B204 /* BKTouchIDManager.m */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
@@ -669,8 +661,6 @@
 		F711CD85246ACF430009B204 /* BKTouchIDSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDSwitchView.m; sourceTree = "<group>"; };
 		F711CD86246ACF430009B204 /* BKTouchIDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDManager.h; sourceTree = "<group>"; };
 		F711CD87246ACF430009B204 /* BKPasscodeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeField.h; sourceTree = "<group>"; };
-		F711CD89246ACF440009B204 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
-		F711CD8A246ACF440009B204 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
 		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
@@ -1173,7 +1163,6 @@
 		F70F02A81C889183008DAB36 /* Libraries external */ = {
 			isa = PBXGroup;
 			children = (
-				F711CD88246ACF440009B204 /* AFViewShaker */,
 				F711CD76246ACF430009B204 /* BKPasscodeView */,
 				F711CC75246AC99E0009B204 /* OCCommunicationLib */,
 				F711CD08246AC9B70009B204 /* NCUchardet */,
@@ -1438,15 +1427,6 @@
 				F711CD87246ACF430009B204 /* BKPasscodeField.h */,
 			);
 			path = BKPasscodeView;
-			sourceTree = "<group>";
-		};
-		F711CD88246ACF440009B204 /* AFViewShaker */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD89246ACF440009B204 /* AFViewShaker.m */,
-				F711CD8A246ACF440009B204 /* AFViewShaker.h */,
-			);
-			path = AFViewShaker;
 			sourceTree = "<group>";
 		};
 		F7169A161EE590930086BD69 /* Shares */ = {
@@ -2669,7 +2649,6 @@
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
-				F711CD8E246ACF440009B204 /* BKPasscodeField.m in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
@@ -2690,8 +2669,8 @@
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
+				F711CD97246AD0970009B204 /* BKTouchIDManager.m in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
-				F711CD91246ACF440009B204 /* BKPasscodeViewController.m in Sources */,
 				F711CCDC246AC99E0009B204 /* OCSharedDto.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
@@ -2708,7 +2687,6 @@
 				F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
 				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
-				F711CD8C246ACF440009B204 /* BKPasscodeInputView.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,
@@ -2718,7 +2696,6 @@
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
-				F711CD8F246ACF440009B204 /* BKTouchIDManager.m in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
 				F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */,
@@ -2746,7 +2723,6 @@
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
-				F711CD92246ACF440009B204 /* BKTouchIDSwitchView.m in Sources */,
 				F711CCE0246AC99E0009B204 /* OCCommunication.m in Sources */,
 				F711CCC0246AC99E0009B204 /* OCRichObjectStrings.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
@@ -2789,16 +2765,13 @@
 				F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
-				F711CD93246ACF440009B204 /* AFViewShaker.m in Sources */,
 				F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */,
 				F711CCB4246AC99E0009B204 /* HCFeatures.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
-				F711CD8B246ACF440009B204 /* BKPasscodeDummyViewController.m in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */,
 				F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */,
-				F711CD8D246ACF440009B204 /* BKShiftingView.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F711CD69246AC9B80009B204 /* LangRussianModel.cpp in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
@@ -2866,7 +2839,6 @@
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
-				F711CD90246ACF440009B204 /* BKPasscodeLockScreenManager.m in Sources */,
 				F711CCCC246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
