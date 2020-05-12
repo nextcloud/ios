@@ -135,8 +135,12 @@ NSString *const NCResource = @"<d:displayname/>"
     } else {
         [UtilsFramework deleteAllCookies];
     }
-    
-    OCHTTPRequestOperation *operation = (OCHTTPRequestOperation*) [sharedOCCommunication.networkSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+	
+    OCHTTPRequestOperation *operation = (OCHTTPRequestOperation*)[sharedOCCommunication.networkSessionManager dataTaskWithRequest:request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
         if (!error) {
             success((NSHTTPURLResponse*)response,responseObject, token);
         } else {
@@ -161,8 +165,12 @@ NSString *const NCResource = @"<d:displayname/>"
         [UtilsFramework deleteAllCookies];
     }
     
-    OCHTTPRequestOperation *operation = (OCHTTPRequestOperation*) [sharedOCCommunication.networkSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-         if (!error) {
+    OCHTTPRequestOperation *operation = (OCHTTPRequestOperation*)[sharedOCCommunication.networkSessionManager  dataTaskWithRequest:request uploadProgress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } downloadProgress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+        if (!error) {
             success((NSHTTPURLResponse*)response,responseObject);
         } else {
             failure((NSHTTPURLResponse*)response, responseObject, error);
