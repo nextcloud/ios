@@ -1012,20 +1012,6 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
     }
 }
 
-//
-// https://stackoverflow.com/questions/44822558/ios-11-uitabbar-uitabbaritem-positioning-issue/46348796#46348796
-//
-extension UITabBar {
-    // Workaround for iOS 11's new UITabBar behavior where on iPad, the UITabBar inside
-    // the Master view controller shows the UITabBarItem icon next to the text
-    override open var traitCollection: UITraitCollection {
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return UITraitCollection(horizontalSizeClass: .compact)
-        }
-        return super.traitCollection
-    }
-}
-
 //MARK: - Networking Main
 
 class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
