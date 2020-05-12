@@ -31,7 +31,7 @@
 @interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
-    NSString *passcodeType = @"";
+    NSString *passcodeType;
 }
 @end
 
