@@ -30,9 +30,6 @@
 @interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate>
 {
     AppDelegate *appDelegate;
-
-    NSUInteger _failedAttempts;
-    NSDate *_lockUntilDate;
 }
 @end
 
@@ -189,6 +186,7 @@
 
     if ([[CCUtility getBlockCode] length]) {
         
+        /*
         CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
         viewController.delegate = self;
         viewController.fromType = CCBKPasscodeFromStartEncryption;
@@ -213,6 +211,7 @@
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         [self presentViewController:navigationController animated:YES completion:nil];
+        */
         
     } else {
         
@@ -228,6 +227,7 @@
 {
     [self deselectFormRow:sender];
     
+    /*
     if ([[CCUtility getBlockCode] length]) {
         
         CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
@@ -263,12 +263,14 @@
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
+     */
 }
 
 - (void)removeLocallyEncryption:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
+    /*
     if ([[CCUtility getBlockCode] length]) {
         
         CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
@@ -304,6 +306,7 @@
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
+    */
 }
 
 - (void)deletePublicKey:(XLFormRowDescriptor *)sender
@@ -350,6 +353,7 @@
 #pragma mark === BKPasscodeViewController ===
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 - (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
 {
     return _failedAttempts;
@@ -416,5 +420,6 @@
         [self presentViewController:alertController animated:YES completion:nil];
     }
 }
+*/
 
 @end

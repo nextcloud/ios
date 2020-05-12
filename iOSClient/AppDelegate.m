@@ -32,9 +32,12 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 #import <QuartzCore/QuartzCore.h>
+#import "TOPasscodeViewController.h"
 
 @class NCViewerRichdocument;
 
+@interface AppDelegate() <TOPasscodeViewControllerDelegate>
+@end
 
 @implementation AppDelegate
 
@@ -73,9 +76,6 @@
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
         
-    // Initialization Notification
-    self.listOfNotifications = [NSMutableArray new];
-    
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
@@ -116,13 +116,6 @@
 
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
-    
-    // passcode
-    [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[BKPasscodeLockScreenManager sharedManager] showLockScreen:NO];
-    });
     
     // Quick Actions
     if([[UIApplicationShortcutItem class] respondsToSelector:@selector(new)]) {
@@ -238,6 +231,14 @@
         [[NCService sharedInstance] middlewarePing];
     }
     
+    // Passcode
+    if ([[CCUtility getBlockCode] length] > 0) {
+        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentDark passcodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = false;
+        [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
+    }
+    
     // verify task (download/upload) lost
     [self verifyTaskLost];
     
@@ -263,9 +264,7 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"[LOG] Enter in Background");
-    
-    [[BKPasscodeLockScreenManager sharedManager] showLockScreen:YES];
-    
+        
     if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
         
         __block UIBackgroundTaskIdentifier background_task;
@@ -1019,14 +1018,6 @@
     // Dark Mode
     [NCBrandColor.sharedInstance setDarkMode];
     
-    // Appearance
-    UINavigationBar.appearance.tintColor = NCBrandColor.sharedInstance.brand;
-    UINavigationBar.appearance.barTintColor = NCBrandColor.sharedInstance.brand;
-    //[UINavigationBar.appearance setBackgroundImage:[[NCUtility sharedInstance] fromColorWithColor:NCBrandColor.sharedInstance.brand] forBarMetrics: UIBarMetricsDefault];
-    UINavigationBar.appearance.titleTextAttributes = @{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.brand};
-    UINavigationBar.appearance.translucent = false;
-    // Refresh UIAppearance after application loaded
-    
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
@@ -1080,118 +1071,6 @@
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Manager Passcode =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)lockScreenManagerShouldShowLockScreen:(BKPasscodeLockScreenManager *)aManager
-{
-    // ServerUrl active
-    NSString *serverUrl = self.activeMain.serverUrl;
-    BOOL isBlockZone = false;
-    
-    // fermiamo la data della sessione
-    self.sessionePasscodeLock = nil;
-    
-    // se il block code è a zero esci con NON attivare la richiesta password
-    if ([[CCUtility getBlockCode] length] == 0) return NO;
-    
-    // se non c'è attivo un account esci con NON attivare la richiesta password
-    if ([self.activeAccount length] == 0) return NO;
-    
-    // se non è attivo il OnlyLockDir esci con NON attivare la richiesta password
-    if (serverUrl && _activeUrl) {
-        
-        while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
-            
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, serverUrl]];
-            
-            if (directory.lock) {
-                isBlockZone = true;
-                break;
-            } else {
-                serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                if (serverUrl == self.activeUrl)
-                    break;
-            }
-        }
-    }
-    
-    if ([CCUtility getOnlyLockDir] && !isBlockZone) return NO;
-    
-    return YES;
-}
-
-- (UIViewController *)lockScreenManagerPasscodeViewController:(BKPasscodeLockScreenManager *)aManager
-{
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    viewController.delegate = self;
-    viewController.title = [NCBrandOptions sharedInstance].brand;
-    viewController.fromType = CCBKPasscodeFromLockScreen;
-    viewController.inputViewTitlePassword = YES;
-    
-    if ([CCUtility getSimplyBlockCode]) {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 6;
-        
-    } else {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 64;
-    }
-
-    viewController.touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName: k_serviceShareKeyChain];
-    viewController.touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-    return navigationController;
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    // is a lock screen
-    if (aViewController.fromType == CCBKPasscodeFromLockScreen) {
-        
-        [aViewController dismissViewControllerAnimated:YES completion:nil];
-        
-        // start session Passcode Lock
-        BOOL isBlockZone = false;
-        NSString *serverUrl = self.activeMain.serverUrl;
-        
-        while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
-            
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, serverUrl]];
-            
-            if (directory.lock) {
-                isBlockZone = true;
-                break;
-            } else {
-                serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
-                if (serverUrl == self.activeUrl)
-                    break;
-            }
-        }
-        if (isBlockZone)
-            self.sessionePasscodeLock = [NSDate date];
-     }
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if (aViewController.fromType == CCBKPasscodeFromLockScreen || aViewController.fromType == CCBKPasscodeFromInit) {
-        if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-            //self.lockUntilDate = nil;
-            //self.failedAttempts = 0;
-            aResultHandler(YES);
-        } else aResultHandler(NO);
-    } else aResultHandler(YES);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1735,7 +1614,7 @@
                                                     NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                                     NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.url, k_webDAV, [path stringByDeletingLastPathComponent]]];
                                                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
-                                                    [self.activeMain performSegueDirectoryWithControlPasscode:true metadata:metadata blinkFileNamePath:fileNamePath];
+                                                    [self.activeMain performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {
                                                     
@@ -1802,6 +1681,20 @@
     }
     
     return YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Passcode Delegate =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
+{
+    return [code isEqualToString:[CCUtility getBlockCode]];
 }
 
 #pragma --------------------------------------------------------------------------------------------

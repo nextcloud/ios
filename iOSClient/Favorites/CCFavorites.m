@@ -662,18 +662,15 @@
     }
     
     // Directory
-    if (self.metadata.directory)
-        [self performSegueDirectoryWithControlPasscode];
-}
-
--(void)performSegueDirectoryWithControlPasscode
-{
-    CCFavorites *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCFavorites"];
-    
-    vc.serverUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-    vc.titleViewControl = self.metadata.fileNameView;
-    
-    [self.navigationController pushViewController:vc animated:YES];
+    if (self.metadata.directory) {
+        
+        CCFavorites *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCFavorites"];
+        
+        vc.serverUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
+        vc.titleViewControl = self.metadata.fileNameView;
+        
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

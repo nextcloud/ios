@@ -27,46 +27,6 @@
 		F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
 		F700222D1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
-		F70022B31EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
-		F70022B41EC4C9100080073F /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
-		F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
-		F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
-		F70022B91EC4C9100080073F /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
-		F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
-		F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
-		F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226E1EC4C9100080073F /* OCExternalSites.m */; };
-		F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
-		F70022C01EC4C9100080073F /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022701EC4C9100080073F /* OCFileDto.m */; };
-		F70022C21EC4C9100080073F /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
-		F70022C31EC4C9100080073F /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022731EC4C9100080073F /* OCNotifications.m */; };
-		F70022C51EC4C9100080073F /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
-		F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022751EC4C9100080073F /* OCNotificationsAction.m */; };
-		F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
-		F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022771EC4C9100080073F /* OCRichObjectStrings.m */; };
-		F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
-		F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
-		F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
-		F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227B1EC4C9100080073F /* OCShareUser.m */; };
-		F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
-		F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F700227D1EC4C9100080073F /* OCUserProfile.m */; };
-		F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
-		F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022801EC4C9100080073F /* NSDate+ISO8601.m */; };
-		F70022D71EC4C9100080073F /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
-		F70022D81EC4C9100080073F /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022821EC4C9100080073F /* NSDate+RFC1123.m */; };
-		F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
-		F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */; };
-		F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
-		F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022861EC4C9100080073F /* OCWebDAVClient.m */; };
-		F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
-		F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */; };
-		F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
-		F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */; };
-		F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
-		F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022911EC4C9100080073F /* OCXMLSharedParser.m */; };
-		F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
-		F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F700229D1EC4C9100080073F /* NSString+Encode.m */; };
-		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
-		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F700510022DF63AC003A3356 /* NCShare.storyboard */; };
 		F700510322DF6897003A3356 /* Parchment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F700510222DF6897003A3356 /* Parchment.framework */; };
 		F700510522DF6A89003A3356 /* NCShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = F700510422DF6A89003A3356 /* NCShare.swift */; };
@@ -94,15 +54,128 @@
 		F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */; };
 		F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
+		F711CCB0246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */; };
+		F711CCB1246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */; };
+		F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC79246AC99E0009B204 /* OCFileDto.m */; };
+		F711CCB3246AC99E0009B204 /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC79246AC99E0009B204 /* OCFileDto.m */; };
+		F711CCB4246AC99E0009B204 /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7C246AC99E0009B204 /* HCFeatures.m */; };
+		F711CCB5246AC99E0009B204 /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7C246AC99E0009B204 /* HCFeatures.m */; };
+		F711CCB6246AC99E0009B204 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */; };
+		F711CCB7246AC99E0009B204 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */; };
+		F711CCB8246AC99E0009B204 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7F246AC99E0009B204 /* OCUserProfile.m */; };
+		F711CCB9246AC99E0009B204 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7F246AC99E0009B204 /* OCUserProfile.m */; };
+		F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC80246AC99E0009B204 /* OCShareUser.m */; };
+		F711CCBB246AC99E0009B204 /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC80246AC99E0009B204 /* OCShareUser.m */; };
+		F711CCBC246AC99E0009B204 /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC86246AC99E0009B204 /* UtilsFramework.m */; };
+		F711CCBD246AC99E0009B204 /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC86246AC99E0009B204 /* UtilsFramework.m */; };
+		F711CCBE246AC99E0009B204 /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC87246AC99E0009B204 /* NSString+Encode.m */; };
+		F711CCBF246AC99E0009B204 /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC87246AC99E0009B204 /* NSString+Encode.m */; };
+		F711CCC0246AC99E0009B204 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */; };
+		F711CCC1246AC99E0009B204 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */; };
+		F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC89246AC99E0009B204 /* OCExternalSites.m */; };
+		F711CCC3246AC99E0009B204 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC89246AC99E0009B204 /* OCExternalSites.m */; };
+		F711CCC4246AC99E0009B204 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC8D246AC99E0009B204 /* OCCapabilities.m */; };
+		F711CCC5246AC99E0009B204 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC8D246AC99E0009B204 /* OCCapabilities.m */; };
+		F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC90246AC99E0009B204 /* NCXMLListParser.m */; };
+		F711CCC7246AC99E0009B204 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC90246AC99E0009B204 /* NCXMLListParser.m */; };
+		F711CCC8246AC99E0009B204 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */; };
+		F711CCC9246AC99E0009B204 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */; };
+		F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */; };
+		F711CCCB246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */; };
+		F711CCCC246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */; };
+		F711CCCD246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */; };
+		F711CCCE246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */; };
+		F711CCCF246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */; };
+		F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */; };
+		F711CCD1246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */; };
+		F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */; };
+		F711CCD3246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */; };
+		F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */; };
+		F711CCD5246AC99E0009B204 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */; };
+		F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */; };
+		F711CCD7246AC99E0009B204 /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */; };
+		F711CCD8246AC99E0009B204 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */; };
+		F711CCD9246AC99E0009B204 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */; };
+		F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA4246AC99E0009B204 /* OCActivity.m */; };
+		F711CCDB246AC99E0009B204 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA4246AC99E0009B204 /* OCActivity.m */; };
+		F711CCDC246AC99E0009B204 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA7246AC99E0009B204 /* OCSharedDto.m */; };
+		F711CCDD246AC99E0009B204 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA7246AC99E0009B204 /* OCSharedDto.m */; };
+		F711CCDE246AC99E0009B204 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA8246AC99E0009B204 /* NCComments.m */; };
+		F711CCDF246AC99E0009B204 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA8246AC99E0009B204 /* NCComments.m */; };
+		F711CCE0246AC99E0009B204 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA9246AC99E0009B204 /* OCCommunication.m */; };
+		F711CCE1246AC99E0009B204 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA9246AC99E0009B204 /* OCCommunication.m */; };
+		F711CCE2246AC99E0009B204 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCAD246AC99E0009B204 /* OCNotifications.m */; };
+		F711CCE3246AC99E0009B204 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCAD246AC99E0009B204 /* OCNotifications.m */; };
+		F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CCFF246AC9B10009B204 /* DropdownItem.swift */; };
+		F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD00246AC9B10009B204 /* DropUpMenu.swift */; };
+		F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD02246AC9B10009B204 /* DropdownMenu.swift */; };
+		F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD03246AC9B10009B204 /* SectionHeader.swift */; };
+		F711CD4C246AC9B80009B204 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD09246AC9B70009B204 /* NCUchardet.m */; };
+		F711CD4D246AC9B80009B204 /* nsEUCTWProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */; };
+		F711CD4E246AC9B80009B204 /* symbols.cmake in Resources */ = {isa = PBXBuildFile; fileRef = F711CD0D246AC9B70009B204 /* symbols.cmake */; };
+		F711CD4F246AC9B80009B204 /* uchardet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD0E246AC9B70009B204 /* uchardet.cpp */; };
+		F711CD50246AC9B80009B204 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = F711CD11246AC9B70009B204 /* CMakeLists.txt */; };
+		F711CD51246AC9B80009B204 /* nsMBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */; };
+		F711CD52246AC9B80009B204 /* nsSBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */; };
+		F711CD53246AC9B80009B204 /* nsSBCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */; };
+		F711CD54246AC9B80009B204 /* nsBig5Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */; };
+		F711CD55246AC9B80009B204 /* EUCTWFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD19246AC9B70009B204 /* EUCTWFreq.tab */; };
+		F711CD56246AC9B80009B204 /* nsEUCKRProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */; };
+		F711CD57246AC9B80009B204 /* nsGB2312Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */; };
+		F711CD58246AC9B80009B204 /* nsMBCSSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */; };
+		F711CD59246AC9B80009B204 /* JpCntx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD22246AC9B80009B204 /* JpCntx.cpp */; };
+		F711CD5A246AC9B80009B204 /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD23246AC9B80009B204 /* CharDistribution.cpp */; };
+		F711CD5B246AC9B80009B204 /* nsLatin1Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */; };
+		F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */; };
+		F711CD5D246AC9B80009B204 /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD27246AC9B80009B204 /* JISFreq.tab */; };
+		F711CD5E246AC9B80009B204 /* nsHebrewProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */; };
+		F711CD5F246AC9B80009B204 /* EUCKRFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */; };
+		F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */; };
+		F711CD61246AC9B80009B204 /* nsCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */; };
+		F711CD62246AC9B80009B204 /* LangHungarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */; };
+		F711CD63246AC9B80009B204 /* LangVietnameseModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */; };
+		F711CD64246AC9B80009B204 /* LangBulgarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */; };
+		F711CD65246AC9B80009B204 /* LangFrenchModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */; };
+		F711CD66246AC9B80009B204 /* LangThaiModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD32246AC9B80009B204 /* LangThaiModel.cpp */; };
+		F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */; };
+		F711CD68246AC9B80009B204 /* LangArabicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD34246AC9B80009B204 /* LangArabicModel.cpp */; };
+		F711CD69246AC9B80009B204 /* LangRussianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD35246AC9B80009B204 /* LangRussianModel.cpp */; };
+		F711CD6A246AC9B80009B204 /* LangHebrewModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */; };
+		F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */; };
+		F711CD6C246AC9B80009B204 /* LangTurkishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */; };
+		F711CD6D246AC9B80009B204 /* LangGermanModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD39246AC9B80009B204 /* LangGermanModel.cpp */; };
+		F711CD6E246AC9B80009B204 /* LangGreekModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */; };
+		F711CD6F246AC9B80009B204 /* LangDanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */; };
+		F711CD70246AC9B80009B204 /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD3C246AC9B80009B204 /* Big5Freq.tab */; };
+		F711CD71246AC9B80009B204 /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD3F246AC9B80009B204 /* GB2312Freq.tab */; };
+		F711CD72246AC9B80009B204 /* nsUniversalDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */; };
+		F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */; };
+		F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */; };
+		F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD48246AC9B80009B204 /* nsEscSM.cpp */; };
+		F711CDC2246AD2E40009B204 /* TOPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */; };
+		F711CDC3246AD2E40009B204 /* TOPasscodeCircleImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */; };
+		F711CDC4246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */; };
+		F711CDC5246AD2E40009B204 /* TOSettingsKeypadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */; };
+		F711CDC6246AD2E40009B204 /* TOPasscodeViewContentLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */; };
+		F711CDC7246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */; };
+		F711CDC8246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */; };
+		F711CDC9246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */; };
+		F711CDCA246AD2E40009B204 /* TOPasscodeFixedInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */; };
+		F711CDCB246AD2E40009B204 /* TOPasscodeCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */; };
+		F711CDCC246AD2E40009B204 /* TOPasscodeButtonLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */; };
+		F711CDCD246AD2E40009B204 /* TOPasscodeVariableInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */; };
+		F711CDCE246AD2E40009B204 /* TOPasscodeInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */; };
+		F711CDCF246AD2E40009B204 /* TOPasscodeCircleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */; };
+		F711CDD0246AD2E40009B204 /* TOPasscodeKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */; };
+		F711CDD1246AD2E40009B204 /* TOPasscodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDC0246AD2E40009B204 /* TOPasscodeView.m */; };
+		F711CDD2246AD2E40009B204 /* TOPasscodeSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
 		F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
 		F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
-		F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
@@ -133,64 +206,7 @@
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
 		F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7395139221B127F00D986C8 /* NCSectionMediaHeader.xib */; };
-		F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */; };
-		F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */; };
-		F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB01F470D9100BBEE4B /* CMakeLists.txt */; };
-		F73B4EF11F470D9100BBEE4B /* EUCKRFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB11F470D9100BBEE4B /* EUCKRFreq.tab */; };
-		F73B4EF21F470D9100BBEE4B /* EUCTWFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB21F470D9100BBEE4B /* EUCTWFreq.tab */; };
-		F73B4EF31F470D9100BBEE4B /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB31F470D9100BBEE4B /* GB2312Freq.tab */; };
-		F73B4EF41F470D9100BBEE4B /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB41F470D9100BBEE4B /* JISFreq.tab */; };
-		F73B4EF51F470D9100BBEE4B /* JpCntx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EB51F470D9100BBEE4B /* JpCntx.cpp */; };
-		F73B4EF61F470D9100BBEE4B /* LangArabicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EB81F470D9100BBEE4B /* LangArabicModel.cpp */; };
-		F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EB91F470D9100BBEE4B /* LangBulgarianModel.cpp */; };
-		F73B4EF81F470D9100BBEE4B /* LangDanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBA1F470D9100BBEE4B /* LangDanishModel.cpp */; };
-		F73B4EF91F470D9100BBEE4B /* LangEsperantoModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBB1F470D9100BBEE4B /* LangEsperantoModel.cpp */; };
-		F73B4EFA1F470D9100BBEE4B /* LangFrenchModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBC1F470D9100BBEE4B /* LangFrenchModel.cpp */; };
-		F73B4EFB1F470D9100BBEE4B /* LangGermanModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBD1F470D9100BBEE4B /* LangGermanModel.cpp */; };
-		F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBE1F470D9100BBEE4B /* LangGreekModel.cpp */; };
-		F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EBF1F470D9100BBEE4B /* LangHebrewModel.cpp */; };
-		F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC01F470D9100BBEE4B /* LangHungarianModel.cpp */; };
-		F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC11F470D9100BBEE4B /* LangRussianModel.cpp */; };
-		F73B4F001F470D9100BBEE4B /* LangSpanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC21F470D9100BBEE4B /* LangSpanishModel.cpp */; };
-		F73B4F011F470D9100BBEE4B /* LangThaiModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC31F470D9100BBEE4B /* LangThaiModel.cpp */; };
-		F73B4F021F470D9100BBEE4B /* LangTurkishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC41F470D9100BBEE4B /* LangTurkishModel.cpp */; };
-		F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC51F470D9100BBEE4B /* LangVietnameseModel.cpp */; };
-		F73B4F041F470D9100BBEE4B /* nsBig5Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC61F470D9100BBEE4B /* nsBig5Prober.cpp */; };
-		F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EC81F470D9100BBEE4B /* nsCharSetProber.cpp */; };
-		F73B4F061F470D9100BBEE4B /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ECC1F470D9100BBEE4B /* nsEscCharsetProber.cpp */; };
-		F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ECE1F470D9100BBEE4B /* nsEscSM.cpp */; };
-		F73B4F081F470D9100BBEE4B /* nsEUCJPProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ECF1F470D9100BBEE4B /* nsEUCJPProber.cpp */; };
-		F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ED11F470D9100BBEE4B /* nsEUCKRProber.cpp */; };
-		F73B4F0A1F470D9100BBEE4B /* nsEUCTWProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ED31F470D9100BBEE4B /* nsEUCTWProber.cpp */; };
-		F73B4F0B1F470D9100BBEE4B /* nsGB2312Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ED51F470D9100BBEE4B /* nsGB2312Prober.cpp */; };
-		F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ED71F470D9100BBEE4B /* nsHebrewProber.cpp */; };
-		F73B4F0D1F470D9100BBEE4B /* nsLatin1Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4ED91F470D9100BBEE4B /* nsLatin1Prober.cpp */; };
-		F73B4F0E1F470D9100BBEE4B /* nsMBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EDB1F470D9100BBEE4B /* nsMBCSGroupProber.cpp */; };
-		F73B4F0F1F470D9100BBEE4B /* nsMBCSSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EDD1F470D9100BBEE4B /* nsMBCSSM.cpp */; };
-		F73B4F101F470D9100BBEE4B /* nsSBCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EDF1F470D9100BBEE4B /* nsSBCharSetProber.cpp */; };
-		F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE11F470D9100BBEE4B /* nsSBCSGroupProber.cpp */; };
-		F73B4F121F470D9100BBEE4B /* nsSJISProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE31F470D9100BBEE4B /* nsSJISProber.cpp */; };
-		F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE51F470D9100BBEE4B /* nsUniversalDetector.cpp */; };
-		F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE71F470D9100BBEE4B /* nsUTF8Prober.cpp */; };
-		F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EEA1F470D9100BBEE4B /* symbols.cmake */; };
-		F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */; };
 		F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */; };
-		F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
-		F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */; };
-		F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
-		F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */; };
-		F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */; };
-		F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */; };
-		F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */; };
-		F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */; };
-		F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */; };
-		F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */; };
-		F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0641E813DFF006E3047 /* BKShiftingView.m */; };
-		F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0641E813DFF006E3047 /* BKShiftingView.m */; };
-		F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
-		F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */; };
-		F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
-		F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */; };
 		F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7421EAE2294044B00C4B7C1 /* Accelerate.framework */; };
@@ -213,10 +229,6 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
-		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
-		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
-		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
-		F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC821772B6100BB1CDF /* SectionHeader.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F758B45A212C564000515F55 /* Scan.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F758B457212C564000515F55 /* Scan.storyboard */; };
 		F758B45E212C569D00515F55 /* ScanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45D212C569C00515F55 /* ScanCell.swift */; };
@@ -274,7 +286,6 @@
 		F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F77B0E141D118A16002130FE /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
-		F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F02B41C889183008DAB36 /* AFViewShaker.m */; };
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
@@ -285,7 +296,6 @@
 		F77B0E8F1D118A16002130FE /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
 		F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
-		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
@@ -302,8 +312,6 @@
 		F77D49A91DC238E500CDC568 /* loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = F77D49A71DC238E500CDC568 /* loading.gif */; };
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
-		F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
-		F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F781996822636BFA00EBDF6A /* HCFeatures.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
@@ -356,11 +364,6 @@
 		F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B174C722FAC0A8000B7579 /* AppDelegate.m */; };
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
-		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
-		F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
-		F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */; };
-		F7B6ACDB22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
-		F7B6ACDC22FC2D15008AB646 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B6ACDA22FC2D15008AB646 /* NCComments.m */; };
 		F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
@@ -390,8 +393,6 @@
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
-		F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
-		F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */; };
 		F7D4B6852295663D000C2C86 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */; };
 		F7D4B6862295663D000C2C86 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */; };
 		F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B67F2295663D000C2C86 /* FirebaseAnalytics.framework */; };
@@ -409,12 +410,8 @@
 		F7D4B69B2295666E000C2C86 /* GoogleMobileVision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D4B6942295666E000C2C86 /* GoogleMobileVision.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */; };
-		F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
-		F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */; };
 		F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DBD82B23E46A4700ECB7C6 /* MarkdownKit.framework */; };
 		F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */; };
-		F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
-		F7DFB7E1219C312D00680748 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */; };
 		F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */; };
 		F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */; };
 		F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */; };
@@ -497,49 +494,6 @@
 		F70006F924164F8D00F214A5 /* NCViewerImageVideo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImageVideo.storyboard; sourceTree = "<group>"; };
 		F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageVideo.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
-		F70022661EC4C9100080073F /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
-		F70022671EC4C9100080073F /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
-		F70022681EC4C9100080073F /* OCCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCapabilities.h; sourceTree = "<group>"; };
-		F70022691EC4C9100080073F /* OCCapabilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCapabilities.m; sourceTree = "<group>"; };
-		F700226A1EC4C9100080073F /* OCCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCommunication.h; sourceTree = "<group>"; };
-		F700226B1EC4C9100080073F /* OCCommunication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCommunication.m; sourceTree = "<group>"; };
-		F700226C1EC4C9100080073F /* OCErrorMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCErrorMsg.h; sourceTree = "<group>"; };
-		F700226D1EC4C9100080073F /* OCExternalSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCExternalSites.h; sourceTree = "<group>"; };
-		F700226E1EC4C9100080073F /* OCExternalSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCExternalSites.m; sourceTree = "<group>"; };
-		F700226F1EC4C9100080073F /* OCFileDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFileDto.h; sourceTree = "<group>"; };
-		F70022701EC4C9100080073F /* OCFileDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCFileDto.m; sourceTree = "<group>"; };
-		F70022711EC4C9100080073F /* OCFrameworkConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFrameworkConstants.h; sourceTree = "<group>"; };
-		F70022721EC4C9100080073F /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
-		F70022731EC4C9100080073F /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
-		F70022741EC4C9100080073F /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
-		F70022751EC4C9100080073F /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
-		F70022761EC4C9100080073F /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
-		F70022771EC4C9100080073F /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
-		F70022781EC4C9100080073F /* OCSharedDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCSharedDto.h; sourceTree = "<group>"; };
-		F70022791EC4C9100080073F /* OCSharedDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCSharedDto.m; sourceTree = "<group>"; };
-		F700227A1EC4C9100080073F /* OCShareUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCShareUser.h; sourceTree = "<group>"; };
-		F700227B1EC4C9100080073F /* OCShareUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCShareUser.m; sourceTree = "<group>"; };
-		F700227C1EC4C9100080073F /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
-		F700227D1EC4C9100080073F /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
-		F700227F1EC4C9100080073F /* NSDate+ISO8601.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+ISO8601.h"; sourceTree = "<group>"; };
-		F70022801EC4C9100080073F /* NSDate+ISO8601.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ISO8601.m"; sourceTree = "<group>"; };
-		F70022811EC4C9100080073F /* NSDate+RFC1123.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+RFC1123.h"; sourceTree = "<group>"; };
-		F70022821EC4C9100080073F /* NSDate+RFC1123.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+RFC1123.m"; sourceTree = "<group>"; };
-		F70022831EC4C9100080073F /* OCHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCHTTPRequestOperation.h; sourceTree = "<group>"; };
-		F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCHTTPRequestOperation.m; sourceTree = "<group>"; };
-		F70022851EC4C9100080073F /* OCWebDAVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCWebDAVClient.h; sourceTree = "<group>"; };
-		F70022861EC4C9100080073F /* OCWebDAVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCWebDAVClient.m; sourceTree = "<group>"; };
-		F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLServerErrorsParser.h; sourceTree = "<group>"; };
-		F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLServerErrorsParser.m; sourceTree = "<group>"; };
-		F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLShareByLinkParser.h; sourceTree = "<group>"; };
-		F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
-		F70022901EC4C9100080073F /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
-		F70022911EC4C9100080073F /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
-		F700229C1EC4C9100080073F /* NSString+Encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Encode.h"; sourceTree = "<group>"; };
-		F700229D1EC4C9100080073F /* NSString+Encode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Encode.m"; sourceTree = "<group>"; };
-		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
-		F700229F1EC4C9100080073F /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
-		F70022A01EC4C9100080073F /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
 		F700510422DF6A89003A3356 /* NCShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShare.swift; sourceTree = "<group>"; };
@@ -568,8 +522,6 @@
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+adjust.swift"; sourceTree = "<group>"; };
-		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
-		F70F02B41C889183008DAB36 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
 		F70F05251C889184008DAB36 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		F70F05261C889184008DAB36 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		F70F05571C889184008DAB36 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
@@ -583,6 +535,166 @@
 		F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCDetailNavigationController+Menu.swift"; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
+		F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCRichDocumentTemplate.m; sourceTree = "<group>"; };
+		F711CC77246AC99E0009B204 /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
+		F711CC78246AC99E0009B204 /* OCCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCapabilities.h; sourceTree = "<group>"; };
+		F711CC79246AC99E0009B204 /* OCFileDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCFileDto.m; sourceTree = "<group>"; };
+		F711CC7A246AC99E0009B204 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
+		F711CC7B246AC99E0009B204 /* OCSharedDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCSharedDto.h; sourceTree = "<group>"; };
+		F711CC7C246AC99E0009B204 /* HCFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCFeatures.m; sourceTree = "<group>"; };
+		F711CC7D246AC99E0009B204 /* OCCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCommunication.h; sourceTree = "<group>"; };
+		F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
+		F711CC7F246AC99E0009B204 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
+		F711CC80246AC99E0009B204 /* OCShareUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCShareUser.m; sourceTree = "<group>"; };
+		F711CC81246AC99E0009B204 /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
+		F711CC83246AC99E0009B204 /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
+		F711CC84246AC99E0009B204 /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
+		F711CC85246AC99E0009B204 /* NSString+Encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Encode.h"; sourceTree = "<group>"; };
+		F711CC86246AC99E0009B204 /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
+		F711CC87246AC99E0009B204 /* NSString+Encode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Encode.m"; sourceTree = "<group>"; };
+		F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
+		F711CC89246AC99E0009B204 /* OCExternalSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCExternalSites.m; sourceTree = "<group>"; };
+		F711CC8A246AC99E0009B204 /* OCFileDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFileDto.h; sourceTree = "<group>"; };
+		F711CC8B246AC99E0009B204 /* OCFrameworkConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFrameworkConstants.h; sourceTree = "<group>"; };
+		F711CC8C246AC99E0009B204 /* OCErrorMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCErrorMsg.h; sourceTree = "<group>"; };
+		F711CC8D246AC99E0009B204 /* OCCapabilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCapabilities.m; sourceTree = "<group>"; };
+		F711CC90246AC99E0009B204 /* NCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLListParser.m; sourceTree = "<group>"; };
+		F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
+		F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
+		F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLCommentsParser.m; sourceTree = "<group>"; };
+		F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
+		F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLServerErrorsParser.m; sourceTree = "<group>"; };
+		F711CC96246AC99E0009B204 /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
+		F711CC97246AC99E0009B204 /* NCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLListParser.h; sourceTree = "<group>"; };
+		F711CC98246AC99E0009B204 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
+		F711CC99246AC99E0009B204 /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
+		F711CC9A246AC99E0009B204 /* OCXMLServerErrorsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLServerErrorsParser.h; sourceTree = "<group>"; };
+		F711CC9B246AC99E0009B204 /* OCXMLShareByLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLShareByLinkParser.h; sourceTree = "<group>"; };
+		F711CC9C246AC99E0009B204 /* NSDate+ISO8601.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+ISO8601.h"; sourceTree = "<group>"; };
+		F711CC9D246AC99E0009B204 /* NSDate+RFC1123.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+RFC1123.h"; sourceTree = "<group>"; };
+		F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCHTTPRequestOperation.m; sourceTree = "<group>"; };
+		F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCWebDAVClient.m; sourceTree = "<group>"; };
+		F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ISO8601.m"; sourceTree = "<group>"; };
+		F711CCA1246AC99E0009B204 /* OCWebDAVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCWebDAVClient.h; sourceTree = "<group>"; };
+		F711CCA2246AC99E0009B204 /* OCHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCHTTPRequestOperation.h; sourceTree = "<group>"; };
+		F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+RFC1123.m"; sourceTree = "<group>"; };
+		F711CCA4246AC99E0009B204 /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
+		F711CCA5246AC99E0009B204 /* NCRichDocumentTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRichDocumentTemplate.h; sourceTree = "<group>"; };
+		F711CCA6246AC99E0009B204 /* HCFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCFeatures.h; sourceTree = "<group>"; };
+		F711CCA7246AC99E0009B204 /* OCSharedDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCSharedDto.m; sourceTree = "<group>"; };
+		F711CCA8246AC99E0009B204 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
+		F711CCA9246AC99E0009B204 /* OCCommunication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCommunication.m; sourceTree = "<group>"; };
+		F711CCAA246AC99E0009B204 /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
+		F711CCAB246AC99E0009B204 /* OCExternalSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCExternalSites.h; sourceTree = "<group>"; };
+		F711CCAC246AC99E0009B204 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
+		F711CCAD246AC99E0009B204 /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
+		F711CCAE246AC99E0009B204 /* OCShareUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCShareUser.h; sourceTree = "<group>"; };
+		F711CCAF246AC99E0009B204 /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
+		F711CCFF246AC9B10009B204 /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
+		F711CD00246AC9B10009B204 /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
+		F711CD01246AC9B10009B204 /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
+		F711CD02246AC9B10009B204 /* DropdownMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownMenu.swift; sourceTree = "<group>"; };
+		F711CD03246AC9B10009B204 /* SectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
+		F711CD09246AC9B70009B204 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
+		F711CD0A246AC9B70009B204 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
+		F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCTWProber.cpp; sourceTree = "<group>"; };
+		F711CD0D246AC9B70009B204 /* symbols.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.cmake; sourceTree = "<group>"; };
+		F711CD0E246AC9B70009B204 /* uchardet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uchardet.cpp; sourceTree = "<group>"; };
+		F711CD0F246AC9B70009B204 /* prmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prmem.h; sourceTree = "<group>"; };
+		F711CD10246AC9B70009B204 /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharDistribution.h; sourceTree = "<group>"; };
+		F711CD11246AC9B70009B204 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSGroupProber.cpp; sourceTree = "<group>"; };
+		F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCSGroupProber.cpp; sourceTree = "<group>"; };
+		F711CD14246AC9B70009B204 /* nsHebrewProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsHebrewProber.h; sourceTree = "<group>"; };
+		F711CD15246AC9B70009B204 /* nsEUCKRProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCKRProber.h; sourceTree = "<group>"; };
+		F711CD16246AC9B70009B204 /* nsMBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsMBCSGroupProber.h; sourceTree = "<group>"; };
+		F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCharSetProber.cpp; sourceTree = "<group>"; };
+		F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsBig5Prober.cpp; sourceTree = "<group>"; };
+		F711CD19246AC9B70009B204 /* EUCTWFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCTWFreq.tab; sourceTree = "<group>"; };
+		F711CD1A246AC9B70009B204 /* nsEUCJPProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCJPProber.h; sourceTree = "<group>"; };
+		F711CD1B246AC9B70009B204 /* JpCntx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JpCntx.h; sourceTree = "<group>"; };
+		F711CD1C246AC9B80009B204 /* nsCodingStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCodingStateMachine.h; sourceTree = "<group>"; };
+		F711CD1D246AC9B80009B204 /* nsGB2312Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsGB2312Prober.h; sourceTree = "<group>"; };
+		F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCKRProber.cpp; sourceTree = "<group>"; };
+		F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsGB2312Prober.cpp; sourceTree = "<group>"; };
+		F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSSM.cpp; sourceTree = "<group>"; };
+		F711CD21246AC9B80009B204 /* nscore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nscore.h; sourceTree = "<group>"; };
+		F711CD22246AC9B80009B204 /* JpCntx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JpCntx.cpp; sourceTree = "<group>"; };
+		F711CD23246AC9B80009B204 /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharDistribution.cpp; sourceTree = "<group>"; };
+		F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsLatin1Prober.cpp; sourceTree = "<group>"; };
+		F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCJPProber.cpp; sourceTree = "<group>"; };
+		F711CD26246AC9B80009B204 /* nsCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCharSetProber.h; sourceTree = "<group>"; };
+		F711CD27246AC9B80009B204 /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = JISFreq.tab; sourceTree = "<group>"; };
+		F711CD28246AC9B80009B204 /* nsUTF8Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUTF8Prober.h; sourceTree = "<group>"; };
+		F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsHebrewProber.cpp; sourceTree = "<group>"; };
+		F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCKRFreq.tab; sourceTree = "<group>"; };
+		F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSJISProber.cpp; sourceTree = "<group>"; };
+		F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsCharSetProber.cpp; sourceTree = "<group>"; };
+		F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHungarianModel.cpp; sourceTree = "<group>"; };
+		F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangVietnameseModel.cpp; sourceTree = "<group>"; };
+		F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangBulgarianModel.cpp; sourceTree = "<group>"; };
+		F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangFrenchModel.cpp; sourceTree = "<group>"; };
+		F711CD32246AC9B80009B204 /* LangThaiModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangThaiModel.cpp; sourceTree = "<group>"; };
+		F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangSpanishModel.cpp; sourceTree = "<group>"; };
+		F711CD34246AC9B80009B204 /* LangArabicModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangArabicModel.cpp; sourceTree = "<group>"; };
+		F711CD35246AC9B80009B204 /* LangRussianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangRussianModel.cpp; sourceTree = "<group>"; };
+		F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHebrewModel.cpp; sourceTree = "<group>"; };
+		F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangEsperantoModel.cpp; sourceTree = "<group>"; };
+		F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangTurkishModel.cpp; sourceTree = "<group>"; };
+		F711CD39246AC9B80009B204 /* LangGermanModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGermanModel.cpp; sourceTree = "<group>"; };
+		F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGreekModel.cpp; sourceTree = "<group>"; };
+		F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangDanishModel.cpp; sourceTree = "<group>"; };
+		F711CD3C246AC9B80009B204 /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
+		F711CD3D246AC9B80009B204 /* nsUniversalDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUniversalDetector.h; sourceTree = "<group>"; };
+		F711CD3E246AC9B80009B204 /* nsSBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCSGroupProber.h; sourceTree = "<group>"; };
+		F711CD3F246AC9B80009B204 /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GB2312Freq.tab; sourceTree = "<group>"; };
+		F711CD40246AC9B80009B204 /* nsSBCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCharSetProber.h; sourceTree = "<group>"; };
+		F711CD41246AC9B80009B204 /* nsPkgInt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsPkgInt.h; sourceTree = "<group>"; };
+		F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUniversalDetector.cpp; sourceTree = "<group>"; };
+		F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscCharsetProber.cpp; sourceTree = "<group>"; };
+		F711CD44246AC9B80009B204 /* nsEscCharsetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEscCharsetProber.h; sourceTree = "<group>"; };
+		F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUTF8Prober.cpp; sourceTree = "<group>"; };
+		F711CD46246AC9B80009B204 /* nsBig5Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsBig5Prober.h; sourceTree = "<group>"; };
+		F711CD47246AC9B80009B204 /* nsSJISProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSJISProber.h; sourceTree = "<group>"; };
+		F711CD48246AC9B80009B204 /* nsEscSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscSM.cpp; sourceTree = "<group>"; };
+		F711CD49246AC9B80009B204 /* nsLatin1Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsLatin1Prober.h; sourceTree = "<group>"; };
+		F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCTWProber.h; sourceTree = "<group>"; };
+		F711CD4B246AC9B80009B204 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
+		F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewController.m; sourceTree = "<group>"; };
+		F711CD9B246AD2E40009B204 /* TOPasscodeCircleImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleImage.h; sourceTree = "<group>"; };
+		F711CD9C246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerAnimatedTransitioning.h; sourceTree = "<group>"; };
+		F711CD9D246AD2E40009B204 /* TOPasscodeViewContentLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewContentLayout.h; sourceTree = "<group>"; };
+		F711CD9E246AD2E40009B204 /* TOSettingsKeypadImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOSettingsKeypadImage.h; sourceTree = "<group>"; };
+		F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleImage.m; sourceTree = "<group>"; };
+		F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewControllerAnimatedTransitioning.m; sourceTree = "<group>"; };
+		F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOSettingsKeypadImage.m; sourceTree = "<group>"; };
+		F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewContentLayout.m; sourceTree = "<group>"; };
+		F711CDA3246AD2E40009B204 /* TOPasscodeSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsViewController.h; sourceTree = "<group>"; };
+		F711CDA4246AD2E40009B204 /* TOPasscodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewController.h; sourceTree = "<group>"; };
+		F711CDA6246AD2E40009B204 /* TOPasscodeViewControllerConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerConstants.h; sourceTree = "<group>"; };
+		F711CDA9246AD2E40009B204 /* TOPasscodeSettingsKeypadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadView.h; sourceTree = "<group>"; };
+		F711CDAA246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsWarningLabel.h; sourceTree = "<group>"; };
+		F711CDAB246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadButton.h; sourceTree = "<group>"; };
+		F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadView.m; sourceTree = "<group>"; };
+		F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsWarningLabel.m; sourceTree = "<group>"; };
+		F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadButton.m; sourceTree = "<group>"; };
+		F711CDB0246AD2E40009B204 /* TOPasscodeCircleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleView.h; sourceTree = "<group>"; };
+		F711CDB1246AD2E40009B204 /* TOPasscodeFixedInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeFixedInputView.h; sourceTree = "<group>"; };
+		F711CDB2246AD2E40009B204 /* TOPasscodeVariableInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeVariableInputView.h; sourceTree = "<group>"; };
+		F711CDB3246AD2E40009B204 /* TOPasscodeButtonLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeButtonLabel.h; sourceTree = "<group>"; };
+		F711CDB4246AD2E40009B204 /* TOPasscodeInputField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeInputField.h; sourceTree = "<group>"; };
+		F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeFixedInputView.m; sourceTree = "<group>"; };
+		F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleView.m; sourceTree = "<group>"; };
+		F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeButtonLabel.m; sourceTree = "<group>"; };
+		F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeVariableInputView.m; sourceTree = "<group>"; };
+		F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeInputField.m; sourceTree = "<group>"; };
+		F711CDBB246AD2E40009B204 /* TOPasscodeKeypadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeKeypadView.h; sourceTree = "<group>"; };
+		F711CDBC246AD2E40009B204 /* TOPasscodeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeView.h; sourceTree = "<group>"; };
+		F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleButton.m; sourceTree = "<group>"; };
+		F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeKeypadView.m; sourceTree = "<group>"; };
+		F711CDBF246AD2E40009B204 /* TOPasscodeCircleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleButton.h; sourceTree = "<group>"; };
+		F711CDC0246AD2E40009B204 /* TOPasscodeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeView.m; sourceTree = "<group>"; };
+		F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsViewController.m; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
 		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
@@ -624,88 +736,8 @@
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
 		F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCManageEndToEndEncryption.m; sourceTree = "<group>"; };
 		F7395139221B127F00D986C8 /* NCSectionMediaHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionMediaHeader.xib; sourceTree = "<group>"; };
-		F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
-		F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharDistribution.cpp; sourceTree = "<group>"; };
-		F73B4EAF1F470D9100BBEE4B /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharDistribution.h; sourceTree = "<group>"; };
-		F73B4EB01F470D9100BBEE4B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		F73B4EB11F470D9100BBEE4B /* EUCKRFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCKRFreq.tab; sourceTree = "<group>"; };
-		F73B4EB21F470D9100BBEE4B /* EUCTWFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCTWFreq.tab; sourceTree = "<group>"; };
-		F73B4EB31F470D9100BBEE4B /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GB2312Freq.tab; sourceTree = "<group>"; };
-		F73B4EB41F470D9100BBEE4B /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = JISFreq.tab; sourceTree = "<group>"; };
-		F73B4EB51F470D9100BBEE4B /* JpCntx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JpCntx.cpp; sourceTree = "<group>"; };
-		F73B4EB61F470D9100BBEE4B /* JpCntx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JpCntx.h; sourceTree = "<group>"; };
-		F73B4EB81F470D9100BBEE4B /* LangArabicModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangArabicModel.cpp; sourceTree = "<group>"; };
-		F73B4EB91F470D9100BBEE4B /* LangBulgarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangBulgarianModel.cpp; sourceTree = "<group>"; };
-		F73B4EBA1F470D9100BBEE4B /* LangDanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangDanishModel.cpp; sourceTree = "<group>"; };
-		F73B4EBB1F470D9100BBEE4B /* LangEsperantoModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangEsperantoModel.cpp; sourceTree = "<group>"; };
-		F73B4EBC1F470D9100BBEE4B /* LangFrenchModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangFrenchModel.cpp; sourceTree = "<group>"; };
-		F73B4EBD1F470D9100BBEE4B /* LangGermanModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGermanModel.cpp; sourceTree = "<group>"; };
-		F73B4EBE1F470D9100BBEE4B /* LangGreekModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGreekModel.cpp; sourceTree = "<group>"; };
-		F73B4EBF1F470D9100BBEE4B /* LangHebrewModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHebrewModel.cpp; sourceTree = "<group>"; };
-		F73B4EC01F470D9100BBEE4B /* LangHungarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHungarianModel.cpp; sourceTree = "<group>"; };
-		F73B4EC11F470D9100BBEE4B /* LangRussianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangRussianModel.cpp; sourceTree = "<group>"; };
-		F73B4EC21F470D9100BBEE4B /* LangSpanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangSpanishModel.cpp; sourceTree = "<group>"; };
-		F73B4EC31F470D9100BBEE4B /* LangThaiModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangThaiModel.cpp; sourceTree = "<group>"; };
-		F73B4EC41F470D9100BBEE4B /* LangTurkishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangTurkishModel.cpp; sourceTree = "<group>"; };
-		F73B4EC51F470D9100BBEE4B /* LangVietnameseModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangVietnameseModel.cpp; sourceTree = "<group>"; };
-		F73B4EC61F470D9100BBEE4B /* nsBig5Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsBig5Prober.cpp; sourceTree = "<group>"; };
-		F73B4EC71F470D9100BBEE4B /* nsBig5Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsBig5Prober.h; sourceTree = "<group>"; };
-		F73B4EC81F470D9100BBEE4B /* nsCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsCharSetProber.cpp; sourceTree = "<group>"; };
-		F73B4EC91F470D9100BBEE4B /* nsCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCharSetProber.h; sourceTree = "<group>"; };
-		F73B4ECA1F470D9100BBEE4B /* nsCodingStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCodingStateMachine.h; sourceTree = "<group>"; };
-		F73B4ECB1F470D9100BBEE4B /* nscore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nscore.h; sourceTree = "<group>"; };
-		F73B4ECC1F470D9100BBEE4B /* nsEscCharsetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscCharsetProber.cpp; sourceTree = "<group>"; };
-		F73B4ECD1F470D9100BBEE4B /* nsEscCharsetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEscCharsetProber.h; sourceTree = "<group>"; };
-		F73B4ECE1F470D9100BBEE4B /* nsEscSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscSM.cpp; sourceTree = "<group>"; };
-		F73B4ECF1F470D9100BBEE4B /* nsEUCJPProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCJPProber.cpp; sourceTree = "<group>"; };
-		F73B4ED01F470D9100BBEE4B /* nsEUCJPProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCJPProber.h; sourceTree = "<group>"; };
-		F73B4ED11F470D9100BBEE4B /* nsEUCKRProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCKRProber.cpp; sourceTree = "<group>"; };
-		F73B4ED21F470D9100BBEE4B /* nsEUCKRProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCKRProber.h; sourceTree = "<group>"; };
-		F73B4ED31F470D9100BBEE4B /* nsEUCTWProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCTWProber.cpp; sourceTree = "<group>"; };
-		F73B4ED41F470D9100BBEE4B /* nsEUCTWProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCTWProber.h; sourceTree = "<group>"; };
-		F73B4ED51F470D9100BBEE4B /* nsGB2312Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsGB2312Prober.cpp; sourceTree = "<group>"; };
-		F73B4ED61F470D9100BBEE4B /* nsGB2312Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsGB2312Prober.h; sourceTree = "<group>"; };
-		F73B4ED71F470D9100BBEE4B /* nsHebrewProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsHebrewProber.cpp; sourceTree = "<group>"; };
-		F73B4ED81F470D9100BBEE4B /* nsHebrewProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsHebrewProber.h; sourceTree = "<group>"; };
-		F73B4ED91F470D9100BBEE4B /* nsLatin1Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsLatin1Prober.cpp; sourceTree = "<group>"; };
-		F73B4EDA1F470D9100BBEE4B /* nsLatin1Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsLatin1Prober.h; sourceTree = "<group>"; };
-		F73B4EDB1F470D9100BBEE4B /* nsMBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSGroupProber.cpp; sourceTree = "<group>"; };
-		F73B4EDC1F470D9100BBEE4B /* nsMBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsMBCSGroupProber.h; sourceTree = "<group>"; };
-		F73B4EDD1F470D9100BBEE4B /* nsMBCSSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSSM.cpp; sourceTree = "<group>"; };
-		F73B4EDE1F470D9100BBEE4B /* nsPkgInt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsPkgInt.h; sourceTree = "<group>"; };
-		F73B4EDF1F470D9100BBEE4B /* nsSBCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCharSetProber.cpp; sourceTree = "<group>"; };
-		F73B4EE01F470D9100BBEE4B /* nsSBCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCharSetProber.h; sourceTree = "<group>"; };
-		F73B4EE11F470D9100BBEE4B /* nsSBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCSGroupProber.cpp; sourceTree = "<group>"; };
-		F73B4EE21F470D9100BBEE4B /* nsSBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCSGroupProber.h; sourceTree = "<group>"; };
-		F73B4EE31F470D9100BBEE4B /* nsSJISProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSJISProber.cpp; sourceTree = "<group>"; };
-		F73B4EE41F470D9100BBEE4B /* nsSJISProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSJISProber.h; sourceTree = "<group>"; };
-		F73B4EE51F470D9100BBEE4B /* nsUniversalDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUniversalDetector.cpp; sourceTree = "<group>"; };
-		F73B4EE61F470D9100BBEE4B /* nsUniversalDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUniversalDetector.h; sourceTree = "<group>"; };
-		F73B4EE71F470D9100BBEE4B /* nsUTF8Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUTF8Prober.cpp; sourceTree = "<group>"; };
-		F73B4EE81F470D9100BBEE4B /* nsUTF8Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUTF8Prober.h; sourceTree = "<group>"; };
-		F73B4EE91F470D9100BBEE4B /* prmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prmem.h; sourceTree = "<group>"; };
-		F73B4EEA1F470D9100BBEE4B /* symbols.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.cmake; sourceTree = "<group>"; };
-		F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uchardet.cpp; sourceTree = "<group>"; };
-		F73B4EED1F470D9100BBEE4B /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		F73CB3B122E072A000AD728E /* NCShareHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCShareHeaderView.xib; sourceTree = "<group>"; };
 		F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
-		F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeDummyViewController.h; sourceTree = "<group>"; };
-		F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeDummyViewController.m; sourceTree = "<group>"; };
-		F73CC05A1E813DFF006E3047 /* BKPasscodeField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeField.h; sourceTree = "<group>"; };
-		F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeField.m; sourceTree = "<group>"; };
-		F73CC05C1E813DFF006E3047 /* BKPasscodeInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeInputView.h; sourceTree = "<group>"; };
-		F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeInputView.m; sourceTree = "<group>"; };
-		F73CC05E1E813DFF006E3047 /* BKPasscodeLockScreenManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeLockScreenManager.h; sourceTree = "<group>"; };
-		F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeLockScreenManager.m; sourceTree = "<group>"; };
-		F73CC0601E813DFF006E3047 /* BKPasscodeUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeUtils.h; sourceTree = "<group>"; };
-		F73CC0611E813DFF006E3047 /* BKPasscodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPasscodeViewController.h; sourceTree = "<group>"; };
-		F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPasscodeViewController.m; sourceTree = "<group>"; };
-		F73CC0631E813DFF006E3047 /* BKShiftingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKShiftingView.h; sourceTree = "<group>"; };
-		F73CC0641E813DFF006E3047 /* BKShiftingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKShiftingView.m; sourceTree = "<group>"; };
-		F73CC0651E813DFF006E3047 /* BKTouchIDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDManager.h; sourceTree = "<group>"; };
-		F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDManager.m; sourceTree = "<group>"; };
-		F73CC0671E813DFF006E3047 /* BKTouchIDSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDSwitchView.h; sourceTree = "<group>"; };
-		F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDSwitchView.m; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F7421EAE2294044B00C4B7C1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -742,11 +774,6 @@
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F754EEC421772B6100BB1CDF /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
-		F754EEC521772B6100BB1CDF /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
-		F754EEC621772B6100BB1CDF /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
-		F754EEC721772B6100BB1CDF /* DropdownMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownMenu.swift; sourceTree = "<group>"; };
-		F754EEC821772B6100BB1CDF /* SectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F758B457212C564000515F55 /* Scan.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Scan.storyboard; sourceTree = "<group>"; };
 		F758B45D212C569C00515F55 /* ScanCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanCell.swift; sourceTree = "<group>"; };
@@ -831,8 +858,6 @@
 		F77D49A71DC238E500CDC568 /* loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = loading.gif; sourceTree = "<group>"; };
 		F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+MainThread.h"; sourceTree = "<group>"; };
 		F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+MainThread.m"; sourceTree = "<group>"; };
-		F781996722636BFA00EBDF6A /* HCFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCFeatures.h; sourceTree = "<group>"; };
-		F781996822636BFA00EBDF6A /* HCFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCFeatures.m; sourceTree = "<group>"; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
 		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkspaceWebView.swift; sourceTree = "<group>"; };
@@ -909,12 +934,6 @@
 		F7B2DEED1F976785007CF4D2 /* english.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F7B2DEEE1F976785007CF4D2 /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NYMnemonic.m; sourceTree = "<group>"; };
-		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
-		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
-		F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLCommentsParser.m; sourceTree = "<group>"; };
-		F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
-		F7B6ACD922FC2D14008AB646 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
-		F7B6ACDA22FC2D15008AB646 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
 		F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+fixedOrientation.swift"; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
@@ -969,8 +988,6 @@
 		F7D154271E2392A300202FD9 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
 		F7D2C772246470CA008513AE /* XLForm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XLForm.framework; path = Carthage/Build/iOS/XLForm.framework; sourceTree = "<group>"; };
-		F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLListParser.h; sourceTree = "<group>"; };
-		F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLListParser.m; sourceTree = "<group>"; };
 		F7D4B67B22956610000C2C86 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
 		F7D4B67D2295663D000C2C86 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppMeasurement.framework; sourceTree = "<group>"; };
 		F7D4B67E2295663D000C2C86 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
@@ -994,13 +1011,9 @@
 		F7D532A41F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
 		F7DBC37B23325E01001A85BA /* NCAppConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAppConfigView.swift; sourceTree = "<group>"; };
-		F7DBC37D23325E2D001A85BA /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
-		F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
 		F7DBD82B23E46A4700ECB7C6 /* MarkdownKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MarkdownKit.framework; path = Carthage/Build/iOS/MarkdownKit.framework; sourceTree = "<group>"; };
 		F7DE9AB01F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7DFAA8922E22EF100FC4527 /* NCShareLinkMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkMenuView.xib; sourceTree = "<group>"; };
-		F7DFB7DE219C312D00680748 /* NCRichDocumentTemplate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCRichDocumentTemplate.h; sourceTree = "<group>"; };
-		F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCRichDocumentTemplate.m; sourceTree = "<group>"; };
 		F7DFB7EF219C5B8000680748 /* NCCreateFormUploadAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadAssets.swift; sourceTree = "<group>"; };
 		F7DFB7F3219C5CA800680748 /* NCCreateFormUploadScanDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadScanDocument.swift; sourceTree = "<group>"; };
 		F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMainRefreshControl.swift; sourceTree = "<group>"; };
@@ -1025,8 +1038,6 @@
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
 		F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPeekPop.m; sourceTree = "<group>"; };
-		F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBKPasscode.h; sourceTree = "<group>"; };
-		F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBKPasscode.m; sourceTree = "<group>"; };
 		F7FFEACE1F82BB23005E5C17 /* CCCellMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1136,93 +1147,6 @@
 			path = Menu;
 			sourceTree = "<group>";
 		};
-		F70022561EC4C9100080073F /* OCCommunicationLib */ = {
-			isa = PBXGroup;
-			children = (
-				F7DFB7DE219C312D00680748 /* NCRichDocumentTemplate.h */,
-				F7DFB7DF219C312D00680748 /* NCRichDocumentTemplate.m */,
-				F781996722636BFA00EBDF6A /* HCFeatures.h */,
-				F781996822636BFA00EBDF6A /* HCFeatures.m */,
-				F7B6ACD922FC2D14008AB646 /* NCComments.h */,
-				F7B6ACDA22FC2D15008AB646 /* NCComments.m */,
-				F70022661EC4C9100080073F /* OCActivity.h */,
-				F70022671EC4C9100080073F /* OCActivity.m */,
-				F70022681EC4C9100080073F /* OCCapabilities.h */,
-				F70022691EC4C9100080073F /* OCCapabilities.m */,
-				F700226A1EC4C9100080073F /* OCCommunication.h */,
-				F700226B1EC4C9100080073F /* OCCommunication.m */,
-				F700226C1EC4C9100080073F /* OCErrorMsg.h */,
-				F700226D1EC4C9100080073F /* OCExternalSites.h */,
-				F700226E1EC4C9100080073F /* OCExternalSites.m */,
-				F700226F1EC4C9100080073F /* OCFileDto.h */,
-				F70022701EC4C9100080073F /* OCFileDto.m */,
-				F70022711EC4C9100080073F /* OCFrameworkConstants.h */,
-				F70022721EC4C9100080073F /* OCNotifications.h */,
-				F70022731EC4C9100080073F /* OCNotifications.m */,
-				F70022741EC4C9100080073F /* OCNotificationsAction.h */,
-				F70022751EC4C9100080073F /* OCNotificationsAction.m */,
-				F70022761EC4C9100080073F /* OCRichObjectStrings.h */,
-				F70022771EC4C9100080073F /* OCRichObjectStrings.m */,
-				F70022781EC4C9100080073F /* OCSharedDto.h */,
-				F70022791EC4C9100080073F /* OCSharedDto.m */,
-				F700227A1EC4C9100080073F /* OCShareUser.h */,
-				F700227B1EC4C9100080073F /* OCShareUser.m */,
-				F700227C1EC4C9100080073F /* OCUserProfile.h */,
-				F700227D1EC4C9100080073F /* OCUserProfile.m */,
-				F700227E1EC4C9100080073F /* OCWebDavClient */,
-				F700229B1EC4C9100080073F /* Utils */,
-			);
-			name = OCCommunicationLib;
-			path = Library/OCCommunicationLib;
-			sourceTree = "<group>";
-		};
-		F700227E1EC4C9100080073F /* OCWebDavClient */ = {
-			isa = PBXGroup;
-			children = (
-				F700227F1EC4C9100080073F /* NSDate+ISO8601.h */,
-				F70022801EC4C9100080073F /* NSDate+ISO8601.m */,
-				F70022811EC4C9100080073F /* NSDate+RFC1123.h */,
-				F70022821EC4C9100080073F /* NSDate+RFC1123.m */,
-				F70022831EC4C9100080073F /* OCHTTPRequestOperation.h */,
-				F70022841EC4C9100080073F /* OCHTTPRequestOperation.m */,
-				F70022851EC4C9100080073F /* OCWebDAVClient.h */,
-				F70022861EC4C9100080073F /* OCWebDAVClient.m */,
-				F70022871EC4C9100080073F /* Parsers */,
-			);
-			path = OCWebDavClient;
-			sourceTree = "<group>";
-		};
-		F70022871EC4C9100080073F /* Parsers */ = {
-			isa = PBXGroup;
-			children = (
-				F7DBC37D23325E2D001A85BA /* NCXMLGetAppPasswordParser.h */,
-				F7DBC37E23325E2E001A85BA /* NCXMLGetAppPasswordParser.m */,
-				F7B6ACD522FC2BD4008AB646 /* NCXMLCommentsParser.h */,
-				F7B6ACD422FC2BD3008AB646 /* NCXMLCommentsParser.m */,
-				F7D2D125230804DF00FD3ED7 /* NCXMLListParser.h */,
-				F7D2D126230804E000FD3ED7 /* NCXMLListParser.m */,
-				F700228C1EC4C9100080073F /* OCXMLServerErrorsParser.h */,
-				F700228D1EC4C9100080073F /* OCXMLServerErrorsParser.m */,
-				F700228E1EC4C9100080073F /* OCXMLShareByLinkParser.h */,
-				F700228F1EC4C9100080073F /* OCXMLShareByLinkParser.m */,
-				F70022901EC4C9100080073F /* OCXMLSharedParser.h */,
-				F70022911EC4C9100080073F /* OCXMLSharedParser.m */,
-			);
-			path = Parsers;
-			sourceTree = "<group>";
-		};
-		F700229B1EC4C9100080073F /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				F700229C1EC4C9100080073F /* NSString+Encode.h */,
-				F700229D1EC4C9100080073F /* NSString+Encode.m */,
-				F700229E1EC4C9100080073F /* OCConstants.h */,
-				F700229F1EC4C9100080073F /* UtilsFramework.h */,
-				F70022A01EC4C9100080073F /* UtilsFramework.m */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -1273,7 +1197,9 @@
 		F70F02A81C889183008DAB36 /* Libraries external */ = {
 			isa = PBXGroup;
 			children = (
-				F70F02B21C889183008DAB36 /* AFViewShaker */,
+				F711CC75246AC99E0009B204 /* OCCommunicationLib */,
+				F711CD08246AC9B70009B204 /* NCUchardet */,
+				F711CCFE246AC9B10009B204 /* DropdownMenu */,
 				F7A377131EB2364A002856D3 /* Fabric */,
 				F7D4B67A22956610000C2C86 /* Firebase */,
 				F704FA5A232A341800BBA952 /* Imagemeter */,
@@ -1281,19 +1207,11 @@
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
+				F711CD98246AD2E40009B204 /* TOPasscodeViewController */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
 			);
 			path = "Libraries external";
 			sourceTree = SOURCE_ROOT;
-		};
-		F70F02B21C889183008DAB36 /* AFViewShaker */ = {
-			isa = PBXGroup;
-			children = (
-				F70F02B31C889183008DAB36 /* AFViewShaker.h */,
-				F70F02B41C889183008DAB36 /* AFViewShaker.m */,
-			);
-			path = AFViewShaker;
-			sourceTree = "<group>";
 		};
 		F70F05241C889184008DAB36 /* Reachability */ = {
 			isa = PBXGroup;
@@ -1333,6 +1251,282 @@
 				F749C10823C4A5330027D966 /* NCIntroViewController.swift */,
 			);
 			path = Intro;
+			sourceTree = "<group>";
+		};
+		F711CC75246AC99E0009B204 /* OCCommunicationLib */ = {
+			isa = PBXGroup;
+			children = (
+				F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */,
+				F711CC77246AC99E0009B204 /* OCActivity.h */,
+				F711CC78246AC99E0009B204 /* OCCapabilities.h */,
+				F711CC79246AC99E0009B204 /* OCFileDto.m */,
+				F711CC7A246AC99E0009B204 /* NCComments.h */,
+				F711CC7B246AC99E0009B204 /* OCSharedDto.h */,
+				F711CC7C246AC99E0009B204 /* HCFeatures.m */,
+				F711CC7D246AC99E0009B204 /* OCCommunication.h */,
+				F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */,
+				F711CC7F246AC99E0009B204 /* OCUserProfile.m */,
+				F711CC80246AC99E0009B204 /* OCShareUser.m */,
+				F711CC81246AC99E0009B204 /* OCNotifications.h */,
+				F711CC82246AC99E0009B204 /* Utils */,
+				F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */,
+				F711CC89246AC99E0009B204 /* OCExternalSites.m */,
+				F711CC8A246AC99E0009B204 /* OCFileDto.h */,
+				F711CC8B246AC99E0009B204 /* OCFrameworkConstants.h */,
+				F711CC8C246AC99E0009B204 /* OCErrorMsg.h */,
+				F711CC8D246AC99E0009B204 /* OCCapabilities.m */,
+				F711CC8E246AC99E0009B204 /* OCWebDavClient */,
+				F711CCA4246AC99E0009B204 /* OCActivity.m */,
+				F711CCA5246AC99E0009B204 /* NCRichDocumentTemplate.h */,
+				F711CCA6246AC99E0009B204 /* HCFeatures.h */,
+				F711CCA7246AC99E0009B204 /* OCSharedDto.m */,
+				F711CCA8246AC99E0009B204 /* NCComments.m */,
+				F711CCA9246AC99E0009B204 /* OCCommunication.m */,
+				F711CCAA246AC99E0009B204 /* OCNotificationsAction.h */,
+				F711CCAB246AC99E0009B204 /* OCExternalSites.h */,
+				F711CCAC246AC99E0009B204 /* OCRichObjectStrings.h */,
+				F711CCAD246AC99E0009B204 /* OCNotifications.m */,
+				F711CCAE246AC99E0009B204 /* OCShareUser.h */,
+				F711CCAF246AC99E0009B204 /* OCUserProfile.h */,
+			);
+			path = OCCommunicationLib;
+			sourceTree = "<group>";
+		};
+		F711CC82246AC99E0009B204 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				F711CC83246AC99E0009B204 /* OCConstants.h */,
+				F711CC84246AC99E0009B204 /* UtilsFramework.h */,
+				F711CC85246AC99E0009B204 /* NSString+Encode.h */,
+				F711CC86246AC99E0009B204 /* UtilsFramework.m */,
+				F711CC87246AC99E0009B204 /* NSString+Encode.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		F711CC8E246AC99E0009B204 /* OCWebDavClient */ = {
+			isa = PBXGroup;
+			children = (
+				F711CC8F246AC99E0009B204 /* Parsers */,
+				F711CC9C246AC99E0009B204 /* NSDate+ISO8601.h */,
+				F711CC9D246AC99E0009B204 /* NSDate+RFC1123.h */,
+				F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */,
+				F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */,
+				F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */,
+				F711CCA1246AC99E0009B204 /* OCWebDAVClient.h */,
+				F711CCA2246AC99E0009B204 /* OCHTTPRequestOperation.h */,
+				F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */,
+			);
+			path = OCWebDavClient;
+			sourceTree = "<group>";
+		};
+		F711CC8F246AC99E0009B204 /* Parsers */ = {
+			isa = PBXGroup;
+			children = (
+				F711CC90246AC99E0009B204 /* NCXMLListParser.m */,
+				F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */,
+				F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */,
+				F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */,
+				F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */,
+				F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */,
+				F711CC96246AC99E0009B204 /* OCXMLSharedParser.h */,
+				F711CC97246AC99E0009B204 /* NCXMLListParser.h */,
+				F711CC98246AC99E0009B204 /* NCXMLCommentsParser.h */,
+				F711CC99246AC99E0009B204 /* NCXMLGetAppPasswordParser.h */,
+				F711CC9A246AC99E0009B204 /* OCXMLServerErrorsParser.h */,
+				F711CC9B246AC99E0009B204 /* OCXMLShareByLinkParser.h */,
+			);
+			path = Parsers;
+			sourceTree = "<group>";
+		};
+		F711CCFE246AC9B10009B204 /* DropdownMenu */ = {
+			isa = PBXGroup;
+			children = (
+				F711CCFF246AC9B10009B204 /* DropdownItem.swift */,
+				F711CD00246AC9B10009B204 /* DropUpMenu.swift */,
+				F711CD01246AC9B10009B204 /* DropdownMenu.h */,
+				F711CD02246AC9B10009B204 /* DropdownMenu.swift */,
+				F711CD03246AC9B10009B204 /* SectionHeader.swift */,
+			);
+			path = DropdownMenu;
+			sourceTree = "<group>";
+		};
+		F711CD08246AC9B70009B204 /* NCUchardet */ = {
+			isa = PBXGroup;
+			children = (
+				F711CD09246AC9B70009B204 /* NCUchardet.m */,
+				F711CD0A246AC9B70009B204 /* NCUchardet.h */,
+				F711CD0B246AC9B70009B204 /* src */,
+			);
+			path = NCUchardet;
+			sourceTree = "<group>";
+		};
+		F711CD0B246AC9B70009B204 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */,
+				F711CD0D246AC9B70009B204 /* symbols.cmake */,
+				F711CD0E246AC9B70009B204 /* uchardet.cpp */,
+				F711CD0F246AC9B70009B204 /* prmem.h */,
+				F711CD10246AC9B70009B204 /* CharDistribution.h */,
+				F711CD11246AC9B70009B204 /* CMakeLists.txt */,
+				F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */,
+				F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */,
+				F711CD14246AC9B70009B204 /* nsHebrewProber.h */,
+				F711CD15246AC9B70009B204 /* nsEUCKRProber.h */,
+				F711CD16246AC9B70009B204 /* nsMBCSGroupProber.h */,
+				F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */,
+				F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */,
+				F711CD19246AC9B70009B204 /* EUCTWFreq.tab */,
+				F711CD1A246AC9B70009B204 /* nsEUCJPProber.h */,
+				F711CD1B246AC9B70009B204 /* JpCntx.h */,
+				F711CD1C246AC9B80009B204 /* nsCodingStateMachine.h */,
+				F711CD1D246AC9B80009B204 /* nsGB2312Prober.h */,
+				F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */,
+				F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */,
+				F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */,
+				F711CD21246AC9B80009B204 /* nscore.h */,
+				F711CD22246AC9B80009B204 /* JpCntx.cpp */,
+				F711CD23246AC9B80009B204 /* CharDistribution.cpp */,
+				F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */,
+				F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */,
+				F711CD26246AC9B80009B204 /* nsCharSetProber.h */,
+				F711CD27246AC9B80009B204 /* JISFreq.tab */,
+				F711CD28246AC9B80009B204 /* nsUTF8Prober.h */,
+				F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */,
+				F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */,
+				F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */,
+				F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */,
+				F711CD2D246AC9B80009B204 /* LangModels */,
+				F711CD3C246AC9B80009B204 /* Big5Freq.tab */,
+				F711CD3D246AC9B80009B204 /* nsUniversalDetector.h */,
+				F711CD3E246AC9B80009B204 /* nsSBCSGroupProber.h */,
+				F711CD3F246AC9B80009B204 /* GB2312Freq.tab */,
+				F711CD40246AC9B80009B204 /* nsSBCharSetProber.h */,
+				F711CD41246AC9B80009B204 /* nsPkgInt.h */,
+				F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */,
+				F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */,
+				F711CD44246AC9B80009B204 /* nsEscCharsetProber.h */,
+				F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */,
+				F711CD46246AC9B80009B204 /* nsBig5Prober.h */,
+				F711CD47246AC9B80009B204 /* nsSJISProber.h */,
+				F711CD48246AC9B80009B204 /* nsEscSM.cpp */,
+				F711CD49246AC9B80009B204 /* nsLatin1Prober.h */,
+				F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */,
+				F711CD4B246AC9B80009B204 /* uchardet.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		F711CD2D246AC9B80009B204 /* LangModels */ = {
+			isa = PBXGroup;
+			children = (
+				F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */,
+				F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */,
+				F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */,
+				F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */,
+				F711CD32246AC9B80009B204 /* LangThaiModel.cpp */,
+				F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */,
+				F711CD34246AC9B80009B204 /* LangArabicModel.cpp */,
+				F711CD35246AC9B80009B204 /* LangRussianModel.cpp */,
+				F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */,
+				F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */,
+				F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */,
+				F711CD39246AC9B80009B204 /* LangGermanModel.cpp */,
+				F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */,
+				F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */,
+			);
+			path = LangModels;
+			sourceTree = "<group>";
+		};
+		F711CD98246AD2E40009B204 /* TOPasscodeViewController */ = {
+			isa = PBXGroup;
+			children = (
+				F711CD9A246AD2E40009B204 /* Models */,
+				F711CDA5246AD2E40009B204 /* Supporting */,
+				F711CDA3246AD2E40009B204 /* TOPasscodeSettingsViewController.h */,
+				F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */,
+				F711CDA4246AD2E40009B204 /* TOPasscodeViewController.h */,
+				F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */,
+				F711CDA7246AD2E40009B204 /* Views */,
+			);
+			path = TOPasscodeViewController;
+			sourceTree = "<group>";
+		};
+		F711CD9A246AD2E40009B204 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F711CD9B246AD2E40009B204 /* TOPasscodeCircleImage.h */,
+				F711CD9C246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.h */,
+				F711CD9D246AD2E40009B204 /* TOPasscodeViewContentLayout.h */,
+				F711CD9E246AD2E40009B204 /* TOSettingsKeypadImage.h */,
+				F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */,
+				F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */,
+				F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */,
+				F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F711CDA5246AD2E40009B204 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				F711CDA6246AD2E40009B204 /* TOPasscodeViewControllerConstants.h */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+		F711CDA7246AD2E40009B204 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F711CDA8246AD2E40009B204 /* Settings */,
+				F711CDAF246AD2E40009B204 /* Shared */,
+				F711CDBA246AD2E40009B204 /* Main */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F711CDA8246AD2E40009B204 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				F711CDA9246AD2E40009B204 /* TOPasscodeSettingsKeypadView.h */,
+				F711CDAA246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.h */,
+				F711CDAB246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.h */,
+				F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */,
+				F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */,
+				F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		F711CDAF246AD2E40009B204 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F711CDB0246AD2E40009B204 /* TOPasscodeCircleView.h */,
+				F711CDB1246AD2E40009B204 /* TOPasscodeFixedInputView.h */,
+				F711CDB2246AD2E40009B204 /* TOPasscodeVariableInputView.h */,
+				F711CDB3246AD2E40009B204 /* TOPasscodeButtonLabel.h */,
+				F711CDB4246AD2E40009B204 /* TOPasscodeInputField.h */,
+				F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */,
+				F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */,
+				F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */,
+				F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */,
+				F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		F711CDBA246AD2E40009B204 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				F711CDBB246AD2E40009B204 /* TOPasscodeKeypadView.h */,
+				F711CDBC246AD2E40009B204 /* TOPasscodeView.h */,
+				F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */,
+				F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */,
+				F711CDBF246AD2E40009B204 /* TOPasscodeCircleButton.h */,
+				F711CDC0246AD2E40009B204 /* TOPasscodeView.m */,
+			);
+			path = Main;
 			sourceTree = "<group>";
 		};
 		F7169A161EE590930086BD69 /* Shares */ = {
@@ -1406,108 +1600,6 @@
 			path = Offline;
 			sourceTree = "<group>";
 		};
-		F73B4EAC1F470D9100BBEE4B /* src */ = {
-			isa = PBXGroup;
-			children = (
-				F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */,
-				F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */,
-				F73B4EAF1F470D9100BBEE4B /* CharDistribution.h */,
-				F73B4EB01F470D9100BBEE4B /* CMakeLists.txt */,
-				F73B4EB11F470D9100BBEE4B /* EUCKRFreq.tab */,
-				F73B4EB21F470D9100BBEE4B /* EUCTWFreq.tab */,
-				F73B4EB31F470D9100BBEE4B /* GB2312Freq.tab */,
-				F73B4EB41F470D9100BBEE4B /* JISFreq.tab */,
-				F73B4EB51F470D9100BBEE4B /* JpCntx.cpp */,
-				F73B4EB61F470D9100BBEE4B /* JpCntx.h */,
-				F73B4EB71F470D9100BBEE4B /* LangModels */,
-				F73B4EC61F470D9100BBEE4B /* nsBig5Prober.cpp */,
-				F73B4EC71F470D9100BBEE4B /* nsBig5Prober.h */,
-				F73B4EC81F470D9100BBEE4B /* nsCharSetProber.cpp */,
-				F73B4EC91F470D9100BBEE4B /* nsCharSetProber.h */,
-				F73B4ECA1F470D9100BBEE4B /* nsCodingStateMachine.h */,
-				F73B4ECB1F470D9100BBEE4B /* nscore.h */,
-				F73B4ECC1F470D9100BBEE4B /* nsEscCharsetProber.cpp */,
-				F73B4ECD1F470D9100BBEE4B /* nsEscCharsetProber.h */,
-				F73B4ECE1F470D9100BBEE4B /* nsEscSM.cpp */,
-				F73B4ECF1F470D9100BBEE4B /* nsEUCJPProber.cpp */,
-				F73B4ED01F470D9100BBEE4B /* nsEUCJPProber.h */,
-				F73B4ED11F470D9100BBEE4B /* nsEUCKRProber.cpp */,
-				F73B4ED21F470D9100BBEE4B /* nsEUCKRProber.h */,
-				F73B4ED31F470D9100BBEE4B /* nsEUCTWProber.cpp */,
-				F73B4ED41F470D9100BBEE4B /* nsEUCTWProber.h */,
-				F73B4ED51F470D9100BBEE4B /* nsGB2312Prober.cpp */,
-				F73B4ED61F470D9100BBEE4B /* nsGB2312Prober.h */,
-				F73B4ED71F470D9100BBEE4B /* nsHebrewProber.cpp */,
-				F73B4ED81F470D9100BBEE4B /* nsHebrewProber.h */,
-				F73B4ED91F470D9100BBEE4B /* nsLatin1Prober.cpp */,
-				F73B4EDA1F470D9100BBEE4B /* nsLatin1Prober.h */,
-				F73B4EDB1F470D9100BBEE4B /* nsMBCSGroupProber.cpp */,
-				F73B4EDC1F470D9100BBEE4B /* nsMBCSGroupProber.h */,
-				F73B4EDD1F470D9100BBEE4B /* nsMBCSSM.cpp */,
-				F73B4EDE1F470D9100BBEE4B /* nsPkgInt.h */,
-				F73B4EDF1F470D9100BBEE4B /* nsSBCharSetProber.cpp */,
-				F73B4EE01F470D9100BBEE4B /* nsSBCharSetProber.h */,
-				F73B4EE11F470D9100BBEE4B /* nsSBCSGroupProber.cpp */,
-				F73B4EE21F470D9100BBEE4B /* nsSBCSGroupProber.h */,
-				F73B4EE31F470D9100BBEE4B /* nsSJISProber.cpp */,
-				F73B4EE41F470D9100BBEE4B /* nsSJISProber.h */,
-				F73B4EE51F470D9100BBEE4B /* nsUniversalDetector.cpp */,
-				F73B4EE61F470D9100BBEE4B /* nsUniversalDetector.h */,
-				F73B4EE71F470D9100BBEE4B /* nsUTF8Prober.cpp */,
-				F73B4EE81F470D9100BBEE4B /* nsUTF8Prober.h */,
-				F73B4EE91F470D9100BBEE4B /* prmem.h */,
-				F73B4EEA1F470D9100BBEE4B /* symbols.cmake */,
-				F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */,
-				F73B4EED1F470D9100BBEE4B /* uchardet.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		F73B4EB71F470D9100BBEE4B /* LangModels */ = {
-			isa = PBXGroup;
-			children = (
-				F73B4EB81F470D9100BBEE4B /* LangArabicModel.cpp */,
-				F73B4EB91F470D9100BBEE4B /* LangBulgarianModel.cpp */,
-				F73B4EBA1F470D9100BBEE4B /* LangDanishModel.cpp */,
-				F73B4EBB1F470D9100BBEE4B /* LangEsperantoModel.cpp */,
-				F73B4EBC1F470D9100BBEE4B /* LangFrenchModel.cpp */,
-				F73B4EBD1F470D9100BBEE4B /* LangGermanModel.cpp */,
-				F73B4EBE1F470D9100BBEE4B /* LangGreekModel.cpp */,
-				F73B4EBF1F470D9100BBEE4B /* LangHebrewModel.cpp */,
-				F73B4EC01F470D9100BBEE4B /* LangHungarianModel.cpp */,
-				F73B4EC11F470D9100BBEE4B /* LangRussianModel.cpp */,
-				F73B4EC21F470D9100BBEE4B /* LangSpanishModel.cpp */,
-				F73B4EC31F470D9100BBEE4B /* LangThaiModel.cpp */,
-				F73B4EC41F470D9100BBEE4B /* LangTurkishModel.cpp */,
-				F73B4EC51F470D9100BBEE4B /* LangVietnameseModel.cpp */,
-			);
-			path = LangModels;
-			sourceTree = "<group>";
-		};
-		F73CC0571E813DFF006E3047 /* BKPasscodeView */ = {
-			isa = PBXGroup;
-			children = (
-				F73CC0581E813DFF006E3047 /* BKPasscodeDummyViewController.h */,
-				F73CC0591E813DFF006E3047 /* BKPasscodeDummyViewController.m */,
-				F73CC05A1E813DFF006E3047 /* BKPasscodeField.h */,
-				F73CC05B1E813DFF006E3047 /* BKPasscodeField.m */,
-				F73CC05C1E813DFF006E3047 /* BKPasscodeInputView.h */,
-				F73CC05D1E813DFF006E3047 /* BKPasscodeInputView.m */,
-				F73CC05E1E813DFF006E3047 /* BKPasscodeLockScreenManager.h */,
-				F73CC05F1E813DFF006E3047 /* BKPasscodeLockScreenManager.m */,
-				F73CC0601E813DFF006E3047 /* BKPasscodeUtils.h */,
-				F73CC0611E813DFF006E3047 /* BKPasscodeViewController.h */,
-				F73CC0621E813DFF006E3047 /* BKPasscodeViewController.m */,
-				F73CC0631E813DFF006E3047 /* BKShiftingView.h */,
-				F73CC0641E813DFF006E3047 /* BKShiftingView.m */,
-				F73CC0651E813DFF006E3047 /* BKTouchIDManager.h */,
-				F73CC0661E813DFF006E3047 /* BKTouchIDManager.m */,
-				F73CC0671E813DFF006E3047 /* BKTouchIDSwitchView.h */,
-				F73CC0681E813DFF006E3047 /* BKTouchIDSwitchView.m */,
-			);
-			path = BKPasscodeView;
-			sourceTree = "<group>";
-		};
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -1539,18 +1631,6 @@
 				F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */,
 			);
 			path = PureLayout;
-			sourceTree = "<group>";
-		};
-		F754EEC321772B6100BB1CDF /* DropdownMenu */ = {
-			isa = PBXGroup;
-			children = (
-				F754EEC421772B6100BB1CDF /* DropdownItem.swift */,
-				F754EEC521772B6100BB1CDF /* DropUpMenu.swift */,
-				F754EEC621772B6100BB1CDF /* DropdownMenu.h */,
-				F754EEC721772B6100BB1CDF /* DropdownMenu.swift */,
-				F754EEC821772B6100BB1CDF /* SectionHeader.swift */,
-			);
-			path = DropdownMenu;
 			sourceTree = "<group>";
 		};
 		F758B41E212C516300515F55 /* ScanDocument */ = {
@@ -1800,16 +1880,6 @@
 			path = languages;
 			sourceTree = "<group>";
 		};
-		F7B4F1C51F44356F00B53B42 /* NCUchardet */ = {
-			isa = PBXGroup;
-			children = (
-				F73B4EAC1F470D9100BBEE4B /* src */,
-				F7B4F1C71F44356F00B53B42 /* NCUchardet.h */,
-				F7B4F1C81F44356F00B53B42 /* NCUchardet.m */,
-			);
-			path = NCUchardet;
-			sourceTree = "<group>";
-		};
 		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -2049,16 +2119,6 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
-		F7F54CAC1E5B143100E19C62 /* Library */ = {
-			isa = PBXGroup;
-			children = (
-				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
-				F754EEC321772B6100BB1CDF /* DropdownMenu */,
-				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
-			);
-			path = Library;
-			sourceTree = "<group>";
-		};
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
@@ -2078,7 +2138,6 @@
 			isa = PBXGroup;
 			children = (
 				F70F02A81C889183008DAB36 /* Libraries external */,
-				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
@@ -2091,7 +2150,6 @@
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F7BAAD951ED5A63D00B7EAD4 /* Database */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
-				F7F54CAC1E5B143100E19C62 /* Library */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
 				F7EC9CB921185F2000F1C5CE /* Media */,
@@ -2212,8 +2270,6 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */,
-				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
 				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
@@ -2451,19 +2507,19 @@
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
 				F78ACD4621903D010088454D /* NCGridCell.xib in Resources */,
-				F73B4EF21F470D9100BBEE4B /* EUCTWFreq.tab in Resources */,
+				F711CD71246AC9B80009B204 /* GB2312Freq.tab in Resources */,
 				F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */,
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
-				F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
+				F711CD5F246AC9B80009B204 /* EUCKRFreq.tab in Resources */,
 				F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */,
 				F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
@@ -2479,39 +2535,39 @@
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F72382C22295856A005B8A07 /* GoogleMVTextDetectorResources.bundle in Resources */,
+				F711CD4E246AC9B80009B204 /* symbols.cmake in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
+				F711CD70246AC9B80009B204 /* Big5Freq.tab in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
-				F73B4EF31F470D9100BBEE4B /* GB2312Freq.tab in Resources */,
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */,
+				F711CD50246AC9B80009B204 /* CMakeLists.txt in Resources */,
 				F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
 				F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
+				F711CD55246AC9B80009B204 /* EUCTWFreq.tab in Resources */,
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
-				F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */,
-				F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */,
 				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
 				F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
+				F711CD5D246AC9B80009B204 /* JISFreq.tab in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
 				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
-				F73B4EF41F470D9100BBEE4B /* JISFreq.tab in Resources */,
 				F70006FA24164F8D00F214A5 /* NCViewerImageVideo.storyboard in Resources */,
 				F774DF101FCC26BE002AF9FC /* iTunesArtwork@2x.png in Resources */,
-				F73B4EF11F470D9100BBEE4B /* EUCKRFreq.tab in Resources */,
 				F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */,
 				F774DF111FCC26BE002AF9FC /* iTunesArtwork@3x.png in Resources */,
 			);
@@ -2610,65 +2666,55 @@
 			buildActionMask = 2147483647;
 			files = (
 				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
-				F73CC0701E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
+				F711CCBD246AC99E0009B204 /* UtilsFramework.m in Sources */,
+				F711CCE3246AC99E0009B204 /* OCNotifications.m in Sources */,
 				F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
+				F711CCDB246AC99E0009B204 /* OCActivity.m in Sources */,
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
-				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
-				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
+				F711CCB7246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
-				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
+				F711CCD1246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
 				F7E87CC3241A559E005E8C6F /* NCNetworkingEndToEnd.m in Sources */,
-				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
-				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
-				F7B6ACD722FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
-				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
+				F711CCB5246AC99E0009B204 /* HCFeatures.m in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
-				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
+				F711CCE1246AC99E0009B204 /* OCCommunication.m in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
-				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
-				F7DFB7E1219C312D00680748 /* NCRichDocumentTemplate.m in Sources */,
-				F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
-				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
-				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
+				F711CCBF246AC99E0009B204 /* NSString+Encode.m in Sources */,
+				F711CCD7246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
-				F7DBC38023325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */,
-				F71459CD1D12E3B700CAFEEC /* AFViewShaker.m in Sources */,
-				F7D2D128230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
-				F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */,
+				F711CCC5246AC99E0009B204 /* OCCapabilities.m in Sources */,
+				F711CCDD246AC99E0009B204 /* OCSharedDto.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
-				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
+				F711CCC7246AC99E0009B204 /* NCXMLListParser.m in Sources */,
+				F711CCD9246AC99E0009B204 /* NSDate+RFC1123.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
 				F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */,
-				F70022CF1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
+				F711CCC1246AC99E0009B204 /* OCRichObjectStrings.m in Sources */,
+				F711CCB9246AC99E0009B204 /* OCUserProfile.m in Sources */,
+				F711CCB3246AC99E0009B204 /* OCFileDto.m in Sources */,
 				F765609023BF813600765969 /* NCContentPresenter.swift in Sources */,
-				F70022EA1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
-				F70022D81EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
-				F70022E71EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
-				F781996A22636BFA00EBDF6A /* HCFeatures.m in Sources */,
-				F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
-				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
-				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
+				F711CCDF246AC99E0009B204 /* NCComments.m in Sources */,
+				F711CCCF246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */,
+				F711CCD3246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
 				F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */,
-				F70022B41EC4C9100080073F /* OCActivity.m in Sources */,
-				F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */,
-				F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
-				F7B6ACDC22FC2D15008AB646 /* NCComments.m in Sources */,
+				F711CCC9246AC99E0009B204 /* OCXMLSharedParser.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
-				F73CC07F1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
+				F711CCC3246AC99E0009B204 /* OCExternalSites.m in Sources */,
+				F711CCCB246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
+				F711CCB1246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */,
+				F711CCBB246AC99E0009B204 /* OCShareUser.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
-				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
-				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
+				F711CCD5246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
-				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
+				F711CCCD246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2698,170 +2744,171 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F70022D71EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
-				F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */,
+				F711CCB6246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
+				F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
+				F711CDD1246AD2E40009B204 /* TOPasscodeView.m in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
-				F73B4F0D1F470D9100BBEE4B /* nsLatin1Prober.cpp in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
+				F711CD4F246AC9B80009B204 /* uchardet.cpp in Sources */,
+				F711CD66246AC9B80009B204 /* LangThaiModel.cpp in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
-				F73B4F041F470D9100BBEE4B /* nsBig5Prober.cpp in Sources */,
-				F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */,
+				F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */,
+				F711CDCD246AD2E40009B204 /* TOPasscodeVariableInputView.m in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
+				F711CCE2246AC99E0009B204 /* OCNotifications.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
-				F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */,
+				F711CDCF246AD2E40009B204 /* TOPasscodeCircleButton.m in Sources */,
+				F711CDC5246AD2E40009B204 /* TOSettingsKeypadImage.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
-				F73B4F081F470D9100BBEE4B /* nsEUCJPProber.cpp in Sources */,
-				F70022DA1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
-				F73B4F0F1F470D9100BBEE4B /* nsMBCSSM.cpp in Sources */,
-				F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */,
+				F711CD61246AC9B80009B204 /* nsCharSetProber.cpp in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
-				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
-				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
+				F711CCDC246AC99E0009B204 /* OCSharedDto.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
+				F711CDC7246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
-				F73B4EF71F470D9100BBEE4B /* LangBulgarianModel.cpp in Sources */,
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
+				F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
+				F711CD6F246AC9B80009B204 /* LangDanishModel.cpp in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
+				F711CDC8246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
+				F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
+				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
+				F711CDC4246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
-				F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
+				F711CDCE246AD2E40009B204 /* TOPasscodeInputField.m in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
-				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
-				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
-				F7B6ACD622FC2BD4008AB646 /* NCXMLCommentsParser.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
+				F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
+				F711CDD2246AD2E40009B204 /* TOPasscodeSettingsViewController.m in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
-				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
+				F711CDC6246AD2E40009B204 /* TOPasscodeViewContentLayout.m in Sources */,
+				F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */,
+				F711CD65246AC9B80009B204 /* LangFrenchModel.cpp in Sources */,
+				F711CD5B246AC9B80009B204 /* nsLatin1Prober.cpp in Sources */,
 				F749C10C23C4A5340027D966 /* NCIntroViewController.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */,
-				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
+				F711CCBC246AC99E0009B204 /* UtilsFramework.m in Sources */,
 				3757A35523D9D76300EC369E /* NCMenuPanelController.swift in Sources */,
 				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
-				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
-				F73B4F101F470D9100BBEE4B /* nsSBCharSetProber.cpp in Sources */,
-				F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */,
+				F711CCBE246AC99E0009B204 /* NSString+Encode.m in Sources */,
+				F711CD6A246AC9B80009B204 /* LangHebrewModel.cpp in Sources */,
+				F711CCB8246AC99E0009B204 /* OCUserProfile.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
-				F70022C51EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
+				F711CCCE246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
-				F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */,
-				F73B4EF61F470D9100BBEE4B /* LangArabicModel.cpp in Sources */,
 				F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */,
-				F7DFB7E0219C312D00680748 /* NCRichDocumentTemplate.m in Sources */,
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
-				F73B4F0B1F470D9100BBEE4B /* nsGB2312Prober.cpp in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
+				F711CCE0246AC99E0009B204 /* OCCommunication.m in Sources */,
+				F711CCC0246AC99E0009B204 /* OCRichObjectStrings.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
-				F70022E91EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
-				F73B4F0E1F470D9100BBEE4B /* nsMBCSGroupProber.cpp in Sources */,
-				F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */,
-				F7B6ACDB22FC2D15008AB646 /* NCComments.m in Sources */,
-				F73B4F121F470D9100BBEE4B /* nsSJISProber.cpp in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
-				F73CC0781E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
+				F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
-				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
-				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
-				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,
-				F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */,
+				F711CD58246AC9B80009B204 /* nsMBCSSM.cpp in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
-				F73B4EFB1F470D9100BBEE4B /* LangGermanModel.cpp in Sources */,
-				F73B4F061F470D9100BBEE4B /* nsEscCharsetProber.cpp in Sources */,
-				F73B4EFA1F470D9100BBEE4B /* LangFrenchModel.cpp in Sources */,
+				F711CD62246AC9B80009B204 /* LangHungarianModel.cpp in Sources */,
+				F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */,
+				F711CD72246AC9B80009B204 /* nsUniversalDetector.cpp in Sources */,
+				F711CDCB246AD2E40009B204 /* TOPasscodeCircleView.m in Sources */,
+				F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */,
+				F711CD63246AC9B80009B204 /* LangVietnameseModel.cpp in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
-				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
+				F711CD5E246AC9B80009B204 /* nsHebrewProber.cpp in Sources */,
+				F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
+				F711CDD0246AD2E40009B204 /* TOPasscodeKeypadView.m in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
+				F711CD51246AC9B80009B204 /* nsMBCSGroupProber.cpp in Sources */,
+				F711CDC2246AD2E40009B204 /* TOPasscodeViewController.m in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
-				F73B4EF81F470D9100BBEE4B /* LangDanishModel.cpp in Sources */,
+				F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */,
 				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
+				F711CD57246AC9B80009B204 /* nsGB2312Prober.cpp in Sources */,
+				F711CCC4246AC99E0009B204 /* OCCapabilities.m in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
-				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
+				F711CD54246AC9B80009B204 /* nsBig5Prober.cpp in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
-				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
-				F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */,
+				F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
-				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
-				F7DBC37F23325E2E001A85BA /* NCXMLGetAppPasswordParser.m in Sources */,
+				F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */,
+				F711CCB4246AC99E0009B204 /* HCFeatures.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
-				F73B4EF51F470D9100BBEE4B /* JpCntx.cpp in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
+				F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */,
+				F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
+				F711CD69246AC9B80009B204 /* LangRussianModel.cpp in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
-				F70022FB1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
+				F711CD4C246AC9B80009B204 /* NCUchardet.m in Sources */,
 				F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */,
-				F70022B91EC4C9100080073F /* OCCommunication.m in Sources */,
-				F73B4EF91F470D9100BBEE4B /* LangEsperantoModel.cpp in Sources */,
+				F711CD4D246AC9B80009B204 /* nsEUCTWProber.cpp in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
-				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
+				F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
+				F711CD64246AC9B80009B204 /* LangBulgarianModel.cpp in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
-				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
-				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
+				F711CD52246AC9B80009B204 /* nsSBCSGroupProber.cpp in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
-				F7D2D127230804E000FD3ED7 /* NCXMLListParser.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
-				F73B4F011F470D9100BBEE4B /* LangThaiModel.cpp in Sources */,
-				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
-				F73B4F001F470D9100BBEE4B /* LangSpanishModel.cpp in Sources */,
-				F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */,
-				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
+				F711CCC8246AC99E0009B204 /* OCXMLSharedParser.m in Sources */,
 				F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */,
+				F711CD59246AC9B80009B204 /* JpCntx.cpp in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
-				F70022B31EC4C9100080073F /* OCActivity.m in Sources */,
 				F7E09CE723E308AD00FB3E9E /* NCMasterNavigationController.swift in Sources */,
-				F70022D41EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F79018B6240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */,
@@ -2870,50 +2917,56 @@
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */,
+				F711CD56246AC9B80009B204 /* nsEUCKRProber.cpp in Sources */,
+				F711CCD8246AC99E0009B204 /* NSDate+RFC1123.m in Sources */,
+				F711CD6D246AC9B80009B204 /* LangGermanModel.cpp in Sources */,
 				F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
-				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
+				F711CD53246AC9B80009B204 /* nsSBCharSetProber.cpp in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
+				F711CD68246AC9B80009B204 /* LangArabicModel.cpp in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
-				F73B4EFF1F470D9100BBEE4B /* LangRussianModel.cpp in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */,
+				F711CDC3246AD2E40009B204 /* TOPasscodeCircleImage.m in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
+				F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
-				F73B4F031F470D9100BBEE4B /* LangVietnameseModel.cpp in Sources */,
-				F73B4F021F470D9100BBEE4B /* LangTurkishModel.cpp in Sources */,
+				F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
+				F711CD6C246AC9B80009B204 /* LangTurkishModel.cpp in Sources */,
+				F711CD5A246AC9B80009B204 /* CharDistribution.cpp in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
-				F70022B61EC4C9100080073F /* OCCapabilities.m in Sources */,
+				F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
+				F711CD6E246AC9B80009B204 /* LangGreekModel.cpp in Sources */,
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
-				F73B4F0A1F470D9100BBEE4B /* nsEUCTWProber.cpp in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
+				F711CDCC246AD2E40009B204 /* TOPasscodeButtonLabel.m in Sources */,
+				F711CDC9246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
+				F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
+				F711CCCC246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
-				F781996922636BFA00EBDF6A /* HCFeatures.m in Sources */,
-				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
 				F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */,
-				F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */,
-				F70022C81EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
+				F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */,
-				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
-				F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */,
-				F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */,
+				F711CCB0246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
+				F711CDCA246AD2E40009B204 /* TOPasscodeFixedInputView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

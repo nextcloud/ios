@@ -1532,49 +1532,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectoryLock(serverUrl: String, lock: Bool, account: String) -> Bool {
-        
-        let realm = try! Realm()
-
-        var update = false
-        
-        do {
-            try realm.write {
-            
-                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
-                result.lock = lock
-                update = true
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return false
-        }
-        
-        return update
-    }
-    
-    @objc func setAllDirectoryUnLock(account: String) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-            
-                let results = realm.objects(tableDirectory.self).filter("account == %@", account)
-
-                for result in results {
-                    result.lock = false;
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     @objc func setDirectory(serverUrl: String, offline: Bool, account: String) {
         
         let realm = try! Realm()
@@ -2729,12 +2686,8 @@ class NCManageDatabase: NSObject {
         if results.count == 0 {
             return nil
         }
-        
-        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
-        
+                
         var metadatas = [tableMetadata]()
-        var oldServerUrl = ""
-        var isValidMetadata = true
         
         // For Live Photo
         var fileNameImages = [String]()
@@ -2746,26 +2699,11 @@ class NCManageDatabase: NSObject {
                 
         for result in results {
             let metadata = tableMetadata.init(value: result)
-        
-            // Verify Lock
-            if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
-                var foundLock = false
-                oldServerUrl = metadata.serverUrl
-                for serverUrlLocked in serversUrlLocked {
-                    if metadata.serverUrl.contains(serverUrlLocked) {
-                        foundLock = true
-                        break
-                    }
-                }
-                isValidMetadata = !foundLock
-            }
-            if isValidMetadata {
-                let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
-                let fileName = (metadata.fileNameView as NSString).deletingPathExtension
+            let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
-                if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                    metadatas.append(tableMetadata.init(value: metadata))
-                }
+            if !(ext == "MOV" && fileNameImages.contains(fileName)) {
+                metadatas.append(tableMetadata.init(value: metadata))
             }
         }
       
@@ -2819,34 +2757,6 @@ class NCManageDatabase: NSObject {
         var isDifferent: Bool = false
         var newInsert: Int = 0
         
-        var oldServerUrl = ""
-        var isValidMetadata = true
-        
-        var metadatas = [tableMetadata]()
-        
-        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
-        if (serversUrlLocked.count > 0) {
-            for metadata in metadatasSource {
-                // Verify Lock
-                if (metadata.serverUrl != oldServerUrl) {
-                    var foundLock = false
-                    oldServerUrl = metadata.serverUrl
-                    for serverUrlLocked in serversUrlLocked {
-                        if metadata.serverUrl.contains(serverUrlLocked) {
-                            foundLock = true
-                            break
-                        }
-                    }
-                    isValidMetadata = !foundLock
-                }
-                if isValidMetadata {
-                    metadatas.append(tableMetadata.init(value: metadata))
-                }
-            }
-        } else {
-            metadatas = metadatasSource
-        }
-        
         do {
             try realm.write {
                 
@@ -2856,7 +2766,7 @@ class NCManageDatabase: NSObject {
                 numDelete = results.count
                 
                 // INSERT
-                let photos = Array(metadatas.map { tableMedia.init(value:$0) })
+                let photos = Array(metadatasSource.map { tableMedia.init(value:$0) })
                 etagsInsert = Array(photos.map { $0.etag })
                 numInsert = photos.count
                 

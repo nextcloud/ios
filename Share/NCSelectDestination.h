@@ -23,7 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCHud.h"
 
@@ -31,7 +30,7 @@
 
 @protocol NCSelectDestinationDelegate;
 
-@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate>
+@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate>
 
 @property (nonatomic, weak) id <NCSelectDestinationDelegate> delegate;
 
@@ -46,10 +45,6 @@
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
 @property (nonatomic, strong) NSString *type;
-
-//BKPasscodeViewController
-@property (nonatomic) NSUInteger failedAttempts;
-@property (nonatomic, strong) NSDate *lockUntilDate;
 
 // Color
 @property (nonatomic, strong) UIColor *barTintColor;

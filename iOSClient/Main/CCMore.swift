@@ -97,6 +97,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueTransfers"
         functionMenu.append(item)
         
+        // ITEM : Notification
+        item = OCExternalSites.init()
+        item.name = "_notification_"
+        item.icon = "notification"
+        item.url = "segueNotification"
+        functionMenu.append(item)
+        
         // ITEM : Activity
         item = OCExternalSites.init()
         item.name = "_activity_"
