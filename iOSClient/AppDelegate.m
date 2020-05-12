@@ -31,6 +31,7 @@
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
+#import <QuartzCore/QuartzCore.h>
 #import "TOPasscodeViewController.h"
 
 @class NCViewerRichdocument;
@@ -875,29 +876,38 @@
     item.selectedImage = item.image;
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:NCBrandColor.sharedInstance.brandElement];
+    int buttonSize = 56;
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
-    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
+    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brand;
+    buttonPlus.layer.cornerRadius = buttonSize / 2;
+    buttonPlus.layer.masksToBounds = NO;
+    buttonPlus.layer.shadowOffset = CGSizeMake(0, 0);
+    buttonPlus.layer.shadowRadius = 3.0f;
+    buttonPlus.layer.shadowOpacity = 0.5;
+    
+
     [buttonPlus addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
     
     [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
     [tabBarController.tabBar addSubview:buttonPlus];
     
+
     if (safeAreaBottom > 0) {
         
         // X
         constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
         [tabBarController.view addConstraint:constraint];
         // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:5];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:-(buttonSize / 2)];
         [tabBarController.view addConstraint:constraint];
         // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
         [tabBarController.view addConstraint:constraint];
         // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:40];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
         [tabBarController.view addConstraint:constraint];
         
     } else {
@@ -906,13 +916,13 @@
         constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
         [tabBarController.view addConstraint:constraint];
         // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:-(buttonSize / 2)];
         [tabBarController.view addConstraint:constraint];
         // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:33];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
         [tabBarController.view addConstraint:constraint];
         // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:33];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
         [tabBarController.view addConstraint:constraint];
     }
 }
@@ -1032,10 +1042,11 @@
         if ([navigationController isKindOfClass:[UINavigationController class]]) {
             UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                [tabBarController.tabBar setNeedsDisplay];
                 UIButton *button = [tabBarController.view viewWithTag:99];
-                UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:NCBrandColor.sharedInstance.brandElement];
-                [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-                [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+                UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
+                [button setImage:buttonImage forState:UIControlStateNormal];
+                button.backgroundColor = NCBrandColor.sharedInstance.brand;
             }
         }
     }
