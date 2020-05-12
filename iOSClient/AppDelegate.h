@@ -25,6 +25,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 
 #import "Reachability.h"
 #import "CCUtility.h"
