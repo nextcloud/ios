@@ -240,19 +240,40 @@
 
 - (void)passcodeType:(NSString *)type
 {
-    TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
-    if (@available(iOS 13.0, *)) {
-        if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-            passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
-        }
-    }
+    LAContext *laContext = [LAContext new];
+    NSError *error;
+    
+    if ([[CCUtility getBlockCode] length] > 0) {
         
-    passcodeViewController.allowCancel = true;
-    passcodeViewController.delegate = self;
-    passcodeViewController.keypadButtonShowLettering = false;
-    passcodeType = type;
-
-    [self presentViewController:passcodeViewController animated:YES completion:nil];
+        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            }
+        }
+    
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = false;
+        passcodeViewController.keypadButtonShowLettering = false;
+        
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else {
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+        
+        [self presentViewController:passcodeViewController animated:YES completion:nil];
+    }
 }
 
 
@@ -265,42 +286,57 @@
 {
     if ([code isEqualToString:[CCUtility getBlockCode]]) {
         
-        if ([passcodeType isEqualToString:@"startE2E"]) {
-            
-            [self.endToEndInitialize initEndToEndEncryption];
-            
-        } else if ([passcodeType isEqualToString:@"readPassphrase"]) {
-            
-            NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
-            NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
-            
-            NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-            
-        } else if ([passcodeType isEqualToString:@"removeLocallyEncryption"]) {
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
-            
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
-                [self initializeForm];
-            }];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
-            
-            [alertController addAction:okAction];
-            [alertController addAction:cancelAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-        
+        [self passcodeCorrectCode];
         return YES;
     }
          
     return NO;
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"Nextcloud" reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self passcodeCorrectCode];
+            });
+        }
+    }];
+}
+
+-(void)passcodeCorrectCode {
+    
+    if ([passcodeType isEqualToString:@"startE2E"]) {
+        
+        [self.endToEndInitialize initEndToEndEncryption];
+        
+    } else if ([passcodeType isEqualToString:@"readPassphrase"]) {
+        
+        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
+        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
+        
+        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+    } else if ([passcodeType isEqualToString:@"removeLocallyEncryption"]) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
+            [self initializeForm];
+        }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
+        
+        [alertController addAction:okAction];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 

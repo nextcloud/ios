@@ -1673,6 +1673,9 @@
 
 - (void)passcode
 {
+    LAContext *laContext = [LAContext new];
+    NSError *error;
+    
     if ([[CCUtility getBlockCode] length] > 0) {
         
         TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
@@ -1686,6 +1689,22 @@
         passcodeViewController.allowCancel = false;
         passcodeViewController.keypadButtonShowLettering = false;
         
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else {
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+        
         [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
     }
 }
@@ -1698,6 +1717,17 @@
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
     return [code isEqualToString:[CCUtility getBlockCode]];
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"Nextcloud" reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

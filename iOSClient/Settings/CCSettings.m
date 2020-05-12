@@ -321,17 +321,13 @@
 
 - (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
-    LAContext *laContext = [[LAContext alloc] init];
-
-    [laContext evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"" reply:^(BOOL success, NSError * _Nullable error) {
-
-        if (error != NULL) {
-            // handle error
-        } else if (success) {
-            [CCUtility setBlockCode:@""];
-            [self reloadForm];
-        } else {
-            // handle false response
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"Nextcloud" reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [CCUtility setBlockCode:@""];
+                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                [self reloadForm];
+            });
         }
     }];
 }
@@ -363,7 +359,7 @@
 
 - (void)passcode:(XLFormRowDescriptor *)sender
 {
-    LAContext *laContext = [[LAContext alloc] init];
+    LAContext *laContext = [LAContext new];
     NSError *error;
     
     [self deselectFormRow:sender];
@@ -398,18 +394,16 @@
         
         if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
-                if (@available(iOS 11.0.1, *)) {
-                    if (laContext.biometryType == LABiometryTypeFaceID) {
-                        passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
-                        passcodeViewController.allowBiometricValidation = true;
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true;
-                    } else if (laContext.biometryType == LABiometryTypeTouchID) {
-                        passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
-                        passcodeViewController.allowBiometricValidation = true;
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true;
-                    } else {
-                        NSLog(@"No Biometric support");
-                    }
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else {
+                    NSLog(@"No Biometric support");
                 }
             }
         }
