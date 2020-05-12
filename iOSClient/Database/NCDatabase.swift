@@ -262,7 +262,6 @@ class tableDirectory: Object {
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
-    @objc dynamic var lock: Bool = false
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""

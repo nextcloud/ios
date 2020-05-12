@@ -294,11 +294,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
                 
-                // Status image: passcode
-                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
-                    cell.imageStatus.image = UIImage.init(named: "passcode")
-                }
-                
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
                     cell.imageLocal.image = UIImage.init(named: "offlineFlag")
@@ -423,12 +418,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
-                
-                // Status image: passcode
-                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
-                    cell.imageStatus.image = UIImage.init(named: "passcode")
-                }
-                
+                                
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
                     cell.imageLocal.image = UIImage.init(named: "offlineFlag")
@@ -552,10 +542,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
                     cell.local.image = UIImage.init(named: "offlineFlag")
-                }
-                // Status image: passcode
-                if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
-                    cell.status.image = UIImage.init(named: "passcode")
                 }
                 
             } else {

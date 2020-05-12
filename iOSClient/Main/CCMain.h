@@ -43,7 +43,7 @@
 @class tableMetadata;
 @class NCViewRichWorkspace;
 
-@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NCViewRichWorkspace *viewRichWorkspace;
@@ -66,7 +66,7 @@
 @property BOOL isSelectedMode;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector;
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath;
+- (void)performSegueDirectoryWithMetadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath;
 
 - (void)saveToPhotoAlbum:(tableMetadata *)metadata;
 
@@ -98,7 +98,6 @@
 - (void)moveOpenWindow:(NSArray *)indexPaths;
 
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
-- (void)comandoLockPassword;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 - (void)createRichWorkspace;
 

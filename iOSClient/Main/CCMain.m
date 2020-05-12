@@ -2101,147 +2101,6 @@
     [appDelegate startLoadAutoDownloadUpload];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Lock Passcode =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return _failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return _lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if (aViewController.fromType == CCBKPasscodeFromLockScreen || aViewController.fromType == CCBKPasscodeFromLockDirectory || aViewController.fromType == CCBKPasscodeFromDisactivateDirectory ) {
-        if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-            _lockUntilDate = nil;
-            _failedAttempts = 0;
-            aResultHandler(YES);
-        } else aResultHandler(NO);
-    } else aResultHandler(YES);
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    switch (aViewController.type) {
-            
-        case BKPasscodeViewControllerCheckPasscodeType: {
-            
-            if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
-                
-                // possiamo procedere alla prossima directory
-                [self performSegueDirectoryWithControlPasscode:false metadata:self.metadata blinkFileNamePath:self.blinkFileNamePath];
-                
-                // avviamo la sessione Passcode Lock con now
-                appDelegate.sessionePasscodeLock = [NSDate date];
-            }
-            
-            // disattivazione lock cartella
-            if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
-            
-                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-                
-                if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO account:appDelegate.activeAccount]) {
-                
-                    [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_operation_canc_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-                }
-                
-                [self tableViewReloadData];
-            }
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-- (void)comandoLockPassword
-{
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:self.metadata.fileName];
-
-    // se non è abilitato il Lock Passcode esci
-    if ([[CCUtility getBlockCode] length] == 0) {
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_warning_", nil) message:NSLocalizedString(@"_only_lock_passcode_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *goToSettingsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_go_to_app_settings_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [self.tabBarController setSelectedIndex:4];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                NSIndexPath *selectedIndex = [NSIndexPath indexPathForRow:0 inSection:1];
-                [appDelegate.activeMore.tableView selectRowAtIndexPath:selectedIndex animated:true scrollPosition: UITableViewScrollPositionNone];
-                [appDelegate.activeMore tableView:appDelegate.activeMore.tableView didSelectRowAtIndexPath:selectedIndex];
-            });
-        }];
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-
-        [alertController addAction:goToSettingsAction];
-        [alertController addAction:okAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-        return;
-    }
-    
-    // se è richiesta la disattivazione si chiede la password
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
-    
-    if (directory.lock) {
-        
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromDisactivateDirectory;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        viewController.inputViewTitlePassword = YES;
-        
-        if ([CCUtility getSimplyBlockCode]) {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-            
-        } else {
-            
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-
-        viewController.title = NSLocalizedString(@"_passcode_protection_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
-        
-        return;
-    }
-    
-    // ---------------- ACTIVATE PASSWORD
-    
-    if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES account:appDelegate.activeAccount]) {
-        
-        NSIndexPath *indexPath = [sectionDataSource.ocIdIndexPath objectForKey:self.metadata.ocId];
-        if ([self indexPathIsValid:indexPath])
-            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-        
-    } else {
-        
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_operation_canc_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-    }
-}
-
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== menu action : Favorite, More, Delete [swipe] =====
@@ -2290,18 +2149,7 @@
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-    
-    // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:self.metadata.serverUrl addFileName:metadata.fileName];
-    
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-    
-    if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) {
-        
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_folder_blocked_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-        return;
-    }
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
@@ -2958,7 +2806,7 @@
     
     if (self.metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:true metadata:self.metadata blinkFileNamePath:self.blinkFileNamePath];
+        [self performSegueDirectoryWithMetadata:self.metadata blinkFileNamePath:self.blinkFileNamePath];
     }
 }
 
@@ -3060,50 +2908,11 @@
 }
 
 // can i go to next viewcontroller
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode metadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath
+- (void)performSegueDirectoryWithMetadata:(tableMetadata *)metadata blinkFileNamePath:(NSString *)blinkFileNamePath
 {
     NSString *nomeDir;
     
     if (self.tableView.editing == NO) {
-        
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadata.account, lockServerUrl]];
-        
-        // SE siamo in presenza di una directory bloccata E è attivo il block E la sessione password Lock è senza data ALLORA chiediamo la password per procedere
-        if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil && controlPasscode) {
-            
-            CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-            viewController.delegate = self;
-            viewController.fromType = CCBKPasscodeFromLockDirectory;
-            viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-            viewController.inputViewTitlePassword = YES;
-            
-            if ([CCUtility getSimplyBlockCode]) {
-                
-                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-                viewController.passcodeInputView.maximumLength = 6;
-                
-            } else {
-                
-                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-                viewController.passcodeInputView.maximumLength = 64;
-            }
-
-            BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-            touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-            viewController.touchIDManager = touchIDManager;
-            
-            viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
-            viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-            
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-            navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-            [self presentViewController:navigationController animated:YES completion:nil];
-            
-            return;
-        }
         
         // E2EE Check enable
         if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {

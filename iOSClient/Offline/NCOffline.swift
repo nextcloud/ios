@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate  {
+class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -176,50 +176,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         return true
     }
     
-    // MARK: BKPASSCODEVIEWCONTROLLER
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
-        aViewController.dismiss(animated: true, completion: nil)
-        performSegueDirectoryWithControlPasscode(controlPasscode: false)
-    }
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
-        if aPasscode == CCUtility.getBlockCode() {
-            failedAttempts = 0
-            lockUntilDate = nil
-            aResultHandler(true)
-        } else {
-            aResultHandler(false)
-        }
-    }
-    
-    func passcodeViewControllerDidFailAttempt(_ aViewController: BKPasscodeViewController!) {
-        failedAttempts += 1
-        if failedAttempts > 5 {
-            var timeInterval: TimeInterval = 60
-            if failedAttempts > 6 {
-                let multiplier: Double = failedAttempts - 6
-                timeInterval = (5 * 60) * multiplier
-                if timeInterval > 3600 * 24 {
-                    timeInterval = 3600 * 24
-                }
-            }
-            lockUntilDate = NSDate.init(timeIntervalSinceNow: timeInterval)
-        }
-    }
-    
-    func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
-        return UInt(failedAttempts)
-    }
-    
-    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date? {
-        return lockUntilDate as Date?
-    }
-    
-    @objc func passcodeViewCloseButtonPressed(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-
     // MARK: TAP EVENT
     
     func tapSwitchHeader(sender: Any) {
@@ -503,55 +459,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             }
         }
     }
-    
-    // MARK: NAVIGATION
-    
-    private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
-        
-        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else {
-            return
-        }
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
-            return
-        }
-        
-        if directoryPush.lock == true && CCUtility.getBlockCode() != nil && (CCUtility.getBlockCode()?.count)! > 0 && controlPasscode {
-            
-            let viewController = CCBKPasscode.init(nibName: nil, bundle: nil)
-            guard let touchIDManager = BKTouchIDManager.init(keychainServiceName: k_serviceShareKeyChain) else {
-                return
-            }
-            touchIDManager.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
-            
-            viewController.delegate = self
-            viewController.type = BKPasscodeViewControllerCheckPasscodeType
-            viewController.inputViewTitlePassword = true
-            if CCUtility.getSimplyBlockCode() {
-                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 6
-            } else {
-                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 64
-            }
-            viewController.touchIDManager = touchIDManager
-            viewController.title = NSLocalizedString("_folder_blocked_", comment: "")
-            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(_:)))
-            viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
-            
-            let navigationController = UINavigationController.init(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .fullScreen
-            self.present(navigationController, animated: true, completion: nil)
-            
-            return
-        }
-        
-        let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-        
-        ncOffline.serverUrl = serverUrlPush
-        ncOffline.titleCurrentFolder = metadataPush!.fileNameView
-        
-        self.navigationController?.pushViewController(ncOffline, animated: true)
-    }
 }
 
 // MARK: - 3D Touch peek and pop
@@ -615,10 +522,15 @@ extension NCOffline: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            performSegueDirectoryWithControlPasscode(controlPasscode: true)
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
+            let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+            
+            ncOffline.serverUrl = serverUrlPush
+            ncOffline.titleCurrentFolder = metadataPush!.fileNameView
+            
+            self.navigationController?.pushViewController(ncOffline, animated: true)
             
         } else {
-            
             
             performSegue(withIdentifier: "segueDetail", sender: self)
         }

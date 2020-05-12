@@ -23,7 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCHud.h"
 
@@ -31,7 +30,7 @@
 
 @protocol NCSelectDestinationDelegate;
 
-@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate>
+@interface NCSelectDestination : UITableViewController <UIAlertViewDelegate, UITableViewDelegate>
 
 @property (nonatomic, weak) id <NCSelectDestinationDelegate> delegate;
 

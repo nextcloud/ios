@@ -518,7 +518,6 @@
             if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode) {
                 
                 [CCUtility setBlockCode:@""];
-                [[NCManageDatabase sharedInstance] setAllDirectoryUnLockWithAccount:appDelegate.activeAccount];
                 [appDelegate.activeMain.tableView reloadData];
             }
             
@@ -527,7 +526,6 @@
                 
                 // disable passcode
                 [CCUtility setBlockCode:@""];
-                [[NCManageDatabase sharedInstance] setAllDirectoryUnLockWithAccount:appDelegate.activeAccount];
                 [appDelegate.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];

@@ -235,14 +235,10 @@ extension CCMain {
 
         if (metadata.directory) {
             
-            var isDirectoryLock = false
             var isOffline = false
             let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
 
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
-                if (directory.lock && CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
-                    isDirectoryLock = true
-                }
                 isOffline = directory.offline
             }
 
@@ -264,7 +260,7 @@ extension CCMain {
                 )
             )
 
-            if (!isDirectoryLock && !isFolderEncrypted) {
+            if (!isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
@@ -276,7 +272,7 @@ extension CCMain {
                 )
             }
 
-            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isDirectoryLock && !metadata.e2eEncrypted) {
+            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !metadata.e2eEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_rename_", comment: ""),
@@ -307,7 +303,7 @@ extension CCMain {
                 )
             }
 
-            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isDirectoryLock && !isFolderEncrypted) {
+            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_move_or_copy_", comment: ""),
@@ -337,16 +333,6 @@ extension CCMain {
                     )
                 )
             }
-
-            actions.append(
-                NCMenuAction(
-                    title: isDirectoryLock ? NSLocalizedString("_remove_passcode_", comment: "") : NSLocalizedString("_protect_passcode_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "settingsPasscodeYES"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        self.perform(#selector(self.comandoLockPassword))
-                    }
-                )
-            )
 
             if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
