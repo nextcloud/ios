@@ -176,6 +176,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
     
+    // Passcode
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self passcode];
+    });
+    
     return YES;
 }
 
@@ -199,6 +204,9 @@
     // Test Maintenance
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
+    
+    NSLog(@"[LOG] Request Passcode");
+    [self passcode];
     
     NSLog(@"[LOG] Request Service Server Nextcloud");
     [[NCService sharedInstance] startRequestServicesServer];
@@ -246,12 +254,7 @@
         vc.account = account;
         
         [self.window.rootViewController presentViewController:vc animated:YES completion:nil];
-        
-    } else {
-        [self passcode];
     }
-#else
-    [self passcode];
 #endif
 }
 
@@ -1735,7 +1738,7 @@
 {
     [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
             });
         }
