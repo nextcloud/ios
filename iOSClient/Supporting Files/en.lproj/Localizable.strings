@@ -786,6 +786,15 @@
 "_voice_memo_filename_"     = "Voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
 
+// Passcode
+
+"Enter Passcode"            = "Enter Passcode";
+"Enter a new passcode"      = "Enter a new passcode";
+"Confirm new passcode"      = "Confirm new passcode";
+"Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
+"Delete"                    = "Delete";
+"Cancel"                    = "Cancel";
+
 // IM
 
 "_textnote_"                = "Text note";

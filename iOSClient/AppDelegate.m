@@ -231,13 +231,8 @@
     }
     
     // Passcode
-    if ([[CCUtility getBlockCode] length] > 0) {
-        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentDark passcodeType:TOPasscodeTypeSixDigits];
-        passcodeViewController.delegate = self;
-        passcodeViewController.allowCancel = false;
-        [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
-    }
-    
+    [self passcode];
+   
     // verify task (download/upload) lost
     [self verifyTaskLost];
     
@@ -1675,6 +1670,25 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Passcode Delegate =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)passcode
+{
+    if ([[CCUtility getBlockCode] length] > 0) {
+        
+        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            }
+        }
+    
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = false;
+        passcodeViewController.keypadButtonShowLettering = false;
+        
+        [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
+    }
+}
 
 - (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
