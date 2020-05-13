@@ -88,44 +88,25 @@
     return build;
 }
 
-+ (NSString *)getBlockCode
++ (NSString *)getPasscode
 {
-    return [UICKeyChainStore stringForKey:@"blockcode" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"passcode" service:k_serviceShareKeyChain];
 }
 
-+ (void)setBlockCode:(NSString *)blockcode
++ (void)setPasscode:(NSString *)passcode
 {
-    [UICKeyChainStore setString:blockcode forKey:@"blockcode" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:passcode forKey:@"passcode" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getSimplyBlockCode
++ (BOOL)getNotPasscodeAtStart
 {
-    NSString *simplyBlockCode = [UICKeyChainStore stringForKey:@"simplyblockcode" service:k_serviceShareKeyChain];
-    
-    if (simplyBlockCode == nil) {
-        
-        [self setSimplyBlockCode:YES];
-        return YES;
-    }
-    
-    return [simplyBlockCode boolValue];
+    return [[UICKeyChainStore stringForKey:@"notPasscodeAtStart" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (void)setSimplyBlockCode:(BOOL)simply
++ (void)setNotPasscodeAtStart:(BOOL)set
 {
-    NSString *sSimply = (simply) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSimply forKey:@"simplyblockcode" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getOnlyLockDir
-{
-    return [[UICKeyChainStore stringForKey:@"onlylockdir" service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (void)setOnlyLockDir:(BOOL)lockDir
-{
-    NSString *sLockDir = (lockDir) ? @"true" : @"false";
-    [UICKeyChainStore setString:sLockDir forKey:@"onlylockdir" service:k_serviceShareKeyChain];
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"notPasscodeAtStart" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getOrderSettings

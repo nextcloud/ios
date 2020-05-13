@@ -1693,8 +1693,9 @@
 {
     LAContext *laContext = [LAContext new];
     NSError *error;
+    BOOL isBiometryAvailable = false;
     
-    if ([[CCUtility getBlockCode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getOnlyLockDir]) return;
+    if ([[CCUtility getPasscode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getNotPasscodeAtStart]) return;
     
     if (!self.passcodeViewController.view.window) {
            
@@ -1713,11 +1714,14 @@
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
                     self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
-                    self.passcodeViewController.allowBiometricValidation = false;
+                    self.passcodeViewController.allowBiometricValidation = true;
+                    isBiometryAvailable = true;
                 } else if (laContext.biometryType == LABiometryTypeTouchID) {
                     self.passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
-                    self.passcodeViewController.allowBiometricValidation = false;
+                    self.passcodeViewController.allowBiometricValidation = true;
+                    isBiometryAvailable = true;
                 } else {
+                    isBiometryAvailable = false;
                     NSLog(@"No Biometric support");
                 }
             }
@@ -1727,7 +1731,7 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
+        if (automaticallyPromptForBiometricValidation && isBiometryAvailable && self.passcodeViewController.view.window) {
             [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
@@ -1746,7 +1750,18 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    return [code isEqualToString:[CCUtility getBlockCode]];
+    return [code isEqualToString:[CCUtility getPasscode]];
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

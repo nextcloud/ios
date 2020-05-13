@@ -196,7 +196,7 @@
 {
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
         [self passcodeType:@"startE2E"];
         
@@ -214,7 +214,7 @@
 {
     [self deselectFormRow:sender];
     
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
         [self passcodeType:@"readPassphrase"];
         
@@ -232,7 +232,7 @@
 {
     [self deselectFormRow:sender];
     
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
         [self passcodeType:@"removeLocallyEncryption"];
         
@@ -253,7 +253,7 @@
     LAContext *laContext = [LAContext new];
     NSError *error;
     
-    if ([[CCUtility getBlockCode] length] > 0) {
+    if ([[CCUtility getPasscode] length] > 0) {
         
         passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
         if (@available(iOS 13.0, *)) {
@@ -294,7 +294,7 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    if ([code isEqualToString:[CCUtility getBlockCode]]) {
+    if ([code isEqualToString:[CCUtility getPasscode]]) {
         
         [self passcodeCorrectCode];
         return YES;

@@ -97,7 +97,7 @@
     [section addFormRow:row];
     
     // Lock no screen
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_no_screen_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"notPasscodeAtStart" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_no_screen_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -227,15 +227,14 @@
     // ------------------------------------------------------------------
 
     XLFormRowDescriptor *rowBloccoPasscode = [self.form formRowWithTag:@"bloccopasscode"];
-    XLFormRowDescriptor *rowSimplyPasscode = [self.form formRowWithTag:@"simplypasscode"];
-    XLFormRowDescriptor *rowOnlyLockDir = [self.form formRowWithTag:@"onlylockdir"];
+    XLFormRowDescriptor *rowNotPasscodeAtStart = [self.form formRowWithTag:@"notPasscodeAtStart"];
     XLFormRowDescriptor *rowFavoriteOffline = [self.form formRowWithTag:@"favoriteoffline"];
     XLFormRowDescriptor *rowDarkModeDetect = [self.form formRowWithTag:@"darkModeDetect"];
     XLFormRowDescriptor *rowDarkMode = [self.form formRowWithTag:@"darkMode"];
 
     // ------------------------------------------------------------------
     
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
         [rowBloccoPasscode.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     } else {
@@ -243,8 +242,7 @@
         [rowBloccoPasscode.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeNO"] multiplier:2 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
     }
     
-    if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
-    if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
+    if ([CCUtility getNotPasscodeAtStart]) [rowNotPasscodeAtStart setValue:@1]; else [rowNotPasscodeAtStart setValue:@0];
     if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
     if ([CCUtility getDarkModeDetect]) [rowDarkModeDetect setValue:@1]; else [rowDarkModeDetect setValue:@0];
     if ([CCUtility getDarkMode]) [rowDarkMode setValue:@1]; else [rowDarkMode setValue:@0];
@@ -260,12 +258,12 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"onlylockdir"]) {
+    if ([rowDescriptor.tag isEqualToString:@"notPasscodeAtStart"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setOnlyLockDir:true];
+            [CCUtility setNotPasscodeAtStart:true];
         } else {
-            [CCUtility setOnlyLockDir:false];
+            [CCUtility setNotPasscodeAtStart:false];
         }
     }
     
@@ -337,7 +335,7 @@
     [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [CCUtility setBlockCode:@""];
+                [CCUtility setPasscode:@""];
                 [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
                 [self reloadForm];
             });
@@ -347,7 +345,7 @@
 
 - (void)passcodeSettingsViewController:(TOPasscodeSettingsViewController *)passcodeSettingsViewController didChangeToNewPasscode:(NSString *)passcode ofType:(TOPasscodeType)type
 {
-    [CCUtility setBlockCode:passcode];
+    [CCUtility setPasscode:passcode];
     [passcodeSettingsViewController dismissViewControllerAnimated:YES completion:nil];
     
     [self reloadForm];
@@ -360,8 +358,8 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    if ([code isEqualToString:[CCUtility getBlockCode]]) {
-        [CCUtility setBlockCode:@""];
+    if ([code isEqualToString:[CCUtility getPasscode]]) {
+        [CCUtility setPasscode:@""];
         [self reloadForm];
         
         return YES;
@@ -377,7 +375,7 @@
     
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getBlockCode] length] == 0) {
+    if ([[CCUtility getPasscode] length] == 0) {
         
         passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
         if (@available(iOS 13.0, *)) {
