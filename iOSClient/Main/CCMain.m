@@ -1361,7 +1361,7 @@
             }
             
             // Version >= 12
-            if ([[NCManageDatabase sharedInstance] getServerVersionWithAccount:appDelegate.activeAccount] >= 12) {
+            if ([[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:appDelegate.activeAccount] >= 12) {
                 
                 [_timerWaitInput invalidate];
                 _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];

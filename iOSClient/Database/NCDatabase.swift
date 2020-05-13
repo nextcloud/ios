@@ -155,6 +155,7 @@ class tableActivitySubjectRich: Object {
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var jsondata: Data? = nil
     @objc dynamic var themingBackground = ""
     @objc dynamic var themingBackgroundDefault: Bool = false
     @objc dynamic var themingBackgroundPlain: Bool = false
