@@ -265,6 +265,8 @@
 {
     NSLog(@"[LOG] Enter in Background");
             
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    
     if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
         
         __block UIBackgroundTaskIdentifier background_task;

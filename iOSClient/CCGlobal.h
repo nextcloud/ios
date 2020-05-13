@@ -322,6 +322,8 @@
 
 // Notification Center
 
+#define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
+
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
 #define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"
