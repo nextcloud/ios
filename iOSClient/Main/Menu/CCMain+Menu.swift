@@ -228,8 +228,6 @@ extension CCMain {
     
     private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [NCMenuAction] {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        let autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
 
         var actions = [NCMenuAction]()
 
@@ -272,7 +270,7 @@ extension CCMain {
                 )
             }
 
-            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !metadata.e2eEncrypted) {
+            if (!metadata.e2eEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_rename_", comment: ""),
@@ -303,7 +301,7 @@ extension CCMain {
                 )
             }
 
-            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !isFolderEncrypted) {
+            if (!isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_move_or_copy_", comment: ""),
