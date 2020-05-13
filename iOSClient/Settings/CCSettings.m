@@ -39,6 +39,8 @@
 @interface CCSettings () <TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
+    TOPasscodeViewController *passcodeViewController;
+    TOPasscodeSettingsViewController *passcodeSettingsViewController;
 }
 @end
 
@@ -191,8 +193,9 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+    
     [self changeTheming];
 }
 
@@ -201,6 +204,16 @@
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
     [self initializeForm];
     [self reloadForm];
+}
+
+- (void)applicationDidEnterBackground
+{
+    if (passcodeViewController.view.window != nil) {
+        [passcodeViewController dismissViewControllerAnimated:true completion:nil];
+    }
+    if (passcodeSettingsViewController.view.window != nil) {
+        [passcodeSettingsViewController dismissViewControllerAnimated:true completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -366,23 +379,23 @@
 
     if ([[CCUtility getBlockCode] length] == 0) {
         
-        TOPasscodeSettingsViewController *settingsController = [[TOPasscodeSettingsViewController alloc] init];
+        passcodeSettingsViewController = [[TOPasscodeSettingsViewController alloc] init];
         if (@available(iOS 13.0, *)) {
             if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-                settingsController.style = TOPasscodeSettingsViewStyleDark;
+                passcodeSettingsViewController.style = TOPasscodeSettingsViewStyleDark;
             }
         }
         
-        settingsController.hideOptionsButton = YES;
-        settingsController.requireCurrentPasscode = NO;
-        settingsController.passcodeType = TOPasscodeTypeSixDigits;
-        settingsController.delegate = self;
+        passcodeSettingsViewController.hideOptionsButton = YES;
+        passcodeSettingsViewController.requireCurrentPasscode = NO;
+        passcodeSettingsViewController.passcodeType = TOPasscodeTypeSixDigits;
+        passcodeSettingsViewController.delegate = self;
         
-        [self presentViewController:settingsController animated:YES completion:nil];
+        [self presentViewController:passcodeSettingsViewController animated:YES completion:nil];
         
     } else {
      
-        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
         if (@available(iOS 13.0, *)) {
             if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
                 passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;

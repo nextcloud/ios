@@ -32,6 +32,7 @@
 {
     AppDelegate *appDelegate;
     NSString *passcodeType;
+    TOPasscodeViewController *passcodeViewController;
 }
 @end
 
@@ -169,6 +170,8 @@
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+
     [self changeTheming];
 }
 
@@ -176,6 +179,13 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
     [self initializeForm];
+}
+
+- (void)applicationDidEnterBackground
+{
+    if (passcodeViewController.view.window != nil) {
+        [passcodeViewController dismissViewControllerAnimated:true completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -245,7 +255,7 @@
     
     if ([[CCUtility getBlockCode] length] > 0) {
         
-        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
         if (@available(iOS 13.0, *)) {
             if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
                 passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
