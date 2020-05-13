@@ -32,7 +32,7 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 #import <QuartzCore/QuartzCore.h>
-#import "TOPasscodeViewController.h"
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 @class NCViewerRichdocument;
 

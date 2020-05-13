@@ -152,23 +152,6 @@
 		F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */; };
 		F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */; };
 		F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD48246AC9B80009B204 /* nsEscSM.cpp */; };
-		F711CDC2246AD2E40009B204 /* TOPasscodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */; };
-		F711CDC3246AD2E40009B204 /* TOPasscodeCircleImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */; };
-		F711CDC4246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */; };
-		F711CDC5246AD2E40009B204 /* TOSettingsKeypadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */; };
-		F711CDC6246AD2E40009B204 /* TOPasscodeViewContentLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */; };
-		F711CDC7246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */; };
-		F711CDC8246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */; };
-		F711CDC9246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */; };
-		F711CDCA246AD2E40009B204 /* TOPasscodeFixedInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */; };
-		F711CDCB246AD2E40009B204 /* TOPasscodeCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */; };
-		F711CDCC246AD2E40009B204 /* TOPasscodeButtonLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */; };
-		F711CDCD246AD2E40009B204 /* TOPasscodeVariableInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */; };
-		F711CDCE246AD2E40009B204 /* TOPasscodeInputField.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */; };
-		F711CDCF246AD2E40009B204 /* TOPasscodeCircleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */; };
-		F711CDD0246AD2E40009B204 /* TOPasscodeKeypadView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */; };
-		F711CDD1246AD2E40009B204 /* TOPasscodeView.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDC0246AD2E40009B204 /* TOPasscodeView.m */; };
-		F711CDD2246AD2E40009B204 /* TOPasscodeSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
@@ -359,6 +342,7 @@
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
 		F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */; };
 		F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */; };
+		F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */; };
 		F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */; };
 		F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */; };
 		F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B174C722FAC0A8000B7579 /* AppDelegate.m */; };
@@ -660,41 +644,6 @@
 		F711CD49246AC9B80009B204 /* nsLatin1Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsLatin1Prober.h; sourceTree = "<group>"; };
 		F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCTWProber.h; sourceTree = "<group>"; };
 		F711CD4B246AC9B80009B204 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
-		F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewController.m; sourceTree = "<group>"; };
-		F711CD9B246AD2E40009B204 /* TOPasscodeCircleImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleImage.h; sourceTree = "<group>"; };
-		F711CD9C246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerAnimatedTransitioning.h; sourceTree = "<group>"; };
-		F711CD9D246AD2E40009B204 /* TOPasscodeViewContentLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewContentLayout.h; sourceTree = "<group>"; };
-		F711CD9E246AD2E40009B204 /* TOSettingsKeypadImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOSettingsKeypadImage.h; sourceTree = "<group>"; };
-		F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleImage.m; sourceTree = "<group>"; };
-		F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewControllerAnimatedTransitioning.m; sourceTree = "<group>"; };
-		F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOSettingsKeypadImage.m; sourceTree = "<group>"; };
-		F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeViewContentLayout.m; sourceTree = "<group>"; };
-		F711CDA3246AD2E40009B204 /* TOPasscodeSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsViewController.h; sourceTree = "<group>"; };
-		F711CDA4246AD2E40009B204 /* TOPasscodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewController.h; sourceTree = "<group>"; };
-		F711CDA6246AD2E40009B204 /* TOPasscodeViewControllerConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeViewControllerConstants.h; sourceTree = "<group>"; };
-		F711CDA9246AD2E40009B204 /* TOPasscodeSettingsKeypadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadView.h; sourceTree = "<group>"; };
-		F711CDAA246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsWarningLabel.h; sourceTree = "<group>"; };
-		F711CDAB246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeSettingsKeypadButton.h; sourceTree = "<group>"; };
-		F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadView.m; sourceTree = "<group>"; };
-		F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsWarningLabel.m; sourceTree = "<group>"; };
-		F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsKeypadButton.m; sourceTree = "<group>"; };
-		F711CDB0246AD2E40009B204 /* TOPasscodeCircleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleView.h; sourceTree = "<group>"; };
-		F711CDB1246AD2E40009B204 /* TOPasscodeFixedInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeFixedInputView.h; sourceTree = "<group>"; };
-		F711CDB2246AD2E40009B204 /* TOPasscodeVariableInputView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeVariableInputView.h; sourceTree = "<group>"; };
-		F711CDB3246AD2E40009B204 /* TOPasscodeButtonLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeButtonLabel.h; sourceTree = "<group>"; };
-		F711CDB4246AD2E40009B204 /* TOPasscodeInputField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeInputField.h; sourceTree = "<group>"; };
-		F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeFixedInputView.m; sourceTree = "<group>"; };
-		F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleView.m; sourceTree = "<group>"; };
-		F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeButtonLabel.m; sourceTree = "<group>"; };
-		F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeVariableInputView.m; sourceTree = "<group>"; };
-		F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeInputField.m; sourceTree = "<group>"; };
-		F711CDBB246AD2E40009B204 /* TOPasscodeKeypadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeKeypadView.h; sourceTree = "<group>"; };
-		F711CDBC246AD2E40009B204 /* TOPasscodeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeView.h; sourceTree = "<group>"; };
-		F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeCircleButton.m; sourceTree = "<group>"; };
-		F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeKeypadView.m; sourceTree = "<group>"; };
-		F711CDBF246AD2E40009B204 /* TOPasscodeCircleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOPasscodeCircleButton.h; sourceTree = "<group>"; };
-		F711CDC0246AD2E40009B204 /* TOPasscodeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeView.m; sourceTree = "<group>"; };
-		F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOPasscodeSettingsViewController.m; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
 		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
@@ -925,6 +874,7 @@
 		F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWeb.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
+		F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TOPasscodeViewController.framework; path = Carthage/Build/iOS/TOPasscodeViewController.framework; sourceTree = "<group>"; };
 		F7B0C0CB1EE7E7750033AC24 /* CCSynchronize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSynchronize.h; sourceTree = "<group>"; };
 		F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSynchronize.m; sourceTree = "<group>"; };
 		F7B0C1731EE839A30033AC24 /* NCAutoUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCAutoUpload.h; sourceTree = "<group>"; };
@@ -1082,6 +1032,7 @@
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7D4B6872295663D000C2C86 /* FirebaseAnalytics.framework in Frameworks */,
+				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7C40BE521998D5B0004137E /* MGSwipeTableCell.framework in Frameworks */,
 				F7D4B68B2295663D000C2C86 /* FirebaseInstanceID.framework in Frameworks */,
@@ -1207,7 +1158,6 @@
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
-				F711CD98246AD2E40009B204 /* TOPasscodeViewController */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
 			);
 			path = "Libraries external";
@@ -1437,96 +1387,6 @@
 				F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */,
 			);
 			path = LangModels;
-			sourceTree = "<group>";
-		};
-		F711CD98246AD2E40009B204 /* TOPasscodeViewController */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD9A246AD2E40009B204 /* Models */,
-				F711CDA5246AD2E40009B204 /* Supporting */,
-				F711CDA3246AD2E40009B204 /* TOPasscodeSettingsViewController.h */,
-				F711CDC1246AD2E40009B204 /* TOPasscodeSettingsViewController.m */,
-				F711CDA4246AD2E40009B204 /* TOPasscodeViewController.h */,
-				F711CD99246AD2E40009B204 /* TOPasscodeViewController.m */,
-				F711CDA7246AD2E40009B204 /* Views */,
-			);
-			path = TOPasscodeViewController;
-			sourceTree = "<group>";
-		};
-		F711CD9A246AD2E40009B204 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD9B246AD2E40009B204 /* TOPasscodeCircleImage.h */,
-				F711CD9C246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.h */,
-				F711CD9D246AD2E40009B204 /* TOPasscodeViewContentLayout.h */,
-				F711CD9E246AD2E40009B204 /* TOSettingsKeypadImage.h */,
-				F711CD9F246AD2E40009B204 /* TOPasscodeCircleImage.m */,
-				F711CDA0246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m */,
-				F711CDA1246AD2E40009B204 /* TOSettingsKeypadImage.m */,
-				F711CDA2246AD2E40009B204 /* TOPasscodeViewContentLayout.m */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		F711CDA5246AD2E40009B204 /* Supporting */ = {
-			isa = PBXGroup;
-			children = (
-				F711CDA6246AD2E40009B204 /* TOPasscodeViewControllerConstants.h */,
-			);
-			path = Supporting;
-			sourceTree = "<group>";
-		};
-		F711CDA7246AD2E40009B204 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				F711CDA8246AD2E40009B204 /* Settings */,
-				F711CDAF246AD2E40009B204 /* Shared */,
-				F711CDBA246AD2E40009B204 /* Main */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		F711CDA8246AD2E40009B204 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				F711CDA9246AD2E40009B204 /* TOPasscodeSettingsKeypadView.h */,
-				F711CDAA246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.h */,
-				F711CDAB246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.h */,
-				F711CDAC246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m */,
-				F711CDAD246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m */,
-				F711CDAE246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		F711CDAF246AD2E40009B204 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				F711CDB0246AD2E40009B204 /* TOPasscodeCircleView.h */,
-				F711CDB1246AD2E40009B204 /* TOPasscodeFixedInputView.h */,
-				F711CDB2246AD2E40009B204 /* TOPasscodeVariableInputView.h */,
-				F711CDB3246AD2E40009B204 /* TOPasscodeButtonLabel.h */,
-				F711CDB4246AD2E40009B204 /* TOPasscodeInputField.h */,
-				F711CDB5246AD2E40009B204 /* TOPasscodeFixedInputView.m */,
-				F711CDB6246AD2E40009B204 /* TOPasscodeCircleView.m */,
-				F711CDB7246AD2E40009B204 /* TOPasscodeButtonLabel.m */,
-				F711CDB8246AD2E40009B204 /* TOPasscodeVariableInputView.m */,
-				F711CDB9246AD2E40009B204 /* TOPasscodeInputField.m */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
-		F711CDBA246AD2E40009B204 /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				F711CDBB246AD2E40009B204 /* TOPasscodeKeypadView.h */,
-				F711CDBC246AD2E40009B204 /* TOPasscodeView.h */,
-				F711CDBD246AD2E40009B204 /* TOPasscodeCircleButton.m */,
-				F711CDBE246AD2E40009B204 /* TOPasscodeKeypadView.m */,
-				F711CDBF246AD2E40009B204 /* TOPasscodeCircleButton.h */,
-				F711CDC0246AD2E40009B204 /* TOPasscodeView.m */,
-			);
-			path = Main;
 			sourceTree = "<group>";
 		};
 		F7169A161EE590930086BD69 /* Shares */ = {
@@ -2198,6 +2058,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */,
 				F7D2C772246470CA008513AE /* XLForm.framework */,
 				F79018A424092EF4007C9B6D /* ATGMediaBrowser.framework */,
 				F7DBD82B23E46A4700ECB7C6 /* MarkdownKit.framework */,
@@ -2625,6 +2486,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/FloatingPanel.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
 			);
 			outputPaths = (
 			);
@@ -2749,7 +2611,6 @@
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
-				F711CDD1246AD2E40009B204 /* TOPasscodeView.m in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
@@ -2759,12 +2620,9 @@
 				F711CD66246AC9B80009B204 /* LangThaiModel.cpp in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */,
-				F711CDCD246AD2E40009B204 /* TOPasscodeVariableInputView.m in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
 				F711CCE2246AC99E0009B204 /* OCNotifications.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
-				F711CDCF246AD2E40009B204 /* TOPasscodeCircleButton.m in Sources */,
-				F711CDC5246AD2E40009B204 /* TOSettingsKeypadImage.m in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
@@ -2779,7 +2637,6 @@
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
-				F711CDC7246AD2E40009B204 /* TOPasscodeSettingsKeypadView.m in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
 				F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
@@ -2787,26 +2644,21 @@
 				F711CD6F246AC9B80009B204 /* LangDanishModel.cpp in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
-				F711CDC8246AD2E40009B204 /* TOPasscodeSettingsWarningLabel.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
 				F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
 				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
-				F711CDC4246AD2E40009B204 /* TOPasscodeViewControllerAnimatedTransitioning.m in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
-				F711CDCE246AD2E40009B204 /* TOPasscodeInputField.m in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
-				F711CDD2246AD2E40009B204 /* TOPasscodeSettingsViewController.m in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
-				F711CDC6246AD2E40009B204 /* TOPasscodeViewContentLayout.m in Sources */,
 				F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */,
 				F711CD65246AC9B80009B204 /* LangFrenchModel.cpp in Sources */,
@@ -2848,7 +2700,6 @@
 				F711CD62246AC9B80009B204 /* LangHungarianModel.cpp in Sources */,
 				F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */,
 				F711CD72246AC9B80009B204 /* nsUniversalDetector.cpp in Sources */,
-				F711CDCB246AD2E40009B204 /* TOPasscodeCircleView.m in Sources */,
 				F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */,
 				F711CD63246AC9B80009B204 /* LangVietnameseModel.cpp in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
@@ -2858,10 +2709,8 @@
 				F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
-				F711CDD0246AD2E40009B204 /* TOPasscodeKeypadView.m in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
 				F711CD51246AC9B80009B204 /* nsMBCSGroupProber.cpp in Sources */,
-				F711CDC2246AD2E40009B204 /* TOPasscodeViewController.m in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
 				F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */,
@@ -2928,7 +2777,6 @@
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */,
-				F711CDC3246AD2E40009B204 /* TOPasscodeCircleImage.m in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
 				F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
@@ -2947,8 +2795,6 @@
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
-				F711CDCC246AD2E40009B204 /* TOPasscodeButtonLabel.m in Sources */,
-				F711CDC9246AD2E40009B204 /* TOPasscodeSettingsKeypadButton.m in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
@@ -2966,7 +2812,6 @@
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F711CCB0246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
-				F711CDCA246AD2E40009B204 /* TOPasscodeFixedInputView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

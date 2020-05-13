@@ -30,8 +30,8 @@
 #import "CCManageAccount.h"
 #import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
-#import "TOPasscodeSettingsViewController.h"
-#import "TOPasscodeViewController.h"
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
+
 
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
@@ -373,6 +373,7 @@
             }
         }
         
+        settingsController.hideOptionsButton = YES;
         settingsController.requireCurrentPasscode = NO;
         settingsController.passcodeType = TOPasscodeTypeSixDigits;
         settingsController.delegate = self;
