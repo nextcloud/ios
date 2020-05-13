@@ -32,7 +32,6 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 #import <QuartzCore/QuartzCore.h>
-#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 @class NCViewerRichdocument;
 
@@ -178,7 +177,7 @@
     
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self passcode];
+        [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     });
     
     return YES;
@@ -206,7 +205,7 @@
         return;
     
     NSLog(@"[LOG] Request Passcode");
-    [self passcode];
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     NSLog(@"[LOG] Request Service Server Nextcloud");
     [[NCService sharedInstance] startRequestServicesServer];
@@ -266,6 +265,7 @@
     NSLog(@"[LOG] Enter in Background");
             
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
     
     if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
         
@@ -1686,44 +1686,44 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Passcode Delegate =====
+#pragma mark ===== Passcode + Delegate =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)passcode
+- (void)passcodeWithAutomaticallyPromptForBiometricValidation:(BOOL)automaticallyPromptForBiometricValidation
 {
     LAContext *laContext = [LAContext new];
     NSError *error;
     
     if ([[CCUtility getBlockCode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getOnlyLockDir]) return;
    
-    TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+    self.passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
     if (@available(iOS 13.0, *)) {
         if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-            passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            self.passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
         }
     }
 
-    passcodeViewController.delegate = self;
-    passcodeViewController.allowCancel = false;
-    passcodeViewController.keypadButtonShowLettering = false;
+    self.passcodeViewController.delegate = self;
+    self.passcodeViewController.allowCancel = false;
+    self.passcodeViewController.keypadButtonShowLettering = false;
     
     if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
         if (error == NULL) {
             if (laContext.biometryType == LABiometryTypeFaceID) {
-                passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
-                passcodeViewController.allowBiometricValidation = true;
-                passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                self.passcodeViewController.allowBiometricValidation = true;
+                self.passcodeViewController.automaticallyPromptForBiometricValidation = automaticallyPromptForBiometricValidation;
             } else if (laContext.biometryType == LABiometryTypeTouchID) {
-                passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
-                passcodeViewController.allowBiometricValidation = true;
-                passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                self.passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                self.passcodeViewController.allowBiometricValidation = true;
+                self.passcodeViewController.automaticallyPromptForBiometricValidation = automaticallyPromptForBiometricValidation;
             } else {
                 NSLog(@"No Biometric support");
             }
         }
     }
     
-    [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
+    [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:nil];
 }
 
 - (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController

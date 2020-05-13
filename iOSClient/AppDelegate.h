@@ -26,6 +26,7 @@
 #import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
 #import <LocalAuthentication/LocalAuthentication.h>
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "Reachability.h"
 #import "CCUtility.h"
@@ -86,6 +87,8 @@
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;
+
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
