@@ -1695,35 +1695,48 @@
     NSError *error;
     
     if ([[CCUtility getBlockCode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getOnlyLockDir]) return;
-   
-    self.passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
-    if (@available(iOS 13.0, *)) {
-        if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
-            self.passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
-        }
-    }
-
-    self.passcodeViewController.delegate = self;
-    self.passcodeViewController.allowCancel = false;
-    self.passcodeViewController.keypadButtonShowLettering = false;
     
-    if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
-        if (error == NULL) {
-            if (laContext.biometryType == LABiometryTypeFaceID) {
-                self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
-                self.passcodeViewController.allowBiometricValidation = true;
-                self.passcodeViewController.automaticallyPromptForBiometricValidation = automaticallyPromptForBiometricValidation;
-            } else if (laContext.biometryType == LABiometryTypeTouchID) {
-                self.passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
-                self.passcodeViewController.allowBiometricValidation = true;
-                self.passcodeViewController.automaticallyPromptForBiometricValidation = automaticallyPromptForBiometricValidation;
-            } else {
-                NSLog(@"No Biometric support");
+    if (!self.passcodeViewController.view.window) {
+           
+        self.passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                self.passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
             }
         }
+
+        self.passcodeViewController.delegate = self;
+        self.passcodeViewController.allowCancel = false;
+        self.passcodeViewController.keypadButtonShowLettering = false;
+        
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    self.passcodeViewController.allowBiometricValidation = false;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    self.passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    self.passcodeViewController.allowBiometricValidation = false;
+                } else {
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+    
+        [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:nil];
     }
     
-    [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:nil];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        if (automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
+            [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+                if (success) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                        [self.passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                    });
+                }
+            }];
+        }
+    });
 }
 
 - (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
@@ -1734,17 +1747,6 @@
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
     return [code isEqualToString:[CCUtility getBlockCode]];
-}
-
-- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
-{
-    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
-        if (success) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
-            });
-        }
-    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
