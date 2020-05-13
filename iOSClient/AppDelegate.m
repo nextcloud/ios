@@ -398,8 +398,10 @@
 {
     if (contextViewController == NULL) {
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.navigationBar.barStyle =  UIBarStyleBlack;
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navController.navigationBar setTranslucent:false];
         self.window.rootViewController = navController;
         [self.window makeKeyAndVisible];
         
@@ -410,8 +412,10 @@
     } else {
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navController.navigationBar.barStyle =  UIBarStyleBlack;
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navController.navigationBar setTranslucent:false];
         [contextViewController presentViewController:navController animated:true completion:nil];
     }
 }
