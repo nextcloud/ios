@@ -282,6 +282,9 @@
             }
         }
         
+        // Type of passcode
+        passcodeType = type;
+        
         [self presentViewController:passcodeViewController animated:YES completion:nil];
     }
 }
@@ -295,8 +298,9 @@
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
     if ([code isEqualToString:[CCUtility getPasscode]]) {
-        
-        [self passcodeCorrectCode];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            [self passcodeCorrectCode];
+        });
         return YES;
     }
          
