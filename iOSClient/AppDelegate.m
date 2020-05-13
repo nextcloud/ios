@@ -1731,7 +1731,7 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (automaticallyPromptForBiometricValidation && isBiometryAvailable && self.passcodeViewController.view.window) {
+        if (automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
             [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
