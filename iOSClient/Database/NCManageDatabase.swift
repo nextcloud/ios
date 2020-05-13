@@ -935,6 +935,25 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getCapabilitiesE2EEVersion(account: String) -> Float {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return 0
+        }
+        
+        let json = JSON(result.jsondata! as Data)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let version = dataCapabilities["end-to-end-encryption"]["api-version"].string {
+            return Float(version)!
+        } else {
+            return 0
+        }
+    }
+    
     #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
@@ -1044,18 +1063,6 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         
         return realm.objects(tableCapabilities.self).filter("account == %@", account).first
-    }
-    
-    @objc func getEndToEndEncryptionVersion(account: String) -> Float {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        
-        return Float(result.endToEndEncryptionVersion)!
     }
     
     @objc func compareServerVersion(_ versionCompare: String, account: String) -> Int {
