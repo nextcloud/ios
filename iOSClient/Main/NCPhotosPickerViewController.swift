@@ -100,8 +100,8 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandText
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandText
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
         
         self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
         self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
@@ -112,7 +112,7 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         if CCUtility.getDarkMode() {
             self.navigationBar.barStyle = .black
         }
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.brand
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brand
     }
 }
