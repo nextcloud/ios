@@ -929,7 +929,7 @@ class NCManageDatabase: NSObject {
         return json[elements].intValue
     }
     
-    @objc func getCapabilitiesServerBool(account: String, elements: Array<String>) -> Bool {
+    @objc func getCapabilitiesServerBool(account: String, elements: Array<String>, exists: Bool) -> Bool {
 
         let realm = try! Realm()
         realm.refresh()
@@ -942,7 +942,11 @@ class NCManageDatabase: NSObject {
         }
         
         let json = JSON(jsondata)
-        return json[elements].boolValue
+        if exists {
+            return json[elements].exists()
+        } else {
+            return json[elements].boolValue
+        }        
     }
     
     @objc func getCapabilitiesServerArray(account: String, elements: Array<String>) -> [String]? {
