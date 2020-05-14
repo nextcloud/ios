@@ -154,6 +154,9 @@ class NCService: NSObject {
                 // Theming
                 self.appDelegate.settingThemingColorBrand()
                 
+                //TEST
+                let x = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: ["ocs","data","version","string"])
+                
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesFilesSharingEnabled(account: account)
                 if (isFilesSharingEnabled && self.appDelegate.activeMain != nil) {
