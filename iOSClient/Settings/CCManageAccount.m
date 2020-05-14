@@ -45,7 +45,6 @@
         
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    tableCapabilities *tableCapabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
 
     // Section : ACCOUNTS -------------------------------------------
     
@@ -225,8 +224,8 @@
     }
     
     // Section : THIRT PART -------------------------------------------
-
-    if (tableCapabilities.isHandwerkcloudEnabled) {
+    BOOL isHandwerkcloudEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesHandwerkcloudEnabledWithAccount:appDelegate.activeAccount];
+    if (isHandwerkcloudEnabled) {
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];
         [form addFormSection:section];
