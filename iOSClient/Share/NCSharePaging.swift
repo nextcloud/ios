@@ -245,7 +245,7 @@ class NCSharePagingView: PagingView {
             collectionView.heightAnchor.constraint(equalToConstant: options.menuHeight),
             collectionView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             
-            headerView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            headerView.topAnchor.constraint(equalTo: topAnchor),
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             
