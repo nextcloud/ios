@@ -985,8 +985,8 @@
         completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
     }
     
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
-    if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_15_0) {
+    NSInteger versionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:account element:@"major"];
+    if (versionMajor >= k_nextcloud_version_15_0) {
         previews = true;
     }
     
@@ -1650,7 +1650,7 @@
     @synchronized(self) {
         
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:account];
+        NSInteger versionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:account element:@"major"];
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
         NSString *token = [CCUtility getPassword:account];
         
@@ -1660,7 +1660,7 @@
             self.checkRemoteUserInProgress = true;
         }
         
-        if (capabilities != nil && capabilities.versionMajor >= k_nextcloud_version_17_0) {
+        if (versionMajor >= k_nextcloud_version_17_0) {
             
             [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account token:token completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
                 

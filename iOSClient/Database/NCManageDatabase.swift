@@ -1073,6 +1073,32 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getCapabilitiesRichdocumentsMimetypes(account: String) -> [String]? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        var resultArray = [String]()
+
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
+        
+        let json = JSON(jsondata)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+        
+        if let results = dataCapabilities["richdocuments"]["mimetypes"].array {
+            for result in results {
+                resultArray.append(result.string ?? "")
+            }
+            return resultArray
+        }
+        
+        return nil
+    }
+    
     #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
@@ -1175,28 +1201,6 @@ class NCManageDatabase: NSObject {
         }
     }
     #endif
-    
-    @objc func getCapabilites(account: String) -> tableCapabilities? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        return realm.objects(tableCapabilities.self).filter("account == %@", account).first
-    }
-    
-   
-    
-    @objc func getRichdocumentsMimetypes(account: String) -> [String]? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        
-        return Array(result.richdocumentsMimetypes)
-    }
     
     //MARK: -
     //MARK: Table Comments

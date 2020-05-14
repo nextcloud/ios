@@ -218,7 +218,7 @@ extension AppDelegate {
             )
         }
         
-        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
+        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesRichdocumentsMimetypes(account: appDelegate.activeAccount) {
             if richdocumentsMimetypes.count > 0 && appDelegate.reachability.isReachable() && !isEncrypted {
                 actions.append(
                     NCMenuAction(

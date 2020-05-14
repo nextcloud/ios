@@ -176,8 +176,10 @@
 {
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
-        [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color"];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-element"];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-text"];
+        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;

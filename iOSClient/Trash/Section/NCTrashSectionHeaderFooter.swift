@@ -36,16 +36,6 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        // Button More
-        /*
-        let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
-        if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available_more_fix) {
-            buttonMore.isHidden = false
-        } else {
-            buttonMore.isHidden = true
-        }
-        */
-        
         buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)

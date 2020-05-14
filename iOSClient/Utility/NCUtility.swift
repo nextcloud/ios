@@ -330,7 +330,7 @@ class NCUtility: NSObject {
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
         }
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: metadata.account) else {
+        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesRichdocumentsMimetypes(account: metadata.account) else {
             return false
         }
         
