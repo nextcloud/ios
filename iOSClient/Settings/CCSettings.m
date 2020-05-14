@@ -468,17 +468,17 @@
         }
         break;
         case 5: {
-            
-            tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-            
-            NSString *versionServer = capabilities.versionString;
-            
+                        
+            NSString *versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionStringWithAccount:appDelegate.activeAccount];
+            NSString *themingName = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:appDelegate.activeAccount element:@"name"];
+            NSString *themingSlogan = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:appDelegate.activeAccount element:@"slogan"];
+
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             
             NSString *versionNextcloud = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudServer, versionServer];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
             
-            NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", capabilities.themingName, capabilities.themingSlogan];
+            NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", themingName, themingSlogan];
             
             sectionName = [NSString stringWithFormat:@"%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
         }

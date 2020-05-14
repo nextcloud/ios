@@ -912,10 +912,32 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let data = json["ocs"]["data"]
 
-        if let versionMajor = data["version"]["major"].int {
-            return versionMajor
+        if let result = data["version"]["major"].int {
+            return result
         } else {
             return 0
+        }
+    }
+    
+    @objc func getCapabilitiesServerVersionString(account: String) -> String? {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
+        
+        let json = JSON(jsondata)
+        let data = json["ocs"]["data"]
+
+        if let result = data["version"]["string"].string {
+            return result
+        } else {
+            return nil
         }
     }
     
@@ -934,8 +956,8 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let webDavRoot = dataCapabilities["core"]["webdav-root"].string {
-            return webDavRoot
+        if let result = dataCapabilities["core"]["webdav-root"].string {
+            return result
         } else {
             return nil
         }
@@ -956,10 +978,32 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let version = dataCapabilities["end-to-end-encryption"]["api-version"].string {
-            return Float(version)!
+        if let result = dataCapabilities["end-to-end-encryption"]["api-version"].string {
+            return Float(result)!
         } else {
             return 0
+        }
+    }
+    
+    @objc func getCapabilitiesServerTheming(account: String, element: String) -> String? {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
+        
+        let json = JSON(jsondata)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let result = dataCapabilities["theming"][element].string {
+            return result
+        } else {
+            return nil
         }
     }
     
@@ -1074,34 +1118,7 @@ class NCManageDatabase: NSObject {
         return realm.objects(tableCapabilities.self).filter("account == %@", account).first
     }
     
-    @objc func compareServerVersion(_ versionCompare: String, account: String) -> Int {
-        
-        let realm = try! Realm()
-
-        guard let capabilities = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return -1
-        }
-        
-        let versionServer = capabilities.versionString
-        
-        let v1 = versionServer.split(separator:".").map { Int(String($0)) }
-        let v2 = versionCompare.split(separator:".").map { Int(String($0)) }
-        
-        var result = 0
-        for i in 0..<max(v1.count,v2.count) {
-            let left = i >= v1.count ? 0 : v1[i]
-            let right = i >= v2.count ? 0 : v2[i]
-            
-            if (left == right) {
-                result = 0
-            } else if left! > right! {
-                return 1
-            } else if right! > left! {
-                return -1
-            }
-        }
-        return result
-    }
+   
     
     @objc func getRichdocumentsMimetypes(account: String) -> [String]? {
         
