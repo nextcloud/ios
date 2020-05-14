@@ -129,9 +129,10 @@
 - (void)startTimerErrorNetworking;
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb;
 
-// Setting Account
+// Setting Account & Communication
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
+- (void)settingSetupCommunicationCapabilities:(NSString *)account;
 
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;

@@ -61,7 +61,7 @@ class NCService: NSObject {
                 
                 // Update User (+ userProfile.id) & active account & account network
                 guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
-                    NCContentPresenter.shared.messageNotification("Accopunt", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                     return
                 }
                 
@@ -147,6 +147,9 @@ class NCService: NSObject {
             
             if errorCode == 0 && data != nil {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+                
+                // Setup communication
+                self.appDelegate.settingSetupCommunicationCapabilities(account)
             }
         }
         

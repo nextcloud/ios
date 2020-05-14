@@ -61,10 +61,11 @@
         
     } else {
         
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
-
+        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:tableAccount.account];
+        NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:tableAccount.account];
+        
         // Networking
-        [[NCCommunicationCommon sharedInstance] setupWithUser:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
+        [[NCCommunicationCommon sharedInstance] setupWithUser:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking sharedInstance]];
        
         _activeAccount = tableAccount.account;
         

@@ -56,7 +56,8 @@
     [CCUtility emptyTemporaryDirectory];
     
     // Networking
-    [[NCCommunicationCommon sharedInstance] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups delegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon sharedInstance] setupWithDelegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon sharedInstance] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -426,7 +427,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Account =====
+#pragma mark ===== Account & Communication =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword
@@ -436,23 +437,11 @@
     self.activeUser = activeUser;
     self.activeUserID = activeUserID;
     self.activePassword = activePassword;
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:activeAccount];
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
-    
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:activeAccount];
-    if (serverVersionMajor > 0) {
-        [communication setupNextcloudVersion: serverVersionMajor];
-    }
-   
-    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:activeAccount];
-    if (webDavRoot != nil) {
-        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
-    }
+    [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl];
+    [self settingSetupCommunicationCapabilities:activeAccount];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -483,6 +472,20 @@
         } else {
             [self openLoginView:self.window.rootViewController selector:k_intro_login openLoginWeb:false];
         }
+    }
+}
+
+- (void)settingSetupCommunicationCapabilities:(NSString *)account
+{
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:account];
+    if (serverVersionMajor > 0) {
+        [[OCNetworking sharedManager].sharedOCCommunication setupNextcloudVersion: serverVersionMajor];
+        [[NCCommunicationCommon sharedInstance] setupWithNextcloudVersion:serverVersionMajor];
+     }
+    
+    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:account];
+    if (webDavRoot != nil) {
+        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
     }
 }
 
