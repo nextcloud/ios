@@ -468,10 +468,10 @@
         }
         break;
         case 5: {
-                        
-            NSString *versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionStringWithAccount:appDelegate.activeAccount];
-            NSString *themingName = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:appDelegate.activeAccount element:@"name"];
-            NSString *themingSlogan = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:appDelegate.activeAccount element:@"slogan"];
+                                
+            NSString *versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionString];
+            NSString *themingName = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingName];
+            NSString *themingSlogan = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
 
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             
