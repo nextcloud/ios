@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -113,15 +113,6 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="Kfq-Bg-a0E">
                                 <rect key="frame" x="381" y="176" width="20" height="20"/>
                             </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bSU-bn-DlO">
-                                <rect key="frame" x="10" y="44" width="51" height="30"/>
-                                <state key="normal" title="Annulla">
-                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <action selector="handleAnnulla:" destination="yj9-jo-WIn" eventType="touchUpInside" id="XyT-Gg-W9A"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
                                 <rect key="frame" x="182" y="448" width="50" height="50"/>
                                 <constraints>
@@ -147,9 +138,7 @@
                             <constraint firstItem="jU7-Iw-XfU" firstAttribute="top" secondItem="1Gf-Bw-Nim" secondAttribute="bottom" id="QHr-T7-zbl"/>
                             <constraint firstItem="owR-PS-F32" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="VSS-Pz-f7g"/>
                             <constraint firstItem="4OF-5u-Hd1" firstAttribute="centerY" secondItem="1Gf-Bw-Nim" secondAttribute="centerY" id="Wkl-Is-Ay0"/>
-                            <constraint firstItem="bSU-bn-DlO" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="YBV-h4-rvh"/>
                             <constraint firstItem="jU7-Iw-XfU" firstAttribute="leading" secondItem="7q8-rl-x2M" secondAttribute="trailing" constant="10" id="a3y-yQ-wa8"/>
-                            <constraint firstItem="bSU-bn-DlO" firstAttribute="top" secondItem="8lf-3Y-f5R" secondAttribute="top" id="bBC-tf-tHj"/>
                             <constraint firstItem="7q8-rl-x2M" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="bf8-6l-dfs"/>
                             <constraint firstItem="4OF-5u-Hd1" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="e7p-K8-Tt3"/>
                             <constraint firstItem="s9o-RX-XeS" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="10" id="gYr-20-hOQ"/>
@@ -171,7 +160,6 @@
                     <navigationItem key="navigationItem" id="6v9-Gy-jiv"/>
                     <connections>
                         <outlet property="activity" destination="Kfq-Bg-a0E" id="Xx6-cQ-Yef"/>
-                        <outlet property="annulla" destination="bSU-bn-DlO" id="30o-yK-jjV"/>
                         <outlet property="baseUrl" destination="szn-G7-5sK" id="syP-Ff-tfS"/>
                         <outlet property="imageBaseUrl" destination="s9o-RX-XeS" id="Q81-S9-1P2"/>
                         <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>

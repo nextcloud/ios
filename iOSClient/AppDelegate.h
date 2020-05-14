@@ -26,6 +26,7 @@
 #import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
 #import <LocalAuthentication/LocalAuthentication.h>
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "Reachability.h"
 #import "CCUtility.h"
@@ -87,6 +88,8 @@
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;
 
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
+
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
@@ -128,7 +131,6 @@
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
-- (void)settingWebDavRoot:(NSString *)webdavRoot;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 
 // Quick Actions - ShotcutItem

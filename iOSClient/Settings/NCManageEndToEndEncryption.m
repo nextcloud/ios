@@ -24,12 +24,15 @@
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
 #import "CCNetworking.h"
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "NCBridgeSwift.h"
 
-@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate>
+@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
+    NSString *passcodeType;
+    TOPasscodeViewController *passcodeViewController;
 }
 @end
 
@@ -37,7 +40,7 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
@@ -159,6 +162,7 @@
 {
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_e2e_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
     // E2EE
@@ -167,6 +171,8 @@
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+
     [self changeTheming];
 }
 
@@ -174,6 +180,13 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
     [self initializeForm];
+}
+
+- (void)applicationDidEnterBackground
+{
+    if (passcodeViewController.view.window != nil) {
+        [passcodeViewController dismissViewControllerAnimated:true completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -184,34 +197,9 @@
 {
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        /*
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromStartEncryption;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_start_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
-        */
+        [self passcodeType:@"startE2E"];
         
     } else {
         
@@ -227,33 +215,9 @@
 {
     [self deselectFormRow:sender];
     
-    /*
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromCheckPassphrase;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-            
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_read_passphrase_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self passcodeType:@"readPassphrase"];
         
     } else {
         
@@ -263,40 +227,15 @@
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
-     */
 }
 
 - (void)removeLocallyEncryption:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
-    /*
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromRemoveEncryption;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_remove_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self passcodeType:@"removeLocallyEncryption"];
         
     } else {
         
@@ -306,8 +245,115 @@
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }
-    */
 }
+
+#pragma mark - Passcode -
+
+- (void)passcodeType:(NSString *)type
+{
+    LAContext *laContext = [LAContext new];
+    NSError *error;
+    
+    if ([[CCUtility getPasscode] length] > 0) {
+        
+        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            }
+        }
+    
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = false;
+        passcodeViewController.keypadButtonShowLettering = false;
+        
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else {
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+        
+        // Type of passcode
+        passcodeType = type;
+        
+        [self presentViewController:passcodeViewController animated:YES completion:nil];
+    }
+}
+
+
+- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
+{
+    if ([code isEqualToString:[CCUtility getPasscode]]) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            [self passcodeCorrectCode];
+        });
+        return YES;
+    }
+         
+    return NO;
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                [self passcodeCorrectCode];
+            });
+        }
+    }];
+}
+
+-(void)passcodeCorrectCode {
+    
+    if ([passcodeType isEqualToString:@"startE2E"]) {
+        
+        [self.endToEndInitialize initEndToEndEncryption];
+        
+    } else if ([passcodeType isEqualToString:@"readPassphrase"]) {
+        
+        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
+        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
+        
+        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+    } else if ([passcodeType isEqualToString:@"removeLocallyEncryption"]) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
+            [self initializeForm];
+        }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
+        
+        [alertController addAction:okAction];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
 
 - (void)deletePublicKey:(XLFormRowDescriptor *)sender
 {
@@ -348,78 +394,5 @@
 
     [self initializeForm];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === BKPasscodeViewController ===
-#pragma --------------------------------------------------------------------------------------------
-
-/*
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return _failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return _lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-        _lockUntilDate = nil;
-        _failedAttempts = 0;
-        aResultHandler(YES);
-    } else
-        aResultHandler(NO);
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
-        
-        [self.endToEndInitialize initEndToEndEncryption];        
-    }
-    
-    if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
-    
-        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
-        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
-    
-        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
-    
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        }];
-        [alertController addAction:okAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-    
-    if (aViewController.fromType == CCBKPasscodeFromRemoveEncryption) {
-     
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
-            [self initializeForm];
-        }];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-            NSLog(@"[LOG] Cancel action");
-        }];
-        
-        [alertController addAction:okAction];
-        [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
-*/
 
 @end

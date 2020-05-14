@@ -100,19 +100,13 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
         
-        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandText
-        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandText
-        
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.icon
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.graySoft
-        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, multiplier: 1, color: NCBrandColor.sharedInstance.graySoft)
-        
-        self.collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        if CCUtility.getDarkMode() {
-            self.navigationBar.barStyle = .black
-        }
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.brandText
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
+        self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
+      
+        /*
+        self.titleLabel.textColor = NCBrandColor.sharedInstance.brand
+        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brand
+        self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
+        */
     }
 }

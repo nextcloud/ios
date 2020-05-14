@@ -143,11 +143,12 @@ class NCService: NSObject {
             return
         }
         
-        /*
-        NCCommunication.sharedInstance.getCapabilities(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, capabilities, errorCode, errorDescription) in
+        NCCommunication.sharedInstance.getCapabilities(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
             
+            if errorCode == 0 && data != nil {
+                NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+            }
         }
-        */
         
         OCNetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
             
@@ -155,54 +156,9 @@ class NCService: NSObject {
                 
                 // Update capabilities db
                 NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
-                
-                // Update webDavRoot
-                self.appDelegate.settingWebDavRoot(capabilities?.coreWebDavRoot)
-                
+                                
                 // ------ THEMING -----------------------------------------------------------------------
                 self.appDelegate.settingThemingColorBrand()
-                
-                /*
-                if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
-                    
-                    // Download Theming Background
-                    DispatchQueue.global().async {
-                        
-                        // Download Logo
-                        if NCBrandOptions.sharedInstance.use_themingLogo {
-                            let fileNameThemingLogo = CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingLogo.png"
-                            NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: capabilities!.themingLogo, fileName: fileNameThemingLogo, width: 40, rewrite: true, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
-                        }
-                        
-                        let backgroundURL = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
-                        
-                        NCCommunication.sharedInstance.downloadContent(urlString: backgroundURL, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                                if let image = UIImage(data: data!) {
-                                    try? FileManager.default.removeItem(atPath: fileNamePath)
-                                    if let data = image.pngData() {
-                                        try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                                    }
-                                }
-                            }
-                        }
-                        DispatchQueue.main.async {
-                            self.appDelegate.settingThemingColorBrand()
-                        }
-                    }
-                    
-                } else {
-                    
-                    self.appDelegate.settingThemingColorBrand()
-                }
-                */
-                
-                // ------ SEARCH ------------------------------------------------------------------------
-                
-                if (NCManageDatabase.sharedInstance.getServerVersion(account: account!) != capabilities!.versionMajor && self.appDelegate.activeMain != nil) {
-                    self.appDelegate.activeMain.cancelSearchBar()
-                }
                 
                 // ------ GET OTHER SERVICE -------------------------------------------------------------
                                 

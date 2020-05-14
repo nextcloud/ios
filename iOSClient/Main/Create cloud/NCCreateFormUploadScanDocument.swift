@@ -72,6 +72,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         super.viewDidLoad()
         
+        self.title = NSLocalizedString("_save_settings_", comment: "")
+        
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
@@ -104,7 +106,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_save_settings_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor

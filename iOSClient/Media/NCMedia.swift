@@ -622,8 +622,7 @@ extension NCMedia {
         }
         
         if addPast {
-            //CCGraphics.addImage(toTitle: NSLocalizedString("_media_", comment: ""), colorTitle: NCBrandColor.sharedInstance.brandText, imageTitle: CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), multiplier: 2, color: NCBrandColor.sharedInstance.brandText), imageRight: false, navigationItem: self.navigationItem)
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 60)
         }
         loadingSearch = true
         

@@ -32,7 +32,6 @@
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
 #import <QuartzCore/QuartzCore.h>
-#import "TOPasscodeViewController.h"
 
 @class NCViewerRichdocument;
 
@@ -176,6 +175,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
     
+    // Passcode
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+    });
+    
     return YES;
 }
 
@@ -199,6 +203,9 @@
     // Test Maintenance
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
+    
+    NSLog(@"[LOG] Request Passcode");
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     NSLog(@"[LOG] Request Service Server Nextcloud");
     [[NCService sharedInstance] startRequestServicesServer];
@@ -230,15 +237,7 @@
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
-    
-    // Passcode
-    if ([[CCUtility getBlockCode] length] > 0) {
-        TOPasscodeViewController *passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentDark passcodeType:TOPasscodeTypeSixDigits];
-        passcodeViewController.delegate = self;
-        passcodeViewController.allowCancel = false;
-        [self.window.rootViewController presentViewController:passcodeViewController animated:YES completion:nil];
-    }
-    
+
     // verify task (download/upload) lost
     [self verifyTaskLost];
     
@@ -264,18 +263,20 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     NSLog(@"[LOG] Enter in Background");
-        
-    if([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
-        
-        __block UIBackgroundTaskIdentifier background_task;
-        
-        background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
             
-            //Clean up code. Tell the system that we are done.
-            [application endBackgroundTask: background_task];
-            background_task = UIBackgroundTaskInvalid;
-        }];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
+    
+    /*
+    __block UIBackgroundTaskIdentifier background_task;
+        
+    background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
+            
+        //Clean up code. Tell the system that we are done.
+        [application endBackgroundTask: background_task];
+        background_task = UIBackgroundTaskInvalid;
+    }];
+    */
 }
 
 //
@@ -397,8 +398,10 @@
 {
     if (contextViewController == NULL) {
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navController.navigationBar.barStyle =  UIBarStyleBlack;
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navController.navigationBar setTranslucent:false];
         self.window.rootViewController = navController;
         [self.window makeKeyAndVisible];
         
@@ -409,8 +412,10 @@
     } else {
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
         navController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navController.navigationBar.barStyle =  UIBarStyleBlack;
         navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
         navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navController.navigationBar setTranslucent:false];
         [contextViewController presentViewController:navController animated:true completion:nil];
     }
 }
@@ -438,14 +443,15 @@
     [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    [communication setupNextcloudVersion:[[NCManageDatabase sharedInstance] getServerVersionWithAccount:activeAccount]];
     
-}
-
-- (void)settingWebDavRoot:(NSString *)webdavRoot
-{
-    if (webdavRoot != nil) {
-        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webdavRoot];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:activeAccount];
+    if (serverVersionMajor > 0) {
+        [communication setupNextcloudVersion: serverVersionMajor];
+    }
+   
+    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:activeAccount];
+    if (webDavRoot != nil) {
+        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
     }
 }
 
@@ -1684,8 +1690,62 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Passcode Delegate =====
+#pragma mark ===== Passcode + Delegate =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)passcodeWithAutomaticallyPromptForBiometricValidation:(BOOL)automaticallyPromptForBiometricValidation
+{
+    LAContext *laContext = [LAContext new];
+    NSError *error;
+    BOOL isBiometryAvailable = false;
+    
+    if ([[CCUtility getPasscode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getNotPasscodeAtStart]) return;
+    
+    if (!self.passcodeViewController.view.window) {
+           
+        self.passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                self.passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            }
+        }
+
+        self.passcodeViewController.delegate = self;
+        self.passcodeViewController.allowCancel = false;
+        self.passcodeViewController.keypadButtonShowLettering = false;
+        
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    self.passcodeViewController.allowBiometricValidation = true;
+                    isBiometryAvailable = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    self.passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    self.passcodeViewController.allowBiometricValidation = true;
+                    isBiometryAvailable = true;
+                } else {
+                    isBiometryAvailable = false;
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+    
+        [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:nil];
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        if (automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
+            [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+                if (success) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                        [self.passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                    });
+                }
+            }];
+        }
+    });
+}
 
 - (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
 {
@@ -1694,7 +1754,18 @@
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
 {
-    return [code isEqualToString:[CCUtility getBlockCode]];
+    return [code isEqualToString:[CCUtility getPasscode]];
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

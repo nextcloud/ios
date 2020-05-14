@@ -336,7 +336,7 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "In case of successful auto upload a message will require the deletion of the photos or videos from the camera roll, remember that the deleted photos or videos will be available for 30 days in the trash";
+"_remove_photo_CameraRoll_desc_"            = "In case of a successful automatic upload, a message confirmation is required to delete the photos or videos from the camera roll. Remember that the deleted photos or videos are available in the Trash for 30 days";
 
 // Utility
 
@@ -785,6 +785,15 @@
 "_voice_memo_stop_"         = "Tap to stop";
 "_voice_memo_filename_"     = "Voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
+
+// Passcode
+
+"Enter Passcode"            = "Enter Passcode";
+"Enter a new passcode"      = "Enter a new passcode";
+"Confirm new passcode"      = "Confirm new passcode";
+"Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
+"Delete"                    = "Delete";
+"Cancel"                    = "Cancel";
 
 // IM
 
