@@ -156,63 +156,6 @@ class tableCapabilities: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var jsondata: Data? = nil
-    @objc dynamic var themingBackground = ""
-    @objc dynamic var themingBackgroundDefault: Bool = false
-    @objc dynamic var themingBackgroundPlain: Bool = false
-    @objc dynamic var themingColor = ""
-    @objc dynamic var themingColorElement = ""
-    @objc dynamic var themingColorText = ""
-    @objc dynamic var themingLogo = ""
-    @objc dynamic var themingName = ""
-    @objc dynamic var themingSlogan = ""
-    @objc dynamic var themingUrl = ""
-    @objc dynamic var versionMajor: Int = 0
-    @objc dynamic var versionMicro: Int = 0
-    @objc dynamic var versionMinor: Int = 0
-    @objc dynamic var versionString = ""
-    @objc dynamic var endToEndEncryption: Bool = false
-    @objc dynamic var endToEndEncryptionVersion = ""
-    let richdocumentsMimetypes = List<String>()
-    @objc dynamic var richdocumentsDirectEditing: Bool = false
-    // FILES SHARING
-    @objc dynamic var isFilesSharingAPIEnabled: Bool = false
-    @objc dynamic var filesSharingDefaulPermissions: Int = 0
-    @objc dynamic var isFilesSharingGroupSharing: Bool = false
-    @objc dynamic var isFilesSharingReSharing: Bool = false
-    @objc dynamic var isFilesSharingPublicShareLinkEnabled: Bool = false
-    @objc dynamic var isFilesSharingAllowPublicUploadsEnabled: Bool = false
-    @objc dynamic var isFilesSharingAllowPublicUserSendMail: Bool = false
-    @objc dynamic var isFilesSharingAllowPublicUploadFilesDrop: Bool = false
-    @objc dynamic var isFilesSharingAllowPublicMultipleLinks: Bool = false
-    @objc dynamic var isFilesSharingPublicExpireDateByDefaultEnabled: Bool = false
-    @objc dynamic var isFilesSharingPublicExpireDateEnforceEnabled: Bool = false
-    @objc dynamic var filesSharingPublicExpireDateDays : Int = 0
-    @objc dynamic var isFilesSharingPublicPasswordEnforced: Bool = false
-    @objc dynamic var isFilesSharingAllowUserSendMail: Bool = false
-    @objc dynamic var isFilesSharingUserExpireDate: Bool = false
-    @objc dynamic var isFilesSharingGroupEnabled: Bool = false
-    @objc dynamic var isFilesSharingGroupExpireDate: Bool = false
-    @objc dynamic var isFilesSharingFederationAllowUserSendShares: Bool = false
-    @objc dynamic var isFilesSharingFederationAllowUserReceiveShares: Bool = false
-    @objc dynamic var isFilesSharingFederationExpireDate: Bool = false
-    @objc dynamic var isFileSharingShareByMailEnabled: Bool = false
-    @objc dynamic var isFileSharingShareByMailPassword: Bool = false
-    @objc dynamic var isFileSharingShareByMailUploadFilesDrop: Bool = false
-    // HC
-    @objc dynamic var isHandwerkcloudEnabled: Bool = false
-    @objc dynamic var HCShopUrl = ""
-    // Imagemeter
-    @objc dynamic var isImagemeterEnabled: Bool = false
-    // Fulltextsearch
-    @objc dynamic var isFulltextsearchEnabled: Bool = false
-    // Extended Support
-    @objc dynamic var isExtendedSupportEnabled: Bool = false
-    // Pagination iOS Helper
-    @objc dynamic var isPaginationEnabled: Bool = false
-    @objc dynamic var paginationEndponit = ""
-    // Core
-    @objc dynamic var corePollInterval: Int = 0
-    @objc dynamic var coreWebDavRoot = ""
 }
 
 class tableComments: Object {
