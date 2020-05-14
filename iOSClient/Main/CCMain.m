@@ -167,7 +167,7 @@
     self.navigationItem.searchController = self.searchController;
     self.searchController.hidesNavigationBarDuringPresentation = true;
     self.navigationController.navigationBar.prefersLargeTitles = true;
-    self.navigationItem.hidesSearchBarWhenScrolling = false;
+    self.navigationItem.hidesSearchBarWhenScrolling = true;
     [self.navigationController.navigationBar sizeToFit];
 
     // Table Header View
@@ -216,8 +216,8 @@
 {
     [super viewWillAppear:animated];
     [self updateNavBarShadow:self.tableView force:false];
-    if (@available(iOS 13.0, *)) {
-        self.navigationItem.hidesSearchBarWhenScrolling = true;
+    if(_isViewDidLoad) {
+        self.navigationItem.hidesSearchBarWhenScrolling = false;
     }
     // test
     if (appDelegate.activeAccount.length == 0)
@@ -246,6 +246,9 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    if(_isViewDidLoad) {
+        self.navigationItem.hidesSearchBarWhenScrolling = true;
+    }
     // Active Main
     appDelegate.activeMain = self;
     
@@ -308,7 +311,6 @@
 // detect scroll for remove keyboard in search mode
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-    self.navigationItem.hidesSearchBarWhenScrolling = true;
     if (self.searchController.isActive && scrollView == self.tableView) {
         
         [self.searchController.searchBar endEditing:YES];
