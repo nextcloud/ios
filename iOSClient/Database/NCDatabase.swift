@@ -156,6 +156,10 @@ class tableCapabilities: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var jsondata: Data? = nil
+    
+    override static func primaryKey() -> String {
+        return "account"
+    }
 }
 
 class tableComments: Object {

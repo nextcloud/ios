@@ -128,6 +128,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableMetadata.className())
                     }
                     
+                    if oldSchemaVersion < 104 {
+                        migration.deleteData(forType: tableCapabilities.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -874,24 +878,20 @@ class NCManageDatabase: NSObject {
     //MARK: Table Capabilities
     
     @objc func addCapabilitiesJSon(_ data: Data, account: String) {
-        let realm = try! Realm()
-        do {
-            try realm.write {
-                   
-                let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first
-                var resultCapabilities = tableCapabilities()
-                       
-                if let result = result {
-                    resultCapabilities = result
-                }
                            
-                resultCapabilities.account = account
-                resultCapabilities.jsondata = data
-                          
-                if result == nil {
-                    realm.add(resultCapabilities)
-                }
-            }
+        let realm = try! Realm()
+
+        realm.beginWrite()
+               
+        let addObject = tableCapabilities()
+                       
+        addObject.account = account
+        addObject.jsondata = data
+      
+        realm.add(addObject, update: .all)
+               
+        do {
+            try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
