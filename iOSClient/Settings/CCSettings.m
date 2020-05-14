@@ -48,7 +48,7 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     NSInteger versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:appDelegate.activeAccount];
@@ -191,11 +191,12 @@
 {
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
-    
+
     [self changeTheming];
 }
 

@@ -40,7 +40,7 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
@@ -162,6 +162,7 @@
 {
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_e2e_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
     // E2EE

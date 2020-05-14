@@ -36,7 +36,7 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_settings_autoupload_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
  
@@ -201,10 +201,12 @@
 {
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_settings_autoupload_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    
     [self changeTheming];
 }
 
