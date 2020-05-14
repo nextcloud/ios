@@ -2627,11 +2627,11 @@
 
 - (void)setTableViewHeader
 {
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
+    NSInteger versionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:appDelegate.activeAccount element:@"major"];
 
     NSString *trimmedRichWorkspaceText = [self.richWorkspaceText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
-    if (capabilities.versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
+    if (versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
                 
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         
