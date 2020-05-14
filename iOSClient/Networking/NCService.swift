@@ -150,40 +150,13 @@ class NCService: NSObject {
                 
                 // Setup communication
                 self.appDelegate.settingSetupCommunicationCapabilities(account)
-            }
-        }
-        
-        OCNetworking.sharedManager().getCapabilitiesWithAccount(appDelegate.activeAccount, completion: { (account, capabilities, message, errorCode) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                // Update capabilities db
-                NCManageDatabase.sharedInstance.addCapabilities(capabilities!, account: account!)
-                                
-                // ------ THEMING -----------------------------------------------------------------------
+                // Theming
                 self.appDelegate.settingThemingColorBrand()
                 
-                // ------ GET OTHER SERVICE -------------------------------------------------------------
-                                
-                // Get External Sites
-                if (capabilities!.isExternalSitesServerEnabled) {
-                    
-                    OCNetworking.sharedManager().getExternalSites(withAccount: account!, completion: { (account, listOfExternalSites, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
-                            for externalSites in listOfExternalSites! {
-                                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
-                            }
-                        } 
-                    })
-                   
-                } else {
-                    
-                    NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
-                }
-                
-                // Get Share Server
-                if (capabilities!.isFilesSharingAPIEnabled && self.appDelegate.activeMain != nil) {
+                // File Sharing
+                let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesFilesSharingEnabled(account: account)
+                if (isFilesSharingEnabled && self.appDelegate.activeMain != nil) {
                     
                     OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
@@ -198,20 +171,36 @@ class NCService: NSObject {
                     })
                 }
                 
-                // Get Handwerkcloud
-                if (capabilities!.isHandwerkcloudEnabled) {
-                    self.requestHC()
-                }
-                
                 // NCTextObtainEditorDetails
-                if capabilities!.versionMajor >= k_nextcloud_version_18_0 {
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: account, element: "major")
+                if serverVersionMajor >= k_nextcloud_version_18_0 {
                     NCCommunication.sharedInstance.NCTextObtainEditorDetails(serverUrl: self.appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
                     }
                 }
-              
+                
+                let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesExternalSitesServerEnabled(account: account)
+                if (isExternalSitesServerEnabled) {
+                    OCNetworking.sharedManager().getExternalSites(withAccount: account, completion: { (account, listOfExternalSites, message, errorCode) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
+                            for externalSites in listOfExternalSites! {
+                                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
+                            }
+                        }
+                    })
+                } else {
+                    NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
+                }
+                
+                // Handwerkcloud
+                let isHandwerkcloudEnabled = NCManageDatabase.sharedInstance.getCapabilitiesHandwerkcloudEnabled(account: account)
+                if (isHandwerkcloudEnabled) {
+                    self.requestHC()
+                }
+                            
             } else if errorCode != 0 {
                 
                 self.appDelegate.settingThemingColorBrand()
@@ -225,7 +214,7 @@ class NCService: NSObject {
                 // Change Theming color
                 self.appDelegate.settingThemingColorBrand()
             }
-        })
+        }
     }
     
     @objc public func middlewarePing() {

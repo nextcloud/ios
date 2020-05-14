@@ -1051,6 +1051,28 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getCapabilitiesFilesSharingEnabled(account: String) -> Bool {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return false
+        }
+        guard let jsondata = result.jsondata else {
+            return false
+        }
+        
+        let json = JSON(jsondata)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let result = dataCapabilities["files_sharing"]["api_enabled"].bool {
+            return result
+        } else {
+            return false
+        }
+    }
+    
     @objc func getCapabilitiesFilesSharingPublicPasswordEnforced(account: String) -> Bool {
 
         let realm = try! Realm()
@@ -1099,6 +1121,28 @@ class NCManageDatabase: NSObject {
         return nil
     }
     
+    @objc func getCapabilitiesExternalSitesServerEnabled(account: String) -> Bool {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return false
+        }
+        guard let jsondata = result.jsondata else {
+            return false
+        }
+        
+        let json = JSON(jsondata)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if dataCapabilities["external"].error == nil {
+            return true
+        } else {
+            return false
+        }
+    }
+        
     #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         
