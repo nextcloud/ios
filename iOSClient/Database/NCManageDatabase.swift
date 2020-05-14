@@ -912,11 +912,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let data = json["ocs"]["data"]
 
-        if let result = data["version"][element].int {
-            return result
-        } else {
-            return 0
-        }
+        return data["version"][element].intValue
     }
     
     @objc func getCapabilitiesServerVersionString(account: String) -> String? {
@@ -934,11 +930,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let data = json["ocs"]["data"]
 
-        if let result = data["version"]["string"].string {
-            return result
-        } else {
-            return nil
-        }
+        return data["version"]["string"].string
     }
     
     @objc func getCapabilitiesWebDavRoot(account: String) -> String? {
@@ -956,11 +948,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["core"]["webdav-root"].string {
-            return result
-        } else {
-            return nil
-        }
+        return dataCapabilities["core"]["webdav-root"].string
     }
     
     @objc func getCapabilitiesE2EEEnabled(account: String) -> Bool {
@@ -978,14 +966,10 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["end-to-end-encryption"]["enabled"].bool {
-            return result
-        } else {
-            return false
-        }
+        return dataCapabilities["end-to-end-encryption"]["enabled"].boolValue
     }
     
-    @objc func getCapabilitiesE2EEVersion(account: String) -> Float {
+    @objc func getCapabilitiesE2EEVersion(account: String) -> Int {
 
         let realm = try! Realm()
         realm.refresh()
@@ -1001,7 +985,7 @@ class NCManageDatabase: NSObject {
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
         if let result = dataCapabilities["end-to-end-encryption"]["api-version"].string {
-            return Float(result)!
+            return Int(result)!
         } else {
             return 0
         }
@@ -1022,11 +1006,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["theming"][element].string {
-            return result
-        } else {
-            return nil
-        }
+        return dataCapabilities["theming"][element].string
     }
     
     @objc func getCapabilitiesHandwerkcloudEnabled(account: String) -> Bool {
@@ -1044,11 +1024,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["handwerkcloud"]["enabled"].bool {
-            return result
-        } else {
-            return false
-        }
+        return dataCapabilities["handwerkcloud"]["enabled"].boolValue
     }
     
     @objc func getCapabilitiesFilesSharingEnabled(account: String) -> Bool {
@@ -1066,11 +1042,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["files_sharing"]["api_enabled"].bool {
-            return result
-        } else {
-            return false
-        }
+        return dataCapabilities["files_sharing"]["api_enabled"].boolValue
     }
     
     @objc func getCapabilitiesFilesSharingPublicPasswordEnforced(account: String) -> Bool {
@@ -1088,11 +1060,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if let result = dataCapabilities["files_sharing"]["public"]["password"]["enforced"].bool {
-            return result
-        } else {
-            return false
-        }
+        return dataCapabilities["files_sharing"]["public"]["password"]["enforced"].boolValue
     }
     
     @objc func getCapabilitiesRichdocumentsMimetypes(account: String) -> [String]? {
