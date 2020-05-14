@@ -41,11 +41,8 @@ class NCSharePaging: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         
-        // Navigation Controller
-        var image = CCGraphics.changeThemingColorImage(UIImage(named: "exitCircle")!, width: 60, height: 60, color: NCBrandColor.sharedInstance.brandText)
-        image = image?.withRenderingMode(.alwaysOriginal)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: image, style:.plain, target: self, action: #selector(exitTapped))
-        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+
         // Pagination
         addChild(pagingViewController)
         view.addSubview(pagingViewController.view)
