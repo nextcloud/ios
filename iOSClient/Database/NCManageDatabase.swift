@@ -905,8 +905,11 @@ class NCManageDatabase: NSObject {
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return 0
         }
+        guard let jsondata = result.jsondata else {
+            return 0
+        }
         
-        let json = JSON(result.jsondata! as Data)
+        let json = JSON(jsondata)
         let data = json["ocs"]["data"]
 
         if let versionMajor = data["version"]["major"].int {
@@ -924,8 +927,11 @@ class NCManageDatabase: NSObject {
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return nil
         }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
         
-        let json = JSON(result.jsondata! as Data)
+        let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
         if let webDavRoot = dataCapabilities["core"]["webdav-root"].string {
@@ -943,8 +949,11 @@ class NCManageDatabase: NSObject {
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return 0
         }
+        guard let jsondata = result.jsondata else {
+            return 0
+        }
         
-        let json = JSON(result.jsondata! as Data)
+        let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
         if let version = dataCapabilities["end-to-end-encryption"]["api-version"].string {

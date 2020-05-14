@@ -147,11 +147,6 @@ class NCService: NSObject {
             
             if errorCode == 0 && data != nil {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
-                
-                // Update webDavRoot
-                if let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: account) {
-                     self.appDelegate.settingWebDavRoot(webDavRoot)
-                }
             }
         }
         

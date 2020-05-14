@@ -725,48 +725,21 @@
         self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)selezionati, (unsigned long)totali];
 
     } else {
-        if (@available(iOS 11.0, *)) {
-            if (_isRoot) {
-                    self.navigationController.navigationBar.prefersLargeTitles = true;
-                    self.navigationItem.title = NCBrandOptions.sharedInstance.brand;
+       
+        if (_isRoot) {
+            
+            self.navigationItem.title = NCBrandOptions.sharedInstance.brand;
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
                 
-                    self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
-                
-            } else {
-                self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
-            }
+        } else {
+            
+            self.navigationItem.title = _titleMain;
+            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
         }
     }
     
     [self SetSortButtonText];
 }
-
-/*
-- (UIImage *)getImageLogoHome
-{
-    UIImage *image = [UIImage imageNamed:@"themingLogo"];
-    
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-    if ([NCBrandOptions sharedInstance].use_themingColor && [capabilities.themingColorText isEqualToString:@"#000000"] && [UIImage imageNamed:@"themingLogoBlack"]) {
-        image = [UIImage imageNamed:@"themingLogoBlack"];
-    }
-   
-    if ([NCBrandOptions sharedInstance].use_themingLogo) {
-        
-        image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@-themingLogo.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]]];
-        if (image == nil) image = [UIImage imageNamed:@"themingLogo"];
-    }
-        
-    if ([appDelegate.reachability isReachable] == NO) {
-            
-        return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"nonetwork"] width:50 height:50 color:NCBrandColor.sharedInstance.icon];
-            
-    } else {
-        
-        return image;
-    }
-}
-*/
 
 - (void)setUINavigationBarDefault
 {

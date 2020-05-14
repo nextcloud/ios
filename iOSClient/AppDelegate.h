@@ -131,7 +131,6 @@
 
 // Setting Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
-- (void)settingWebDavRoot:(NSString *)webdavRoot;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 
 // Quick Actions - ShotcutItem

@@ -443,13 +443,15 @@
     [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
     
     OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    [communication setupNextcloudVersion:[[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:activeAccount]];
-}
-
-- (void)settingWebDavRoot:(NSString *)webdavRoot
-{
-    if (webdavRoot != nil) {
-        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webdavRoot];
+    
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:activeAccount];
+    if (serverVersionMajor > 0) {
+        [communication setupNextcloudVersion: serverVersionMajor];
+    }
+   
+    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:activeAccount];
+    if (webDavRoot != nil) {
+        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
     }
 }
 
