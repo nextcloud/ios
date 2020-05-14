@@ -187,7 +187,7 @@ class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
 
 class NCSharePagingView: PagingView {
     
-    static let HeaderHeight: CGFloat = 200
+    static let HeaderHeight: CGFloat = 250
     var metadata: tableMetadata?
     
     var headerHeightConstraint: NSLayoutConstraint?
