@@ -45,6 +45,7 @@ extension AppDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeMain.serverUrl, e2eEncrypted: false, account: appDelegate.activeAccount)
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: appDelegate.activeAccount, element: "major")
         
         actions.append(
             NCMenuAction(
@@ -130,21 +131,18 @@ extension AppDelegate {
             )
         )
 
-        
-        if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
-            if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) && !isEncrypted {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_add_folder_info_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            self.activeMain.createRichWorkspace()
-                        }
-                    )
+        if (serverVersionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) && !isEncrypted {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_add_folder_info_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.activeMain.createRichWorkspace()
+                    }
                 )
-            }
+            )
         }
-        
+               
         if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_docx}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_docx})!
             actions.append(

@@ -44,9 +44,9 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-
-    if (capabilities.endToEndEncryption == NO) {
+    BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesE2EEEnabledWithAccount:appDelegate.activeAccount];
+    
+    if (isE2EEEnabled == NO) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
         
