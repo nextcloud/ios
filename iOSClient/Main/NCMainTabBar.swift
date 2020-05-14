@@ -80,11 +80,8 @@ import Foundation
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        if self.bounds.contains(point) {
-            //inside tab bar
-            let buttonRadius: CGFloat = 60
-            let val = abs(self.center.x - point.x) > buttonRadius || abs(point.y) > buttonRadius
-            print(val)
+        let button = self.viewWithTag(99)
+        if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
             return true
         } else {
             return false
