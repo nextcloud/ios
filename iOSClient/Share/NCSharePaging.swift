@@ -126,11 +126,12 @@ extension NCSharePaging: PagingViewControllerDataSource {
     func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
         
         let height = pagingViewController.options.menuHeight + NCSharePagingView.HeaderHeight
+        let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
         switch index {
         case 0:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
-            viewController.insets = UIEdgeInsets(top: height, left: 0, bottom: 0, right: 0)
+            viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata!.fileId
             viewController.objectType = "files"
