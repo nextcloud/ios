@@ -728,15 +728,13 @@
 
     } else {
        
+        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+        self.navigationController.navigationBar.prefersLargeTitles = true;
+        
         if (_isRoot) {
-            
             self.navigationItem.title = NCBrandOptions.sharedInstance.brand;
-            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
-                
         } else {
-            
             self.navigationItem.title = _titleMain;
-            self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
         }
     }
     
