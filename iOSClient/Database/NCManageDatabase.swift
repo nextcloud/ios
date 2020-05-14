@@ -945,6 +945,31 @@ class NCManageDatabase: NSObject {
         return json[elements].boolValue
     }
     
+    @objc func getCapabilitiesServerArray(account: String, elements: Array<String>) -> [String]? {
+
+        let realm = try! Realm()
+        var resultArray = [String]()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
+        
+        let json = JSON(jsondata)
+       
+        if let results = json[elements].array {
+            for result in results {
+                resultArray.append(result.string ?? "")
+            }
+            return resultArray
+        }
+        
+        return nil
+    }
+    
     @objc func getCapabilitiesServerVersion(account: String, element: String) -> Int {
 
         let realm = try! Realm()
