@@ -1051,6 +1051,28 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getCapabilitiesFilesSharingPublicPasswordEnforced(account: String) -> Bool {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return false
+        }
+        guard let jsondata = result.jsondata else {
+            return false
+        }
+        
+        let json = JSON(jsondata)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let result = dataCapabilities["files_sharing"]["public"]["password"]["enforced"].bool {
+            return result
+        } else {
+            return false
+        }
+    }
+    
     #if !EXTENSION
     @objc func addCapabilities(_ capabilities: OCCapabilities, account: String) {
         

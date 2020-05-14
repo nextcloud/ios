@@ -142,10 +142,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
 
         guard let metadata = self.metadata else { return }
-        guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: metadata.account) else { return }
+        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.sharedInstance.getCapabilitiesFilesSharingPublicPasswordEnforced(account: metadata.account)
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
 
-        if capabilities.isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
+        if isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
             let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
             alertController.addTextField { (textField) in
                 textField.isSecureTextEntry = true
