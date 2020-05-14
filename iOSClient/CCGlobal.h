@@ -84,7 +84,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         100
+#define k_databaseSchemaVersion                         102
 
 // Intro selector
 #define k_intro_login                                   0
@@ -322,6 +322,8 @@
 
 // Notification Center
 
+#define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
+
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
 #define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"
@@ -331,7 +333,6 @@
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
-#define k_notificationCenter_reloadDataNotification     @"reloadDataNotification"
 
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription

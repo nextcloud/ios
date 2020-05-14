@@ -24,14 +24,10 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 #import <XLForm/XLForm.h>
-#import "BKPasscodeViewController.h"
 #import "CCUtility.h"
 #import "CCHud.h"
 
-@interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
-
-@property (nonatomic) NSUInteger failedAttempts;
-@property (strong, nonatomic) NSDate *lockUntilDate;
+@interface CCSettings : XLFormViewController
 
 - (void)reloadForm;
 

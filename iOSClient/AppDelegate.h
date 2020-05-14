@@ -25,10 +25,10 @@
 #import <UserNotifications/UserNotifications.h>
 #import <PushKit/PushKit.h>
 #import <AVKit/AVKit.h>
+#import <LocalAuthentication/LocalAuthentication.h>
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
-#import "BKPasscodeLockScreenManager.h"
 #import "Reachability.h"
-#import "CCBKPasscode.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCSettings.h"
@@ -42,7 +42,7 @@
 @class IMImagemeterViewer;
 @class NCDetailViewController;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -63,9 +63,6 @@
 // next version ... ? ...
 @property double currentLatitude;
 @property double currentLongitude;
-
-// Notification
-@property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
@@ -90,6 +87,8 @@
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;
+
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;

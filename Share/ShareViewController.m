@@ -105,9 +105,6 @@
 {
     [super viewWillAppear:animated];
         
-    if ([[CCUtility getBlockCode] length] > 0 && [CCUtility getOnlyLockDir] == NO)
-        [self openBKPasscode];
-    
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
@@ -322,71 +319,6 @@
     }
     
     [self closeShareViewController];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Lock Password =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openBKPasscode
-{
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.delegate = self;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    viewController.inputViewTitlePassword = YES;
-    
-    if ([CCUtility getSimplyBlockCode]) {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 6;
-        
-    } else {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 64;
-    }
-    
-    BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-    touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-    viewController.touchIDManager = touchIDManager;
-    viewController.title = [NCBrandOptions sharedInstance].brand;
-    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return self.failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return self.lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:^{
-        [self performSelector:@selector(closeShareViewController) withObject:nil];
-    }];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-        self.lockUntilDate = nil;
-        self.failedAttempts = 0;
-        aResultHandler(YES);
-    } else aResultHandler(NO);
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

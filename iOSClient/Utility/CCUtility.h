@@ -50,14 +50,11 @@
 + (NSString *)getBuild;
 + (NSString *)setBuild;
 
-+ (NSString *)getBlockCode;
-+ (void)setBlockCode:(NSString *)blockcode;
++ (NSString *)getPasscode;
++ (void)setPasscode:(NSString *)passcode;
 
-+ (BOOL)getSimplyBlockCode;
-+ (void)setSimplyBlockCode:(BOOL)simply;
-
-+ (BOOL)getOnlyLockDir;
-+ (void)setOnlyLockDir:(BOOL)lockDir;
++ (BOOL)getNotPasscodeAtStart;
++ (void)setNotPasscodeAtStart:(BOOL)set;
 
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;

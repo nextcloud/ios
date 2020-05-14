@@ -168,7 +168,7 @@
 "_lock_active_"                 = "Lock: On";
 "_lock_not_active_"             = "Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
-"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or for the encryption option";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option";
 "_url_"                         = "URL";
 "_username_"                    = "Username";
 "_change_credentials_"          = "Change your credentials";
@@ -208,7 +208,6 @@
 "_synchronizations_"            = "Synchronized folders";
 "_version_server_"              = "Server version";
 "_help_"                        = "Help";
-"_lock_protection_simply_"      = "Weak password protection";
 "_change_simply_passcode_"      = "Change password type";
 "_quota_"                       = "Quota";
 "_available_"                   = "available";
@@ -337,7 +336,7 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "In case of successful auto upload a message will require the deletion of the photos or videos from the camera roll, remember that the deleted photos or videos will be available for 30 days in the trash";
+"_remove_photo_CameraRoll_desc_"            = "In case of a successful automatic upload, a message confirmation is required to delete the photos or videos from the camera roll. Remember that the deleted photos or videos are available in the Trash for 30 days";
 
 // Utility
 
@@ -617,6 +616,7 @@
 // Notification
 
 "_notification_"                    = "Notification";
+"_no_notification_"                 = "No notification yet";
 
 // Photo Browser
 
@@ -773,48 +773,6 @@
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 
-// BKPasscode
-
-"%d Failed Passcode Attempts" = "%d failed passcode attempts";
-"%d Failed Password Attempts" = "%d failed password attempts";
-
-"1 Failed Passcode Attempt" = "1 failed passcode attempt";
-"1 Failed Password Attempt" = "1 failed password attempt";
-
-"Do you want to use Touch ID for authentication?" = "Do you want to use Touch/Face ID for authentication?";
-
-"Done" = "Done";
-
-"Enable Touch ID" = "Enable Touch/Face ID";
-
-"Enter a different passcode. Cannot re-use the same passcode." = "Enter a different passcode. Cannot re-use the same passcode.";
-"Enter a different password. Cannot re-use the same password." = "Enter a different password. Cannot re-use the same password.";
-
-"Enter a passcode" = "Enter a passcode";
-"Enter a password" = "Enter a password";
-
-"Enter your new passcode" = "Enter your new passcode";
-"Enter your new password" = "Enter your new password";
-
-"Enter your old passcode" = "Enter your old passcode";
-"Enter your old password" = "Enter your old password";
-
-"Enter your passcode" = "Enter your passcode";
-"Enter your password" = "Enter your password";
-
-"Invalid Passcode" = "Invalid passcode";
-"Invalid Password" = "Invalid password";
-
-"Passcodes did not match.\nTry again." = "Passcodes did not match.\nTry again.";
-"Password did not match.\nTry again." = "Password did not match.\nTry again.";
-
-"Re-enter your passcode" = "Re-enter your passcode";
-"Re-enter your password" = "Re-enter your password";
-
-"Try again in %d minutes" = "Try again in %d minutes";
-
-"Try again in 1 minute" = "Try again in 1 minute";
-
 // QRCode
 
 "_qrcode_not_authorized_"   = "This app is not authorized to use Back Camera";
@@ -827,6 +785,15 @@
 "_voice_memo_stop_"         = "Tap to stop";
 "_voice_memo_filename_"     = "Voice memo";
 "_voice_memo_title_"        = "Upload voice memo";
+
+// Passcode
+
+"Enter Passcode"            = "Enter Passcode";
+"Enter a new passcode"      = "Enter a new passcode";
+"Confirm new passcode"      = "Confirm new passcode";
+"Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
+"Delete"                    = "Delete";
+"Cancel"                    = "Cancel";
 
 // IM
 

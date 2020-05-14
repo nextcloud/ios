@@ -147,7 +147,7 @@ class NCBrandColor: NSObject {
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
         } else {
-            tabBar = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+            tabBar = .white
             backgroundView = .white
             backgroundForm = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
             textView = .black

@@ -23,6 +23,7 @@
 
 import RealmSwift
 import NCCommunication
+import SwiftyJSON
 
 class NCManageDatabase: NSObject {
     @objc static let sharedInstance: NCManageDatabase = {
@@ -872,127 +873,84 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Capabilities
     
-    @objc func addCapabilitiesT(_ capabilities: NCCapabilities, account: String) {
-    
+    @objc func addCapabilitiesJSon(_ data: Data, account: String) {
         let realm = try! Realm()
-
         do {
             try realm.write {
-            
+                   
                 let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first
-
                 var resultCapabilities = tableCapabilities()
-            
+                       
                 if let result = result {
                     resultCapabilities = result
                 }
-                
+                           
                 resultCapabilities.account = account
-                // Version
-                resultCapabilities.versionMajor = capabilities.versionMajor
-                resultCapabilities.versionMinor = capabilities.versionMinor
-                resultCapabilities.versionMicro = capabilities.versionMicro
-                resultCapabilities.versionString = capabilities.versionString
-//                resultCapabilities.versionEdition = capabilities.versionEdition
-//                resultCapabilities.versionExtendedSupport = capabilities.versionExtendedSupport
-                // Core
-                resultCapabilities.corePollInterval = capabilities.corePollInterval
-                resultCapabilities.coreWebDavRoot = capabilities.coreWebDavRoot
-                // Files sharing
-                resultCapabilities.isFilesSharingAPIEnabled = capabilities.isFilesSharingAPIEnabled
-                resultCapabilities.filesSharingDefaulPermissions = capabilities.filesSharingDefaulPermissions
-                resultCapabilities.isFilesSharingGroupSharing = capabilities.isFilesSharingGroupSharing
-                resultCapabilities.isFilesSharingReSharing = capabilities.isFilesSharingReSharing
-                // Files sharing Public
-                resultCapabilities.isFilesSharingPublicShareLinkEnabled = capabilities.isFilesSharingPublicShareLinkEnabled
-                resultCapabilities.isFilesSharingAllowPublicUploadsEnabled = capabilities.isFilesSharingAllowPublicUploadsEnabled
-                resultCapabilities.isFilesSharingAllowPublicUserSendMail = capabilities.isFilesSharingAllowPublicUserSendMail
-                resultCapabilities.isFilesSharingAllowPublicUploadFilesDrop = capabilities.isFilesSharingAllowPublicUploadFilesDrop
-                resultCapabilities.isFilesSharingAllowPublicMultipleLinks = capabilities.isFilesSharingAllowPublicMultipleLinks
-                resultCapabilities.isFilesSharingPublicExpireDateByDefaultEnabled = capabilities.isFilesSharingPublicExpireDateByDefaultEnabled
-                resultCapabilities.isFilesSharingPublicExpireDateEnforceEnabled = capabilities.isFilesSharingPublicExpireDateEnforceEnabled
-                resultCapabilities.filesSharingPublicExpireDateDays = capabilities.filesSharingPublicExpireDateDays
-                resultCapabilities.isFilesSharingPublicPasswordEnforced = capabilities.isFilesSharingPublicPasswordEnforced
-//                resultCapabilities.isFilesSharingPublicPasswordAskForOptionalPassword = capabilities.isFilesSharingPublicPasswordAskForOptionalPassword
-//                resultCapabilities.isFilesSharingPublicExpireDateInternal = capabilities.isFilesSharingPublicExpireDateInternal
-                // Files sharing User
-                resultCapabilities.isFilesSharingAllowUserSendMail = capabilities.isFilesSharingAllowUserSendMail
-                resultCapabilities.isFilesSharingUserExpireDate = capabilities.isFilesSharingUserExpireDate
-                // Files sharing Group
-                resultCapabilities.isFilesSharingGroupEnabled = capabilities.isFilesSharingGroupEnabled
-                resultCapabilities.isFilesSharingGroupExpireDate = capabilities.isFilesSharingGroupExpireDate
-                // Files sharing Federation
-                resultCapabilities.isFilesSharingFederationAllowUserSendShares = capabilities.isFilesSharingFederationAllowUserSendShares
-                resultCapabilities.isFilesSharingFederationAllowUserReceiveShares = capabilities.isFilesSharingFederationAllowUserReceiveShares
-                resultCapabilities.isFilesSharingFederationExpireDate = capabilities.isFilesSharingFederationExpireDate
-                // Files sharing share by mail
-                resultCapabilities.isFileSharingShareByMailEnabled = capabilities.isFileSharingShareByMailEnabled
-//                resultCapabilities.isFileSharingShareByMailExpireDate = capabilities.isFileSharingShareByMailExpireDate
-                resultCapabilities.isFileSharingShareByMailPassword = capabilities.isFileSharingShareByMailPassword
-                resultCapabilities.isFileSharingShareByMailUploadFilesDrop = capabilities.isFileSharingShareByMailUploadFilesDrop
-                // External sites
-//                isExternalSitesServerEnabled: Bool = false
-//                externalSiteV1 = [String]()
-                // Notification
-//                isNotificationEnabled
-//                notificationAdminNotification
-//                notificationOcsEndpoints
-//                notificationPush
-                // Files
-//                isFilesBigFileChunkingEnabled
-//                filesBlacklistedFile
-//                filesDirectEditingEtag
-//                filesDirectEditingUrl
-//                isFilesUndeleteEnabled
-//                isFilesVersioningEnabled
-                // Theming
-                resultCapabilities.themingBackground = capabilities.themingBackground
-                resultCapabilities.themingBackgroundDefault = capabilities.themingBackgroundDefault
-                resultCapabilities.themingBackgroundPlain = capabilities.themingBackgroundPlain
-                resultCapabilities.themingColor = capabilities.themingColor
-                resultCapabilities.themingColorElement = capabilities.themingColorElement
-                resultCapabilities.themingColorText = capabilities.themingColorText
-//                resultCapabilities.themingFavicon = capabilities.themingFavicon
-                resultCapabilities.themingLogo = capabilities.themingLogo
-//                resultCapabilities.themingLogoHeader = capabilities.themingLogoHeader
-                resultCapabilities.themingName = capabilities.themingName
-                resultCapabilities.themingSlogan = capabilities.themingSlogan
-                resultCapabilities.themingUrl = capabilities.themingUrl
-                // E2EE
-                resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
-                resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
-                // Richdocuments
-                resultCapabilities.richdocumentsMimetypes.removeAll()
-                for mimeType in capabilities.richdocumentsMimetypes {
-                    resultCapabilities.richdocumentsMimetypes.append(mimeType)
-                }
-//                richdocumentsMimetypesNoDefaultOpen
-                resultCapabilities.richdocumentsDirectEditing = capabilities.richdocumentsDirectEditing
-//                richdocumentsProductName
-//                richdocumentsTemplates
-//                isRichdocumentsCollaboraConvertToAvailable
-//                isRichdocumentsCollaboraHasMobileSupport
-//                isRichdocumentsCollaboraHasTemplateSaveAs
-//                isRichdocumentsCollaboraHasTemplateSource
-//                isRichdocumentsCollaboraProductName
-                // Activity
-//                isActivityV2Enabled
-//                activityV2
-                // HC
-                resultCapabilities.isHandwerkcloudEnabled = capabilities.isHandwerkcloudEnabled
-                resultCapabilities.HCShopUrl = capabilities.HCShopUrl
-                // Imagemeter
-                resultCapabilities.isImagemeterEnabled = capabilities.isImagemeterEnabled
-                // Pagination iOS Helper
-                resultCapabilities.isPaginationEnabled = capabilities.isPaginationEnabled
-                resultCapabilities.paginationEndponit = capabilities.paginationEndponit
-                                
+                resultCapabilities.jsondata = data
+                          
                 if result == nil {
                     realm.add(resultCapabilities)
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getCapabilitiesServerVersionMajor(account: String) -> Int {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return 0
+        }
+        
+        let json = JSON(result.jsondata! as Data)
+        let data = json["ocs"]["data"]
+
+        if let versionMajor = data["version"]["major"].int {
+            return versionMajor
+        } else {
+            return 0
+        }
+    }
+    
+    @objc func getCapabilitiesWebDavRoot(account: String) -> String? {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        
+        let json = JSON(result.jsondata! as Data)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let webDavRoot = dataCapabilities["core"]["webdav-root"].string {
+            return webDavRoot
+        } else {
+            return nil
+        }
+    }
+    
+    @objc func getCapabilitiesE2EEVersion(account: String) -> Float {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return 0
+        }
+        
+        let json = JSON(result.jsondata! as Data)
+        let dataCapabilities = json["ocs"]["data"]["capabilities"]
+
+        if let version = dataCapabilities["end-to-end-encryption"]["api-version"].string {
+            return Float(version)!
+        } else {
+            return 0
         }
     }
     
@@ -1105,30 +1063,6 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         
         return realm.objects(tableCapabilities.self).filter("account == %@", account).first
-    }
-    
-    @objc func getServerVersion(account: String) -> Int {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-
-        return result.versionMajor
-    }
-
-    @objc func getEndToEndEncryptionVersion(account: String) -> Float {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        
-        return Float(result.endToEndEncryptionVersion)!
     }
     
     @objc func compareServerVersion(_ versionCompare: String, account: String) -> Int {
@@ -1525,49 +1459,6 @@ class NCManageDatabase: NSObject {
                 for result in results {
                     result.dateReadDirectory = nil;
                     result.etag = ""
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func setDirectoryLock(serverUrl: String, lock: Bool, account: String) -> Bool {
-        
-        let realm = try! Realm()
-
-        var update = false
-        
-        do {
-            try realm.write {
-            
-                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
-                result.lock = lock
-                update = true
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return false
-        }
-        
-        return update
-    }
-    
-    @objc func setAllDirectoryUnLock(account: String) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-            
-                let results = realm.objects(tableDirectory.self).filter("account == %@", account)
-
-                for result in results {
-                    result.lock = false;
                 }
             }
         } catch let error {
@@ -2729,12 +2620,8 @@ class NCManageDatabase: NSObject {
         if results.count == 0 {
             return nil
         }
-        
-        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
-        
+                
         var metadatas = [tableMetadata]()
-        var oldServerUrl = ""
-        var isValidMetadata = true
         
         // For Live Photo
         var fileNameImages = [String]()
@@ -2746,26 +2633,11 @@ class NCManageDatabase: NSObject {
                 
         for result in results {
             let metadata = tableMetadata.init(value: result)
-        
-            // Verify Lock
-            if (serversUrlLocked.count > 0) && (metadata.serverUrl != oldServerUrl) {
-                var foundLock = false
-                oldServerUrl = metadata.serverUrl
-                for serverUrlLocked in serversUrlLocked {
-                    if metadata.serverUrl.contains(serverUrlLocked) {
-                        foundLock = true
-                        break
-                    }
-                }
-                isValidMetadata = !foundLock
-            }
-            if isValidMetadata {
-                let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
-                let fileName = (metadata.fileNameView as NSString).deletingPathExtension
+            let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension
 
-                if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                    metadatas.append(tableMetadata.init(value: metadata))
-                }
+            if !(ext == "MOV" && fileNameImages.contains(fileName)) {
+                metadatas.append(tableMetadata.init(value: metadata))
             }
         }
       
@@ -2819,34 +2691,6 @@ class NCManageDatabase: NSObject {
         var isDifferent: Bool = false
         var newInsert: Int = 0
         
-        var oldServerUrl = ""
-        var isValidMetadata = true
-        
-        var metadatas = [tableMetadata]()
-        
-        let serversUrlLocked = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND lock == true", account)).map { $0.serverUrl } as Array
-        if (serversUrlLocked.count > 0) {
-            for metadata in metadatasSource {
-                // Verify Lock
-                if (metadata.serverUrl != oldServerUrl) {
-                    var foundLock = false
-                    oldServerUrl = metadata.serverUrl
-                    for serverUrlLocked in serversUrlLocked {
-                        if metadata.serverUrl.contains(serverUrlLocked) {
-                            foundLock = true
-                            break
-                        }
-                    }
-                    isValidMetadata = !foundLock
-                }
-                if isValidMetadata {
-                    metadatas.append(tableMetadata.init(value: metadata))
-                }
-            }
-        } else {
-            metadatas = metadatasSource
-        }
-        
         do {
             try realm.write {
                 
@@ -2856,7 +2700,7 @@ class NCManageDatabase: NSObject {
                 numDelete = results.count
                 
                 // INSERT
-                let photos = Array(metadatas.map { tableMedia.init(value:$0) })
+                let photos = Array(metadatasSource.map { tableMedia.init(value:$0) })
                 etagsInsert = Array(photos.map { $0.etag })
                 numInsert = photos.count
                 

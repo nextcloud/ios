@@ -24,9 +24,11 @@
 import UIKit
 import NCCommunication
 
-class CCNotification: UITableViewController, CCNotificationCelllDelegate {
+class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    static var notifications = [OCNotifications]()
+    static var notificationsAccount = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,14 +40,22 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         self.tableView.estimatedRowHeight = 50.0
         self.tableView.allowsSelection = false
         
-        // Register to receive notification reload data
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDatasource), name: Notification.Name(rawValue: k_notificationCenter_reloadDataNotification), object: nil)
-
-        // Theming view
+        // empty Data Source
+        self.tableView.emptyDataSetSource = self
+        self.tableView.emptyDataSetDelegate = self
+        
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        reloadDatasource()
+        getNetwokingNotification()
     }
     
     @objc func changeTheming() {
@@ -53,11 +63,27 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     }
 
     @objc func viewClose() {
-        
-        // Stop listening notification reload data
-        NotificationCenter.default.removeObserver(self, name: Notification.Name(k_notificationCenter_reloadDataNotification), object: nil);
-        
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: DZNEmpty
+    
+    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
+        return NCBrandColor.sharedInstance.backgroundView
+    }
+    
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: NCBrandColor.sharedInstance.graySoft)
+    }
+    
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        let text = "\n"+NSLocalizedString("_no_notification_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+    
+    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
+        return true
     }
     
     // MARK: - Table
@@ -67,9 +93,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    
-        let numRecord = appDelegate.listOfNotifications.count
-        return numRecord
+        return CCNotification.notifications.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -77,7 +101,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
         cell.delegate = self
         
-        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
+        let notification = CCNotification.notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
         var image : UIImage?
         
@@ -215,17 +239,13 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
-                let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+                //let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
                 
-                if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                    self.appDelegate.listOfNotifications.removeObject(at: index)
+                if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                    CCNotification.self.notifications.remove(at: index)
                 }
                 
                 self.reloadDatasource()
-                
-                if self.appDelegate.listOfNotifications.count == 0 {
-                    self.viewClose()
-                }
                 
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -244,18 +264,12 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                 OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (action as! OCNotificationsAction).link, type: (action as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
                     
                     if errorCode == 0 && account == self.appDelegate.activeAccount {
-                        
-                        let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-                        
-                        if let index = listOfNotifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                            self.appDelegate.listOfNotifications.removeObject(at: index)
+                                                
+                        if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                            CCNotification.self.notifications.remove(at: index)
                         }
                         
                         self.reloadDatasource()
-                        
-                        if self.appDelegate.listOfNotifications.count == 0 {
-                            self.viewClose()
-                        }
                         
                     } else if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -265,6 +279,41 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate {
                 })
             }
         }
+    }
+    
+    // MARK: Load notification networking
+    func getNetwokingNotification() {
+    
+        NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
+
+        // Verify User
+        if appDelegate.activeAccount != CCNotification.notificationsAccount {
+            CCNotification.notifications.removeAll()
+            reloadDatasource()
+            CCNotification.notificationsAccount = appDelegate.activeAccount
+        }
+                
+        OCNetworking.sharedManager().getNotificationWithAccount(CCNotification.notificationsAccount, completion: { (account, listOfNotifications, message, errorCode) in
+            
+            if errorCode == 0 && account == CCNotification.self.notificationsAccount {
+                    
+                CCNotification.self.notifications.removeAll()
+                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
+                    
+                for notification in sortedListOfNotifications {
+                    // download icon
+                    if let icon = (notification as! OCNotifications).icon {
+                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
+                    }
+                    
+                    CCNotification.self.notifications.append(notification as! OCNotifications)
+                }
+                
+                self.reloadDatasource()
+            }
+            
+            NCUtility.sharedInstance.stopActivityIndicator()
+        })
     }
 }
 

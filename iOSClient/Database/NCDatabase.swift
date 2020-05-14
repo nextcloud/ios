@@ -155,6 +155,7 @@ class tableActivitySubjectRich: Object {
 class tableCapabilities: Object {
     
     @objc dynamic var account = ""
+    @objc dynamic var jsondata: Data? = nil
     @objc dynamic var themingBackground = ""
     @objc dynamic var themingBackgroundDefault: Bool = false
     @objc dynamic var themingBackgroundPlain: Bool = false
@@ -262,7 +263,6 @@ class tableDirectory: Object {
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
-    @objc dynamic var lock: Bool = false
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
