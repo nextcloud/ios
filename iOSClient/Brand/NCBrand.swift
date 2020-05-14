@@ -26,7 +26,6 @@ import UIKit
 //MARK: - Configuration
 
 @objc class NCBrandConfiguration: NSObject {
-    
     @objc static let sharedInstance: NCBrandConfiguration = {
         let instance = NCBrandConfiguration()
         return instance
@@ -41,7 +40,6 @@ import UIKit
 //MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
-    
     @objc static let sharedInstance: NCBrandOptions = {
         let instance = NCBrandOptions()
         return instance
@@ -100,7 +98,6 @@ import UIKit
 //MARK: - Color
 
 class NCBrandColor: NSObject {
-
     @objc static let sharedInstance: NCBrandColor = {
         let instance = NCBrandColor()
         instance.setDarkMode()
@@ -156,16 +153,3 @@ class NCBrandColor: NSObject {
         }
     }
 }
-
-//MARK: - Beta
-
-@objc class NCBrandBeta: NSObject {
-    
-    @objc static let shared: NCBrandBeta = {
-        let instance = NCBrandBeta()
-        return instance
-    }()
-
-    //@objc public let iOSHelper: Bool = false
-}
-
