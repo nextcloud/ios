@@ -1104,11 +1104,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let dataCapabilities = json["ocs"]["data"]["capabilities"]
 
-        if dataCapabilities["external"].error == nil {
-            return true
-        } else {
-            return false
-        }
+        return dataCapabilities["external"].exists()
     }
     
     //MARK: -
