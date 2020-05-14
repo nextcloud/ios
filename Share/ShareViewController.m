@@ -61,7 +61,7 @@
         
     } else {
         
-        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:tableAccount.account];
+        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:tableAccount.account element:@"major"];
         NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:tableAccount.account];
         
         // Networking

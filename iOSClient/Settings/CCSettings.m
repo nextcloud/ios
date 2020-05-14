@@ -51,7 +51,7 @@
     XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    NSInteger versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:appDelegate.activeAccount];
+    NSInteger versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:appDelegate.activeAccount element:@"major"];
     
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     

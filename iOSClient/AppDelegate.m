@@ -477,7 +477,7 @@
 
 - (void)settingSetupCommunicationCapabilities:(NSString *)account
 {
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionMajorWithAccount:account];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:account element:@"major"];
     if (serverVersionMajor > 0) {
         [[OCNetworking sharedManager].sharedOCCommunication setupNextcloudVersion: serverVersionMajor];
         [[NCCommunicationCommon sharedInstance] setupWithNextcloudVersion:serverVersionMajor];

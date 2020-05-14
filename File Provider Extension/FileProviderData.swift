@@ -74,7 +74,7 @@ class fileProviderData: NSObject {
         if domain == nil {
             
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
-            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersionMajor(account: tableAccount.account)
+            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
             let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
             
             account = tableAccount.account
@@ -99,7 +99,7 @@ class fileProviderData: NSObject {
             let accountDomain = tableAccount.userID + " (" + host + ")"
             if accountDomain == domain {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersionMajor(account: tableAccount.account)
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
                 let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
                 
                 account = tableAccount.account
@@ -132,7 +132,7 @@ class fileProviderData: NSObject {
         for tableAccount in tableAccounts {
             if accountFromItemIdentifier == tableAccount.account {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersionMajor(account: tableAccount.account)
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
                 let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
                 
                 account = tableAccount.account

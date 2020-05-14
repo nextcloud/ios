@@ -897,7 +897,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getCapabilitiesServerVersionMajor(account: String) -> Int {
+    @objc func getCapabilitiesServerVersion(account: String, element: String) -> Int {
 
         let realm = try! Realm()
         realm.refresh()
@@ -912,7 +912,7 @@ class NCManageDatabase: NSObject {
         let json = JSON(jsondata)
         let data = json["ocs"]["data"]
 
-        if let result = data["version"]["major"].int {
+        if let result = data["version"][element].int {
             return result
         } else {
             return 0
