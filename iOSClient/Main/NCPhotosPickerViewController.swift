@@ -102,12 +102,11 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         
         self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
         self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brand
-        
-        self.titleLabel.textColor = NCBrandColor.sharedInstance.brand
-        self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brand
-        
+      
+        /*
         self.titleLabel.textColor = NCBrandColor.sharedInstance.brand
         self.subTitleLabel.textColor = NCBrandColor.sharedInstance.brand
         self.subTitleArrowImageView.image = CCGraphics.changeThemingColorImage(self.subTitleArrowImageView.image, width: 100, height: 100, color: NCBrandColor.sharedInstance.brand)
+        */
     }
 }

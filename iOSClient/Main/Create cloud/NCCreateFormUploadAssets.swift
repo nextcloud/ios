@@ -74,6 +74,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         super.viewDidLoad()
         
+        self.title = NSLocalizedString("_upload_photos_videos_", comment: "")
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
@@ -107,7 +109,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
