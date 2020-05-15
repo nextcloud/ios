@@ -132,7 +132,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
                         }
                     } else {
                         DispatchQueue.global().async {
-                            NCCommunication.sharedInstance.downloadAvatar(serverUrl: self.appDelegate.activeUrl, userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            NCCommunication.shared.downloadAvatar(serverUrl: self.appDelegate.activeUrl, userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                                 if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
                                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                         cell.avatar.isHidden = false

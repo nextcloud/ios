@@ -1830,7 +1830,7 @@ class NCManageDatabase: NSObject {
         if isEncrypted || metadata.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
+                let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
                 metadata.contentType = results.contentType
                 metadata.iconName = results.iconName
                 metadata.typeFile = results.typeFile
@@ -1879,7 +1879,7 @@ class NCManageDatabase: NSObject {
     @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, url: String, contentType: String) -> tableMetadata {
         
         let metadata = tableMetadata()
-        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
+        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
         
         metadata.account = account
         metadata.contentType = results.contentType

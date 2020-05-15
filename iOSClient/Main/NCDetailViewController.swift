@@ -512,7 +512,7 @@ class NCDetailViewController: UIViewController {
                             self.navigationController?.navigationBar.topItem?.title = ""
                         }
                         
-                        NCCommunication.sharedInstance.NCTextOpenFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                        NCCommunication.shared.NCTextOpenFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                             
                             if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                                 
@@ -706,7 +706,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             metadata.session = k_download_session_foreground
             
-            _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
+            _ = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
                                 
                 self.progress(Float(progress.fractionCompleted))
                 
@@ -743,7 +743,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.sharedInstance.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
                 if errorCode == 0 && data != nil {
                     completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                 } else {
@@ -817,7 +817,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                                 
-                _ = NCCommunication.sharedInstance.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
+                _ = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, progressHandler: { (progress) in
                                     
                     self.progress(Float(progress.fractionCompleted))
                     

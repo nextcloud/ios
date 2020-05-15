@@ -224,7 +224,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
     func readFileOrFolder(serverUrl: String, completionHandler: @escaping () -> Void) {
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
             
             var needReadFolder = true
         
@@ -238,7 +238,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if needReadFolder {
 
-                NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account, completionHandler: { (account, files, errorCode, errorDescription) in
                     
                     if errorCode == 0 && files != nil {
                         
@@ -283,7 +283,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
         }
         
-        NCCommunication.sharedInstance.iosHelper(serverUrl: serverUrl, fileNamePath: fileNamePath, offset: offset, limit: limit, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.iosHelper(serverUrl: serverUrl, fileNamePath: fileNamePath, offset: offset, limit: limit, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, files, errorCode, errorDescription) in
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 

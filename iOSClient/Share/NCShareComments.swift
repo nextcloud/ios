@@ -253,7 +253,7 @@ extension NCShareComments: UITableViewDataSource {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.sharedInstance.downloadAvatar(serverUrl: self.appDelegate.activeUrl, userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(serverUrl: self.appDelegate.activeUrl, userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }

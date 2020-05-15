@@ -5,6 +5,19 @@
 //  Created by Marino Faggiana on 05/05/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import Foundation
 import OpenSSL
@@ -56,7 +69,7 @@ import NCCommunication
             
             DispatchQueue.main.async {
                 
-                NCCommunication.sharedInstance.createFolder(fileNameFolderUrl, customUserAgent: nil, addCustomHeaders: ["e2e-token" : e2eToken], account: account) { (account, ocId, date, errorCode, errorDescription) in
+                NCCommunication.shared.createFolder(fileNameFolderUrl, customUserAgent: nil, addCustomHeaders: ["e2e-token" : e2eToken], account: account) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         NCNetworking.sharedInstance.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
                             if errorCode == 0 {

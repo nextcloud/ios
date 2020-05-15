@@ -195,7 +195,7 @@ extension NCLoginWeb: WKNavigationDelegate {
         
         if loginFlowV2Available {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                NCCommunication.sharedInstance.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint, customUserAgent: nil, addCustomHeaders: nil) { (server, loginName, appPassword, errorCode, errorDescription) in
+                NCCommunication.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint, customUserAgent: nil, addCustomHeaders: nil) { (server, loginName, appPassword, errorCode, errorDescription) in
                     if errorCode == 0 && server != nil && loginName != nil && appPassword != nil {
                         self.createAccount(server: server!, username: loginName!, password: appPassword!)
                     }

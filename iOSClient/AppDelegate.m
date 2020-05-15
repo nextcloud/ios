@@ -56,8 +56,8 @@
     [CCUtility emptyTemporaryDirectory];
     
     // Networking
-    [[NCCommunicationCommon sharedInstance] setupWithDelegate:[NCNetworking sharedInstance]];
-    [[NCCommunicationCommon sharedInstance] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -440,7 +440,7 @@
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [[NCCommunicationCommon sharedInstance] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl];
+    [[NCCommunicationCommon shared] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl];
     [self settingSetupCommunicationCapabilities:activeAccount];
 }
 
@@ -480,12 +480,12 @@
     NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
         [[OCNetworking sharedManager].sharedOCCommunication setupNextcloudVersion: serverVersionMajor];
-        [[NCCommunicationCommon sharedInstance] setupWithNextcloudVersion:serverVersionMajor];
+        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
      }
     
     NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
     if (webDavRoot != nil) {
-        [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
+        [[NCCommunicationCommon shared] setupWithWebDavRoot:webDavRoot];
     }
 }
 

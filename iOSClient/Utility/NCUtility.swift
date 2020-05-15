@@ -176,7 +176,7 @@ class NCUtility: NSObject {
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
-            NCCommunication.sharedInstance.downloadContent(serverUrl: iconURL.absoluteString, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, data, errorCode, errorMessage) in
                
                 if errorCode == 0 && data != nil {
                 

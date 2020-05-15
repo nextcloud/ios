@@ -609,7 +609,7 @@
         
     } else {
         
-        NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:metadata.fileNameView contentType:metadata.contentType directory:metadata.directory];
+        NSDictionary *results = [[NCCommunicationCommon shared] objcGetInternalContenTypeWithFileName:metadata.fileNameView contentType:metadata.contentType directory:metadata.directory];
         metadata.contentType = results[@"contentType"];
         metadata.iconName = results[@"iconName"];
         metadata.typeFile = results[@"typeFile"];

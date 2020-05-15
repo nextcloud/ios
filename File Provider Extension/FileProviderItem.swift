@@ -42,7 +42,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var typeIdentifier: String {
-        let results = NCCommunicationCommon.sharedInstance.getInternalContenType(fileName: metadata.fileNameView, contentType: "", directory: metadata.directory)
+        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: "", directory: metadata.directory)
         metadata.contentType = results.contentType
         metadata.iconName = results.iconName
         metadata.typeFile = results.typeFile

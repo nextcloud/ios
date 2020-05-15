@@ -1776,7 +1776,7 @@
                         trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
                         trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
 
-                        NSDictionary *results = [[NCCommunicationCommon sharedInstance] objcGetInternalContenTypeWithFileName:trash.trashbinFileName contentType:@"" directory:itemDto.isDirectory];
+                        NSDictionary *results = [[NCCommunicationCommon shared] objcGetInternalContenTypeWithFileName:trash.trashbinFileName contentType:@"" directory:itemDto.isDirectory];
                         
                         trash.contentType = results[@"contentType"];
                         trash.iconName = results[@"iconName"];
