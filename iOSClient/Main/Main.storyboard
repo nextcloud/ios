@@ -461,7 +461,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Sqy-z1-MI5"/>
                     </view>
-                    <navigationItem key="navigationItem" id="2BC-Vb-dXh"/>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="2BC-Vb-dXh"/>
                     <connections>
                         <outlet property="tableView" destination="dC6-NQ-0Td" id="hew-Gn-bWh"/>
                         <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="2Qm-A6-CfB"/>
