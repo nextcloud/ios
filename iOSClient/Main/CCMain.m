@@ -1334,7 +1334,8 @@
             }
             
             // Version >= 12
-            if ([[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:appDelegate.activeAccount element:@"major"] >= 12) {
+            NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+            if (serverVersionMajor >= 12) {
                 
                 [_timerWaitInput invalidate];
                 _timerWaitInput = [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(searchStartTimer) userInfo:nil repeats:NO];
@@ -2625,11 +2626,11 @@
 
 - (void)setTableViewHeader
 {
-    NSInteger versionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:appDelegate.activeAccount element:@"major"];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
 
     NSString *trimmedRichWorkspaceText = [self.richWorkspaceText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
-    if (versionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
+    if (serverVersionMajor < k_nextcloud_version_18_0 || trimmedRichWorkspaceText.length == 0 ) {
                 
         [self.tableView.tableHeaderView setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightSearchBar)];
         

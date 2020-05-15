@@ -44,8 +44,7 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesE2EEEnabledWithAccount:appDelegate.activeAccount];
-    
+    BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     if (isE2EEEnabled == NO) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------

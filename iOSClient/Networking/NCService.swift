@@ -172,7 +172,7 @@ class NCService: NSObject {
                 }
                 
                 // NCTextObtainEditorDetails
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: account, element: "major")
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= k_nextcloud_version_18_0 {
                     NCCommunication.sharedInstance.NCTextObtainEditorDetails(serverUrl: self.appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {

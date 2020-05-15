@@ -29,8 +29,16 @@ import Foundation
         return instance
     }()
     
-    @objc public let capabilitiesVersionString:     Array = ["ocs","data","version","string"]
+    @objc public lazy var capabilitiesVersionString:        Array = ["ocs","data","version","string"]
+    @objc public let capabilitiesVersionMajor:              Array = ["ocs","data","version","major"]
     
-    @objc public let capabilitiesThemingName:       Array = ["ocs","data","capabilities","theming","name"]
-    @objc public let capabilitiesThemingSlogan:     Array = ["ocs","data","capabilities","theming","slogan"]
+    @objc public let capabilitiesThemingColor:              Array = ["ocs","data","capabilities","theming","color"]
+    @objc public let capabilitiesThemingColorElement:       Array = ["ocs","data","capabilities","theming","color-element"]
+    @objc public let capabilitiesThemingColorText:          Array = ["ocs","data","capabilities","theming","color-text"]
+    @objc public let capabilitiesThemingName:               Array = ["ocs","data","capabilities","theming","name"]
+    @objc public let capabilitiesThemingSlogan:             Array = ["ocs","data","capabilities","theming","slogan"]
+       
+    @objc public let capabilitiesWebDavRoot:                Array = ["ocs","data","capabilities","core","webdav-root"]
+    
+    @objc public let capabilitiesE2EEEnabled:               Array = ["ocs","data","capabilities","end-to-end-encryption","enabled"]
 }

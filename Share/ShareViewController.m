@@ -61,8 +61,8 @@
         
     } else {
         
-        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:tableAccount.account element:@"major"];
-        NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:tableAccount.account];
+        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+        NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
         
         // Networking
         [[NCCommunicationCommon sharedInstance] setupWithUser:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking sharedInstance]];
@@ -176,9 +176,9 @@
 {
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color"];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-element"];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-text"];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
         [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;

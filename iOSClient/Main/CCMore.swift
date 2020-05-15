@@ -133,7 +133,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
         
         // ITEM : Trash
-        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: appDelegate.activeAccount, element: "major")        
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= Int(k_trash_version_available) {
             
             item = OCExternalSites.init()

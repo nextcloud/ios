@@ -974,78 +974,6 @@ class NCManageDatabase: NSObject {
         return nil
     }
     
-    @objc func getCapabilitiesServerVersion(account: String, element: String) -> Int {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        guard let jsondata = result.jsondata else {
-            return 0
-        }
-        
-        let json = JSON(jsondata)
-        let data = json["ocs"]["data"]
-
-        return data["version"][element].intValue
-    }
-    
-    @objc func getCapabilitiesServerVersionString(account: String) -> String? {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-        
-        let json = JSON(jsondata)
-        let data = json["ocs"]["data"]
-
-        return data["version"]["string"].string
-    }
-    
-    @objc func getCapabilitiesWebDavRoot(account: String) -> String? {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["core"]["webdav-root"].string
-    }
-    
-    @objc func getCapabilitiesE2EEEnabled(account: String) -> Bool {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["end-to-end-encryption"]["enabled"].boolValue
-    }
-    
     @objc func getCapabilitiesE2EEVersion(account: String) -> Int {
 
         let realm = try! Realm()
@@ -1066,24 +994,6 @@ class NCManageDatabase: NSObject {
         } else {
             return 0
         }
-    }
-    
-    @objc func getCapabilitiesServerTheming(account: String, element: String) -> String? {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["theming"][element].string
     }
     
     @objc func getCapabilitiesHandwerkcloudEnabled(account: String) -> Bool {

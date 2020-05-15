@@ -51,7 +51,7 @@
     XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    NSInteger versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:appDelegate.activeAccount element:@"major"];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
@@ -134,7 +134,7 @@
     
     // Section : E2EEncryption From Nextcloud 19 --------------------------------------------------------------
 
-    if (versionServer >= k_nextcloud_version_19_0) {
+    if (serverVersionMajor >= k_nextcloud_version_19_0) {
         
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
         [form addFormSection:section];

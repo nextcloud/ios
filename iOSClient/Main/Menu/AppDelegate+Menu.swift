@@ -45,7 +45,7 @@ extension AppDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeMain.serverUrl, e2eEncrypted: false, account: appDelegate.activeAccount)
-        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: appDelegate.activeAccount, element: "major")
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         
         actions.append(
             NCMenuAction(

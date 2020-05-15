@@ -74,8 +74,8 @@ class fileProviderData: NSObject {
         if domain == nil {
             
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
-            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
-            let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
+            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
             
             account = tableAccount.account
             accountUser = tableAccount.user
@@ -99,8 +99,8 @@ class fileProviderData: NSObject {
             let accountDomain = tableAccount.userID + " (" + host + ")"
             if accountDomain == domain {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
-                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
                 
                 account = tableAccount.account
                 accountUser = tableAccount.user
@@ -132,8 +132,8 @@ class fileProviderData: NSObject {
         for tableAccount in tableAccounts {
             if accountFromItemIdentifier == tableAccount.account {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerVersion(account: tableAccount.account, element: "major")
-                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesWebDavRoot(account: tableAccount.account)
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
                 
                 account = tableAccount.account
                 accountUser = tableAccount.user

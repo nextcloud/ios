@@ -477,13 +477,13 @@
 
 - (void)settingSetupCommunicationCapabilities:(NSString *)account
 {
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerVersionWithAccount:account element:@"major"];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
         [[OCNetworking sharedManager].sharedOCCommunication setupNextcloudVersion: serverVersionMajor];
         [[NCCommunicationCommon sharedInstance] setupWithNextcloudVersion:serverVersionMajor];
      }
     
-    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesWebDavRootWithAccount:account];
+    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
     if (webDavRoot != nil) {
         [[NCCommunicationCommon sharedInstance] setupWithWebDavRoot:webDavRoot];
     }
@@ -994,9 +994,9 @@
     
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color"];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-element"];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerThemingWithAccount:self.activeAccount element:@"color-text"];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
 
         [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
         
