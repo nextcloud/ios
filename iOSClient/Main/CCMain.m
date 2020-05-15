@@ -168,6 +168,7 @@
     self.searchController.hidesNavigationBarDuringPresentation = true;
     self.navigationController.navigationBar.prefersLargeTitles = true;
     self.navigationItem.hidesSearchBarWhenScrolling = true;
+    self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
     [self.navigationController.navigationBar sizeToFit];
 
     // Table Header View
@@ -216,7 +217,7 @@
 {
     [super viewWillAppear:animated];
     [self updateNavBarShadow:self.tableView force:false];
-    if(_isViewDidLoad) {
+    if(_isViewDidLoad && _isRoot) {
         self.navigationItem.hidesSearchBarWhenScrolling = false;
     }
     // test
@@ -246,7 +247,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    if(_isViewDidLoad) {
+    if(_isViewDidLoad && _isRoot) {
         self.navigationItem.hidesSearchBarWhenScrolling = true;
     }
     // Active Main
@@ -727,10 +728,6 @@
         self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)selezionati, (unsigned long)totali];
 
     } else {
-       
-        self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
-        self.navigationController.navigationBar.prefersLargeTitles = true;
-        
         if (_isRoot) {
             self.navigationItem.title = NCBrandOptions.sharedInstance.brand;
         } else {
