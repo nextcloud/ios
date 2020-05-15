@@ -181,7 +181,7 @@ class NCService: NSObject {
                     }
                 }
                 
-                let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesExternalSitesServerEnabled(account: account)
+                let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
                     OCNetworking.sharedManager().getExternalSites(withAccount: account, completion: { (account, listOfExternalSites, message, errorCode) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {

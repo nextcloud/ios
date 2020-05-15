@@ -974,68 +974,6 @@ class NCManageDatabase: NSObject {
         return nil
     }
     
-    @objc func getCapabilitiesFilesSharingPublicPasswordEnforced(account: String) -> Bool {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["files_sharing"]["public"]["password"]["enforced"].boolValue
-    }
-    
-    @objc func getCapabilitiesRichdocumentsMimetypes(account: String) -> [String]? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        var resultArray = [String]()
-
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return nil
-        }
-        guard let jsondata = result.jsondata else {
-            return nil
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-        
-        if let results = dataCapabilities["richdocuments"]["mimetypes"].array {
-            for result in results {
-                resultArray.append(result.string ?? "")
-            }
-            return resultArray
-        }
-        
-        return nil
-    }
-    
-    @objc func getCapabilitiesExternalSitesServerEnabled(account: String) -> Bool {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["external"].exists()
-    }
-    
     //MARK: -
     //MARK: Table Comments
     

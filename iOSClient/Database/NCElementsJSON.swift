@@ -46,5 +46,9 @@ import Foundation
     @objc public let capabilitiesE2EEEnabled:                   Array = ["ocs","data","capabilities","end-to-end-encryption","enabled"]
     @objc public let capabilitiesE2EEApiVersion:                Array = ["ocs","data","capabilities","end-to-end-encryption","api-version"]
     
+    @objc public let capabilitiesExternalSitesExists:           Array = ["ocs","data","capabilities","external"]
+
+    @objc public let capabilitiesRichdocumentsMimetypes:        Array = ["ocs","data","capabilities","richdocuments","mimetypes"]
+
     @objc public let capabilitiesHWCEnabled:                    Array = ["ocs","data","capabilities","handwerkcloud","enabled"]
 }
