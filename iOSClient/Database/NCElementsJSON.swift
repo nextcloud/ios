@@ -29,7 +29,7 @@ import Foundation
         return instance
     }()
     
-    @objc public lazy var capabilitiesVersionString:            Array = ["ocs","data","version","string"]
+    @objc public let capabilitiesVersionString:                 Array = ["ocs","data","version","string"]
     @objc public let capabilitiesVersionMajor:                  Array = ["ocs","data","version","major"]
     
     @objc public let capabilitiesFileSharingApiEnabled:         Array = ["ocs","data","capabilities","files_sharing","api_enabled"]
