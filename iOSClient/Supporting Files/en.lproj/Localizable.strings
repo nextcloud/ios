@@ -336,7 +336,7 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "In case of a successful automatic upload, a message confirmation is required to delete the photos or videos from the camera roll. Remember that the deleted photos or videos are available in the Trash for 30 days";
+"_remove_photo_CameraRoll_desc_"            = "In case of a successful automatic upload, a message confirmation is required to delete the photos or videos from the camera roll. Remember that the deleted photos or videos are available in the Trash for 30 days.";
 
 // Utility
 
@@ -772,6 +772,7 @@
 "_no_nextcloud_found_"                  = "Nextcloud server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
+"_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
 
 // QRCode
 
