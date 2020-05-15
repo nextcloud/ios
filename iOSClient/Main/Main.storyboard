@@ -493,7 +493,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
-                                <rect key="frame" x="0.0" y="188" width="414" height="573"/>
+                                <rect key="frame" x="0.0" y="188" width="414" height="565"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
@@ -558,11 +558,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J2k-UZ-XQQ" userLabel="View Quota">
-                                <rect key="frame" x="0.0" y="761" width="414" height="52"/>
+                                <rect key="frame" x="0.0" y="753" width="414" height="60"/>
                                 <subviews>
-                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uGf-Fa-QQ3">
-                                        <rect key="frame" x="35" y="25" width="344" height="2"/>
-                                    </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAP-np-Q1J">
                                         <rect key="frame" x="35" y="2" width="344" height="20"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -573,6 +570,9 @@
                                         <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uGf-Fa-QQ3">
+                                        <rect key="frame" x="35" y="25" width="344" height="2"/>
+                                    </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfl-ZC-XFd">
                                         <rect key="frame" x="35" y="29" width="344" height="20"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -586,16 +586,14 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="52" id="Cch-sg-vfH"/>
+                                    <constraint firstAttribute="height" constant="60" id="Cch-sg-vfH"/>
                                     <constraint firstItem="uGf-Fa-QQ3" firstAttribute="top" secondItem="DAP-np-Q1J" secondAttribute="bottom" constant="3" id="DmS-I9-ex2"/>
                                     <constraint firstItem="vfl-ZC-XFd" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="F1b-zE-5hN"/>
                                     <constraint firstAttribute="trailing" secondItem="DAP-np-Q1J" secondAttribute="trailing" constant="35" id="KIR-Gg-7ty"/>
                                     <constraint firstItem="DAP-np-Q1J" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="MWW-b2-p9J"/>
-                                    <constraint firstAttribute="bottom" secondItem="vfl-ZC-XFd" secondAttribute="bottom" constant="3" id="O6C-Z4-Byy"/>
-                                    <constraint firstItem="uGf-Fa-QQ3" firstAttribute="centerY" secondItem="J2k-UZ-XQQ" secondAttribute="centerY" id="T02-Yc-ehz"/>
+                                    <constraint firstItem="vfl-ZC-XFd" firstAttribute="top" secondItem="uGf-Fa-QQ3" secondAttribute="bottom" constant="2" id="Tbu-4L-brV"/>
                                     <constraint firstItem="DAP-np-Q1J" firstAttribute="top" secondItem="J2k-UZ-XQQ" secondAttribute="top" constant="2" id="jKE-pS-hcH"/>
                                     <constraint firstAttribute="trailing" secondItem="vfl-ZC-XFd" secondAttribute="trailing" constant="35" id="q1x-Mf-7lg"/>
-                                    <constraint firstItem="vfl-ZC-XFd" firstAttribute="top" secondItem="uGf-Fa-QQ3" secondAttribute="bottom" constant="2" id="r90-Jw-MOK"/>
                                     <constraint firstAttribute="trailing" secondItem="uGf-Fa-QQ3" secondAttribute="trailing" constant="35" id="toK-Xd-ifL"/>
                                     <constraint firstItem="uGf-Fa-QQ3" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="w2K-Il-yFz"/>
                                 </constraints>
