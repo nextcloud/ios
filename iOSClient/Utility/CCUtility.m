@@ -90,12 +90,12 @@
 
 + (NSString *)getPasscode
 {
-    return [UICKeyChainStore stringForKey:@"passcode" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"passcodeBlock" service:k_serviceShareKeyChain];
 }
 
 + (void)setPasscode:(NSString *)passcode
 {
-    [UICKeyChainStore setString:passcode forKey:@"passcode" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:passcode forKey:@"passcodeBlock" service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getNotPasscodeAtStart
