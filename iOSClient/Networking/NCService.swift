@@ -114,7 +114,7 @@ class NCService: NSObject {
             } else {
                 
                 if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
-                    OCNetworking.sharedManager()?.checkRemoteUser(account, function: "get user profile", errorCode: errorCode)
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
                 print("[LOG] It has been changed user during networking process, error.")
@@ -206,7 +206,7 @@ class NCService: NSObject {
                 self.appDelegate.settingThemingColorBrand()
                 
                 if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
-                    OCNetworking.sharedManager()?.checkRemoteUser(account, function: "get capabilities", errorCode: errorCode)
+                    NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
             } else {

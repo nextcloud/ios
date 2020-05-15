@@ -511,11 +511,14 @@
             
         } else {
             
-            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteUser:metadata.account function:@"download" errorCode:errorCode];
-            else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
+            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden)) {
+#ifndef EXTENSION
+                [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:metadata.account];
+#endif
+            } else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted) {
                 [CCUtility setCertificateError:metadata.account error:YES];
-
+            }
+            
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
         }
         
@@ -944,10 +947,13 @@
             
         } else {
 
-            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden))
-                [[OCNetworking sharedManager] checkRemoteUser:metadata.account function:@"upload" errorCode:errorCode];
-            else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted)
+            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden)) {
+#ifndef EXTENSION
+                [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:metadata.account];
+#endif
+            } else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted) {
                 [CCUtility setCertificateError:metadata.account error:YES];
+            }
             
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", tempocId]];
             

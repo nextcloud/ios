@@ -382,7 +382,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"download" errorCode:errorCode];
+#ifndef EXTENSION
+                [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -431,7 +433,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"download" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -485,7 +489,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"upload" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1008,7 +1014,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get activity" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1052,7 +1060,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get external sites" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1097,7 +1107,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get notification" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1142,7 +1154,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"set notification" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -1539,191 +1553,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Full Text Search =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)fullTextSearchWithAccount:(NSString *)account text:(NSString *)text page:(NSInteger)page completion:(void(^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, nil, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    } else if ([CCUtility getPassword:account].length == 0) {
-        completion(account, nil, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
-    } else if ([CCUtility getCertificateError:account]) {
-        completion(account, nil, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
-    }
-    
-    // Create JSON
-    NSMutableDictionary *dataDic = [NSMutableDictionary new];
-    [dataDic setValue:@"files" forKey:@"providers"];
-    [dataDic setValue:text forKey:@"search"];
-    [dataDic setValue:[NSNumber numberWithInteger:page] forKey:@"page"];
-    [dataDic setValue:[NSNumber numberWithInt:20] forKey:@"size"];
-    
-    NSMutableDictionary *options = [NSMutableDictionary new];
-    [options setValue:@"" forKey:@"files_within_dir"];
-    [options setValue:@"" forKey:@"files_local"];
-    [options setValue:@"" forKey:@"files_extension"];
-    
-    [dataDic setValue:options forKey:@"options"];
-    
-    NSString *data = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:dataDic options:0 error:nil] encoding:NSUTF8StringEncoding];
-    
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication fullTextSearch:[tableAccount.url stringByAppendingString:@"/"] data:data onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
-        
-        completion(account, items, nil, 0);
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        NSInteger errorCode = response.statusCode;
-        
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        completion(account, nil, message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Check remote user =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)checkRemoteUser:(NSString *)account function:(NSString *)function errorCode:(NSInteger)errorCode
-{
- #ifndef EXTENSION
-    @synchronized(self) {
-        
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-        NSString *token = [CCUtility getPassword:account];
-        
-        if (self.checkRemoteUserInProgress || tableAccount == nil || token == nil) {
-            return;
-        } else {
-            self.checkRemoteUserInProgress = true;
-        }
-        
-        if (serverVersionMajor >= k_nextcloud_version_17_0) {
-            
-            [[OCNetworking sharedManager] getRemoteWipeStatusWithAccount:account token:token completion:^(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode) {
-                
-                if (wipe) {
-                    
-                    [appDelegate deleteAccount:account wipe:true];
-                    [[NCContentPresenter shared] messageNotification:tableAccount.user description:@"_wipe_account_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-                    [[OCNetworking sharedManager] setRemoteWipeCompletitionWithUser:tableAccount.user userID:tableAccount.userID url:tableAccount.url token:token completion:^(NSString *message, NSInteger errorCode) {
-                        NSLog(@"Wiped");
-                    }];
-                    
-                } else {
-                    
-                    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                        NSString *description = [NSString stringWithFormat: NSLocalizedString(@"_error_check_remote_user_", nil), tableAccount.user, tableAccount.url];
-                        [[NCContentPresenter shared] messageNotification:@"_error_" description:description delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
-                        [CCUtility setPassword:account password:nil];
-                    }
-                }
-                
-                self.checkRemoteUserInProgress = false;
-            }];
-            
-        } else if ([CCUtility getPassword:account] != nil) {
-            
-            if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive && [appDelegate.reachability isReachable]) {
-                NSString *description = [NSString stringWithFormat: NSLocalizedString(@"_error_check_remote_user_", nil), tableAccount.user, tableAccount.url];
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:description delay:k_dismissAfterSecond*2 type:messageTypeError errorCode:errorCode];
-                [CCUtility setPassword:account password:nil];
-            }
-        }
-    }
-#endif
-}
-
-- (void)getRemoteWipeStatusWithAccount:(NSString *)account token:(NSString *)token completion:(void(^)(NSString *account, BOOL wipe, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, false, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    } else if ([CCUtility getPassword:account].length == 0) {
-        completion(account, false, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
-    } else if ([CCUtility getCertificateError:account]) {
-        completion(account, false, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
-    }
-    
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication getRemoteWipeStatus:tableAccount.url token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, BOOL wipe, NSString *redirectedServer) {
-        
-        completion(account, wipe, nil, 0);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        NSInteger errorCode = response.statusCode;
-        
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get remote wipe status" errorCode:errorCode];
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        completion(account, false, message, errorCode);
-    }];
-}
-
-- (void)setRemoteWipeCompletitionWithUser:(NSString *)user userID:(NSString *)userID url:(NSString *)url token:(NSString *)token completion:(void(^)(NSString *message, NSInteger errorCode))completion
-{
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:user andUserID:userID andPassword:token];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    [communication setRemoteWipeCompletition:url token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        completion(nil, 0);
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        NSInteger errorCode = response.statusCode;
-        
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        completion(message, errorCode);
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Trash =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2078,7 +1907,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get user profile" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2152,7 +1983,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"put user profile" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }
@@ -2199,7 +2032,9 @@
         
         // Server Unauthorized
         if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-            [[OCNetworking sharedManager] checkRemoteUser:account function:@"get features" errorCode:errorCode];
+#ifndef EXTENSION
+            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
+#endif
         } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
             [CCUtility setCertificateError:account error:YES];
         }

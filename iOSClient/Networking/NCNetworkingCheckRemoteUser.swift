@@ -32,7 +32,7 @@ import NCCommunication
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var checkRemoteUserInProgress = false
 
-    @objc func checkRemoteUser(account: String, function: String, errorCode: Int) {
+    @objc func checkRemoteUser(account: String) {
            
         if self.checkRemoteUserInProgress {
             return;
@@ -71,10 +71,9 @@ import NCCommunication
                
             if UIApplication.shared.applicationState == .active && appDelegate.reachability.isReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.url)
-                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: description, delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: 403)
                 CCUtility.setPassword(account, password: nil)
             }
         }
-           
     }
 }
