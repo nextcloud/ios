@@ -97,7 +97,11 @@ import NCCommunication
                                     }
                                     newobject.mimeType = "httpd/unix-directory"
                                     newobject.serverUrl = serverUrl
-                                    newobject.version = Int(NCManageDatabase.sharedInstance.getCapabilitiesE2EEVersion(account: account))
+                                    if let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) {
+                                        newobject.version = Int(e2eeApiVersion) ?? 1
+                                    } else {
+                                        newobject.version = 1
+                                    }
                                     
                                     let _ = NCManageDatabase.sharedInstance.addE2eEncryption(newobject)
 

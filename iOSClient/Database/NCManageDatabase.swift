@@ -974,64 +974,6 @@ class NCManageDatabase: NSObject {
         return nil
     }
     
-    @objc func getCapabilitiesE2EEVersion(account: String) -> Int {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return 0
-        }
-        guard let jsondata = result.jsondata else {
-            return 0
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        if let result = dataCapabilities["end-to-end-encryption"]["api-version"].string {
-            return Int(result)!
-        } else {
-            return 0
-        }
-    }
-    
-    @objc func getCapabilitiesHandwerkcloudEnabled(account: String) -> Bool {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["handwerkcloud"]["enabled"].boolValue
-    }
-    
-    @objc func getCapabilitiesFilesSharingEnabled(account: String) -> Bool {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
-            return false
-        }
-        guard let jsondata = result.jsondata else {
-            return false
-        }
-        
-        let json = JSON(jsondata)
-        let dataCapabilities = json["ocs"]["data"]["capabilities"]
-
-        return dataCapabilities["files_sharing"]["api_enabled"].boolValue
-    }
-    
     @objc func getCapabilitiesFilesSharingPublicPasswordEnforced(account: String) -> Bool {
 
         let realm = try! Realm()

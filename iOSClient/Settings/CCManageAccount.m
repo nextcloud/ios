@@ -224,7 +224,7 @@
     }
     
     // Section : THIRT PART -------------------------------------------
-    BOOL isHandwerkcloudEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesHandwerkcloudEnabledWithAccount:appDelegate.activeAccount];
+    BOOL isHandwerkcloudEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesHWCEnabled exists:false];
     if (isHandwerkcloudEnabled) {
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_user_job_", nil)];

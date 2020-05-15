@@ -155,7 +155,7 @@ class NCService: NSObject {
                 self.appDelegate.settingThemingColorBrand()
                 
                 // File Sharing
-                let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesFilesSharingEnabled(account: account)
+                let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                 if (isFilesSharingEnabled && self.appDelegate.activeMain != nil) {
                     
                     OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
@@ -196,7 +196,7 @@ class NCService: NSObject {
                 }
                 
                 // Handwerkcloud
-                let isHandwerkcloudEnabled = NCManageDatabase.sharedInstance.getCapabilitiesHandwerkcloudEnabled(account: account)
+                let isHandwerkcloudEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesHWCEnabled, exists: false)
                 if (isHandwerkcloudEnabled) {
                     self.requestHC()
                 }
