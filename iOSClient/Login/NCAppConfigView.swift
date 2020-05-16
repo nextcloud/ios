@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCAppConfigView: UIViewController {
 
@@ -72,9 +73,9 @@ class NCAppConfigView: UIViewController {
             return
         }
         
-        OCNetworking.sharedManager()?.getAppPassword(serverUrl, username: username, password: password, completion: { (token, message, errorCode) in
+        NCCommunication.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password, customUserAgent: nil) { (token, errorCode, errorDescription) in
             DispatchQueue.main.async {
-                if errorCode == 0 {
+                if errorCode == 0 && token != nil {
                     let account: String = "\(username) \(serverUrl)"
                     
                     // NO account found, clear
@@ -95,10 +96,10 @@ class NCAppConfigView: UIViewController {
                     
                     self.dismiss(animated: true) {}
                 } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
-        })
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {

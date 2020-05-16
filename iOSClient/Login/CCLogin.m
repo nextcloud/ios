@@ -331,12 +331,14 @@
             self.login.enabled = NO;
             [self.activity startAnimating];
             
-            [[OCNetworking sharedManager] checkServerUrl:[NSString stringWithFormat:@"%@%@", url, k_webDAV] user:user userID:user password:token completion:^(NSString *message, NSInteger errorCode) {
-
+            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", url, k_webDAV];
+            
+            [[NCCommunication shared] checkServerWithServerUrl:serverUrl completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
+                
                 [self.activity stopAnimating];
                 self.login.enabled = YES;
                 
-                [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:message];
+                [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
             }];
         }
     }
@@ -372,12 +374,12 @@
         self.login.enabled = NO;
         [self.activity startAnimating];
 
-        [[OCNetworking sharedManager] getAppPassword:url username:user password:password completion:^(NSString *token, NSString *message, NSInteger errorCode) {
+        [[NCCommunication shared] getAppPasswordWithServerUrl:url username:user password:password customUserAgent:nil completionHandler:^(NSString *token, NSInteger errorCode, NSString *errorDescription) {
             
             [self.activity stopAnimating];
             self.login.enabled = YES;
-
-            [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:message];
+            
+            [self AfterLoginWithUrl:url user:user token:token errorCode:errorCode message:errorDescription];
         }];
     }
 }
