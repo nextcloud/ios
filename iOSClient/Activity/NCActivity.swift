@@ -387,19 +387,21 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
-            var url = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            url = appDelegate.activeUrl + k_webDAV + url + "/" + activitySubjectRich.name
+            var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
+            serverUrlFileName = appDelegate.activeUrl + k_webDAV + serverUrlFileName + "/" + activitySubjectRich.name
             
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
-            let _ = OCNetworking.sharedManager()?.download(withAccount: activityPreview.account, url: url, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
+            _ = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, progressHandler: { (progress) in
+                
+            }) { (account, etag, date, lenght, errorCode, errorDescription) in
                 
                 if account == self.appDelegate.activeAccount && errorCode == 0 {
                     
-                    let serverUrl = (url as NSString).deletingLastPathComponent
-                    let fileName = (url as NSString).lastPathComponent
+                    let serverUrl = (serverUrlFileName as NSString).deletingLastPathComponent
+                    let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
                     
                     NCNetworking.sharedInstance.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, errorDescription) in
@@ -424,7 +426,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     
                     NCUtility.sharedInstance.stopActivityIndicator()
                 }
-            })
+            }
         }
     }
 }
