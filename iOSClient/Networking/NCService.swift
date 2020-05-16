@@ -171,14 +171,14 @@ class NCService: NSObject {
                 
                 let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
-                    OCNetworking.sharedManager().getExternalSites(withAccount: account, completion: { (account, listOfExternalSites, message, errorCode) in
+                    NCCommunication.shared.getExternalSite(serverUrl: self.appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            NCManageDatabase.sharedInstance.deleteExternalSites(account: account!)
-                            for externalSites in listOfExternalSites! {
-                                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites, account: account!)
+                            NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
+                            for externalSite in externalSites {
+                                NCManageDatabase.sharedInstance.addExternalSites(externalSite, account: account)
                             }
                         }
-                    })
+                    }
                 } else {
                     NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
                 }

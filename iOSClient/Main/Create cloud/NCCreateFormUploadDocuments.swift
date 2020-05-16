@@ -37,8 +37,8 @@ import NCCommunication
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
-    var listOfTemplate = [NCEditorTemplates]()
-    var selectTemplate: NCEditorTemplates?
+    var listOfTemplate = [NCCommunicationEditorTemplates]()
+    var selectTemplate: NCCommunicationEditorTemplates?
     
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -402,7 +402,7 @@ import NCCommunication
                     
                     for template in templates {
                         
-                        let temp = NCEditorTemplates()
+                        let temp = NCCommunicationEditorTemplates()
                                                
                         temp.identifier = template.identifier
                         temp.ext = template.ext
@@ -421,7 +421,7 @@ import NCCommunication
                     
                     // NOT ALIGNED getTemplatesRichdocuments
                     if templates.count == 0 {
-                        let temp = NCEditorTemplates()
+                        let temp = NCCommunicationEditorTemplates()
                         
                         temp.identifier = ""
                         if self.editorId == k_editor_text {
@@ -464,7 +464,7 @@ import NCCommunication
                     
                     for template in templates as! [NCRichDocumentTemplate] {
                         
-                        let temp = NCEditorTemplates()
+                        let temp = NCCommunicationEditorTemplates()
                         temp.identifier = "\(template.templateID)"
                         temp.delete = template.delete
                         temp.ext = template.extension

@@ -637,7 +637,7 @@ extension NCMedia {
                 var isDifferent: Bool = false
                 var newInsert: Int = 0
             
-                NCManageDatabase.sharedInstance.convertNCFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
                     let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)

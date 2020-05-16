@@ -552,7 +552,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountUserProfile(_ userProfile: NCUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(_ userProfile: NCCommunicationUserProfile) -> tableAccount? {
      
         let realm = try! Realm()
 
@@ -1026,7 +1026,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Direct Editing
     
-    @objc func addDirectEditing(account: String, editors: [NCEditorDetailsEditors], creators: [NCEditorDetailsCreators]) {
+    @objc func addDirectEditing(account: String, editors: [NCCommunicationEditorDetailsEditors], creators: [NCCommunicationEditorDetailsCreators]) {
         
         let realm = try! Realm()
 
@@ -1562,8 +1562,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table External Sites
     
-    #if !EXTENSION
-    @objc func addExternalSites(_ externalSites: OCExternalSites, account: String) {
+    @objc func addExternalSites(_ externalSite: NCCommunicationExternalSite, account: String) {
         
         let realm = try! Realm()
 
@@ -1573,12 +1572,12 @@ class NCManageDatabase: NSObject {
                 let addObject = tableExternalSites()
             
                 addObject.account = account
-                addObject.idExternalSite = externalSites.idExternalSite
-                addObject.icon = externalSites.icon
-                addObject.lang = externalSites.lang
-                addObject.name = externalSites.name
-                addObject.url = externalSites.url
-                addObject.type = externalSites.type
+                addObject.idExternalSite = externalSite.idExternalSite
+                addObject.icon = externalSite.icon
+                addObject.lang = externalSite.lang
+                addObject.name = externalSite.name
+                addObject.url = externalSite.url
+                addObject.type = externalSite.type
            
                 realm.add(addObject)
             }
@@ -1586,7 +1585,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
-    #endif
     
     @objc func deleteExternalSites(account: String) {
         
@@ -1795,7 +1793,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    @objc func convertNCFileToMetadata(_ file: NCFile, isEncrypted: Bool, account: String) -> tableMetadata {
+    @objc func convertNCFileToMetadata(_ file: NCCommunicationFile, isEncrypted: Bool, account: String) -> tableMetadata {
         
         let metadata = tableMetadata()
         
@@ -1840,7 +1838,7 @@ class NCManageDatabase: NSObject {
         return metadata
     }
     
-    @objc func convertNCFilesToMetadatas(_ files: [NCFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata,_ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata])->())  {
+    @objc func convertNCCommunicationFilesToMetadatas(_ files: [NCCommunicationFile], useMetadataFolder: Bool, account: String, completion: @escaping (_ metadataFolder: tableMetadata,_ metadatasFolder: [tableMetadata], _ metadatas: [tableMetadata])->())  {
     
         var counter: Int = 0
         var isEncrypted: Bool = false
@@ -1942,7 +1940,7 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
 
-    @objc func addMetadatas(files: [NCFile]?, account: String) {
+    @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {
     
         guard let files = files else { return }
         

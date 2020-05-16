@@ -287,7 +287,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 
-                NCManageDatabase.sharedInstance.convertNCFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Prepare DB
                     if offset == 0 {
