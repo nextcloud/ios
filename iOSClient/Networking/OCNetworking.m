@@ -181,62 +181,6 @@
     [task resume];
 }
 
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== download / upload =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSURLSessionTask *)downloadWithAccount:(NSString *)account url:(NSString *)url fileNameLocalPath:(NSString *)fileNameLocalPath encode:(BOOL)encode completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    if (tableAccount == nil) {
-        completion(account, NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
-    } else if ([CCUtility getPassword:account].length == 0) {
-        completion(account, NSLocalizedString(@"_bad_username_password_", nil), kOCErrorServerUnauthorized);
-    } else if ([CCUtility getCertificateError:account]) {
-        completion(account, NSLocalizedString(@"_ssl_certificate_untrusted_", nil), NSURLErrorServerCertificateUntrusted);
-    }
-    
-    OCCommunication *communication = [OCNetworking sharedManager].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:tableAccount.user andUserID:tableAccount.userID andPassword:[CCUtility getPassword:account]];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-
-    NSURLSessionTask *sessionTask = [communication downloadFileSession:url toDestiny:fileNameLocalPath defaultPriority:YES encode:encode onCommunication:communication progress:^(NSProgress *progress) {
-        //float percent = roundf (progress.fractionCompleted * 100);
-    } successRequest:^(NSURLResponse *response, NSURL *filePath) {
-        
-        completion(account, nil, 0);
-        
-    } failureRequest:^(NSURLResponse *response, NSError *error) {
-        
-        NSString *message;
-        NSInteger errorCode = ((NSHTTPURLResponse*)response).statusCode;
-
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Server Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden) {
-#ifndef EXTENSION
-            [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:account];
-#endif
-        } else if (errorCode == NSURLErrorServerCertificateUntrusted) {
-            [CCUtility setCertificateError:account error:YES];
-        }
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedString(@"_server_error_retry_", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        completion(account, message, errorCode);
-    }];
-    
-    return sessionTask;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Share =====
 #pragma --------------------------------------------------------------------------------------------
