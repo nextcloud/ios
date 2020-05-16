@@ -40,12 +40,6 @@
 - (void)checkServerUrl:(NSString *)serverUrl user:(NSString *)user userID:(NSString *)userID password:(NSString *)password completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 - (void)getAppPassword:(NSString *)serverUrl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *token, NSString *message, NSInteger errorCode))completion;
 
-#pragma mark ===== Download / Upload =====
-
-
-- (NSURLSessionTask *)downloadWithAccount:(NSString *)account url:(NSString *)url fileNameLocalPath:(NSString *)fileNameLocalPath encode:(BOOL)encode completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
-
-
 #pragma mark ===== Share =====
 
 - (void)readShareWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSArray *items, NSString *message, NSInteger errorCode))completion;

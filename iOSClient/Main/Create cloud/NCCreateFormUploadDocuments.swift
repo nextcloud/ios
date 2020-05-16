@@ -497,7 +497,9 @@ import NCCommunication
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + name + ".png"
 
-        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: preview, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
+        _ = NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, progressHandler: { (progress) in
+            
+        }) { (account, etag, date, lenght, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])
@@ -506,6 +508,6 @@ import NCCommunication
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
 }
