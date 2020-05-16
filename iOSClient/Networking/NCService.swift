@@ -90,19 +90,7 @@ class NCService: NSObject {
                             }
                         }
                     }
-                    /*
-                    OCNetworking.sharedManager()?.downloadContents(ofUrl: avatarUrl, completion: { (data, message, errorCode) in
-                        if errorCode == 0 {
-                            if let image = UIImage(data: data!) {
-                                try? FileManager.default.removeItem(atPath: fileNamePath)
-                                if let data = image.pngData() {
-                                    try? data.write(to: URL(fileURLWithPath: fileNamePath))
-                                }
-                            }
-                        }
-                    })
-                    */
-                    
+                  
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_changeUserProfile), object: nil)
                     }
