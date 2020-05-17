@@ -52,6 +52,9 @@
             @"dsn": @"https://42eaf570ec2646b1a564a4c4bfc8c279@o394108.ingest.sentry.io/5243836",
             @"debug": @(YES),
             @"enableAutoSessionTracking": @(YES)
+            /* PRIVACY
+             By default, we don’t apply the user identification provided to the SDK via the API. Instead, we use the installation ID generated with the first use of the application. The ID doesn’t contain any private or public data of your users or any public or shared data of their device.
+             */
         }];
     }
     
