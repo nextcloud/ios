@@ -73,8 +73,8 @@
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     // Initialization List & Array
-    self.listProgressMetadata = [[NSMutableDictionary alloc] init];
-    self.listMainVC = [[NSMutableDictionary alloc] init];
+    self.listProgressMetadata = [NSMutableDictionary new];
+    self.listMainVC = [NSMutableDictionary new];
     self.arrayDeleteMetadata = [NSMutableArray new];
     self.arrayMoveMetadata = [NSMutableArray new];
     self.arrayMoveServerUrlTo = [NSMutableArray new];
@@ -105,7 +105,6 @@
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
     // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-
 
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
