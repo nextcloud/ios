@@ -46,9 +46,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Fabric
+    /*
     if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
-        //[Fabric with:@[[Crashlytics class]]];
+        [Fabric with:@[[Crashlytics class]]];
     }
+    */
     
     [CCUtility createDirectoryStandard];
     [CCUtility emptyTemporaryDirectory];
