@@ -26,8 +26,6 @@
 #import "CCGraphics.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
@@ -49,7 +47,7 @@
 {
     // Fabric
     if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
-        [Fabric with:@[[Crashlytics class]]];
+        //[Fabric with:@[[Crashlytics class]]];
     }
     
     [CCUtility createDirectoryStandard];
