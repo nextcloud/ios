@@ -110,7 +110,6 @@
     
     // Section : Privacy --------------------------------------------------------------
 
-    /*
     if (!NCBrandOptions.sharedInstance.disable_crash_service) {
     
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_privacy_", nil)];
@@ -126,7 +125,6 @@
         else row.value = @"0";
         [section addFormRow:row];
     }
-    */
     
     // Section CLEAR CACHE -------------------------------------------------
     
@@ -167,7 +165,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+        
     self.title = NSLocalizedString(@"_advanced_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
