@@ -72,7 +72,6 @@
     // Background Fetch
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
-    // Initialization List & Array
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listMainVC = [NSMutableDictionary new];
     self.arrayDeleteMetadata = [NSMutableArray new];
@@ -85,7 +84,7 @@
     // Push Notification
     [application registerForRemoteNotifications];
     
-    // Display notification (sent via APNS)
+    // Display notification
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
