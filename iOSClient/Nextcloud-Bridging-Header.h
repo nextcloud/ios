@@ -7,7 +7,6 @@
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
 #import "NCAutoUpload.h"
-#import "NCUchardet.h"
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
 #import "CCSynchronize.h"

@@ -111,48 +111,6 @@
 		F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD00246AC9B10009B204 /* DropUpMenu.swift */; };
 		F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD02246AC9B10009B204 /* DropdownMenu.swift */; };
 		F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD03246AC9B10009B204 /* SectionHeader.swift */; };
-		F711CD4C246AC9B80009B204 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CD09246AC9B70009B204 /* NCUchardet.m */; };
-		F711CD4D246AC9B80009B204 /* nsEUCTWProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */; };
-		F711CD4E246AC9B80009B204 /* symbols.cmake in Resources */ = {isa = PBXBuildFile; fileRef = F711CD0D246AC9B70009B204 /* symbols.cmake */; };
-		F711CD4F246AC9B80009B204 /* uchardet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD0E246AC9B70009B204 /* uchardet.cpp */; };
-		F711CD50246AC9B80009B204 /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = F711CD11246AC9B70009B204 /* CMakeLists.txt */; };
-		F711CD51246AC9B80009B204 /* nsMBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */; };
-		F711CD52246AC9B80009B204 /* nsSBCSGroupProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */; };
-		F711CD53246AC9B80009B204 /* nsSBCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */; };
-		F711CD54246AC9B80009B204 /* nsBig5Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */; };
-		F711CD55246AC9B80009B204 /* EUCTWFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD19246AC9B70009B204 /* EUCTWFreq.tab */; };
-		F711CD56246AC9B80009B204 /* nsEUCKRProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */; };
-		F711CD57246AC9B80009B204 /* nsGB2312Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */; };
-		F711CD58246AC9B80009B204 /* nsMBCSSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */; };
-		F711CD59246AC9B80009B204 /* JpCntx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD22246AC9B80009B204 /* JpCntx.cpp */; };
-		F711CD5A246AC9B80009B204 /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD23246AC9B80009B204 /* CharDistribution.cpp */; };
-		F711CD5B246AC9B80009B204 /* nsLatin1Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */; };
-		F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */; };
-		F711CD5D246AC9B80009B204 /* JISFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD27246AC9B80009B204 /* JISFreq.tab */; };
-		F711CD5E246AC9B80009B204 /* nsHebrewProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */; };
-		F711CD5F246AC9B80009B204 /* EUCKRFreq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */; };
-		F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */; };
-		F711CD61246AC9B80009B204 /* nsCharSetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */; };
-		F711CD62246AC9B80009B204 /* LangHungarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */; };
-		F711CD63246AC9B80009B204 /* LangVietnameseModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */; };
-		F711CD64246AC9B80009B204 /* LangBulgarianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */; };
-		F711CD65246AC9B80009B204 /* LangFrenchModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */; };
-		F711CD66246AC9B80009B204 /* LangThaiModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD32246AC9B80009B204 /* LangThaiModel.cpp */; };
-		F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */; };
-		F711CD68246AC9B80009B204 /* LangArabicModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD34246AC9B80009B204 /* LangArabicModel.cpp */; };
-		F711CD69246AC9B80009B204 /* LangRussianModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD35246AC9B80009B204 /* LangRussianModel.cpp */; };
-		F711CD6A246AC9B80009B204 /* LangHebrewModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */; };
-		F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */; };
-		F711CD6C246AC9B80009B204 /* LangTurkishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */; };
-		F711CD6D246AC9B80009B204 /* LangGermanModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD39246AC9B80009B204 /* LangGermanModel.cpp */; };
-		F711CD6E246AC9B80009B204 /* LangGreekModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */; };
-		F711CD6F246AC9B80009B204 /* LangDanishModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */; };
-		F711CD70246AC9B80009B204 /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD3C246AC9B80009B204 /* Big5Freq.tab */; };
-		F711CD71246AC9B80009B204 /* GB2312Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F711CD3F246AC9B80009B204 /* GB2312Freq.tab */; };
-		F711CD72246AC9B80009B204 /* nsUniversalDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */; };
-		F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */; };
-		F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */; };
-		F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD48246AC9B80009B204 /* nsEscSM.cpp */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -556,71 +514,6 @@
 		F711CD01246AC9B10009B204 /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
 		F711CD02246AC9B10009B204 /* DropdownMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownMenu.swift; sourceTree = "<group>"; };
 		F711CD03246AC9B10009B204 /* SectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
-		F711CD09246AC9B70009B204 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
-		F711CD0A246AC9B70009B204 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
-		F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCTWProber.cpp; sourceTree = "<group>"; };
-		F711CD0D246AC9B70009B204 /* symbols.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.cmake; sourceTree = "<group>"; };
-		F711CD0E246AC9B70009B204 /* uchardet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uchardet.cpp; sourceTree = "<group>"; };
-		F711CD0F246AC9B70009B204 /* prmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prmem.h; sourceTree = "<group>"; };
-		F711CD10246AC9B70009B204 /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharDistribution.h; sourceTree = "<group>"; };
-		F711CD11246AC9B70009B204 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSGroupProber.cpp; sourceTree = "<group>"; };
-		F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCSGroupProber.cpp; sourceTree = "<group>"; };
-		F711CD14246AC9B70009B204 /* nsHebrewProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsHebrewProber.h; sourceTree = "<group>"; };
-		F711CD15246AC9B70009B204 /* nsEUCKRProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCKRProber.h; sourceTree = "<group>"; };
-		F711CD16246AC9B70009B204 /* nsMBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsMBCSGroupProber.h; sourceTree = "<group>"; };
-		F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSBCharSetProber.cpp; sourceTree = "<group>"; };
-		F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsBig5Prober.cpp; sourceTree = "<group>"; };
-		F711CD19246AC9B70009B204 /* EUCTWFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCTWFreq.tab; sourceTree = "<group>"; };
-		F711CD1A246AC9B70009B204 /* nsEUCJPProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCJPProber.h; sourceTree = "<group>"; };
-		F711CD1B246AC9B70009B204 /* JpCntx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JpCntx.h; sourceTree = "<group>"; };
-		F711CD1C246AC9B80009B204 /* nsCodingStateMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCodingStateMachine.h; sourceTree = "<group>"; };
-		F711CD1D246AC9B80009B204 /* nsGB2312Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsGB2312Prober.h; sourceTree = "<group>"; };
-		F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCKRProber.cpp; sourceTree = "<group>"; };
-		F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsGB2312Prober.cpp; sourceTree = "<group>"; };
-		F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsMBCSSM.cpp; sourceTree = "<group>"; };
-		F711CD21246AC9B80009B204 /* nscore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nscore.h; sourceTree = "<group>"; };
-		F711CD22246AC9B80009B204 /* JpCntx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JpCntx.cpp; sourceTree = "<group>"; };
-		F711CD23246AC9B80009B204 /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharDistribution.cpp; sourceTree = "<group>"; };
-		F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsLatin1Prober.cpp; sourceTree = "<group>"; };
-		F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEUCJPProber.cpp; sourceTree = "<group>"; };
-		F711CD26246AC9B80009B204 /* nsCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsCharSetProber.h; sourceTree = "<group>"; };
-		F711CD27246AC9B80009B204 /* JISFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = JISFreq.tab; sourceTree = "<group>"; };
-		F711CD28246AC9B80009B204 /* nsUTF8Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUTF8Prober.h; sourceTree = "<group>"; };
-		F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsHebrewProber.cpp; sourceTree = "<group>"; };
-		F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = EUCKRFreq.tab; sourceTree = "<group>"; };
-		F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsSJISProber.cpp; sourceTree = "<group>"; };
-		F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsCharSetProber.cpp; sourceTree = "<group>"; };
-		F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHungarianModel.cpp; sourceTree = "<group>"; };
-		F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangVietnameseModel.cpp; sourceTree = "<group>"; };
-		F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangBulgarianModel.cpp; sourceTree = "<group>"; };
-		F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangFrenchModel.cpp; sourceTree = "<group>"; };
-		F711CD32246AC9B80009B204 /* LangThaiModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangThaiModel.cpp; sourceTree = "<group>"; };
-		F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangSpanishModel.cpp; sourceTree = "<group>"; };
-		F711CD34246AC9B80009B204 /* LangArabicModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangArabicModel.cpp; sourceTree = "<group>"; };
-		F711CD35246AC9B80009B204 /* LangRussianModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangRussianModel.cpp; sourceTree = "<group>"; };
-		F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangHebrewModel.cpp; sourceTree = "<group>"; };
-		F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangEsperantoModel.cpp; sourceTree = "<group>"; };
-		F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangTurkishModel.cpp; sourceTree = "<group>"; };
-		F711CD39246AC9B80009B204 /* LangGermanModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGermanModel.cpp; sourceTree = "<group>"; };
-		F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangGreekModel.cpp; sourceTree = "<group>"; };
-		F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LangDanishModel.cpp; sourceTree = "<group>"; };
-		F711CD3C246AC9B80009B204 /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
-		F711CD3D246AC9B80009B204 /* nsUniversalDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUniversalDetector.h; sourceTree = "<group>"; };
-		F711CD3E246AC9B80009B204 /* nsSBCSGroupProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCSGroupProber.h; sourceTree = "<group>"; };
-		F711CD3F246AC9B80009B204 /* GB2312Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GB2312Freq.tab; sourceTree = "<group>"; };
-		F711CD40246AC9B80009B204 /* nsSBCharSetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSBCharSetProber.h; sourceTree = "<group>"; };
-		F711CD41246AC9B80009B204 /* nsPkgInt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsPkgInt.h; sourceTree = "<group>"; };
-		F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUniversalDetector.cpp; sourceTree = "<group>"; };
-		F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscCharsetProber.cpp; sourceTree = "<group>"; };
-		F711CD44246AC9B80009B204 /* nsEscCharsetProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEscCharsetProber.h; sourceTree = "<group>"; };
-		F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsUTF8Prober.cpp; sourceTree = "<group>"; };
-		F711CD46246AC9B80009B204 /* nsBig5Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsBig5Prober.h; sourceTree = "<group>"; };
-		F711CD47246AC9B80009B204 /* nsSJISProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsSJISProber.h; sourceTree = "<group>"; };
-		F711CD48246AC9B80009B204 /* nsEscSM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nsEscSM.cpp; sourceTree = "<group>"; };
-		F711CD49246AC9B80009B204 /* nsLatin1Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsLatin1Prober.h; sourceTree = "<group>"; };
-		F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCTWProber.h; sourceTree = "<group>"; };
-		F711CD4B246AC9B80009B204 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1082,7 +975,6 @@
 			isa = PBXGroup;
 			children = (
 				F711CC75246AC99E0009B204 /* OCCommunicationLib */,
-				F711CD08246AC9B70009B204 /* NCUchardet */,
 				F711CCFE246AC9B10009B204 /* DropdownMenu */,
 				F704FA5A232A341800BBA952 /* Imagemeter */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
@@ -1209,94 +1101,6 @@
 				F711CD03246AC9B10009B204 /* SectionHeader.swift */,
 			);
 			path = DropdownMenu;
-			sourceTree = "<group>";
-		};
-		F711CD08246AC9B70009B204 /* NCUchardet */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD09246AC9B70009B204 /* NCUchardet.m */,
-				F711CD0A246AC9B70009B204 /* NCUchardet.h */,
-				F711CD0B246AC9B70009B204 /* src */,
-			);
-			path = NCUchardet;
-			sourceTree = "<group>";
-		};
-		F711CD0B246AC9B70009B204 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD0C246AC9B70009B204 /* nsEUCTWProber.cpp */,
-				F711CD0D246AC9B70009B204 /* symbols.cmake */,
-				F711CD0E246AC9B70009B204 /* uchardet.cpp */,
-				F711CD0F246AC9B70009B204 /* prmem.h */,
-				F711CD10246AC9B70009B204 /* CharDistribution.h */,
-				F711CD11246AC9B70009B204 /* CMakeLists.txt */,
-				F711CD12246AC9B70009B204 /* nsMBCSGroupProber.cpp */,
-				F711CD13246AC9B70009B204 /* nsSBCSGroupProber.cpp */,
-				F711CD14246AC9B70009B204 /* nsHebrewProber.h */,
-				F711CD15246AC9B70009B204 /* nsEUCKRProber.h */,
-				F711CD16246AC9B70009B204 /* nsMBCSGroupProber.h */,
-				F711CD17246AC9B70009B204 /* nsSBCharSetProber.cpp */,
-				F711CD18246AC9B70009B204 /* nsBig5Prober.cpp */,
-				F711CD19246AC9B70009B204 /* EUCTWFreq.tab */,
-				F711CD1A246AC9B70009B204 /* nsEUCJPProber.h */,
-				F711CD1B246AC9B70009B204 /* JpCntx.h */,
-				F711CD1C246AC9B80009B204 /* nsCodingStateMachine.h */,
-				F711CD1D246AC9B80009B204 /* nsGB2312Prober.h */,
-				F711CD1E246AC9B80009B204 /* nsEUCKRProber.cpp */,
-				F711CD1F246AC9B80009B204 /* nsGB2312Prober.cpp */,
-				F711CD20246AC9B80009B204 /* nsMBCSSM.cpp */,
-				F711CD21246AC9B80009B204 /* nscore.h */,
-				F711CD22246AC9B80009B204 /* JpCntx.cpp */,
-				F711CD23246AC9B80009B204 /* CharDistribution.cpp */,
-				F711CD24246AC9B80009B204 /* nsLatin1Prober.cpp */,
-				F711CD25246AC9B80009B204 /* nsEUCJPProber.cpp */,
-				F711CD26246AC9B80009B204 /* nsCharSetProber.h */,
-				F711CD27246AC9B80009B204 /* JISFreq.tab */,
-				F711CD28246AC9B80009B204 /* nsUTF8Prober.h */,
-				F711CD29246AC9B80009B204 /* nsHebrewProber.cpp */,
-				F711CD2A246AC9B80009B204 /* EUCKRFreq.tab */,
-				F711CD2B246AC9B80009B204 /* nsSJISProber.cpp */,
-				F711CD2C246AC9B80009B204 /* nsCharSetProber.cpp */,
-				F711CD2D246AC9B80009B204 /* LangModels */,
-				F711CD3C246AC9B80009B204 /* Big5Freq.tab */,
-				F711CD3D246AC9B80009B204 /* nsUniversalDetector.h */,
-				F711CD3E246AC9B80009B204 /* nsSBCSGroupProber.h */,
-				F711CD3F246AC9B80009B204 /* GB2312Freq.tab */,
-				F711CD40246AC9B80009B204 /* nsSBCharSetProber.h */,
-				F711CD41246AC9B80009B204 /* nsPkgInt.h */,
-				F711CD42246AC9B80009B204 /* nsUniversalDetector.cpp */,
-				F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */,
-				F711CD44246AC9B80009B204 /* nsEscCharsetProber.h */,
-				F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */,
-				F711CD46246AC9B80009B204 /* nsBig5Prober.h */,
-				F711CD47246AC9B80009B204 /* nsSJISProber.h */,
-				F711CD48246AC9B80009B204 /* nsEscSM.cpp */,
-				F711CD49246AC9B80009B204 /* nsLatin1Prober.h */,
-				F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */,
-				F711CD4B246AC9B80009B204 /* uchardet.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
-		F711CD2D246AC9B80009B204 /* LangModels */ = {
-			isa = PBXGroup;
-			children = (
-				F711CD2E246AC9B80009B204 /* LangHungarianModel.cpp */,
-				F711CD2F246AC9B80009B204 /* LangVietnameseModel.cpp */,
-				F711CD30246AC9B80009B204 /* LangBulgarianModel.cpp */,
-				F711CD31246AC9B80009B204 /* LangFrenchModel.cpp */,
-				F711CD32246AC9B80009B204 /* LangThaiModel.cpp */,
-				F711CD33246AC9B80009B204 /* LangSpanishModel.cpp */,
-				F711CD34246AC9B80009B204 /* LangArabicModel.cpp */,
-				F711CD35246AC9B80009B204 /* LangRussianModel.cpp */,
-				F711CD36246AC9B80009B204 /* LangHebrewModel.cpp */,
-				F711CD37246AC9B80009B204 /* LangEsperantoModel.cpp */,
-				F711CD38246AC9B80009B204 /* LangTurkishModel.cpp */,
-				F711CD39246AC9B80009B204 /* LangGermanModel.cpp */,
-				F711CD3A246AC9B80009B204 /* LangGreekModel.cpp */,
-				F711CD3B246AC9B80009B204 /* LangDanishModel.cpp */,
-			);
-			path = LangModels;
 			sourceTree = "<group>";
 		};
 		F7169A161EE590930086BD69 /* Shares */ = {
@@ -2198,7 +2002,6 @@
 				F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */,
 				F78ACD4421903CF20088454D /* NCListCell.xib in Resources */,
 				F78ACD4621903D010088454D /* NCGridCell.xib in Resources */,
-				F711CD71246AC9B80009B204 /* GB2312Freq.tab in Resources */,
 				F769453C22E9CFFF000A798A /* NCShareUserCell.xib in Resources */,
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
@@ -2210,7 +2013,6 @@
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
-				F711CD5F246AC9B80009B204 /* EUCKRFreq.tab in Resources */,
 				F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */,
 				F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
@@ -2225,23 +2027,19 @@
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
-				F711CD4E246AC9B80009B204 /* symbols.cmake in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
-				F711CD70246AC9B80009B204 /* Big5Freq.tab in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */,
-				F711CD50246AC9B80009B204 /* CMakeLists.txt in Resources */,
 				F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
 				F704B5E32430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
-				F711CD55246AC9B80009B204 /* EUCTWFreq.tab in Resources */,
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
@@ -2250,7 +2048,6 @@
 				F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
-				F711CD5D246AC9B80009B204 /* JISFreq.tab in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
@@ -2427,15 +2224,12 @@
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
 				F711CCB6246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
-				F711CD5C246AC9B80009B204 /* nsEUCJPProber.cpp in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
-				F711CD4F246AC9B80009B204 /* uchardet.cpp in Sources */,
-				F711CD66246AC9B80009B204 /* LangThaiModel.cpp in Sources */,
 				F7C525A01E3B48B700FFE02C /* CCNotification.swift in Sources */,
 				F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
@@ -2444,7 +2238,6 @@
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
-				F711CD61246AC9B80009B204 /* nsCharSetProber.cpp in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
@@ -2458,10 +2251,8 @@
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
 				F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
-				F711CD6F246AC9B80009B204 /* LangDanishModel.cpp in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
-				F711CD6B246AC9B80009B204 /* LangEsperantoModel.cpp in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
 				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
@@ -2471,14 +2262,10 @@
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
-				F711CD60246AC9B80009B204 /* nsSJISProber.cpp in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
-				F711CD67246AC9B80009B204 /* LangSpanishModel.cpp in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */,
-				F711CD65246AC9B80009B204 /* LangFrenchModel.cpp in Sources */,
-				F711CD5B246AC9B80009B204 /* nsLatin1Prober.cpp in Sources */,
 				F749C10C23C4A5340027D966 /* NCIntroViewController.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */,
@@ -2488,7 +2275,6 @@
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
 				F711CCBE246AC99E0009B204 /* NSString+Encode.m in Sources */,
-				F711CD6A246AC9B80009B204 /* LangHebrewModel.cpp in Sources */,
 				F711CCB8246AC99E0009B204 /* OCUserProfile.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */,
@@ -2507,40 +2293,30 @@
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F7A3218C1E9E42B30069AD1B /* CCMenuAccount.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
-				F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
-				F711CD58246AC9B80009B204 /* nsMBCSSM.cpp in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
-				F711CD62246AC9B80009B204 /* LangHungarianModel.cpp in Sources */,
 				F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */,
-				F711CD72246AC9B80009B204 /* nsUniversalDetector.cpp in Sources */,
 				F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */,
-				F711CD63246AC9B80009B204 /* LangVietnameseModel.cpp in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
-				F711CD5E246AC9B80009B204 /* nsHebrewProber.cpp in Sources */,
 				F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
-				F711CD51246AC9B80009B204 /* nsMBCSGroupProber.cpp in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
 				F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */,
 				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
-				F711CD57246AC9B80009B204 /* nsGB2312Prober.cpp in Sources */,
 				F711CCC4246AC99E0009B204 /* OCCapabilities.m in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F73D5E47246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
-				F711CD54246AC9B80009B204 /* nsBig5Prober.cpp in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
-				F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
 				F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */,
@@ -2550,11 +2326,8 @@
 				F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */,
 				F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F711CD69246AC9B80009B204 /* LangRussianModel.cpp in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
-				F711CD4C246AC9B80009B204 /* NCUchardet.m in Sources */,
-				F711CD4D246AC9B80009B204 /* nsEUCTWProber.cpp in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
@@ -2562,15 +2335,12 @@
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
-				F711CD64246AC9B80009B204 /* LangBulgarianModel.cpp in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
-				F711CD52246AC9B80009B204 /* nsSBCSGroupProber.cpp in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F711CCC8246AC99E0009B204 /* OCXMLSharedParser.m in Sources */,
 				F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */,
-				F711CD59246AC9B80009B204 /* JpCntx.cpp in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
 				F7E09CE723E308AD00FB3E9E /* NCMasterNavigationController.swift in Sources */,
 				F79018B6240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift in Sources */,
@@ -2581,14 +2351,10 @@
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */,
-				F711CD56246AC9B80009B204 /* nsEUCKRProber.cpp in Sources */,
 				F711CCD8246AC99E0009B204 /* NSDate+RFC1123.m in Sources */,
-				F711CD6D246AC9B80009B204 /* LangGermanModel.cpp in Sources */,
 				F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
-				F711CD53246AC9B80009B204 /* nsSBCharSetProber.cpp in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
-				F711CD68246AC9B80009B204 /* LangArabicModel.cpp in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */,
@@ -2599,19 +2365,15 @@
 				F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
-				F711CD6C246AC9B80009B204 /* LangTurkishModel.cpp in Sources */,
-				F711CD5A246AC9B80009B204 /* CharDistribution.cpp in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
-				F711CD6E246AC9B80009B204 /* LangGreekModel.cpp in Sources */,
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
-				F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,

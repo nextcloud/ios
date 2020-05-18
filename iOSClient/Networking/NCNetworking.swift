@@ -52,7 +52,6 @@ import NCCommunication
             if !lastReachability {
                 NCService.sharedInstance.startRequestServicesServer()
             }
-            
             lastReachability = true
             
         } else {
