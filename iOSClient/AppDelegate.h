@@ -83,9 +83,6 @@
 // ProgressView Detail
 @property (nonatomic, strong) UIProgressView *progressViewDetail;
 
-// Reachability
-@property BOOL lastReachability;
-
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, strong) CCMain *activeMain;
