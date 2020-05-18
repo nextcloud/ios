@@ -1174,7 +1174,6 @@
             BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
             [self setTitle];
             
-
             // File is changed ??
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
                 [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatas serverUrl:serverUrl account:account withDownload:NO];
