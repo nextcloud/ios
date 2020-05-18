@@ -700,12 +700,7 @@
 - (void)deleteRefreshControl
 {
     [refreshControl endRefreshing];
-    
-    for (UIView *subview in [_tableView subviews]) {
-        if (subview == refreshControl)
-            [subview removeFromSuperview];
-    }
-    
+    [refreshControl removeFromSuperview];
     refreshControl = nil;
 }
 
@@ -1168,13 +1163,11 @@
     }
     
     _loadingFolder = YES;
-
+    [refreshControl endRefreshing];
     [self tableViewReloadData];
     
     [[NCNetworking sharedInstance] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
         
-        [refreshControl endRefreshing];
-
         if (errorCode == 0 ) {
             
             _metadataFolder = metadataFolder;
@@ -1215,7 +1208,6 @@
             
             if ([serverUrl isEqualToString:_serverUrl]) {
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
-                [self tableViewReloadData];
             }
         
         } else {
