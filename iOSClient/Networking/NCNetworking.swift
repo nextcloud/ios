@@ -40,9 +40,33 @@ import NCCommunication
         
     // Protocol
     var delegate: NCNetworkingDelegate?
+    var lastReachability: Bool = true
         
     //MARK: - Communication Delegate
        
+    func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
+        
+#if !EXTENSION
+        if typeReachability == NCCommunicationCommon.typeReachability.reachableCellular || typeReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
+            
+            if !lastReachability {
+                NCService.sharedInstance.startRequestServicesServer()
+            }
+            
+            lastReachability = true
+            
+        } else {
+            
+            if lastReachability {
+                NCContentPresenter.shared.messageNotification("_network_not_available_", description: nil, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: -1009)
+            }
+            lastReachability = false
+        }
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_setTitleMain), object: nil, userInfo: nil)
+#endif        
+    }
+    
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))

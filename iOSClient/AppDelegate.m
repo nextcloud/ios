@@ -66,6 +66,7 @@
     // Networking
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking sharedInstance]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    [[NCCommunication shared] startNetworkReachabilityObserver];
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -104,16 +105,6 @@
     UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
     }];
-    
-    // setting Reachable in back
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        self.reachability = [Reachability reachabilityForInternetConnection];
-    
-        self.lastReachability = [self.reachability isReachable];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:nil];
-        [self.reachability startNotifier];
-    });
     
     //AV Session
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
@@ -1040,7 +1031,7 @@
         
     // NavigationBar
     if (viewController.navigationController.navigationBar) {
-        if (![self.reachability isReachable]) {
+        if (!NCCommunication.shared.isNetworkReachable) {
            [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
         }
     }
@@ -1087,41 +1078,6 @@
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== reachabilityChanged =====
-#pragma --------------------------------------------------------------------------------------------
-
--(void)reachabilityChanged:(SCNetworkReachabilityFlags)flags
-{
-    if ([self.reachability isReachable]) {
-        
-        if (self.lastReachability == NO) {
-            
-            NSLog(@"[LOG] Request Service Server Nextcloud");
-            [[NCService sharedInstance] startRequestServicesServer];
-        }
-        
-        NSLog(@"[LOG] Reachability Changed: Reachable");
-        
-        self.lastReachability = YES;
-        
-    } else {
-        
-        if (self.lastReachability == YES) {
-            [[NCContentPresenter shared] messageNotification:@"_network_not_available_" description:nil delay:k_dismissAfterSecond type:messageTypeInfo errorCode:kCFURLErrorNotConnectedToInternet];
-        }
-        
-        NSLog(@"[LOG] Reachability Changed: NOT Reachable");
-        
-        self.lastReachability = NO;
-    }
-    
-    if ([self.reachability isReachableViaWiFi]) NSLog(@"[LOG] Reachability Changed: WiFi");
-    if ([self.reachability isReachableViaWWAN]) NSLog(@"[LOG] Reachability Changed: WWAn");
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_setTitleMain object:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

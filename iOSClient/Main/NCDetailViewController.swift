@@ -495,7 +495,7 @@ class NCDetailViewController: UIViewController {
             }
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
-            if NCUtility.sharedInstance.isDirectEditing(metadata) != nil && appDelegate.reachability.isReachable() {
+            if NCUtility.sharedInstance.isDirectEditing(metadata) != nil &&  NCCommunication.shared.isNetworkReachable() {
                 
                 let editor = NCUtility.sharedInstance.isDirectEditing(metadata)!
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
@@ -547,7 +547,7 @@ class NCDetailViewController: UIViewController {
             }
             
             // RichDocument: Collabora
-            if NCUtility.sharedInstance.isRichDocument(metadata) && appDelegate.reachability.isReachable() {
+            if NCUtility.sharedInstance.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
                 
                 NCUtility.sharedInstance.startActivityIndicator(view: backgroundView, bottom: 0)
                 

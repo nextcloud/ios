@@ -30,8 +30,7 @@ import NCCommunication
 
     @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
         
-        if !appDelegate.reachability.isReachable() {
-            
+        if !NCCommunication.shared.isNetworkReachable() {
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return;
         }
@@ -63,7 +62,7 @@ import NCCommunication
     
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
         
-        if !appDelegate.reachability.isReachable() {
+        if !NCCommunication.shared.isNetworkReachable() {
             
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return;

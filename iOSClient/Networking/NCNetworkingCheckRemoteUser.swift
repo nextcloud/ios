@@ -59,7 +59,7 @@ import NCCommunication
                     
                 } else {
                     
-                    if UIApplication.shared.applicationState == .active && self.appDelegate.reachability.isReachable() {
+                    if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                         let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.url)
                         NCContentPresenter.shared.messageNotification("_error_", description: description, delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         CCUtility.setPassword(account, password: nil)
@@ -69,7 +69,7 @@ import NCCommunication
             
         } else if CCUtility.getPassword(account) != nil {
                
-            if UIApplication.shared.applicationState == .active && appDelegate.reachability.isReachable() {
+            if UIApplication.shared.applicationState == .active &&  NCCommunication.shared.isNetworkReachable() {
                 let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.url)
                 NCContentPresenter.shared.messageNotification("_error_", description: description, delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: 403)
                 CCUtility.setPassword(account, password: nil)
