@@ -153,10 +153,10 @@
 		F711CD73246AC9B80009B204 /* nsEscCharsetProber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD43246AC9B80009B204 /* nsEscCharsetProber.cpp */; };
 		F711CD74246AC9B80009B204 /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD45246AC9B80009B204 /* nsUTF8Prober.cpp */; };
 		F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F711CD48246AC9B80009B204 /* nsEscSM.cpp */; };
+		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05261C889184008DAB36 /* Reachability.m */; };
-		F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
 		F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
@@ -269,7 +269,6 @@
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
 		F77B0DF51D118A16002130FE /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
-		F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */; };
 		F77B0E141D118A16002130FE /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
@@ -494,8 +493,6 @@
 		F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+adjust.swift"; sourceTree = "<group>"; };
 		F70F05251C889184008DAB36 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		F70F05261C889184008DAB36 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
-		F70F05571C889184008DAB36 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
-		F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZIPFoundation.framework; path = Carthage/Build/iOS/ZIPFoundation.framework; sourceTree = "<group>"; };
 		F710C5EF2471A6D1009AD8B7 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = Carthage/Build/iOS/Sentry.framework; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
@@ -631,6 +628,8 @@
 		F711CD49246AC9B80009B204 /* nsLatin1Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsLatin1Prober.h; sourceTree = "<group>"; };
 		F711CD4A246AC9B80009B204 /* nsEUCTWProber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsEUCTWProber.h; sourceTree = "<group>"; };
 		F711CD4B246AC9B80009B204 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
+		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
+		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
 		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
@@ -1106,7 +1105,6 @@
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
-				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
 			);
 			path = "Libraries external";
 			sourceTree = SOURCE_ROOT;
@@ -1118,15 +1116,6 @@
 				F70F05261C889184008DAB36 /* Reachability.m */,
 			);
 			path = Reachability;
-			sourceTree = "<group>";
-		};
-		F70F05561C889184008DAB36 /* UIImage+animatedGIF */ = {
-			isa = PBXGroup;
-			children = (
-				F70F05571C889184008DAB36 /* UIImage+animatedGIF.h */,
-				F70F05581C889184008DAB36 /* UIImage+animatedGIF.m */,
-			);
-			path = "UIImage+animatedGIF";
 			sourceTree = "<group>";
 		};
 		F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */ = {
@@ -1705,6 +1694,8 @@
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
 				F76C3B831C6388BC00DC4301 /* CCGraphics.h */,
 				F76C3B841C6388BC00DC4301 /* CCGraphics.m */,
+				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
+				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7514EDA1C7B1336008F3338 /* CCHud.h */,
 				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
@@ -2405,7 +2396,6 @@
 				F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */,
 				F71459BC1D12E3B700CAFEEC /* Reachability.m in Sources */,
 				F711CCDB246AC99E0009B204 /* OCActivity.m in Sources */,
-				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F711CCB7246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F711CCD1246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
@@ -2499,7 +2489,6 @@
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				F711CD61246AC9B80009B204 /* nsCharSetProber.cpp in Sources */,
-				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
@@ -2596,6 +2585,7 @@
 				F7501C332212E57500FB1415 /* NCMedia.swift in Sources */,
 				F711CD54246AC9B80009B204 /* nsBig5Prober.cpp in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
+				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				F711CD75246AC9B80009B204 /* nsEscSM.cpp in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
