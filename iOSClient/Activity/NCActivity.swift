@@ -576,10 +576,10 @@ extension NCActivity {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        OCNetworking.sharedManager().getActivityWithAccount(appDelegate.activeAccount, since: idActivity, limit: 200, objectId:filterFileId, objectType: objectType, link: "", completion: { (account, listOfActivity, message, errorCode) in
+        NCCommunication.shared.getActivity(serverUrl: appDelegate.activeUrl, since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, activities, errorCode, errorDescription) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.addActivity(listOfActivity as! [OCActivity], account: account!)
+           if errorCode == 0 && account == self.appDelegate.activeAccount {
+                NCManageDatabase.sharedInstance.addActivity(activities , account: account)
             }
             
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -591,6 +591,6 @@ extension NCActivity {
             }
             
             self.loadDataSource()
-        })
+        }
     }
 }

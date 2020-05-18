@@ -714,53 +714,47 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Activity
 
-    #if !EXTENSION
-    @objc func addActivity(_ listOfActivity: [OCActivity], account: String) {
+    @objc func addActivity(_ activities: [NCCommunicationActivity], account: String) {
     
         let realm = try! Realm()
 
         do {
             try realm.write {
             
-                for activity in listOfActivity {
+                for activity in activities {
                     
                     let addObjectActivity = tableActivity()
                     
                     addObjectActivity.account = account
                     addObjectActivity.idActivity = activity.idActivity
                     addObjectActivity.idPrimaryKey = account + String(activity.idActivity)
-            
-                    if let date = activity.date {
-                        addObjectActivity.date = date as NSDate
-                    }
-                    
+                    addObjectActivity.date = activity.date
                     addObjectActivity.app = activity.app
                     addObjectActivity.type = activity.type
                     addObjectActivity.user = activity.user
                     addObjectActivity.subject = activity.subject
                     
-                    if activity.subject_rich.count > 0 {
-                        addObjectActivity.subjectRich = activity.subject_rich[0] as? String ?? ""
-                        if activity.subject_rich.count > 1 {
-                            if let dict = activity.subject_rich[1] as? [String:AnyObject] {
-                                for (key, value) in dict {
-                                    let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                    if let dict = value as? [String:AnyObject] {
+                    if let subject_rich = activity.subject_rich {
+                        if let json = JSON(subject_rich).array {
+                            addObjectActivity.subjectRich = json[0].stringValue
+                            if json.count > 1 {
+                                if let dict = json[1].dictionary {
+                                    for (key, value) in dict {
+                                        let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                                        let dict = value as JSON
                                         addObjectActivitySubjectRich.account = account
-                                        switch dict["id"] {
-                                        case is String:
-                                            addObjectActivitySubjectRich.id = dict["id"] as? String ?? ""
-                                        case is Int:
-                                            addObjectActivitySubjectRich.id = String(dict["id"] as? Int ?? 0)
-                                        default: addObjectActivitySubjectRich.id = ""
+                                        if dict["id"].intValue > 0 {
+                                            addObjectActivitySubjectRich.id = String(dict["id"].intValue)
+                                        } else {
+                                            addObjectActivitySubjectRich.id = dict["id"].stringValue
                                         }
-                                        addObjectActivitySubjectRich.name = dict["name"] as? String ?? ""
+                                        addObjectActivitySubjectRich.name = dict["name"].stringValue
                                         addObjectActivitySubjectRich.idPrimaryKey = account + String(activity.idActivity) + addObjectActivitySubjectRich.id + addObjectActivitySubjectRich.name
                                         addObjectActivitySubjectRich.key = key
                                         addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                        addObjectActivitySubjectRich.link = dict["link"] as? String ?? ""
-                                        addObjectActivitySubjectRich.path = dict["path"] as? String ?? ""
-                                        addObjectActivitySubjectRich.type = dict["type"] as? String ?? ""
+                                        addObjectActivitySubjectRich.link = dict["link"].stringValue
+                                        addObjectActivitySubjectRich.path = dict["path"].stringValue
+                                        addObjectActivitySubjectRich.type = dict["type"].stringValue
 
                                         realm.add(addObjectActivitySubjectRich, update: .all)
                                     }
@@ -769,20 +763,23 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if activity.previews.count > 0 {
-                        for case let activityPreview as [String:AnyObject] in activity.previews {
-                            let addObjectActivityPreview = tableActivityPreview()
-                            addObjectActivityPreview.account = account
-                            addObjectActivityPreview.idActivity = activity.idActivity
-                            addObjectActivityPreview.fileId = activityPreview["fileId"] as? Int ?? 0
-                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
-                            addObjectActivityPreview.source = activityPreview["source"] as? String ?? ""
-                            addObjectActivityPreview.link = activityPreview["link"] as? String ?? ""
-                            addObjectActivityPreview.mimeType = activityPreview["mimeType"] as? String ?? ""
-                            addObjectActivityPreview.view = activityPreview["view"] as? String ?? ""
-                            addObjectActivityPreview.isMimeTypeIcon = activityPreview["isMimeTypeIcon"] as? Bool ?? false
-                            
-                            realm.add(addObjectActivityPreview, update: .all)
+                    if let previews = activity.previews {
+                        if let json = JSON(previews).array {
+                            for preview in json {
+                                let addObjectActivityPreview = tableActivityPreview()
+                                
+                                addObjectActivityPreview.account = account
+                                addObjectActivityPreview.idActivity = activity.idActivity
+                                addObjectActivityPreview.fileId = preview["fileId"].intValue
+                                addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                                addObjectActivityPreview.source = preview["source"].stringValue
+                                addObjectActivityPreview.link = preview["link"].stringValue
+                                addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
+                                addObjectActivityPreview.view = preview["view"].stringValue
+                                addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
+                                
+                                realm.add(addObjectActivityPreview, update: .all)
+                            }
                         }
                     }
                     
@@ -800,7 +797,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
-    #endif
     
     func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
         
