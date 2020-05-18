@@ -34,7 +34,6 @@ class NCService: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     //MARK: -
-    //MARK: Start Services API NC
     
     @objc public func startRequestServicesServer() {
    
@@ -47,7 +46,6 @@ class NCService: NSObject {
     }
 
     //MARK: -
-    //MARK: Internal request Service API NC
     
     private func requestUserProfile() {
         
@@ -212,8 +210,7 @@ class NCService: NSObject {
         }
     }
     
-    //MARK: -
-    //MARK: Thirt Part
+    //MARK: - Thirt Part
     
     private func requestHC() {
         
