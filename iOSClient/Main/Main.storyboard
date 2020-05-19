@@ -474,7 +474,7 @@
         <!--More-->
         <scene sceneID="50a-pn-1yx">
             <objects>
-                <viewController id="Frr-j9-xav" customClass="CCMore" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Frr-j9-xav" customClass="CCMore" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hLP-ql-OiA">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -493,7 +493,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
-                                <rect key="frame" x="0.0" y="188" width="414" height="565"/>
+                                <rect key="frame" x="0.0" y="188" width="414" height="549"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
@@ -558,7 +558,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J2k-UZ-XQQ" userLabel="View Quota">
-                                <rect key="frame" x="0.0" y="753" width="414" height="60"/>
+                                <rect key="frame" x="0.0" y="737" width="414" height="60"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAP-np-Q1J">
                                         <rect key="frame" x="35" y="2" width="344" height="20"/>
@@ -606,7 +606,7 @@
                             <constraint firstItem="qW6-AL-KO3" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="IHF-zg-7RG"/>
                             <constraint firstItem="qW6-AL-KO3" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="Nyf-TZ-gLf"/>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="VDo-ak-TEq"/>
-                            <constraint firstItem="2rd-9k-q51" firstAttribute="bottom" secondItem="J2k-UZ-XQQ" secondAttribute="bottom" id="bRS-IM-13l"/>
+                            <constraint firstItem="2rd-9k-q51" firstAttribute="bottom" secondItem="J2k-UZ-XQQ" secondAttribute="bottom" constant="16" id="bRS-IM-13l"/>
                             <constraint firstItem="aqE-Wq-B1A" firstAttribute="centerY" secondItem="oJg-wO-2iv" secondAttribute="centerY" id="dJY-KW-vIJ"/>
                             <constraint firstItem="aqE-Wq-B1A" firstAttribute="leading" secondItem="oJg-wO-2iv" secondAttribute="trailing" constant="13" id="fPO-DW-Ccp"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Lgd-72-bTD" secondAttribute="trailing" constant="-11" id="gS9-A6-G0U"/>
