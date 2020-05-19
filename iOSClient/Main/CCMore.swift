@@ -114,7 +114,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Shares
         item = OCExternalSites.init()
         item.name = "_list_shares_"
-        item.icon = "share"
+        item.icon = "shareFill"
         item.url = "segueShares"
         functionMenu.append(item)
 
