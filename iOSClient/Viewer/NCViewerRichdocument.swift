@@ -115,7 +115,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 viewController.layoutViewSelect = k_layout_view_richdocument
                 
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                viewController.present(navigationController, animated: true, completion: nil)
+                self.viewController.present(navigationController, animated: true, completion: nil)
             }
             
             if message.body as? String == "share" {
@@ -208,31 +208,35 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         if serverUrl != nil && metadata != nil {
             
-            OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+            
+            NCCommunication.shared.createAssetRichdocuments(serverUrl: appDelegate.activeUrl, path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+        
+        NCCommunication.shared.createAssetRichdocuments(serverUrl: appDelegate.activeUrl, path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
     
     //MARK: -

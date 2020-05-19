@@ -553,7 +553,7 @@ class NCDetailViewController: UIViewController {
                 
                 if metadata.url == "" {
                     
-                    OCNetworking.sharedManager()?.createLinkRichdocuments(withAccount: appDelegate.activeAccount, fileId: metadata.fileId, completion: { (account, url, errorMessage, errorCode) in
+                    NCCommunication.shared.createUrlRichdocuments(serverUrl: appDelegate.activeUrl, fileID: metadata.fileId, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                             
@@ -563,14 +563,14 @@ class NCDetailViewController: UIViewController {
                             
                         } else if errorCode != 0 {
                             
-                            NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             self.navigationController?.popViewController(animated: true)
                             
                         } else {
                             
                             self.navigationController?.popViewController(animated: true)
                         }
-                    })
+                    }
                     
                 } else {
                     

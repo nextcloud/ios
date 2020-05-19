@@ -350,26 +350,24 @@ import NCCommunication
         
         if self.editorId == k_editor_collabora {
             
-            OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileNamePath, serverUrl: serverUrl, templateID: templateIdentifier, completion: { (account, url, message, errorCode) in
-                       
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+            NCCommunication.shared.createRichdocuments(serverUrl: appDelegate.activeUrl, path: fileNamePath, templateID: templateIdentifier, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
+                
+                if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                    
-                   if url != nil && url!.count > 0 {
-                       
-                       self.dismiss(animated: true, completion: {
-                        
-                        let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url!, contentType: "")
-                        
-                           self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
-                       })
-                   }
+                    self.dismiss(animated: true, completion: {
+                    
+                    let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url!, contentType: "")
+                    
+                       self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                   })
+                   
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
@@ -456,18 +454,18 @@ import NCCommunication
         
         if self.editorId == k_editor_collabora  {
                         
-            OCNetworking.sharedManager().getTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, templates, message, errorCode) in
+            NCCommunication.shared.getTemplatesRichdocuments(serverUrl: appDelegate.activeUrl, typeTemplate: typeTemplate, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, templates, errorCode, errorDescription) in
                 
                 self.indicator.stopAnimating()
 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
-                    for template in templates as! [NCRichDocumentTemplate] {
+                    for template in templates! {
                         
                         let temp = NCCommunicationEditorTemplates()
                         temp.identifier = "\(template.templateID)"
                         temp.delete = template.delete
-                        temp.ext = template.extension
+                        temp.ext = template.ext
                         temp.name = template.name
                         temp.preview = template.preview
                         temp.type = template.type
@@ -485,11 +483,11 @@ import NCCommunication
                     self.collectionView.reloadData()
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
