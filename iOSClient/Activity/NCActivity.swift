@@ -236,7 +236,7 @@ extension NCActivity: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(serverUrl: self.appDelegate.activeUrl, userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
                                 cell.avatar.image = UIImage(data: data!)
                             }
@@ -576,7 +576,7 @@ extension NCActivity {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        NCCommunication.shared.getActivity(serverUrl: appDelegate.activeUrl, since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, activities, errorCode, errorDescription) in
+        NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, activities, errorCode, errorDescription) in
             
            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(activities , account: account)

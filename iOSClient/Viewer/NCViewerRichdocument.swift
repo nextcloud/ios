@@ -210,7 +210,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             
             let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
             
-            NCCommunication.shared.createAssetRichdocuments(serverUrl: appDelegate.activeUrl, path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
+            NCCommunication.shared.createAssetRichdocuments(path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
@@ -227,7 +227,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
         
-        NCCommunication.shared.createAssetRichdocuments(serverUrl: appDelegate.activeUrl, path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
+        NCCommunication.shared.createAssetRichdocuments(path: path, customUserAgent: nil, addCustomHeaders: nil, account: metadata!.account) { (account, url, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })

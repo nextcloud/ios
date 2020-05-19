@@ -317,7 +317,7 @@ import NCCommunication
                 customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
             }
             
-            NCCommunication.shared.NCTextCreateFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+            NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
@@ -350,7 +350,7 @@ import NCCommunication
         
         if self.editorId == k_editor_collabora {
             
-            NCCommunication.shared.createRichdocuments(serverUrl: appDelegate.activeUrl, path: fileNamePath, templateID: templateIdentifier, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
+            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateID: templateIdentifier, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                    
@@ -392,7 +392,7 @@ import NCCommunication
                 customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
             }
             
-            NCCommunication.shared.NCTextGetListOfTemplates(serverUrl: appDelegate.activeUrl, customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
+            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
                 
@@ -454,7 +454,7 @@ import NCCommunication
         
         if self.editorId == k_editor_collabora  {
                         
-            NCCommunication.shared.getTemplatesRichdocuments(serverUrl: appDelegate.activeUrl, typeTemplate: typeTemplate, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, templates, errorCode, errorDescription) in
+            NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, templates, errorCode, errorDescription) in
                 
                 self.indicator.stopAnimating()
 

@@ -382,7 +382,7 @@ import NCCommunication
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: url)!
         let favorite = !metadata.favorite
         
-        NCCommunication.shared.setFavorite(serverUrl: url, fileName: fileName, favorite: favorite, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite, customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, errorCode, errorDescription) in
     
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)

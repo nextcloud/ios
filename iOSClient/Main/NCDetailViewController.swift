@@ -512,7 +512,7 @@ class NCDetailViewController: UIViewController {
                             self.navigationController?.navigationBar.topItem?.title = ""
                         }
                         
-                        NCCommunication.shared.NCTextOpenFile(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                        NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
                             
                             if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                                 
@@ -553,7 +553,7 @@ class NCDetailViewController: UIViewController {
                 
                 if metadata.url == "" {
                     
-                    NCCommunication.shared.createUrlRichdocuments(serverUrl: appDelegate.activeUrl, fileID: metadata.fileId, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
+                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorDescription) in
                         
                         if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                             
@@ -743,7 +743,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.shared.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
                 if errorCode == 0 && data != nil {
                     completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                 } else {

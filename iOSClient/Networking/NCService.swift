@@ -53,7 +53,7 @@ class NCService: NSObject {
             return
         }
         
-        NCCommunication.shared.getUserProfile(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, userProfile, errorCode, errorDescription) in
+        NCCommunication.shared.getUserProfile(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, userProfile, errorCode, errorDescription) in
                  
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -129,7 +129,7 @@ class NCService: NSObject {
             return
         }
         
-        NCCommunication.shared.getCapabilities(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.getCapabilities(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
@@ -160,7 +160,7 @@ class NCService: NSObject {
                 // NCTextObtainEditorDetails
                 let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= k_nextcloud_version_18_0 {
-                    NCCommunication.shared.NCTextObtainEditorDetails(serverUrl: self.appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
+                    NCCommunication.shared.NCTextObtainEditorDetails(customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
@@ -169,7 +169,7 @@ class NCService: NSObject {
                 
                 let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
-                    NCCommunication.shared.getExternalSite(serverUrl: self.appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, externalSites, errorCode, errorDescription) in
+                    NCCommunication.shared.getExternalSite(customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
                             for externalSite in externalSites {

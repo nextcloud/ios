@@ -283,7 +283,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
         }
         
-        NCCommunication.shared.iosHelper(serverUrl: serverUrl, fileNamePath: fileNamePath, offset: offset, limit: limit, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, offset: offset, limit: limit, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, files, errorCode, errorDescription) in
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 

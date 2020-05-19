@@ -349,7 +349,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
                     cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
-                    NCCommunication.shared.downloadAvatar(serverUrl: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
@@ -613,7 +613,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                             cell.shared.image = avatar
                         }
                     } else {
-                        NCCommunication.shared.downloadAvatar(serverUrl: appDelegate.activeUrl, userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.activeAccount {
                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                             }
@@ -1070,7 +1070,7 @@ class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.shared.downloadPreview(serverUrl: appDelegate.activeUrl, fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
                 
                 if errorCode == 0 && data != nil  {
                     if let image = UIImage.init(data: data!) {
