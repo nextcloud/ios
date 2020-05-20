@@ -66,7 +66,6 @@
     // Networking
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking sharedInstance]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    [[NCCommunication shared] startNetworkReachabilityObserver];
     
     // Verify upgrade
     if ([self upgrade]) {
