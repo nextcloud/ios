@@ -773,6 +773,7 @@
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 "_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
+"_request_entity_too_large_"            = "The file is too large";
 
 // QRCode
 
