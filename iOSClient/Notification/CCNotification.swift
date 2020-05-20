@@ -23,6 +23,7 @@
 
 import UIKit
 import NCCommunication
+import SwiftyJSON
 
 class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
@@ -66,7 +67,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         self.dismiss(animated: true, completion: nil)
     }
     
-    // MARK: DZNEmpty
+    // MARK: - DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
@@ -229,7 +230,7 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         return cell
     }
     
-    // MARK: tap Action
+    // MARK: - tap Action
     
     func tapRemove(with notification: OCNotifications?) {
         
@@ -281,7 +282,8 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         }
     }
     
-    // MARK: Load notification networking
+    // MARK: - Load notification networking
+    
     func getNetwokingNotification() {
     
         NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
@@ -292,7 +294,13 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
             reloadDatasource()
             CCNotification.notificationsAccount = appDelegate.activeAccount
         }
-                
+         
+        /*
+        NCCommunication.shared.getNotifications(customUserAgent: nil, addCustomHeaders: nil, account: CCNotification.notificationsAccount) { (account, notifications, errorCode, errorDescription) in
+            
+        }
+        */
+        
         OCNetworking.sharedManager().getNotificationWithAccount(CCNotification.notificationsAccount, completion: { (account, listOfNotifications, message, errorCode) in
             
             if errorCode == 0 && account == CCNotification.self.notificationsAccount {
