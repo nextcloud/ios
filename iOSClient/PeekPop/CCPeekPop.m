@@ -104,7 +104,7 @@
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl activeUrl:appDelegate.activeUrl];
     NSString *fileNameLocalPath = [CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
     
-    [[NCCommunication shared] downloadPreviewWithFileNamePath:fileNamePath fileNameLocalPath:fileNameLocalPath width:k_sizePreview height:k_sizePreview customUserAgent:nil addCustomHeaders:nil account:self.metadata.account completionHandler:^(NSString *account, NSData *data, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNameLocalPath:fileNameLocalPath width:k_sizePreview height:k_sizePreview customUserAgent:nil addCustomHeaders:nil account:self.metadata.account downloadFromTrash:false endpointIncluded:false completionHandler:^(NSString *account, NSData *data, NSInteger errorCode, NSString *errorDescription) {
 
         if (errorCode == 0) {
             UIImage *image = [UIImage imageWithData:data];

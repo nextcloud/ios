@@ -743,7 +743,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.shared.downloadPreview(fileNamePath: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: metadata.account, downloadFromTrash: false, endpointIncluded: false) { (account, data, errorCode, errorMessage) in
                 if errorCode == 0 && data != nil {
                     completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
                 } else {

@@ -661,25 +661,20 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        NCCommunication.shared.listingTrash(showHiddenFiles: false, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (accountg, files, errorCode, errorDescription) in
-         
-        }
-        
-        OCNetworking.sharedManager().listingTrash(withAccount: appDelegate.activeAccount, path: path, serverUrl: appDelegate.activeUrl, depth: "1", completion: { (account, item, message, errorCode) in
-            
+        NCCommunication.shared.listingTrash(showHiddenFiles: false, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, items, errorCode, errorDescription) in
             self.refreshControl.endRefreshing()
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+         
+            if errorCode == 0 && account == self.appDelegate.activeAccount && items != nil {
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+                NCManageDatabase.sharedInstance.addTrash(account: account, items: items!)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
             
             self.loadDatasource()
-        })
+        }
     }
     
     func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
@@ -698,7 +693,7 @@ extension NCTrash {
         let fileNameFrom = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
@@ -712,16 +707,18 @@ extension NCTrash {
     
     func emptyTrash() {
         
-        OCNetworking.sharedManager().emptyTrash(withAccount: appDelegate.activeAccount, completion: { (account, message, errorCode) in
+        let serverUrlFileName = appDelegate.activeUrl + "/remote.php/dav/trashbin/" + appDelegate.activeUserID + "/trash"
+
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
             self.loadDatasource()
-        })
+        }
     }
     
     func deleteItem(with fileId: String) {
@@ -748,7 +745,7 @@ extension NCTrash {
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         
-        NCCommunication.shared.downloadPreviewTrash(fileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, downloadFromTrash: true, endpointIncluded: false) { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath), let image = UIImage.init(data: data!) {

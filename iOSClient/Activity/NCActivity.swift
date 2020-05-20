@@ -491,7 +491,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             
                         } else {
                             
-                            NCCommunication.shared.downloadPreview(serverUrlPath: activityPreview.source, fileNameLocalPath: fileNamePath, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, downloadFromTrash: false, endpointIncluded: true) { (account, data, errorCode, errorDescription) in
                                 if errorCode == 0 && data != nil {
                                     cell.imageView.image = UIImage.init(data: data!)
                                 }

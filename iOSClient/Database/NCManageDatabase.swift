@@ -2929,14 +2929,31 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Trash
     
-    @objc func addTrashs(_ trashs: [tableTrash]) {
+    @objc func addTrash(account: String, items: [NCCommunicationTrash]) {
         
         let realm = try! Realm()
         
         do {
             try realm.write {
-                for trash in trashs {
-                    realm.add(trash, update: .all)
+                for trash in items {
+                    let object = tableTrash()
+                                    
+                    object.account = account
+                    object.contentType = trash.contentType
+                    object.date = trash.date
+                    object.directory = trash.directory
+                    object.fileId = trash.fileId
+                    object.fileName = trash.fileName
+                    object.filePath = trash.filePath
+                    object.hasPreview = trash.hasPreview
+                    object.iconName = trash.iconName
+                    object.size = trash.size
+                    object.trashbinDeletionTime = trash.trashbinDeletionTime
+                    object.trashbinFileName = trash.trashbinFileName
+                    object.trashbinOriginalLocation = trash.trashbinOriginalLocation
+                    object.typeFile = trash.typeFile
+                    
+                    realm.add(object, update: .all)
                 }
             }
         } catch let error {
