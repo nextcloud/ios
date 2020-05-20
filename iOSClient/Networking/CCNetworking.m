@@ -422,11 +422,10 @@
     
     if (downloadTask == nil) {
         
-        NSString *sessionError = [NSString stringWithFormat:@"It is not possible downlod the file %@", metadata.fileNameView];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:NSLocalizedString(@"_not_possible_download_", nil) sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:sessionError sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": sessionError}];
+        NSString *errorDescription = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_not_possible_download_", nil), metadata.fileNameView];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": errorDescription}];
         
     } else {
         
