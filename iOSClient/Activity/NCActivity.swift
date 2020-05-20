@@ -460,6 +460,8 @@ extension activityTableViewCell: UICollectionViewDataSource {
                         if let image = UIImage(contentsOfFile: imageNamePath!) {
                             cell.imageView.image = image
                         }
+                    } else {
+                         cell.imageView.image = UIImage.init(named: "file")
                     }
                 }
                 
@@ -474,6 +476,8 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             if let image = UIImage(contentsOfFile: imageNamePath!) {
                                 cell.imageView.image = image
                             }
+                        } else {
+                            cell.imageView.image = UIImage.init(named: "file")
                         }
                     }
                     
@@ -491,7 +495,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             
                         } else {
                             
-                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, downloadFromTrash: false, endpointIncluded: true) { (account, data, errorCode, errorDescription) in
+                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, useInternalEndpoint: false) { (account, data, errorCode, errorDescription) in
                                 if errorCode == 0 && data != nil {
                                     cell.imageView.image = UIImage.init(data: data!)
                                 }
