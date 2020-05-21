@@ -627,7 +627,7 @@ extension NCMedia {
         }
         loadingSearch = true
         
-        NCCommunication.shared.searchMedia(lteDateLastModified: lteDate, gteDateLastModified: gteDate, showHiddenFiles: CCUtility.getShowHiddenFiles(), customUserAgent: nil, addCustomHeaders: nil, user: appDelegate.activeUser, account: appDelegate.activeAccount) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(lteDateLastModified: lteDate, gteDateLastModified: gteDate, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()

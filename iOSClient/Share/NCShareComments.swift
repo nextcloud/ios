@@ -104,7 +104,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         guard let metadata = self.metadata else { return }
 
-        NCCommunication.shared.getComments(fileId: metadata.fileId, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, comments, errorCode, errorDescription) in
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
             if errorCode == 0 && comments != nil {
                 NCManageDatabase.sharedInstance.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
@@ -124,14 +124,14 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         guard let metadata = self.metadata else { return }
         if message.count == 0 { return }
 
-        OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileId: metadata.fileId, message: message, completion: { (account, message, errorCode) in
+        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
     }
     
     func tapMenu(with tableComments: tableComments?, sender: Any) {
@@ -157,13 +157,13 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         if let message = alert.textFields?.first?.text {
                             if message != "" {
-                                OCNetworking.sharedManager()?.updateComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageID, message: message, completion: { (account, message, errorCode) in
+                                NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
                                     if errorCode == 0 {
                                         self.reloadData()
                                     } else {
-                                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     }
-                                })
+                                }
                             }
                         }
                     }))
@@ -181,7 +181,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
 
-                    OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageID, completion: { (account, message, errorCode) in
+                    OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageId, completion: { (account, message, errorCode) in
                         if errorCode == 0 {
                             self.reloadData()
                         } else {
@@ -252,7 +252,7 @@ extension NCShareComments: UITableViewDataSource {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }

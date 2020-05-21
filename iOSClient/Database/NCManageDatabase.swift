@@ -132,6 +132,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableCapabilities.className())
                     }
                     
+                    if oldSchemaVersion < 107 {
+                        migration.deleteData(forType: tableComments.className())
+                    }
+                    
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                     
                     // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -994,7 +998,7 @@ class NCManageDatabase: NSObject {
                     object.creationDateTime = comment.creationDateTime as NSDate
                     object.isUnread = comment.isUnread
                     object.message = comment.message
-                    object.messageID = comment.messageId
+                    object.messageId = comment.messageId
                     object.objectId = comment.objectId
                     object.objectType = comment.objectType
                     object.path = comment.path

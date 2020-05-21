@@ -211,7 +211,7 @@ extension NCActivity: UITableViewDataSource {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.icon.image = image }
                 } else {
                     DispatchQueue.global().async {
-                        NCCommunication.shared.downloadContent(serverUrl: activity.icon, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadContent(serverUrl: activity.icon) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 {
                                 do {
                                     try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -236,7 +236,7 @@ extension NCActivity: UITableViewDataSource {
                     }
                 } else {
                     DispatchQueue.global().async {
-                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                        NCCommunication.shared.downloadAvatar(userID: activity.user, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
                             if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
                                 cell.avatar.image = UIImage(data: data!)
                             }
@@ -394,7 +394,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
-            _ = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, progressHandler: { (progress) in
+            _ = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, progressHandler: { (progress) in
                 
             }) { (account, etag, date, lenght, errorCode, errorDescription) in
                 
@@ -495,7 +495,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             
                         } else {
                             
-                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, useInternalEndpoint: false) { (account, data, errorCode, errorDescription) in
+                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, useInternalEndpoint: false) { (account, data, errorCode, errorDescription) in
                                 if errorCode == 0 && data != nil {
                                     cell.imageView.image = UIImage.init(data: data!)
                                 }
@@ -580,7 +580,7 @@ extension NCActivity {
             NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
         }
         
-        NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, activities, errorCode, errorDescription) in
+        NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
             
            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.addActivity(activities , account: account)

@@ -36,7 +36,7 @@ extension FileProviderExtension {
         let directoryName = NCUtility.sharedInstance.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
-        NCCommunication.shared.createFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, ocId, date, errorCode, errorDescription) in
+        NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
                         
             if errorCode == 0 {
                 
@@ -84,7 +84,7 @@ extension FileProviderExtension {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             
             if errorCode == 0 { //|| error == kOCErrorServerPathNotFound {
             
@@ -134,7 +134,7 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
                 
@@ -175,7 +175,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
                 
@@ -240,7 +240,7 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
             
-            NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account) { (account, errorCode, errorDescription) in
+            NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
                     // Change DB
                     metadata.favorite = favorite

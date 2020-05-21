@@ -171,14 +171,14 @@ class tableComments: Object {
     @objc dynamic var creationDateTime = NSDate()
     @objc dynamic var isUnread: Bool = false
     @objc dynamic var message = ""
-    @objc dynamic var messageID = ""
+    @objc dynamic var messageId = ""
     @objc dynamic var objectId = ""
     @objc dynamic var objectType = ""
     @objc dynamic var path = ""
     @objc dynamic var verb = ""
     
     override static func primaryKey() -> String {
-        return "messageID"
+        return "messageId"
     }
 }
 

@@ -199,7 +199,7 @@
             self.login.enabled = YES;
             
             // Login Flow V2
-            [[NCCommunication shared] getLoginFlowV2WithServerUrl:self.baseUrl.text customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
+            [[NCCommunication shared] getLoginFlowV2WithServerUrl:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
                 // Login Flow V2
                 if (errorCode == 0 && [[NCBrandOptions sharedInstance] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {

@@ -434,7 +434,7 @@
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [[NCCommunicationCommon shared] setupWithUser:activeUser userId:activeUserID password:activePassword url:activeUrl];
+    [[NCCommunicationCommon shared] setupWithUser:activeUser userId:activeUserID password:activePassword account:activeAccount url:activeUrl];
     [self settingSetupCommunicationCapabilities:activeAccount];
 }
 

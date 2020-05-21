@@ -69,7 +69,7 @@ import NCCommunication
             
             DispatchQueue.main.async {
                 
-                NCCommunication.shared.createFolder(fileNameFolderUrl, customUserAgent: nil, addCustomHeaders: ["e2e-token" : e2eToken], account: account) { (account, ocId, date, errorCode, errorDescription) in
+                NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         NCNetworking.sharedInstance.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
                             if errorCode == 0 {

@@ -661,7 +661,7 @@ extension NCTrash {
     
     @objc func loadListingTrash() {
         
-        NCCommunication.shared.listingTrash(showHiddenFiles: false, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, items, errorCode, errorDescription) in
+        NCCommunication.shared.listingTrash(showHiddenFiles: false) { (account, items, errorCode, errorDescription) in
             self.refreshControl.endRefreshing()
          
             if errorCode == 0 && account == self.appDelegate.activeAccount && items != nil {
@@ -693,7 +693,7 @@ extension NCTrash {
         let fileNameFrom = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
         
-        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
@@ -709,7 +709,7 @@ extension NCTrash {
         
         let serverUrlFileName = appDelegate.activeUrl + "/remote.php/dav/trashbin/" + appDelegate.activeUserID + "/trash"
 
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.activeAccount)
             } else if errorCode != 0 {
@@ -729,7 +729,7 @@ extension NCTrash {
         
         let serverUrlFileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         
-        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
@@ -745,7 +745,7 @@ extension NCTrash {
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         
-        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount, downloadFromTrash: true) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), downloadFromTrash: true) { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil && account == self.appDelegate.activeAccount {
                 if let cell = self.collectionView.cellForItem(at: indexPath), let image = UIImage.init(data: data!) {

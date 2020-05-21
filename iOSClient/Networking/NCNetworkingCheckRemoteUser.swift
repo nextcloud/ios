@@ -47,13 +47,13 @@ import NCCommunication
             
             guard let token = CCUtility.getPassword(account) else { return }
             
-            NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.url, token: token, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, wipe, errorCode, errorDescriptiuon) in
+            NCCommunication.shared.getRemoteWipeStatus(serverUrl: tableAccount.url, token: token) { (account, wipe, errorCode, errorDescriptiuon) in
                 
                 if wipe {
                     
                     self.appDelegate.deleteAccount(account, wipe: true)
                     NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                    NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.url, token: token, customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, errorCode, errorDescription) in
+                    NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.url, token: token) { (account, errorCode, errorDescription) in
                         print("wipe");
                     }
                     

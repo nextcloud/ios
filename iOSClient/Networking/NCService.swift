@@ -53,7 +53,7 @@ class NCService: NSObject {
             return
         }
         
-        NCCommunication.shared.getUserProfile(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, userProfile, errorCode, errorDescription) in
+        NCCommunication.shared.getUserProfile() { (account, userProfile, errorCode, errorDescription) in
                  
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 
@@ -78,7 +78,7 @@ class NCService: NSObject {
                     let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                     
-                    NCCommunication.shared.downloadContent(serverUrl: avatarUrl, customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadContent(serverUrl: avatarUrl) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 {
                             if let image = UIImage(data: data!) {
                                 try? FileManager.default.removeItem(atPath: fileNamePath)
@@ -110,7 +110,7 @@ class NCService: NSObject {
     
     private func requestServerStatus() {
         
-        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.activeUrl, customUserAgent: nil, addCustomHeaders: nil) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
+        NCCommunication.shared.getServerStatus(serverUrl: appDelegate.activeUrl) { (serverProductName, serverVersion, versionMajor, versionMinor, versionMicro, extendedSupport, errorCode, errorMessage) in
             if errorCode == 0 {
                 if extendedSupport == false {
                     if serverProductName == "owncloud" {
@@ -129,7 +129,7 @@ class NCService: NSObject {
             return
         }
         
-        NCCommunication.shared.getCapabilities(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
             
             if errorCode == 0 && data != nil {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
@@ -160,7 +160,7 @@ class NCService: NSObject {
                 // NCTextObtainEditorDetails
                 let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= k_nextcloud_version_18_0 {
-                    NCCommunication.shared.NCTextObtainEditorDetails(customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, editors, creators, errorCode, errorMessage) in
+                    NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
                         }
@@ -169,7 +169,7 @@ class NCService: NSObject {
                 
                 let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
-                    NCCommunication.shared.getExternalSite(customUserAgent: nil, addCustomHeaders: nil, account: account) { (account, externalSites, errorCode, errorDescription) in
+                    NCCommunication.shared.getExternalSite() { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
                             NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
                             for externalSite in externalSites {

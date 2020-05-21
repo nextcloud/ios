@@ -221,7 +221,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
-        let task = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, customUserAgent: nil, addCustomHeaders: nil, account: fileProviderData.sharedInstance.account, progressHandler: { (progress) in }) { (account, etag, date, length, errorCode, errorDescription) in
+        let task = NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, progressHandler: { (progress) in }) { (account, etag, date, length, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
             

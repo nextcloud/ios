@@ -240,7 +240,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     
     func tapRemove(with notification: NCCommunicationNotifications?) {
            
-        NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE", customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+        NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                                 
                 if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
@@ -266,7 +266,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
                         let serverUrl = action["link"].stringValue
                         let method = action["type"].stringValue
                             
-                        NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+                        NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
                             
                             if errorCode == 0 && account == self.appDelegate.activeAccount {
                                                         
@@ -294,7 +294,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     
         NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
 
-        NCCommunication.shared.getNotifications(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, notifications, errorCode, errorDescription) in
+        NCCommunication.shared.getNotifications() { (account, notifications, errorCode, errorDescription) in
          
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
