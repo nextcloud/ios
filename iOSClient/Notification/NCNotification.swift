@@ -1,5 +1,5 @@
 //
-//  CCNotification.swift
+//  NCNotification.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/01/17.
@@ -25,11 +25,10 @@ import UIKit
 import NCCommunication
 import SwiftyJSON
 
-class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
-    
+class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+  
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    static var notifications = [OCNotifications]()
-    static var notificationsAccount = ""
+    var notifications = [NCCommunicationNotifications]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -94,15 +93,15 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return CCNotification.notifications.count
+        return notifications.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-        let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCNotificationCell
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! NCNotificationCell
         cell.delegate = self
         
-        let notification = CCNotification.notifications[indexPath.row]
+        let notification = notifications[indexPath.row]
         let urlIcon = URL(string: notification.icon)
         var image : UIImage?
         
@@ -121,6 +120,12 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
 
+        if let subjectRichParameters = notification.subjectRichParameters {
+            if let jsonParameter = JSON(subjectRichParameters).dictionary {
+                print("")
+            }
+        }
+        /*
         if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
             if let user = parameter["user"] as? Dictionary<String, Any> {
                 if let name = user["id"] as? String {
@@ -147,12 +152,13 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
                 }
             }
         }
+        */
         
         //
         //cell.date.text = DateFormatter.localizedString(from: notification.date, dateStyle: .medium, timeStyle: .medium)
         //
         cell.notification = notification
-        cell.date.text = CCUtility.dateDiff(notification.date)
+        cell.date.text = CCUtility.dateDiff(notification.date as Date)
         cell.date.textColor = .gray
         cell.subject.text = notification.subject
         cell.subject.textColor = NCBrandColor.sharedInstance.textView
@@ -182,49 +188,49 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
         cell.messageBottomMargin.constant = 10
         
         // Action
-        if notification.actions.count > 0  {
-            
-            if notification.actions.count == 1 {
-                
-                let action = notification.actions[0] as! OCNotificationsAction
-
-                cell.primary.isEnabled = true
-                cell.primary.isHidden = false
-                cell.primary.setTitle(action.label, for: .normal)
-                
-            } else if notification.actions.count == 2 {
-            
-                cell.primary.isEnabled = true
-                cell.primary.isHidden = false
-                
-                cell.secondary.isEnabled = true
-                cell.secondary.isHidden = false
-            
-                for action in notification.actions {
+        if let actions = notification.actions {
+            if let jsonActions = JSON(actions).array {
+                if jsonActions.count == 1 {
+                    let action = jsonActions[0]
                     
-                    let label = (action as! OCNotificationsAction).label
-                    let primary = (action as! OCNotificationsAction).primary
+                    cell.primary.isEnabled = true
+                    cell.primary.isHidden = false
+                    cell.primary.setTitle(action["label"].stringValue, for: .normal)
                     
-                    if primary {
-                        cell.primary.setTitle(label, for: .normal)
-                    } else {
-                        cell.secondary.setTitle(label, for: .normal)
+                } else if jsonActions.count == 2 {
+                    
+                    cell.primary.isEnabled = true
+                    cell.primary.isHidden = false
+                        
+                    cell.secondary.isEnabled = true
+                    cell.secondary.isHidden = false
+                    
+                    for action in jsonActions {
+                            
+                        let label =  action["label"].stringValue
+                        let primary = action["primary"].boolValue
+                            
+                        if primary {
+                            cell.primary.setTitle(label, for: .normal)
+                        } else {
+                            cell.secondary.setTitle(label, for: .normal)
+                        }
                     }
                 }
+                
+                let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
+                let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
+                
+                if widthPrimary > widthSecondary {
+                    cell.primaryWidth.constant = widthPrimary
+                    cell.secondaryWidth.constant = widthPrimary
+                } else {
+                    cell.primaryWidth.constant = widthSecondary
+                    cell.secondaryWidth.constant = widthSecondary
+                }
+                
+                cell.messageBottomMargin.constant = 40
             }
-            
-            let widthPrimary = cell.primary.intrinsicContentSize.width + 30;
-            let widthSecondary = cell.secondary.intrinsicContentSize.width + 30;
-            
-            if widthPrimary > widthSecondary {
-                cell.primaryWidth.constant = widthPrimary
-                cell.secondaryWidth.constant = widthPrimary
-            } else {
-                cell.primaryWidth.constant = widthSecondary
-                cell.secondaryWidth.constant = widthSecondary
-            }
-            
-            cell.messageBottomMargin.constant = 40
         }
         
         return cell
@@ -232,52 +238,52 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     
     // MARK: - tap Action
     
-    func tapRemove(with notification: OCNotifications?) {
-        
-        let serverUrl = self.appDelegate.activeUrl + "/" + k_url_acces_remote_notification_api + "/" + String(notification!.idNotification)
-        
-        OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: serverUrl, type: "DELETE", completion: { (account, message, errorCode) in
-            
+    func tapRemove(with notification: NCCommunicationNotifications?) {
+           
+        NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE", customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                //let listOfNotifications = self.appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-                
-                if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                    CCNotification.self.notifications.remove(at: index)
+                                
+                if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                    self.notifications.remove(at: index)
                 }
                 
                 self.reloadDatasource()
                 
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
 
-    func tapAction(with notification: OCNotifications?, label: String) {
+    func tapAction(with notification: NCCommunicationNotifications?, label: String) {
         
-        for action in notification!.actions {
-            
-            if (action as! OCNotificationsAction).label == label {
-                
-                OCNetworking.sharedManager().setNotificationWithAccount(self.appDelegate.activeAccount, serverUrl: (action as! OCNotificationsAction).link, type: (action as! OCNotificationsAction).type, completion: { (account, message, errorCode) in
-                    
-                    if errorCode == 0 && account == self.appDelegate.activeAccount {
-                                                
-                        if let index = CCNotification.self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
-                            CCNotification.self.notifications.remove(at: index)
+        if let actions = notification!.actions {
+            if let jsonActions = JSON(actions).array {
+                for action in jsonActions {
+                    if action["label"].string == label {
+                        let serverUrl = action["link"].stringValue
+                        let method = action["type"].stringValue
+                            
+                        NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, errorCode, errorDescription) in
+                            
+                            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                                                        
+                                if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
+                                    self.notifications.remove(at: index)
+                                }
+                                
+                                self.reloadDatasource()
+                                
+                            } else if errorCode != 0 {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            } else {
+                                print("[LOG] It has been changed user during networking process, error.")
+                            }
                         }
-                        
-                        self.reloadDatasource()
-                        
-                    } else if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    } else {
-                        print("[LOG] It has been changed user during networking process, error.")
                     }
-                })
+                }
             }
         }
     }
@@ -288,49 +294,34 @@ class CCNotification: UITableViewController, CCNotificationCelllDelegate, DZNEmp
     
         NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
 
-        // Verify User
-        if appDelegate.activeAccount != CCNotification.notificationsAccount {
-            CCNotification.notifications.removeAll()
-            reloadDatasource()
-            CCNotification.notificationsAccount = appDelegate.activeAccount
-        }
+        NCCommunication.shared.getNotifications(customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, notifications, errorCode, errorDescription) in
          
-        /*
-        NCCommunication.shared.getNotifications(customUserAgent: nil, addCustomHeaders: nil, account: CCNotification.notificationsAccount) { (account, notifications, errorCode, errorDescription) in
-            
-        }
-        */
-        
-        OCNetworking.sharedManager().getNotificationWithAccount(CCNotification.notificationsAccount, completion: { (account, listOfNotifications, message, errorCode) in
-            
-            if errorCode == 0 && account == CCNotification.self.notificationsAccount {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
-                CCNotification.self.notifications.removeAll()
-                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
+                self.notifications.removeAll()
+                let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                     
                 for notification in sortedListOfNotifications {
-                    // download icon
-                    if let icon = (notification as! OCNotifications).icon {
+                    if let icon = (notification as! NCCommunicationNotifications).icon {
                         NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
-                    }
-                    
-                    CCNotification.self.notifications.append(notification as! OCNotifications)
+                    }                    
+                    self.notifications.append(notification as! NCCommunicationNotifications)
                 }
                 
                 self.reloadDatasource()
             }
             
             NCUtility.sharedInstance.stopActivityIndicator()
-        })
+        }
     }
 }
 
-// MARK: - Class UITableViewCell
+// MARK: -
 
-class CCNotificationCell: UITableViewCell {
+class NCNotificationCell: UITableViewCell {
     
-    var delegate: CCNotificationCelllDelegate?
-    var notification: OCNotifications?
+    var delegate: NCNotificationCellDelegate?
+    var notification: NCCommunicationNotifications?
 
     @IBOutlet weak var icon : UIImageView!
     @IBOutlet weak var avatar : UIImageView!
@@ -365,7 +356,7 @@ class CCNotificationCell: UITableViewCell {
     }
 }
 
-protocol CCNotificationCelllDelegate {
-    func tapRemove(with notification: OCNotifications?)
-    func tapAction(with notification: OCNotifications?, label: String)
+protocol NCNotificationCellDelegate {
+    func tapRemove(with notification: NCCommunicationNotifications?)
+    func tapAction(with notification: NCCommunicationNotifications?, label: String)
 }

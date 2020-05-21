@@ -10,13 +10,13 @@
         <!--Notification-->
         <scene sceneID="dZP-R1-zZF">
             <objects>
-                <tableViewController storyboardIdentifier="CCNotification.storyboard" id="c26-Us-IIn" customClass="CCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="NCNotification.storyboard" id="c26-Us-IIn" customClass="NCNotification" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="187" sectionHeaderHeight="28" sectionFooterHeight="28" id="vzh-aE-2MF">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="187" id="R1c-h5-BOp" customClass="CCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="187" id="R1c-h5-BOp" customClass="NCNotificationCell" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="187"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1c-h5-BOp" id="9Bv-1W-yVV">

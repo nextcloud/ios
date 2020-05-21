@@ -366,10 +366,10 @@
             </objects>
             <point key="canvasLocation" x="10878" y="425"/>
         </scene>
-        <!--CCNotification.storyboard-->
+        <!--NCNotification.storyboard-->
         <scene sceneID="1sy-aN-34T">
             <objects>
-                <viewControllerPlaceholder storyboardName="CCNotification" referencedIdentifier="CCNotification.storyboard" id="yit-8P-Oea" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="NCNotification" referencedIdentifier="NCNotification.storyboard" id="yit-8P-Oea" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="avL-mw-LlT"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -75,7 +75,7 @@ class NCContentPresenter: NSObject {
                 var description = description
                 if description == nil { description = "" }
                 if type == messageType.error {
-                    description = NSLocalizedString("_error_", comment: "") + ": \(errorCode), " + NSLocalizedString(description!, comment: "")
+                    description = NSLocalizedString("_error_", comment: "") + " " + NSLocalizedString(description!, comment: "")
                 } else {
                     description = NSLocalizedString(description!, comment: "")
                 }
