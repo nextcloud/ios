@@ -589,7 +589,7 @@ class NCManageDatabase: NSObject {
                 result.storageLocation = userProfile.storageLocation
                 result.subadmin = userProfile.subadmin.joined(separator: ",")
                 result.twitter = userProfile.twitter
-                result.userID = userProfile.userID
+                result.userID = userProfile.userId
                 result.webpage = userProfile.webpage
                 
                 returnAccount = result
@@ -973,8 +973,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Comments
     
-    #if !EXTENSION
-    @objc func addComments(_ listOfComments: [NCComments], account: String, objectId: String) {
+    @objc func addComments(_ comments: [NCCommunicationComments], account: String, objectId: String) {
         
         let realm = try! Realm()
         
@@ -984,30 +983,30 @@ class NCManageDatabase: NSObject {
                 let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
                 realm.delete(results)
                 
-                for comment in listOfComments {
+                for comment in comments {
                     
-                    let addObject = tableComments()
+                    let object = tableComments()
                     
-                    addObject.account = account
-                    addObject.actorDisplayName = comment.actorDisplayName
-                    addObject.actorId = comment.actorId
-                    addObject.actorType = comment.actorType
-                    addObject.creationDateTime = comment.creationDateTime as NSDate
-                    addObject.isUnread = comment.isUnread
-                    addObject.message = comment.message
-                    addObject.messageID = comment.messageID
-                    addObject.objectId = comment.objectId
-                    addObject.objectType = comment.objectType
-                    addObject.verb = comment.verb
+                    object.account = account
+                    object.actorDisplayName = comment.actorDisplayName
+                    object.actorId = comment.actorId
+                    object.actorType = comment.actorType
+                    object.creationDateTime = comment.creationDateTime as NSDate
+                    object.isUnread = comment.isUnread
+                    object.message = comment.message
+                    object.messageID = comment.messageId
+                    object.objectId = comment.objectId
+                    object.objectType = comment.objectType
+                    object.path = comment.path
+                    object.verb = comment.verb
                     
-                    realm.add(addObject, update: .all)
+                    realm.add(object, update: .all)
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
     }
-    #endif
     
     @objc func getComments(account: String, objectId: String) -> [tableComments] {
         

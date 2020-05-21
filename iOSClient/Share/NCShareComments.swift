@@ -104,15 +104,14 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         guard let metadata = self.metadata else { return }
 
-        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileId: metadata.fileId, completion: { (account, items, message, errorCode) in
-            if errorCode == 0 {
-                let itemsNCComments = items as! [NCComments]
-                NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, objectId: metadata.fileId)
+        NCCommunication.shared.getComments(fileId: metadata.fileId, customUserAgent: nil, addCustomHeaders: nil, account: appDelegate.activeAccount) { (account, comments, errorCode, errorDescription) in
+            if errorCode == 0 && comments != nil {
+                NCManageDatabase.sharedInstance.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-               NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+               NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
         
         tableView.reloadData()
     }

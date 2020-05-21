@@ -174,6 +174,7 @@ class tableComments: Object {
     @objc dynamic var messageID = ""
     @objc dynamic var objectId = ""
     @objc dynamic var objectType = ""
+    @objc dynamic var path = ""
     @objc dynamic var verb = ""
     
     override static func primaryKey() -> String {

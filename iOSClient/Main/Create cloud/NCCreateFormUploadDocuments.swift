@@ -463,7 +463,7 @@ import NCCommunication
                     for template in templates! {
                         
                         let temp = NCCommunicationEditorTemplates()
-                        temp.identifier = "\(template.templateID)"
+                        temp.identifier = "\(template.templateId)"
                         temp.delete = template.delete
                         temp.ext = template.ext
                         temp.name = template.name
