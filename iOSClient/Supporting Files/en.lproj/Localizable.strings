@@ -301,7 +301,7 @@
 "_account_already_exists_"      = "The account %@ already exists";
 "_traditional_login_"           = "Revert to old login method";
 "_web_login_"                   = "Revert to web login method";
-"_login_url_error_"             = "Url error, please verify your server url";
+"_login_url_error_"             = "URL error, please verify your server URL";
 
 // Favorite
 
@@ -774,8 +774,9 @@
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 "_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
 "_request_entity_too_large_"            = "The file is too large";
-"_not_possible_download_"               = "It is not possible downlod the file";
-"_not_possible_upload_"                 = "It is not possible upload the file";
+"_not_possible_download_"               = "It is not possible to downlod the file";
+"_not_possible_upload_"                 = "It is not possible to upload the file";
+"_method_not_allowed_"                  = "The requested method is not supported";
 
 // QRCode
 
