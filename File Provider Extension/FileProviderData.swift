@@ -84,7 +84,7 @@ class fileProviderData: NSObject {
             accountUrl = tableAccount.url
             homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                         
-            NCCommunicationCommon.shared.setup(user: accountUser, userId: accountUserID, password: accountPassword, account: account, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
+            NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
             NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
             
             return true
@@ -110,7 +110,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunicationCommon.shared.setup(user: accountUser, userId: accountUserID, password: accountPassword, account: account, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
                 NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
 
                 foundAccount = true
@@ -142,7 +142,7 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunicationCommon.shared.setup(user: accountUser, userId: accountUserID, password: accountPassword, account: account, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.sharedInstance)
                 NCNetworking.sharedInstance.delegate = providerExtension as? NCNetworkingDelegate
                 
                 foundAccount = true
