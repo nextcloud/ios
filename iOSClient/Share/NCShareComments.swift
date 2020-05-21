@@ -76,11 +76,11 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         // Mark comment ad read
         if metadata != nil && metadata!.commentsUnread {
-            OCNetworking.sharedManager()?.readMarkComments(withAccount: self.appDelegate.activeAccount, fileId: metadata!.fileId, completion: { (account, message, errorCode) in
+            NCCommunication.shared.markAsReadComments(fileId: metadata!.fileId) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.readMarkerMetadata(account: account!, fileId: self.metadata!.fileId)
+                    NCManageDatabase.sharedInstance.readMarkerMetadata(account: account, fileId: self.metadata!.fileId)
                 }
-            })
+            }
         }
         
         // changeTheming
@@ -181,13 +181,13 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
 
-                    OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageId, completion: { (account, message, errorCode) in
+                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
                         if errorCode == 0 {
                             self.reloadData()
                         } else {
-                            NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
-                    })
+                    }
                 }
             )
         )
