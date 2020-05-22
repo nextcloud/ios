@@ -519,22 +519,25 @@
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:self.pushKitToken];
     NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
-    
-    [[OCNetworking sharedManager] subscribingPushNotificationWithAccount:account url:url pushToken:self.pushKitToken Hash:pushTokenHash devicePublicKey:pushDevicePublicKey completion:^(NSString *accountCompletion, NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [accountCompletion isEqualToString:account]) {
+    NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+
+    [[NCCommunication shared] subscribingPushNotificationWithPushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
+
+        if (errorCode == 0 && [account isEqualToString:account]) {
             
-            NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+            NSString *customUserAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             
-            [CCUtility setPushNotificationToken:account token:self.pushKitToken];
-            [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
-            [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:deviceIdentifierSignature];
-            [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:publicKey];
-            
-        } else if (errorCode != 0) {
-            NSLog(@"[LOG] Subscribed to Push Notification server & proxy error.");
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
+            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey customUserAgent:customUserAgent addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+               
+                if (errorCode == 0 && [account isEqualToString:account]) {
+                    NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+                
+                    [CCUtility setPushNotificationToken:account token:self.pushKitToken];
+                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
+                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:signature];
+                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:publicKey];
+                }
+            }];
         }
     }];
 }
