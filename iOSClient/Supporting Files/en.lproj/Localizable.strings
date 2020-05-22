@@ -774,7 +774,7 @@
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn’t be read because it isn’t in the correct format.)";
 "_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
 "_request_entity_too_large_"            = "The file is too large";
-"_not_possible_download_"               = "It is not possible to downlod the file";
+"_not_possible_download_"               = "It is not possible to download the file";
 "_not_possible_upload_"                 = "It is not possible to upload the file";
 "_method_not_allowed_"                  = "The requested method is not supported";
 "_invalid_url_"                         = "Invalid server url";
