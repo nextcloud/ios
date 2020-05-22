@@ -57,8 +57,10 @@ import NCCommunication
                                
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
+                        
                         NCNetworking.sharedInstance.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
                             if errorCode == 0 {
+                                
                                 // Add Metadata
                                 metadataFolder?.fileNameView = fileNameFolder
                                 metadataFolder?.e2eEncrypted = true
@@ -69,34 +71,35 @@ import NCCommunication
                                 NCCommunication.shared.markE2EEFolder(fileId: metadataFolder!.fileId, delete: false) { (account, errorCode, errorDescription) in
                                     if errorCode == 0 {
                                         
-                                        let newobject = tableE2eEncryption()
+                                        let object = tableE2eEncryption()
                                         
                                         NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
                                         
-                                        newobject.account = account
-                                        newobject.authenticationTag = nil
-                                        newobject.fileName = fileNameFolder
-                                        newobject.fileNameIdentifier = fileNameIdentifier
-                                        newobject.fileNamePath = ""
-                                        newobject.key = key! as String
-                                        newobject.initializationVector = initializationVector! as String
+                                        object.account = account
+                                        object.authenticationTag = nil
+                                        object.fileName = fileNameFolder
+                                        object.fileNameIdentifier = fileNameIdentifier
+                                        object.fileNamePath = ""
+                                        object.key = key! as String
+                                        object.initializationVector = initializationVector! as String
                                         
-                                        if let object = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                                            newobject.metadataKey = object.metadataKey
-                                            newobject.metadataKeyIndex = object.metadataKeyIndex
+                                        if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
+                                            object.metadataKey = result.metadataKey
+                                            object.metadataKeyIndex = result.metadataKeyIndex
                                         } else {
-                                            newobject.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
-                                            newobject.metadataKeyIndex = 0
+                                            object.metadataKey = (NCEndToEndEncryption.sharedManager()?.generateKey(16)?.base64EncodedString(options: []))! as String // AES_KEY_128_LENGTH
+                                            object.metadataKeyIndex = 0
                                         }
-                                        newobject.mimeType = "httpd/unix-directory"
-                                        newobject.serverUrl = serverUrl
+                                        object.mimeType = "httpd/unix-directory"
+                                        object.serverUrl = serverUrl
                                         if let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) {
-                                            newobject.version = Int(e2eeApiVersion) ?? 1
+                                            object.version = Int(e2eeApiVersion) ?? 1
                                         } else {
-                                            newobject.version = 1
+                                            object.version = 1
                                         }
                                         
-                                        let _ = NCManageDatabase.sharedInstance.addE2eEncryption(newobject)
+                                        let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
+                                        
                                         self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileId: directory.fileId, fileNameRename: nil, fileNameNewRename: nil, url: url) { (errorCode, errorDescription) in
                                             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                         }
