@@ -53,10 +53,8 @@ import NCCommunication
         }
         
         self.lock(serverUrl: serverUrl, fileId: directory.fileId) { (e2eToken, errorCode, errorDescription) in
-           
             if errorCode == 0 && e2eToken != nil {
-                NCManageDatabase.sharedInstance.setE2ETokenLock(serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
-                
+                               
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         NCNetworking.sharedInstance.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
@@ -237,7 +235,6 @@ import NCCommunication
     private func sendE2EMetadata(account: String, serverUrl: String, fileId: String, fileNameRename: String?, fileNameNewRename: String?, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
         self.lock(serverUrl: serverUrl, fileId: fileId) { (e2eToken, errorCode, errorDescription) in
-            
             if errorCode == 0 && e2eToken != nil {
             
                 NCCommunication.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken) { (account, existsMetadata, errorCode, errorDescription) in
