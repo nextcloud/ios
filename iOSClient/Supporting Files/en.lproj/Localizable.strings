@@ -782,6 +782,7 @@
 "_invalid_date_format_"                 = "Invalid date format";
 "_invalid_data_format_"                 = "Invalid data format";
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
+"_internal_generic_error_"              = "internal error";
 
 // QRCode
 

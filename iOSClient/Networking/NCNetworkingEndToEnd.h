@@ -42,8 +42,6 @@
 
 // ===== End-to-End Encryption =====
 
-- (NSError *)markEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)deletemarkEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 
 - (NSError *)getEndToEndMetadata:(NSString **)metadata fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
 - (NSError *)deleteEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;

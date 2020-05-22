@@ -339,7 +339,7 @@ extension CCMain {
                         title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, method: "PUT") { (account, errorCode, errorDescription) in
+                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                                 if errorCode == 0 {
                                     let serverUrl = self.serverUrl + "/" + metadata.fileName
                                     NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl))
@@ -361,7 +361,7 @@ extension CCMain {
                         title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, method: "DELETE") { (account, errorCode, errorDescription) in
+                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                                 if errorCode == 0 {
                                     let serverUrl = self.serverUrl + "/" + metadata.fileName
                                     NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
