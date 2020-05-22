@@ -440,7 +440,10 @@
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
 {
-    [self unsubscribingNextcloudServerPushNotification:account url:self.activeUrl withSubscribing:false];
+    // Push Notification
+    tableAccount *accountPN = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
+    [self unsubscribingNextcloudServerPushNotification:accountPN.account url:accountPN.url user:accountPN.user withSubscribing:false];
+
     [self settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
     
     /* DELETE ALL FILES LOCAL FS */
@@ -500,15 +503,15 @@
         if (![token isEqualToString:self.pushKitToken]) {
             if (token != nil) {
                 // unsubscribing + subscribing
-                [self unsubscribingNextcloudServerPushNotification:result.account url:result.url withSubscribing:true];
+                [self unsubscribingNextcloudServerPushNotification:result.account url:result.url user:result.user withSubscribing:true];
             } else {
-                [self subscribingNextcloudServerPushNotification:result.account url:result.url];
+                [self subscribingNextcloudServerPushNotification:result.account url:result.url user:result.user];
             }
         }
     }
 }
 
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url
+- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url user:(NSString *)user
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
@@ -520,18 +523,15 @@
     NSData *pushPublicKey = [CCUtility getPushNotificationPublicKey:account];
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
-
-    [[NCCommunication shared] subscribingPushNotificationWithPushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
-
-        if (errorCode == 0 && [account isEqualToString:account]) {
-            
-            NSString *customUserAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            
-            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey customUserAgent:customUserAgent addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
-               
-                if (errorCode == 0 && [account isEqualToString:account]) {
+    
+    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:url account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
+        if (errorCode == 0) {
+            NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
+            [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
+                if (errorCode == 0) {
+                    
                     NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
-                
+                        
                     [CCUtility setPushNotificationToken:account token:self.pushKitToken];
                     [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
                     [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:signature];
@@ -542,37 +542,35 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url withSubscribing:(BOOL)subscribing
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url user:(NSString *)user withSubscribing:(BOOL)subscribing
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
-    NSString *deviceIdentifierSignature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
+    NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
     NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
 
-    [[OCNetworking sharedManager] unsubscribingPushNotificationWithAccount:account url:url deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-       
+    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:url account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
-            
-            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
-            
-            [CCUtility setPushNotificationPublicKey:account data:nil];
-            [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
-            [CCUtility setPushNotificationPrivateKey:account data:nil];
-            [CCUtility setPushNotificationToken:account token:nil];
-            [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
-            [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
-            
-            if (self.pushKitToken != nil && subscribing) {
-                [self subscribingNextcloudServerPushNotification:account url:url];
-            }
-            
-        } else if (errorCode != 0) {
-            NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy error.");
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
+            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:url deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
+                if (errorCode == 0) {
+                
+                    NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+                    
+                    [CCUtility setPushNotificationPublicKey:account data:nil];
+                    [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
+                    [CCUtility setPushNotificationPrivateKey:account data:nil];
+                    [CCUtility setPushNotificationToken:account token:nil];
+                    [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:nil];
+                    [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
+                    
+                    if (self.pushKitToken != nil && subscribing) {
+                        [self subscribingNextcloudServerPushNotification:account url:url user:user];
+                    }
+                }
+            }];
         }
     }];
 }
