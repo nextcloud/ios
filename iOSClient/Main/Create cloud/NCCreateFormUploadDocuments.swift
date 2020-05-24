@@ -350,7 +350,7 @@ import NCCommunication
         
         if self.editorId == k_editor_collabora {
             
-            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateID: templateIdentifier) { (account, url, errorCode, errorDescription) in
+            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                    

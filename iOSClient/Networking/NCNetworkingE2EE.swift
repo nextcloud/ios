@@ -256,39 +256,21 @@ import NCCommunication
                     }
             
                     var method = ""
-                    let communication = OCNetworking.sharedManager()?.sharedOCCommunication()
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
                     if errorCode == 0 && existsMetadata != nil {
-                       
-                        communication?.updateEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, encryptedMetadata: metadata, e2eToken: e2eToken, on: communication, successRequest: { (response, a, b) in
-                            
-                        }, failureRequest: { (response, error, b) in
-                            
-                        })
                         method = "PUT"
-                        
                     } else if  errorCode == 404 {
                         method = "POST"
-                        
-                        communication?.storeEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, e2eToken: e2eToken, encryptedMetadata: metadata, on: communication, successRequest: { (response, a, b) in
-                            
-                        }, failureRequest: { (response, error, b) in
-                            
-                        })
-                        
                     } else {
                         completion(errorCode, errorDescription)
                     }
-               
-                    
-                    /*
+                                   
                     NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, method: method, metadata: metadata) { (account, metadata, errorCodeSendMetadata, errorDescriptionSendMetadata) in
-                        
+                                                
                         self.unlock(serverUrl: serverUrl, fileId: fileId) { (errorCode, errorDescription) in }
-                        completion(errorCode, errorDescription)
+                        
+                        completion(errorCodeSendMetadata, errorDescriptionSendMetadata)
                     }
-                    */
+                    
                 }
             } else {
                 completion(errorCode, errorDescription)
