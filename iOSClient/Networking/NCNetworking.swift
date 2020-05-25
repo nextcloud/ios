@@ -299,16 +299,14 @@ import NCCommunication
         
         if isDirectoryEncrypted {
             #if !EXTENSION
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                if metadataLive == nil {
-                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, url: url, completion: completion)
-                } else {
-                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadataLive!, directory: directory, account: account, url: url) { (errorCode, errorDescription) in
-                        if errorCode == 0 {
-                            NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, url: url, completion: completion)
-                        } else {
-                            completion(errorCode, errorDescription)
-                        }
+            if metadataLive == nil {
+                NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, url: url, completion: completion)
+            } else {
+                NCNetworkingE2EE.sharedInstance.deleteMetadata(metadataLive!, url: url) { (errorCode, errorDescription) in
+                    if errorCode == 0 {
+                        NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, url: url, completion: completion)
+                    } else {
+                        completion(errorCode, errorDescription)
                     }
                 }
             }
