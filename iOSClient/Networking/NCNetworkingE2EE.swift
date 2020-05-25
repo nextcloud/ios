@@ -240,6 +240,9 @@ import NCCommunication
         self.lock(serverUrl: serverUrl, fileId: fileId) { (e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil {
             
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                let communication = OCNetworking.sharedManager()?.sharedOCCommunication()
+                
                 NCCommunication.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken) { (account, existsMetadata, errorCode, errorDescription) in
                 
                     if (fileNameRename != nil && fileNameNewRename != nil) {
@@ -258,12 +261,28 @@ import NCCommunication
                     var method = ""
                     if errorCode == 0 && existsMetadata != nil {
                         method = "PUT"
+                        
+                        communication?.updateEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, encryptedMetadata: metadata, e2eToken: e2eToken, on: communication, successRequest: { (re, a, b) in
+                            
+                        }, failureRequest: { (re, e, a) in
+                            
+                        })
+                        
                     } else if  errorCode == 404 {
                         method = "POST"
+                        
+                        communication?.storeEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, e2eToken: e2eToken, encryptedMetadata: metadata, on: communication, successRequest: { (re, a, b) in
+                            
+                        }, failureRequest: { (re, er, a) in
+                            
+                        })
+                        
                     } else {
                         completion(errorCode, errorDescription)
                     }
-                                   
+                             
+                    
+                    
                     NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, method: method, metadata: metadata) { (account, metadata, errorCodeSendMetadata, errorDescriptionSendMetadata) in
                                                 
                         self.unlock(serverUrl: serverUrl, fileId: fileId) { (errorCode, errorDescription) in }
