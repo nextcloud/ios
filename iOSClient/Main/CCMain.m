@@ -1180,26 +1180,28 @@
             
             // E2EE Is encrypted folder get metadata
             if (isFolderEncrypted) {
-                NSString *metadataFolderFileId = metadataFolder.fileId;
-                // Read Metadata
                 if ([CCUtility isEndToEndEnabled:account]) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-                        NSString *metadata;
-                        NSError *error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileId:metadataFolderFileId user:appDelegate.activeUser userID:appDelegate.activeUserID password:[CCUtility getPassword:appDelegate.activeAccount] url:appDelegate.activeUrl];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (error) {
-                                if (error.code != kOCErrorServerPathNotFound)
-                                    [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                            } else {
-                                if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl] == false)
-                                    [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
-                                else
-                                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                    
+                    [[NCCommunication shared] getE2EEMetadataWithFileId:metadataFolder.fileId e2eToken:nil customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *metadata, NSInteger errorCode, NSString *errorDescription) {
+                       
+                        if (errorCode == 0 && metadata != nil) {
+                            
+                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl];
+                            
+                            if (result == false) {
+                                [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:-999];
                             }
-                        });
-                    });
+                            
+                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                            
+                        } else if (errorCode != kOCErrorServerPathNotFound) {
+                            
+                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                        }
+                    }];
                     
                 } else {
+                    
                     [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
                 }
             }
