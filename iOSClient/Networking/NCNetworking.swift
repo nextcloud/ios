@@ -245,20 +245,20 @@ import NCCommunication
     
     //MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account)
                
         if isDirectoryEncrypted {
             #if !EXTENSION
-            NCNetworkingE2EE.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+            NCNetworkingE2EE.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
             #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
         }
     }
     
-    @objc func createFolderPlain(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func createFolderPlain(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         
@@ -292,7 +292,7 @@ import NCCommunication
         
     //MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
         let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
@@ -301,11 +301,11 @@ import NCCommunication
             #if !EXTENSION
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                 if metadataLive == nil {
-                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, url: url, completion: completion)
                 } else {
-                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadataLive!, directory: directory, account: account, user: user, userID: userID, password: password, url: url) { (errorCode, errorDescription) in
+                    NCNetworkingE2EE.sharedInstance.deleteMetadata(metadataLive!, directory: directory, account: account, url: url) { (errorCode, errorDescription) in
                         if errorCode == 0 {
-                            NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, user: user, userID: userID, password: password, url: url, completion: completion)
+                            NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, directory: directory, account: account, url: url, completion: completion)
                         } else {
                             completion(errorCode, errorDescription)
                         }
@@ -394,7 +394,7 @@ import NCCommunication
     
     //MARK: - WebDav Rename
 
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, user: String, userID: String, password: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
         let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
@@ -404,11 +404,11 @@ import NCCommunication
             #if !EXTENSION
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                 if metadataLive == nil {
-                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, url: url, completion: completion)
                 } else {
-                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, directory: directory, user: user, userID: userID, password: password, url: url) { (errorCode, errorDescription) in
+                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, directory: directory, url: url) { (errorCode, errorDescription) in
                         if errorCode == 0 {
-                            NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, user: user, userID: userID, password: password, url: url, completion: completion)
+                            NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, url: url, completion: completion)
                         } else {
                             completion(errorCode, errorDescription)
                         }

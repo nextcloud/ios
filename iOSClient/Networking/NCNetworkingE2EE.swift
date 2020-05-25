@@ -29,11 +29,9 @@ import NCCommunication
         return instance
     }()
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
     //MARK: - WebDav Create Folder
     
-    func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func createFolder(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
@@ -125,7 +123,7 @@ import NCCommunication
     
     //MARK: - WebDav Delete
     
-    func deleteMetadata(_ metadata: tableMetadata, directory: tableDirectory, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func deleteMetadata(_ metadata: tableMetadata, directory: tableDirectory, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                         
         self.lock(serverUrl: directory.serverUrl, fileId: directory.fileId) { (e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil {
@@ -143,7 +141,7 @@ import NCCommunication
     
     //MARK: - WebDav Rename
     
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, directory: tableDirectory, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, directory: tableDirectory, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -219,7 +217,7 @@ import NCCommunication
                     var rebuildMetadata: String?
                     
                     if errorCode == 0 && metadata != nil {
-                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: self.appDelegate.activeUrl) {
+                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url) {
                             completion(Int(k_CCErrorInternalError), NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
                             return
                         }
@@ -245,7 +243,7 @@ import NCCommunication
                     NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, metadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
                         self.unlock(serverUrl: serverUrl, fileId: fileId) { (_, _) in
                             if errorCode == 0 && metadata != nil {
-                                let result = NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: self.appDelegate.activeUrl)
+                                let result = NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)
                                 print("\(result)")
                             }
                             completion(errorCode, errorDescription)

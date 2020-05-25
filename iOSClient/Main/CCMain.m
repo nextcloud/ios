@@ -1380,7 +1380,7 @@
         [appDelegate.arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking sharedInstance] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
@@ -1512,7 +1512,7 @@
         
         UITextField *fileName = alertController.textFields.firstObject;
         
-        [[NCNetworking sharedInstance] createFolderWithFileName:fileName.text serverUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking sharedInstance] createFolderWithFileName:fileName.text serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }];
     
     okAction.enabled = NO;

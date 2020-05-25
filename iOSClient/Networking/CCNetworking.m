@@ -1065,7 +1065,7 @@
     
     // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {
-        
+                
         tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:serverUrl];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

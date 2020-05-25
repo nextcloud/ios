@@ -691,7 +691,7 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        NCNetworking.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+        NCNetworking.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)

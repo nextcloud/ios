@@ -345,7 +345,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
-                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
                     }
                 )
             )

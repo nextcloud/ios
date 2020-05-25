@@ -98,7 +98,7 @@ extension NCDetailNavigationController {
                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, url: self.appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                     })
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
@@ -171,7 +171,7 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
-                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     })
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })

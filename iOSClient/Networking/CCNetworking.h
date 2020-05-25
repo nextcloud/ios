@@ -31,6 +31,7 @@
 #import "CCError.h"
 
 @class tableMetadata;
+@class NCNetworkingE2EE;
 
 @interface CCNetworking : NSObject <NSURLSessionTaskDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
