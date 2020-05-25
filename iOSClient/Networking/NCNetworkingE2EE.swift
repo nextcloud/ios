@@ -262,8 +262,6 @@ import NCCommunication
                             }
                             completion(errorCode, errorDescription)
                         }
-                        
-                        
                     }
                 }
             } else {
