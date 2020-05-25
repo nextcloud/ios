@@ -29,6 +29,8 @@ import NCCommunication
         return instance
     }()
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
     //MARK: - WebDav Create Folder
     
     func createFolder(fileName: String, serverUrl: String, account: String, user: String, userID: String, password: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -239,12 +241,18 @@ import NCCommunication
     
         self.lock(serverUrl: serverUrl, fileId: fileId) { (e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil {
-            
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                let communication = OCNetworking.sharedManager()?.sharedOCCommunication()
-                
-                NCCommunication.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken) { (account, existsMetadata, errorCode, errorDescription) in
-                
+                          
+                NCCommunication.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken) { (account, metadata, errorCode, errorDescription) in
+                    var method = "POST"
+                    
+                    if errorCode == 0 && metadata != nil {
+                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: self.appDelegate.activeUrl) {
+                            completion(Int(k_CCErrorInternalError), NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+                            return
+                        }
+                        method = "PUT"
+                    }
+    
                     if (fileNameRename != nil && fileNameNewRename != nil) {
                         NCManageDatabase.sharedInstance.renameFileE2eEncryption(serverUrl: serverUrl, fileNameIdentifier: fileNameRename!, newFileName: fileNameNewRename!, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNewRename!, serverUrl: serverUrl, activeUrl: url))
                     }
@@ -258,38 +266,15 @@ import NCCommunication
                         return
                     }
             
-                    var method = ""
-                    if errorCode == 0 && existsMetadata != nil {
-                        method = "PUT"
-                        
-                        communication?.updateEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, encryptedMetadata: metadata, e2eToken: e2eToken, on: communication, successRequest: { (re, a, b) in
-                            
-                        }, failureRequest: { (re, e, a) in
-                            
-                        })
-                        
-                    } else if  errorCode == 404 {
-                        method = "POST"
-                        
-                        communication?.storeEnd(toEndMetadata: appDelegate.activeUrl+"/", fileId: fileId, e2eToken: e2eToken, encryptedMetadata: metadata, on: communication, successRequest: { (re, a, b) in
-                            
-                        }, failureRequest: { (re, er, a) in
-                            
-                        })
-                        
-                    } else {
-                        completion(errorCode, errorDescription)
-                    }
-                             
-                    
-                    
-                    NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, method: method, metadata: metadata) { (account, metadata, errorCodeSendMetadata, errorDescriptionSendMetadata) in
-                                                
+                    NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, metadata: metadata, method: method) { (account, metadata, errorCode, errorDescription) in
                         self.unlock(serverUrl: serverUrl, fileId: fileId) { (errorCode, errorDescription) in }
                         
-                        completion(errorCodeSendMetadata, errorDescriptionSendMetadata)
+                        if errorCode == 0 && metadata != nil {
+                            let result = NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: self.appDelegate.activeUrl)
+                            print("\(result)")
+                        }
+                        completion(errorCode, errorDescription)
                     }
-                    
                 }
             } else {
                 completion(errorCode, errorDescription)
