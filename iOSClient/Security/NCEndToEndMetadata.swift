@@ -139,6 +139,7 @@ class NCEndToEndMetadata : NSObject  {
         }
     }
     
+    @discardableResult
     @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, url: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
