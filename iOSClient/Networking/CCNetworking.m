@@ -801,6 +801,13 @@
     // E2EE : CREATE AND SEND METADATA
     if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
                 
+        [[NCNetworkingE2EE sharedInstance] sendE2EMetadataWithAccount:tableAccount.account serverUrl:serverUrl fileNameRename:nil fileNameNewRename:nil deleteE2eEncryption:nil url:tableAccount.url completion:^(NSInteger errorCode, NSString *errorDescription) {
+           
+            
+            
+        }];
+        
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             // Send Metadata

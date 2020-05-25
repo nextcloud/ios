@@ -95,7 +95,7 @@ import NCCommunication
                                         
                                         let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                         
-                                        self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileId: directory!.fileId, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (errorCode, errorDescription) in
+                                        self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (errorCode, errorDescription) in
                                             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                         }
                                     } else {
@@ -124,7 +124,7 @@ import NCCommunication
             if errorCode == 0 && e2eToken != nil && directory != nil {
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
                 NCNetworking.sharedInstance.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token" :e2eToken!]) { (errorCode, errorDescription) in
-                    self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileId: directory!.fileId, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, url: url) { (errorCode, errorDescription) in
+                    self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, url: url) { (errorCode, errorDescription) in
                          self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
@@ -136,7 +136,7 @@ import NCCommunication
     
     //MARK: - WebDav Rename
     
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, directory: tableDirectory, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -145,7 +145,7 @@ import NCCommunication
 
         } else {
             
-            self.sendE2EMetadata(account: metadata.account, serverUrl: directory.serverUrl, fileId: directory.fileId, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, url: url) { (errorCode, errorDescription) in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, url: url) { (errorCode, errorDescription) in
                 
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -212,12 +212,12 @@ import NCCommunication
         }
     }
     
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileId: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
     
         self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
-            if errorCode == 0 && e2eToken != nil {
+            if errorCode == 0 && e2eToken != nil && directory != nil {
                           
-                NCCommunication.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken) { (account, metadata, errorCode, errorDescription) in
+                NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { (account, metadata, errorCode, errorDescription) in
                     var method = "POST"
                     var rebuildMetadata: String?
                     
@@ -245,7 +245,7 @@ import NCCommunication
                         rebuildMetadata = NCEndToEndMetadata.sharedInstance.encoderMetadata(tableE2eEncryption!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
                     }
                     
-                    NCCommunication.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken!, metadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
+                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, metadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
                         self.unlock(account: account, serverUrl: serverUrl) { (_, _) in
                             if errorCode == 0 && metadata != nil {
                                 let result = NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)

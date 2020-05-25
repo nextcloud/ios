@@ -400,16 +400,14 @@ import NCCommunication
 
         if isDirectoryEncrypted {
             #if !EXTENSION
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                if metadataLive == nil {
-                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, url: url, completion: completion)
-                } else {
-                    NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, directory: directory, url: url) { (errorCode, errorDescription) in
-                        if errorCode == 0 {
-                            NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, directory: directory, url: url, completion: completion)
-                        } else {
-                            completion(errorCode, errorDescription)
-                        }
+            if metadataLive == nil {
+                NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+            } else {
+                NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, url: url) { (errorCode, errorDescription) in
+                    if errorCode == 0 {
+                        NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+                    } else {
+                        completion(errorCode, errorDescription)
                     }
                 }
             }
