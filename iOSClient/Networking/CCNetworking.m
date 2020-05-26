@@ -1051,7 +1051,7 @@
     
     // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {
-        [[NCNetworkingE2EE sharedInstance] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworkingE2EE sharedInstance] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(tableDirectory *directory, NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) { }];
     }
         
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
