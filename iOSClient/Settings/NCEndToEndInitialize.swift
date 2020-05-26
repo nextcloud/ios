@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 @objc protocol NCEndToEndInitializeDelegate {
     
@@ -51,7 +52,8 @@ class NCEndToEndInitialize : NSObject  {
     
     func getPublicKey() {
     
-        NCNetworkingEndToEnd.sharedManager()?.getPublicKey(withAccount: appDelegate.activeAccount, completion: { (account, publicKey, message, errorCode) in
+        NCCommunication.shared.getE2EEPublicKey { (account, publicKey, errorCode, errorDescription) in
+        //NCNetworkingEndToEnd.sharedManager()?.getPublicKey(withAccount: appDelegate.activeAccount, completion: { (account, publicKey, message, errorCode) in
             
             if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                 
@@ -75,7 +77,8 @@ class NCEndToEndInitialize : NSObject  {
                         return
                     }
                     
-                    NCNetworkingEndToEnd.sharedManager()?.signPublicKey(withAccount: account, publicKey: csr, completion: { (account, publicKey, message, errorCode) in
+                    NCCommunication.shared.signE2EEPublicKey(publicKey: csr) { (account, publicKey, errorCode, errorDescription) in
+                    //NCNetworkingEndToEnd.sharedManager()?.signPublicKey(withAccount: account, publicKey: csr, completion: { (account, publicKey, message, errorCode) in
                         
                         if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                             
@@ -95,25 +98,26 @@ class NCEndToEndInitialize : NSObject  {
                                 NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: "conflict: a public key for the user already exists", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 
                             default:
-                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("E2E sign publicKey", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
-                    })
+                    }
                     
                 case 409:
                     NCContentPresenter.shared.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     
                 default:
-                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("E2E get publicKey", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
-        })
+        }
     }
     
     func getPrivateKeyCipher() {
         
         // Request PrivateKey chiper to Server
-        NCNetworkingEndToEnd.sharedManager()?.getPrivateKeyCipher(withAccount: appDelegate.activeAccount, completion: { (account, privateKeyChiper, message, errorCode) in
+        NCCommunication.shared.getE2EEPrivateKey { (account, privateKeyChiper, errorCode, errorDescription) in
+        //NCNetworkingEndToEnd.sharedManager()?.getPrivateKeyCipher(withAccount: appDelegate.activeAccount, completion: { (account, privateKeyChiper, message, errorCode) in
             
             if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                 
@@ -159,7 +163,8 @@ class NCEndToEndInitialize : NSObject  {
                     CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
                     
                     // request publicKey Server()
-                    NCNetworkingEndToEnd.sharedManager()?.getServerPublicKey(withAccount: account, completion: { (account, publicKey, message, errorCode) in
+                    NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                    //NCNetworkingEndToEnd.sharedManager()?.getServerPublicKey(withAccount: account, completion: { (account, publicKey, message, errorCode) in
                         
                         if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                             
@@ -185,10 +190,10 @@ class NCEndToEndInitialize : NSObject  {
                                 NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 
                             default:
-                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         }
-                    })
+                    }
                 })
                 
                 let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
@@ -228,7 +233,11 @@ class NCEndToEndInitialize : NSObject  {
                             return
                         }
                         
-                        NCNetworkingEndToEnd.sharedManager()?.storePrivateKeyCipher(withAccount: account, privateKeyString: privateKeyString! as String, privateKeyChiper: privateKeyChiper, completion: { (account, privateKeyString, privateKey, message, errorCode) in
+                        // privateKeyChiper
+                        print(privateKeyChiper)
+                        
+                        NCCommunication.shared.storeE2EEPrivateKey(privateKey: privateKeyString! as String) { (account, privateKeyString, errorCode, errorDescription) in
+                        //NCNetworkingEndToEnd.sharedManager()?.storePrivateKeyCipher(withAccount: account, privateKeyString: privateKeyString! as String, privateKeyChiper: privateKeyChiper, completion: { (account, privateKeyString, privateKey, message, errorCode) in
                             
                             if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                                 
@@ -236,7 +245,8 @@ class NCEndToEndInitialize : NSObject  {
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
                                 
                                 // request publicKey Server()
-                                NCNetworkingEndToEnd.sharedManager()?.getServerPublicKey(withAccount: account, completion: { (account, publicKey, message, errorCode) in
+                                NCCommunication.shared.getE2EEServerPublicKey { (account, publicKey, errorCode, errorDescription) in
+                                //NCNetworkingEndToEnd.sharedManager()?.getServerPublicKey(withAccount: account, completion: { (account, publicKey, message, errorCode) in
                                     
                                     if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                                         
@@ -262,10 +272,10 @@ class NCEndToEndInitialize : NSObject  {
                                             NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                             
                                         default:
-                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                            NCContentPresenter.shared.messageNotification("E2E Server publicKey", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                         }
                                     }
-                                })
+                                }
                                 
                             } else if errorCode != 0 {
                                 
@@ -278,10 +288,10 @@ class NCEndToEndInitialize : NSObject  {
                                     NCContentPresenter.shared.messageNotification("E2E store privateKey", description: "conflict: a private key for the user already exists", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                     
                                 default:
-                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    NCContentPresenter.shared.messageNotification("E2E store privateKey", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                                 }
                             }
-                        })
+                        }
                     }
                     
                     alertController.addAction(OKAction)
@@ -291,10 +301,10 @@ class NCEndToEndInitialize : NSObject  {
                     NCContentPresenter.shared.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     
                 default:
-                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: message,delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("E2E get privateKey", description: errorDescription,delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
-        })
+        }
     }
     
 }
