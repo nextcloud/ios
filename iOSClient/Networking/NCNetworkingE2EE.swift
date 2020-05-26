@@ -246,6 +246,13 @@ import NCCommunication
                     }
                     
                     NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
+                        // remove err 404 becouse is not important in this case
+                        var errorCode = errorCode
+                        var errorDescription = errorDescription
+                        if errorCode == 404 {
+                            errorCode = 0
+                            errorDescription = nil
+                        }
                         
                         if unlock {
                             
