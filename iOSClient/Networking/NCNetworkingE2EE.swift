@@ -95,7 +95,7 @@ import NCCommunication
                                         
                                         let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                         
-                                        self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url, unlock: true) { (e2eToken, errorCode, errorDescription) in
+                                        self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
                                             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                         }
                                     } else {
@@ -124,7 +124,7 @@ import NCCommunication
             if errorCode == 0 && e2eToken != nil && directory != nil {
                 let deleteE2eEncryption = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName)
                 NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token" :e2eToken!]) { (errorCode, errorDescription) in
-                    self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, url: url, unlock: true) { (e2eToken, errorCode, errorDescription) in
+                    self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, url: url) { (e2eToken, errorCode, errorDescription) in
                          self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
@@ -145,7 +145,7 @@ import NCCommunication
 
         } else {
             
-            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, url: url, unlock: true) { (e2eToken, errorCode, errorDescription) in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
                 
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -212,7 +212,7 @@ import NCCommunication
         }
     }
     
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, url: String, unlock: Bool, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, url: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
             
         self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
@@ -246,6 +246,7 @@ import NCCommunication
                     }
                     
                     NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
+                        
                         // remove err 404 becouse is not important in this case
                         var errorCode = errorCode
                         var errorDescription = errorDescription
@@ -254,27 +255,19 @@ import NCCommunication
                             errorDescription = nil
                         }
                         
-                        if unlock {
-                            
-                            self.unlock(account: account, serverUrl: serverUrl) { (_, e2eToken, _, _) in
-                                
-                                if errorCode == 0 && metadata != nil {
-                                    NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)
-                                }
-                                completion(e2eToken, errorCode, errorDescription)
-                            }
-                            
-                        } else {
-                            
-                            if errorCode == 0 && metadata != nil {
-                                NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)
-                            }
+                        if upload {
                             completion(e2eToken, errorCode, errorDescription)
+                        } else {
+                            self.unlock(account: account, serverUrl: serverUrl) { (_, e2eToken, _, _) in
+                                completion(e2eToken, errorCode, errorDescription)
+//                                if errorCode == 0 && metadata != nil {
+//                                    NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)
+//                                }
+                            }
                         }
                     }
                 }
             } else {
-                
                 completion(e2eToken, errorCode, errorDescription)
             }
         }

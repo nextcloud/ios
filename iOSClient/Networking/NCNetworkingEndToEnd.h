@@ -38,20 +38,4 @@
 - (void)deleteEndToEndPrivateKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *message, NSInteger errorCode))completion;
 - (void)getEndToEndServerPublicKeyWithAccount:(NSString *)account completion:(void (^)(NSString *account, NSString *publicKey, NSString *message, NSInteger errorCode))completion;
 
-- (void)createEndToEndFolder:(NSString *)folderPathName account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted ocId:(NSString **)ocId fileId:(NSString **)fileId error:(NSError **)error;
-
-// ===== End-to-End Encryption =====
-
-
-- (NSError *)getEndToEndMetadata:(NSString **)metadata fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)deleteEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)storeEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileId:(NSString *)fileId unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)updateEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl fileId:(NSString *)fileId unlock:(BOOL)unlock user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-
-- (NSError *)lockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)unlockEndToEndFolderEncryptedOnServerUrl:(NSString *)serverUrl fileId:(NSString *)fileId e2eToken:(NSString *)e2eToken user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-
-- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew unlock:(BOOL)unlock account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-- (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url;
-
 @end

@@ -1039,10 +1039,10 @@
         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
         // if request create the folder for Auto Upload & the subfolders
-        if ([autoUploadPath isEqualToString:serverUrl])
-            if (![[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
-                return;
-    
+        if ([autoUploadPath isEqualToString:serverUrl]) {
+            [[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile];
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self uploadFileAsset:assets urls:urls serverUrl:serverUrl autoUploadPath:autoUploadPath useSubFolder:useSubFolder session:session];
         });
