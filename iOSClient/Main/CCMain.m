@@ -1182,11 +1182,11 @@
             if (isFolderEncrypted) {
                 if ([CCUtility isEndToEndEnabled:account]) {
                     
-                    [[NCCommunication shared] getE2EEMetadataWithFileId:metadataFolder.fileId e2eToken:nil customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *metadata, NSInteger errorCode, NSString *errorDescription) {
+                    [[NCCommunication shared] getE2EEMetadataWithFileId:metadataFolder.fileId e2eToken:nil customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *e2eeMetadata, NSInteger errorCode, NSString *errorDescription) {
                        
-                        if (errorCode == 0 && metadata != nil) {
+                        if (errorCode == 0 && e2eeMetadata != nil) {
                             
-                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl];
+                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eeMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl];
                             
                             if (result == false) {
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:-999];

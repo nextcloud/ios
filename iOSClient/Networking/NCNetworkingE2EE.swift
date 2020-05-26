@@ -217,12 +217,12 @@ import NCCommunication
         self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
                           
-                NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { (account, metadata, errorCode, errorDescription) in
+                NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { (account, e2eeMetadata, errorCode, errorDescription) in
                     var method = "POST"
                     var rebuildMetadata: String?
                     
-                    if errorCode == 0 && metadata != nil {
-                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url) {
+                    if errorCode == 0 && e2eeMetadata != nil {
+                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eeMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url) {
                             completion(e2eToken, Int(k_CCErrorInternalError), NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
                             return
                         }
@@ -245,7 +245,7 @@ import NCCommunication
                         rebuildMetadata = NCEndToEndMetadata.sharedInstance.encoderMetadata(tableE2eEncryption!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
                     }
                     
-                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, metadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
+                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eeMetadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
                         
                         if unlock {
                             
