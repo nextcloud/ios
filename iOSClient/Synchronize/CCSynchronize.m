@@ -211,7 +211,7 @@
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
 
-    [[NCNetworking sharedInstance] readFileWithServerUrlFileName:serverUrlFileName account:account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] readFileWithServerUrlFileName:serverUrlFileName account:account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 && [account isEqualToString:account]) {
             

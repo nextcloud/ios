@@ -296,7 +296,7 @@
         
         NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", table.serverUrl, table.fileName];
                
-        [[NCNetworking sharedInstance] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+        [[NCNetworking shared] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
             
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
                 [[NCManageDatabase sharedInstance] addMetadata:metadata];

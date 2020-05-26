@@ -33,7 +33,7 @@ import NCCommunication
 }
 
 @objc class NCNetworking: NSObject, NCCommunicationCommonDelegate {
-    @objc public static let sharedInstance: NCNetworking = {
+    @objc public static let shared: NCNetworking = {
         let instance = NCNetworking()
         return instance
     }()
@@ -50,7 +50,7 @@ import NCCommunication
         if typeReachability == NCCommunicationCommon.typeReachability.reachableCellular || typeReachability == NCCommunicationCommon.typeReachability.reachableEthernetOrWiFi {
             
             if !lastReachability {
-                NCService.sharedInstance.startRequestServicesServer()
+                NCService.shared.startRequestServicesServer()
             }
             lastReachability = true
             
@@ -67,7 +67,7 @@ import NCCommunication
     }
     
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if NCNetworking.sharedInstance.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+        if NCNetworking.shared.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
@@ -251,7 +251,7 @@ import NCCommunication
                
         if isDirectoryEncrypted {
             #if !EXTENSION
-            NCNetworkingE2EE.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
+            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
             #endif
         } else {
             createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
@@ -300,11 +300,11 @@ import NCCommunication
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, url: url, completion: completion)
+                NCNetworkingE2EE.shared.deleteMetadata(metadata, url: url, completion: completion)
             } else {
-                NCNetworkingE2EE.sharedInstance.deleteMetadata(metadataLive!, url: url) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!, url: url) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.sharedInstance.deleteMetadata(metadata, url: url, completion: completion)
+                        NCNetworkingE2EE.shared.deleteMetadata(metadata, url: url, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }
@@ -401,11 +401,11 @@ import NCCommunication
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
             } else {
-                NCNetworkingE2EE.sharedInstance.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, url: url) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, url: url) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }

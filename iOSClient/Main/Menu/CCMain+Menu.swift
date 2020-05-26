@@ -254,7 +254,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -290,7 +290,7 @@ extension CCMain {
 
                             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                                 let fileNameNew = alertController.textFields![0].text
-                                NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                             })
                             okAction.isEnabled = false
                             alertController.addAction(cancelAction)
@@ -400,7 +400,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        NCNetworking.sharedInstance.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -447,7 +447,7 @@ extension CCMain {
 
                         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                             let fileNameNew = alertController.textFields![0].text
-                            NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                         })
                         okAction.isEnabled = false
                         alertController.addAction(cancelAction)

@@ -596,7 +596,7 @@ extension NCMedia {
         }
         if let metadata = appDelegate.arrayDeleteMetadata.firstObject {
             appDelegate.arrayDeleteMetadata.removeObject(at: 0)
-            NCNetworking.sharedInstance.deleteMetadata(metadata as! tableMetadata, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+            NCNetworking.shared.deleteMetadata(metadata as! tableMetadata, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
         }
     }
     

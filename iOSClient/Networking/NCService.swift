@@ -26,7 +26,7 @@ import SVGKit
 import NCCommunication
 
 class NCService: NSObject {
-    @objc static let sharedInstance: NCService = {
+    @objc static let shared: NCService = {
         let instance = NCService()
         return instance
     }()

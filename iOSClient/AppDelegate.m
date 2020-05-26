@@ -64,7 +64,7 @@
     [CCUtility emptyTemporaryDirectory];
     
     // Networking
-    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking sharedInstance]];
+    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
     // Verify upgrade
@@ -203,7 +203,7 @@
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
     NSLog(@"[LOG] Request Service Server Nextcloud");
-    [[NCService sharedInstance] startRequestServicesServer];
+    [[NCService shared] startRequestServicesServer];
     
     NSLog(@"[LOG] Initialize Auto upload");
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
@@ -230,7 +230,7 @@
     // middelware ping
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
-        [[NCService sharedInstance] middlewarePing];
+        [[NCService shared] middlewarePing];
     }
 
     // verify task (download/upload) lost
@@ -303,7 +303,7 @@
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_ssl_certificate_untrusted_", nil) message:NSLocalizedString(@"_connect_server_anyway_", nil)  preferredStyle:UIAlertControllerStyleAlert];
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [[NCNetworking sharedInstance] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
+            [[NCNetworking shared] wrtiteCertificateWithDirectoryCertificate:[CCUtility getDirectoryCerificates]];
             [self startTimerErrorNetworking];
         }]];
                        
@@ -682,7 +682,7 @@
         [self.arrayDeleteMetadata removeObjectAtIndex:0];
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
-            [[NCNetworking sharedInstance] deleteMetadata:metadata account:metadata.account url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+            [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self deleteFile:[NSNotification new]];
         }
@@ -698,7 +698,7 @@
         [self.arrayMoveServerUrlTo removeObjectAtIndex:0];
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
-            [[NCNetworking sharedInstance] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+            [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self moveFile:[NSNotification new]];
         }
@@ -714,7 +714,7 @@
         [self.arrayCopyServerUrlTo removeObjectAtIndex:0];
         tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
         if (account) {
-            [[NCNetworking sharedInstance] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+            [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
         } else {
             [self copyFile:[NSNotification new]];
         }

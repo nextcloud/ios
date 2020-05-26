@@ -404,7 +404,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     let fileName = (serverUrlFileName as NSString).lastPathComponent
                     let serverUrlFileName = serverUrl + "/" + fileName
                     
-                    NCNetworking.sharedInstance.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, errorDescription) in
+                    NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, errorDescription) in
                         
                         NCUtility.sharedInstance.stopActivityIndicator()
                         

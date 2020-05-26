@@ -691,7 +691,7 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        NCNetworking.sharedInstance.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
@@ -706,7 +706,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.sharedInstance.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)

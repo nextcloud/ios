@@ -240,7 +240,7 @@
 - (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
 {
     // The pinnning check
-    if ([[NCNetworking sharedInstance] checkTrustedChallengeWithChallenge:challenge directoryCertificate:[CCUtility getDirectoryCerificates]]) {
+    if ([[NCNetworking shared] checkTrustedChallengeWithChallenge:challenge directoryCertificate:[CCUtility getDirectoryCerificates]]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
@@ -713,9 +713,9 @@
     // Get the last metadata
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", tableAccount.account, metadata.serverUrl]];
         
-    [[NCCommunication shared] getE2EEMetadataWithFileId:directory.fileId e2eToken:nil customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *e2eeMetadata, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0 && e2eeMetadata != nil) {
-            if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eeMetadata privateKey:[CCUtility getEndToEndPrivateKey:tableAccount.account] serverUrl:directory.serverUrl account:tableAccount.account url:tableAccount.url] == false) {
+    [[NCCommunication shared] getE2EEMetadataWithFileId:directory.fileId e2eToken:nil customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *e2eMetadata, NSInteger errorCode, NSString *errorDescription) {
+        if (errorCode == 0 && e2eMetadata != nil) {
+            if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:tableAccount.account] serverUrl:directory.serverUrl account:tableAccount.account url:tableAccount.url] == false) {
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_e2e_error_decode_metadata_"}];
                 return;
             }
@@ -1051,7 +1051,7 @@
     
     // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {
-        [[NCNetworkingE2EE sharedInstance] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(tableDirectory *directory, NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworkingE2EE shared] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(tableDirectory *directory, NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) { }];
     }
         
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];

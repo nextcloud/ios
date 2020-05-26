@@ -61,7 +61,7 @@ extension NCDetailNavigationController {
                 title: titleFavorite,
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                 action: { menuAction in
-                    NCNetworking.sharedInstance.favoriteMetadata(metadata, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                    NCNetworking.shared.favoriteMetadata(metadata, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                 }
             )
         )
@@ -98,7 +98,7 @@ extension NCDetailNavigationController {
                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.sharedInstance.renameMetadata(metadata, fileNameNew: fileNameNew!, url: self.appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: self.appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
                     })
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
@@ -171,7 +171,7 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
                         
-                        NCNetworking.sharedInstance.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     })
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
