@@ -11,7 +11,7 @@ import Foundation
 extension CCMain {
 
     @objc func updateNavBarShadow(_ scrollView: UIScrollView, force: Bool) {
-        if (scrollView.contentOffset.y > -self.viewRichWorkspace.topView.frame.size.height || self.searchController.isActive || force) {
+        if (scrollView.contentOffset.y > self.viewRichWorkspace.topView.frame.size.height || self.searchController.isActive || force) {
             if #available(iOS 13.0, *) {
                 let navBarAppearance = UINavigationBarAppearance()
                 navBarAppearance.configureWithOpaqueBackground()
