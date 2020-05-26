@@ -494,10 +494,12 @@
     NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];    
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
   
-    [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount completion:^(NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && useSubFolder) {
             for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
-                [[NCNetworking shared] createFolderWithFileName:dateSubFolder serverUrl:autoUploadPath account:appDelegate.activeAccount url:appDelegate.activeAccount completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+                NSString *fileName = dateSubFolder.lastPathComponent;
+                NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder].stringByDeletingLastPathComponent;
+                [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
             }
         }
     }];

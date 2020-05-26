@@ -1514,7 +1514,7 @@
         
         UITextField *fileName = alertController.textFields.firstObject;
         
-        [[NCNetworking shared] createFolderWithFileName:fileName.text serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] createFolderWithFileName:fileName.text serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }];
     
     okAction.enabled = NO;
