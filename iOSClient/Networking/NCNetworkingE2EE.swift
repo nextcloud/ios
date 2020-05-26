@@ -219,7 +219,7 @@ import NCCommunication
                           
                 NCCommunication.shared.getE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken) { (account, e2eMetadata, errorCode, errorDescription) in
                     var method = "POST"
-                    var rebuildMetadata: String?
+                    var e2eMetadata: String?
                     
                     if errorCode == 0 && e2eMetadata != nil {
                         if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url) {
@@ -242,10 +242,10 @@ import NCCommunication
                     // Rebuild metadata for send it
                     let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                     if tableE2eEncryption != nil {
-                        rebuildMetadata = NCEndToEndMetadata.sharedInstance.encoderMetadata(tableE2eEncryption!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
+                        e2eMetadata = NCEndToEndMetadata.sharedInstance.encoderMetadata(tableE2eEncryption!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
                     }
                     
-                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: rebuildMetadata, method: method) { (account, metadata, errorCode, errorDescription) in
+                    NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadata, method: method) { (account, e2eMetadata, errorCode, errorDescription) in
                         
                         // remove err 404 becouse is not important in this case
                         var errorCode = errorCode
