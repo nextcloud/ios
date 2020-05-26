@@ -213,7 +213,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="DGE-qR-SnB" kind="relationship" relationship="rootViewController" id="Zy5-nA-QZa"/>
+                        <segue destination="Qyv-Eo-LeA" kind="relationship" relationship="rootViewController" id="Y3c-wh-B5R"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -437,36 +437,39 @@
             <point key="canvasLocation" x="10484" y="1218"/>
         </scene>
         <!--Main-->
-        <scene sceneID="5Py-sI-zil">
+        <scene sceneID="tgH-1R-Pha">
             <objects>
-                <tableViewController storyboardIdentifier="CCMain" extendedLayoutIncludesOpaqueBars="YES" id="DGE-qR-SnB" customClass="CCMain" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="idK-Vi-sZF">
+                <viewController storyboardIdentifier="CCMain" extendedLayoutIncludesOpaqueBars="YES" id="Qyv-Eo-LeA" customClass="CCMain" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="QRE-ju-M4I">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="lCY-Ug-mrO">
-                                <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lCY-Ug-mrO" id="ZmT-UI-0kb">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="DGE-qR-SnB" id="gUu-C3-ycj"/>
-                            <outlet property="delegate" destination="DGE-qR-SnB" id="Q2x-eV-dQq"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="EkG-fE-q92"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dC6-NQ-0Td">
+                                <rect key="frame" x="0.0" y="140" width="414" height="708"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Qyv-Eo-LeA" id="8v3-Et-JVZ"/>
+                                    <outlet property="delegate" destination="Qyv-Eo-LeA" id="CeL-Eu-Cur"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="dC6-NQ-0Td" firstAttribute="leading" secondItem="Sqy-z1-MI5" secondAttribute="leading" id="AAp-Xf-P1c"/>
+                            <constraint firstItem="dC6-NQ-0Td" firstAttribute="top" secondItem="Sqy-z1-MI5" secondAttribute="top" id="BrC-GS-MSF"/>
+                            <constraint firstItem="Sqy-z1-MI5" firstAttribute="trailing" secondItem="dC6-NQ-0Td" secondAttribute="trailing" id="DBL-Bo-AUz"/>
+                            <constraint firstItem="Sqy-z1-MI5" firstAttribute="bottom" secondItem="dC6-NQ-0Td" secondAttribute="bottom" constant="-35" id="d6p-eB-e8X"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Sqy-z1-MI5"/>
+                    </view>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="always" id="2BC-Vb-dXh"/>
                     <connections>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="hse-Jl-nJQ"/>
+                        <outlet property="tableView" destination="dC6-NQ-0Td" id="hew-Gn-bWh"/>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="2Qm-A6-CfB"/>
                     </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Bg4-W5-lB8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="stJ-Yx-rVh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5214" y="1217"/>
+            <point key="canvasLocation" x="5213.04347826087" y="1216.7410714285713"/>
         </scene>
         <!--More-->
         <scene sceneID="50a-pn-1yx">
@@ -651,7 +654,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="hse-Jl-nJQ"/>
+        <segue reference="2Qm-A6-CfB"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="avatar" width="25" height="25"/>
