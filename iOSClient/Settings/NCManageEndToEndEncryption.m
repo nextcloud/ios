@@ -358,12 +358,11 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPublicKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+    [[NCCommunication shared] deleteE2EEPublicKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+       if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:message  delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
     }];
 }
@@ -372,12 +371,11 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPrivateKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
+    [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
     }];
 }
