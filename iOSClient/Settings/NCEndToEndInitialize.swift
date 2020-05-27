@@ -218,10 +218,10 @@ class NCEndToEndInitialize : NSObject  {
                         print(privateKeyChiper)
                         
                         NCCommunication.shared.storeE2EEPrivateKey(privateKey: privateKeyChiper) { (account, privateKey, errorCode, errorDescription) in
-                            
+                       
                             if (errorCode == 0 && account == self.appDelegate.activeAccount) {
                                 
-                                CCUtility.setEndToEndPrivateKey(account, privateKey: privateKey)
+                                CCUtility.setEndToEndPrivateKey(account, privateKey: privateKeyString! as String)
                                 CCUtility.setEndToEndPassphrase(account, passphrase: e2ePassphrase)
                                 
                                 // request publicKey Server()
