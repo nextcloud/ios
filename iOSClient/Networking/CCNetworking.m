@@ -23,7 +23,6 @@
 
 #import "CCNetworking.h"
 #import "NCEndToEndEncryption.h"
-#import "NCNetworkingEndToEnd.h"
 #import "AppDelegate.h"
 #import "NSDate+ISO8601.h"
 #import "NSString+Encode.h"

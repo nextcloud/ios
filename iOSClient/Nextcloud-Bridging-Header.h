@@ -20,7 +20,6 @@
 #import "OCNotificationsAction.h"
 #import "OCShareUser.h"
 #import "UtilsFramework.h"
-#import "NCNetworkingEndToEnd.h"
 #import "NCRichDocumentTemplate.h"
 #import "HCFeatures.h"
 #import "NCComments.h"

@@ -25,7 +25,6 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
-#import "NCNetworkingEndToEnd.h"
 
 @interface CCLogin () <NCLoginQRCodeDelegate>
 {
