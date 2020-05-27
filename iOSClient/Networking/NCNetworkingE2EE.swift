@@ -254,23 +254,12 @@ import NCCommunication
                     }
                     
                     NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { (account, e2eMetadata, errorCode, errorDescription) in
-                        
-                        // remove err 404 becouse is not important in this case
-                        var errorCode = errorCode
-                        var errorDescription = errorDescription
-                        if errorCode == 404 {
-                            errorCode = 0
-                            errorDescription = nil
-                        }
-                        
+
                         if upload {
                             completion(e2eToken, errorCode, errorDescription)
                         } else {
                             self.unlock(account: account, serverUrl: serverUrl) { (_, e2eToken, _, _) in
                                 completion(e2eToken, errorCode, errorDescription)
-//                                if errorCode == 0 && metadata != nil {
-//                                    NCEndToEndMetadata.sharedInstance.decoderMetadata(metadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url)
-//                                }
                             }
                         }
                     }
