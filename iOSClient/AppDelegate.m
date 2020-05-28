@@ -1255,7 +1255,8 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    //[[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    [[NCNetworkingE2EE shared] uploadWithMetadata:metadata];
                     
                     break;
                                         
