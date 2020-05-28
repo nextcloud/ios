@@ -389,7 +389,7 @@ class NCUtility: NSObject {
         UIGraphicsEndImageContext()
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
-        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
+        let avatarImageView = CCAvatar.init(image: image, borderColor: .clear, borderWidth: 0)
         //avatarImageView?.alpha = alpha
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
