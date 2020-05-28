@@ -277,8 +277,8 @@ import NCCommunication
             if errorCode == 0 && e2eToken != nil {
                 
                 _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
-
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadataForUpload.account, "ocId":metadataForUpload.ocId, "serverUrl":metadataForUpload.serverUrl, "status":k_metadataStatusInUpload, "progress":progress.fractionCompleted, "totalBytes":progress.totalUnitCount, "totalBytesExpected": progress.completedUnitCount])
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadataForUpload.account, "ocId":metadataForUpload.ocId, "serverUrl":metadataForUpload.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
                 }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
                 
@@ -298,6 +298,8 @@ import NCCommunication
                         NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataForUpload)
                             
+                        CCGraphics.createNewImage(from: metadataForUpload.fileNameView, ocId: metadataForUpload.ocId, filterGrayScale: false, typeFile: metadataForUpload.typeFile, writeImage: true)
+                        
                         print("[LOG] Insert new upload : " + metadataForUpload.fileNameView)
                             
                     } else {
