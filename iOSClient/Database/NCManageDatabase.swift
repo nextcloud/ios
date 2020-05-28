@@ -1661,6 +1661,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table LocalFile
     
+    @discardableResult
     @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
         
         let realm = try! Realm()

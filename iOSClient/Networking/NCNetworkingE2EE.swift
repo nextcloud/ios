@@ -272,19 +272,43 @@ import NCCommunication
             return
         }
         
-        //
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadataForUpload.account, serverUrl: metadataForUpload.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: appDelegate.activeUrl, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             if errorCode == 0 && e2eToken != nil {
                 
                 _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
-                           
-                    }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
-                           
-                        NCNetworkingE2EE.shared.unlock(account: metadataForUpload.account, serverUrl: metadataForUpload.session) { (_, _, _, _) in }
+
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadataForUpload.account, "ocId":metadataForUpload.ocId, "serverUrl":metadataForUpload.serverUrl, "status":k_metadataStatusInUpload, "progress":progress.fractionCompleted, "totalBytes":progress.totalUnitCount, "totalBytesExpected": progress.completedUnitCount])
+                    
+                }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
+                
+                    if (errorCode == 0 && date != nil && etag != nil && ocId != nil) {
+                            
+                        CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataForUpload.ocId))
+                            
+                        metadataForUpload.date = date!
+                        metadataForUpload.etag = etag!
+                        metadataForUpload.ocId = ocId!
+                        metadataForUpload.session = ""
+                        metadataForUpload.sessionError = ""
+                        metadataForUpload.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                        metadataForUpload.status = Int(k_metadataStatusNormal)
+                            
+                        NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataForUpload)
+                            
+                        print("[LOG] Insert new upload : " + metadataForUpload.fileNameView)
+                            
+                    } else {
+                            
                     }
+                        
+                    NCNetworkingE2EE.shared.unlock(account: metadataForUpload.account, serverUrl: metadataForUpload.session) { (_, _, _, _) in }
+                        
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadataForUpload, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                }
             }
-            
         }
     }
     
