@@ -496,7 +496,11 @@
         *initializationVector = [ivData base64EncodedStringWithOptions:0];
         *authenticationTag = [tagData base64EncodedStringWithOptions:0];
 
-        return true;
+        if (key == nil || initializationVector == nil || authenticationTag == nil) {
+            return false;
+        } else {
+            return true;
+        }
     }
     
     return false;
