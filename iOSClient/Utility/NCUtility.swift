@@ -106,6 +106,24 @@ class NCUtility: NSObject {
         return 0
     }
     
+    @objc func getFileSize(filePath: String) -> Double {
+        
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.size] as? Double ?? 0
+        } catch { }
+        return 0
+    }
+    
+    @objc func getFileModificationDate(filePath: String) -> Date {
+        
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.modificationDate] as? Date ?? Date()
+        } catch { }
+        return Date()
+    }
+    
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width

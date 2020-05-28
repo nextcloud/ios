@@ -176,6 +176,92 @@ import NCCommunication
         }
     }
     
+    //MARK: - Upload
+    @objc func upload(metadata: tableMetadata) {
+        
+        var metadataForUpload: tableMetadata?
+        let object = tableE2eEncryption()
+        let fileNameIdentifier = CCUtility.generateRandomIdentifier()!
+        var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
+        var e2eMetadataKey = ""
+        var e2eMetadataKeyIndex = 0
+        let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
+        var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            metadata.contentType = internalContenType.contentType
+            metadata.iconName = internalContenType.iconName
+            metadata.typeFile = internalContenType.typeFile
+            metadata.date = NCUtility.sharedInstance.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
+            metadata.size = NCUtility.sharedInstance.getFileSize(filePath: fileNameLocalPath)
+            
+            metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            
+        } else {
+            CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { (extractMetadata, fileNamePath) in
+                
+                guard let extractMetadata = extractMetadata else {
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    return
+                }
+                
+                fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
+                CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
+                metadata.size = NCUtility.sharedInstance.getFileSize(filePath: fileNameLocalPath)
+                metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
+            }
+        }
+        
+        if metadataForUpload!.size > Double(k_max_filesize_E2EE) {
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
+            return
+        }
+                
+        NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: fileNameIdentifier, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
+        
+        if let object = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            e2eMetadataKey = object.metadataKey
+            e2eMetadataKeyIndex = object.metadataKeyIndex
+        } else {
+            let key = NCEndToEndEncryption.sharedManager()?.generateKey(16) as NSData?
+            e2eMetadataKey = key!.base64EncodedString()
+        }
+        
+        object.account = metadata.account
+        object.authenticationTag = authenticationTag as String?
+        object.fileName = metadata.fileNameView
+        object.fileNameIdentifier = fileNameIdentifier
+        object.fileNamePath = fileNameLocalPath
+        object.key = key! as String
+        object.initializationVector = initializationVector! as String
+        object.metadataKey = e2eMetadataKey
+        object.metadataKeyIndex = e2eMetadataKeyIndex
+        object.mimeType = internalContenType.contentType
+        object.serverUrl = metadata.serverUrl
+        
+        let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)!
+        object.version = Int(e2eeApiVersion) ?? 1
+        
+        //
+        if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            return
+        }
+        
+        metadataForUpload!.fileName = fileNameIdentifier
+        metadataForUpload!.e2eEncrypted = true
+      
+        NCManageDatabase.sharedInstance.addMetadata(metadataForUpload!)
+        let serverUrlFileName = metadataForUpload!.serverUrl + "/" + metadataForUpload!.fileName
+        
+        _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload!.date as Date, dateModificationFile: metadataForUpload!.date as Date, progressHandler: { (progress) in
+            
+        }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
+            
+        }
+    }
+    
     //MARK: - E2EE
     
     @objc func lock(account:String, serverUrl: String, completion: @escaping (_ direcrtory: tableDirectory?, _ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
