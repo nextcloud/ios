@@ -22,6 +22,7 @@
 import Foundation
 import OpenSSL
 import NCCommunication
+import CFNetwork
 
 @objc class NCNetworkingE2EE: NSObject {
     @objc public static let shared: NCNetworkingE2EE = {
@@ -276,7 +277,7 @@ import NCCommunication
             
             if errorCode == 0 && e2eToken != nil {
                 
-                _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
+                let task = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
                     
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadataForUpload.account, "ocId":metadataForUpload.ocId, "serverUrl":metadataForUpload.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
@@ -302,14 +303,48 @@ import NCCommunication
                         
                         print("[LOG] Insert new upload : " + metadataForUpload.fileNameView)
                             
-                    } else {
+                    } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                        
+                        if (metadataForUpload.status == k_metadataStatusUploadForcedStart) {
                             
+                            metadataForUpload.session = k_upload_session
+                            metadataForUpload.sessionError = ""
+                            metadataForUpload.sessionTaskIdentifier = 0
+                            metadataForUpload.status = Int(k_metadataStatusInUpload)
+                            
+                            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                            
+                        } else {
+                            
+                            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId))
+                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataForUpload.ocId))
+                        }
+                        
+                    } else {
+                        
+                        if errorCode == 401 || errorCode == 403 {
+                            NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadataForUpload.account)
+                        } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
+                            CCUtility.setCertificateError(metadataForUpload.account, error: true)
+                        }
+                        
+                        NCManageDatabase.sharedInstance.setMetadataSession(nil, sessionError: errorDescription, sessionSelector: nil, sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusUploadError), predicate: NSPredicate(format: "ocId == %@", metadataForUpload.ocId))
                     }
                         
                     NCNetworkingE2EE.shared.unlock(account: metadataForUpload.account, serverUrl: metadataForUpload.session) { (_, _, _, _) in }
                         
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadataForUpload, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
                 }
+                
+                guard let taskUpload = task else {
+                    return
+                }
+                
+                NCManageDatabase.sharedInstance.setMetadataSession(metadataForUpload.session, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: taskUpload.taskIdentifier, status: Int(k_metadataStatusUploading), predicate: NSPredicate(format: "ocId == %@", metadataForUpload.ocId))
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadataForUpload.ocId, "task":taskUpload, "serverUrl":metadataForUpload.serverUrl, "account": metadataForUpload.account])
+                    
+                print("[LOG] Upload file " + metadataForUpload.fileNameView)
             }
         }
     }
