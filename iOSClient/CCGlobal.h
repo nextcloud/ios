@@ -122,6 +122,9 @@
 #define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
 #define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
+#define k_download_session_default                      @"download.default"
+#define k_upload_session_default                        @"upload.default"
+
 // Session Download Upload Extension
 #define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
 

@@ -145,7 +145,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                             NCUtility.sharedInstance.startActivityIndicator(view: self, bottom: 0)
                         }
                         
-                        _ = NCCommunication.shared.download(serverUrlFileName: urlString, fileNameLocalPath: fileNameLocalPath, progressHandler: { (progress) in
+                        NCCommunication.shared.download(serverUrlFileName: urlString, fileNameLocalPath: fileNameLocalPath, progressHandler: { (progress) in
                             
                         }, completionHandler: { (account, etag, date, lenght, errorCode, errorDescription) in
                             

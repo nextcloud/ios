@@ -196,6 +196,7 @@ import CFNetwork
             metadata.typeFile = internalContenType.typeFile
             metadata.date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
+            metadata.session = k_upload_session_default
             
             if metadata.size > Double(k_max_filesize_E2EE) {
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
@@ -218,7 +219,8 @@ import CFNetwork
                 CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
                 extractMetadata.fileName = fileNameIdentifier
                 extractMetadata.e2eEncrypted = true
-                
+                extractMetadata.session = k_upload_session_default
+
                 if extractMetadata.size > Double(k_max_filesize_E2EE) {
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
                     return
@@ -277,7 +279,7 @@ import CFNetwork
             
             if errorCode == 0 && e2eToken != nil {
                 
-                let task = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
                     
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadataForUpload.account, "ocId":metadataForUpload.ocId, "serverUrl":metadataForUpload.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
@@ -307,7 +309,6 @@ import CFNetwork
                         
                         if (metadataForUpload.status == k_metadataStatusUploadForcedStart) {
                             
-                            metadataForUpload.session = k_upload_session
                             metadataForUpload.sessionError = ""
                             metadataForUpload.sessionTaskIdentifier = 0
                             metadataForUpload.status = Int(k_metadataStatusInUpload)
@@ -336,14 +337,12 @@ import CFNetwork
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadataForUpload, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
                 }
                 
-                guard let taskUpload = task else {
-                    return
-                }
-                
+               
+                /*
                 NCManageDatabase.sharedInstance.setMetadataSession(metadataForUpload.session, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: taskUpload.taskIdentifier, status: Int(k_metadataStatusUploading), predicate: NSPredicate(format: "ocId == %@", metadataForUpload.ocId))
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadataForUpload.ocId, "task":taskUpload, "serverUrl":metadataForUpload.serverUrl, "account": metadataForUpload.account])
-                    
+                */
                 print("[LOG] Upload file " + metadataForUpload.fileNameView)
             }
         }
