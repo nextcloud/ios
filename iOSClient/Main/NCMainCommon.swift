@@ -143,41 +143,22 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         
         var actionReloadDatasource = k_action_NULL
         var metadata = metadata
-        var getSession: URLSession?
         
         if metadata.session.count == 0 { return }
-        if metadata.session == k_download_session_default || metadata.session == k_upload_session_default {
-            getSession = NCCommunication.shared.getSessionManager()
-        } else {
-            getSession = CCNetworking.shared().getSessionfromSessionDescription(metadata.session)
-        }
-        guard let session = getSession else { return }
+        guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
         
         session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
             
             var cancel = false
             
-            for task in dataTasks {
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                    cancel = true
-                }
-            }
-            for task in uploadTasks {
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                    cancel = true
-                }
-            }
-            for task in downloadTasks {
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                    cancel = true
-                }
-            }
-            
             // DOWNLOAD
-            if metadata.session.contains("download") {
+            if metadata.session.count > 0 && metadata.session.contains("download") {
+                for task in downloadTasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                        cancel = true
+                    }
+                }
                 if cancel == false {
                     NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
@@ -185,13 +166,18 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             }
             
             // UPLOAD
-            if metadata.session.contains("upload") {
-                if cancel {
-                    if uploadStatusForcedStart {
-                        metadata.status = Int(k_metadataStatusUploadForcedStart)
-                        metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+            if metadata.session.count > 0 && metadata.session.contains("upload") {
+                for task in uploadTasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        if uploadStatusForcedStart {
+                            metadata.status = Int(k_metadataStatusUploadForcedStart)
+                            metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                        }
+                        task.cancel()
+                        cancel = true
                     }
-                } else {
+                }
+                if cancel == false {
                     do {
                         try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     }
