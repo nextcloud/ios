@@ -29,6 +29,8 @@ class NCUtilityFileSystem: NSObject {
         return instance
     }()
     
+    let fileManager = FileManager.default
+    
     @objc func getFileSize(asset: PHAsset) -> Int64 {
         
         let resources = PHAssetResource.assetResources(for: asset)
@@ -46,7 +48,7 @@ class NCUtilityFileSystem: NSObject {
     @objc func getFileSize(filePath: String) -> Double {
         
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.size] as? Double ?? 0
         } catch { }
         return 0
@@ -55,7 +57,7 @@ class NCUtilityFileSystem: NSObject {
     @objc func getFileModificationDate(filePath: String) -> Date {
         
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.modificationDate] as? Date ?? Date()
         } catch { }
         return Date()
