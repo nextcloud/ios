@@ -59,17 +59,15 @@ import Foundation
     }
 
     func createPath() -> CGPath {
-        let height: CGFloat = 16
-        let depth: CGFloat = height * 2 + 2
+        let height: CGFloat = 28
+        let margin: CGFloat = 8
         let path = UIBezierPath()
         let centerWidth = self.frame.width / 2
 
         path.move(to: CGPoint(x: 0, y: 0)) // start top left
-        path.addLine(to: CGPoint(x: (centerWidth - height * 2) - 5, y: 0)) // the beginning of the trough
+        path.addLine(to: CGPoint(x: (centerWidth - height - margin), y: 0)) // the beginning of the trough
         // first curve down
-        path.addQuadCurve(to: CGPoint(x: centerWidth, y: depth), controlPoint: CGPoint(x: centerWidth - height * 2, y: depth))
-        // second curve up
-        path.addQuadCurve(to: CGPoint(x: centerWidth + height * 2 + 5, y: 0), controlPoint: CGPoint(x: centerWidth + height * 2, y: depth))
+        path.addArc(withCenter: CGPoint(x: centerWidth, y: 0), radius: height + margin, startAngle: CGFloat(180 * Double.pi / 180), endAngle: CGFloat(0 * Double.pi / 180), clockwise: false)
         // complete the rect
         path.addLine(to: CGPoint(x: self.frame.width, y: 0))
         path.addLine(to: CGPoint(x: self.frame.width, y: self.frame.height))

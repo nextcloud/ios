@@ -883,7 +883,7 @@
     item.selectedImage = item.image;
     
     // Plus Button
-    int buttonSize = 56;
+    int buttonSize = 57;
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
