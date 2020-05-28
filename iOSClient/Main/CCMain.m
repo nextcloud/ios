@@ -1085,7 +1085,7 @@
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
-        metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
+        metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
                         
         if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {

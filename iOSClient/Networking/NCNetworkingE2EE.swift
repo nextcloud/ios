@@ -193,8 +193,8 @@ import NCCommunication
             metadata.contentType = internalContenType.contentType
             metadata.iconName = internalContenType.iconName
             metadata.typeFile = internalContenType.typeFile
-            metadata.date = NCUtility.sharedInstance.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
-            metadata.size = NCUtility.sharedInstance.getFileSize(filePath: fileNameLocalPath)
+            metadata.date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
+            metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
             
             metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
@@ -208,7 +208,7 @@ import NCCommunication
                 
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
-                metadata.size = NCUtility.sharedInstance.getFileSize(filePath: fileNameLocalPath)
+                metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
                 metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
             }
         }

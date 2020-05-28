@@ -92,38 +92,6 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func getFileSize(asset: PHAsset) -> Int64 {
-        
-        let resources = PHAssetResource.assetResources(for: asset)
-        
-        if let resource = resources.first {
-            if resource.responds(to: #selector(NSDictionary.fileSize)) {
-                let unsignedInt64 = resource.value(forKey: "fileSize") as! CLong
-                return Int64(bitPattern: UInt64(unsignedInt64))
-            }
-        }
-        
-        return 0
-    }
-    
-    @objc func getFileSize(filePath: String) -> Double {
-        
-        do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.size] as? Double ?? 0
-        } catch { }
-        return 0
-    }
-    
-    @objc func getFileModificationDate(filePath: String) -> Date {
-        
-        do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.modificationDate] as? Date ?? Date()
-        } catch { }
-        return Date()
-    }
-    
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width

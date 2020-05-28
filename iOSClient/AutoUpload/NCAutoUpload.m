@@ -403,7 +403,7 @@
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
-            metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
+            metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
             metadataForUpload.status = k_metadataStatusWaitUpload;
 
             // Add Medtadata MOV LIVE PHOTO for upload
