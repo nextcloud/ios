@@ -782,10 +782,12 @@
             [request setValue:[NSString stringWithFormat:@"%ld", dateFileCreation] forHTTPHeaderField:@"X-OC-Mtime"];
         }
     }
-    
+     
     // E2EE : CREATE AND SEND METADATA
     if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-            
+         
+#ifndef EXTENSION
+        
         [[NCNetworkingE2EE shared] sendE2EMetadataWithAccount:tableAccount.account serverUrl:serverUrl fileNameRename:nil fileNameNewRename:nil deleteE2eEncryption:nil url:tableAccount.url upload:true completion:^(NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) {
             
             if (errorCode == 0) {
@@ -817,7 +819,8 @@
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorDescription}];
             }
         }];
-            
+#endif
+        
      } else {
     
          // NSURLSession
@@ -1032,15 +1035,17 @@
             (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         }
     }
-    
-    // Detect E2EE
+        
+#ifndef EXTENSION
+
+    // E2EE : UNLOCK
     tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", metadata.account, metadata.serverUrl, k_metadataStatusInUpload, k_metadataStatusUploading]];
     
-    // E2EE : UNLOCK
     if (isE2EEDirectory && e2eeMetadataInSession == nil) {
         [[NCNetworkingE2EE shared] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(tableDirectory *directory, NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) { }];
     }
-        
+#endif
+    
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
 }
 

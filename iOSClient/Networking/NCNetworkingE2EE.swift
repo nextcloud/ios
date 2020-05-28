@@ -29,6 +29,8 @@ import NCCommunication
         return instance
     }()
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     //MARK: - WebDav Create Folder
     
     func createFolder(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -235,6 +237,7 @@ import NCCommunication
         var e2eMetadataKey = ""
         var e2eMetadataKeyIndex = 0
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)!
+        let serverUrlFileName = metadataForUpload.serverUrl + "/" + metadataForUpload.fileName
         
         NCEndToEndEncryption.sharedManager()?.encryptFileName(metadataForUpload.fileNameView, fileNameIdentifier: metadataForUpload.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag)
         
@@ -266,11 +269,18 @@ import NCCommunication
             return
         }
         
-        let serverUrlFileName = metadataForUpload.serverUrl + "/" + metadataForUpload.fileName
-        
-        _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, progressHandler: { (progress) in
+        //
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadataForUpload.account, serverUrl: metadataForUpload.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: appDelegate.activeUrl) { (e2eToken, errorCode, errorDescription) in
             
-        }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
+            if errorCode == 0 && e2eToken != nil {
+                
+                _ = NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadataForUpload.date as Date, dateModificationFile: metadataForUpload.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], progressHandler: { (progress) in
+                           
+                    }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
+                           
+                        NCNetworkingE2EE.shared.unlock(account: metadataForUpload.account, serverUrl: metadataForUpload.session) { (_, _, _, _) in }
+                    }
+            }
             
         }
     }
