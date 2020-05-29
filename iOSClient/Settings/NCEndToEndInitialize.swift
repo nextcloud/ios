@@ -28,7 +28,7 @@ import NCCommunication
     
     func endToEndInitializeSuccess()
 }
-/*
+
 class NCEndToEndInitialize : NSObject  {
 
     @objc weak var delegate: NCEndToEndInitializeDelegate?
@@ -287,8 +287,8 @@ class NCEndToEndInitialize : NSObject  {
     }
     
 }
-*/
 
+/*
  class NCEndToEndInitialize : NSObject  {
 
      @objc weak var delegate: NCEndToEndInitializeDelegate?
@@ -559,4 +559,4 @@ class NCEndToEndInitialize : NSObject  {
      }
      
  }
-
+*/
