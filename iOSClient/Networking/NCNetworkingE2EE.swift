@@ -30,8 +30,6 @@ import CFNetwork
         return instance
     }()
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     //MARK: - WebDav Create Folder
     
     func createFolder(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -186,7 +184,12 @@ import CFNetwork
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         let fileNameIdentifier = CCUtility.generateRandomIdentifier()!
-
+        
+        guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"Internal error"])
+            return
+        }
+        
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
             metadata.fileName = fileNameIdentifier
@@ -204,7 +207,7 @@ import CFNetwork
             }
             
             metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
-            self.upload(metadataForUpload: metadataForUpload!)
+            self.upload(metadataForUpload: metadataForUpload!, account: account)
             
         } else {
             
@@ -227,12 +230,12 @@ import CFNetwork
                 }
                 
                 metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
-                self.upload(metadataForUpload: metadataForUpload!)
+                self.upload(metadataForUpload: metadataForUpload!, account: account)
             }
         }
     }
         
-    private func upload(metadataForUpload: tableMetadata) {
+    private func upload(metadataForUpload: tableMetadata, account: tableAccount) {
         
         let object = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
@@ -275,7 +278,7 @@ import CFNetwork
             return
         }
         
-        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadataForUpload.account, serverUrl: metadataForUpload.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: appDelegate.activeUrl, upload: true) { (e2eToken, errorCode, errorDescription) in
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadataForUpload.account, serverUrl: metadataForUpload.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: account.url, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             if errorCode == 0 && e2eToken != nil {
                                 
