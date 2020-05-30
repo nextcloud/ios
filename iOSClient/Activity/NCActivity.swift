@@ -394,7 +394,9 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!, bottom: 0)
             
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, progressHandler: { (progress) in
+            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+                
+            }, progressHandler: { (progress) in
                 
             }) { (account, etag, date, lenght, errorCode, errorDescription) in
                 
