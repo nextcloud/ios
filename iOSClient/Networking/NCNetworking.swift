@@ -231,11 +231,13 @@ import NCCommunication
                 metadata.sessionError = errorDescription
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                 
+#if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
                 } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                     CCUtility.setCertificateError(metadata.account, error: true)
                 }
+#endif
             }
             
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
