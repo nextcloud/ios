@@ -198,18 +198,29 @@ import NCCommunication
             var errorCode = errorCode
             var errorDescription = errorDescription ?? ""
             
-            if errorCode  == 0 || errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue){
+            if errorCode  == 0 {
                
-                errorCode = 0
-                errorDescription = ""
-
                 metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 if setFavorite { metadata.favorite = true }
                 metadata.status = Int(k_metadataStatusNormal)
-                
+                          
+#if !EXTENSION
+                if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                    
+                    NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                }
+#endif
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 
+            } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                
+                errorCode = 0
+                errorDescription = ""
+                
+                metadata.status = Int(k_metadataStatusNormal)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                                
             } else {
                 
                 metadata.status = Int(k_metadataStatusDownloadError)
