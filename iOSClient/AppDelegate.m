@@ -813,11 +813,14 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
+        NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status = %d OR status == %d OR status == %d", k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
         NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+
+        NSInteger total = counterDownload + counterUpload;
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
-            [UIApplication sharedApplication].applicationIconBadgeNumber = counterUpload;
+            [UIApplication sharedApplication].applicationIconBadgeNumber = total;
             
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
             if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
@@ -827,8 +830,8 @@
                     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
                         UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
                             
-                        if (counterUpload > 0) {
-                            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)counterUpload]];
+                        if (total > 0) {
+                            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
                         } else {
                             [tabBarItem setBadgeValue:nil];
                         }
