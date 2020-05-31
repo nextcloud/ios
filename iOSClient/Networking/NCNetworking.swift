@@ -205,6 +205,7 @@ import NCCommunication
                 metadata.etag = etag ?? ""
                 if setFavorite { metadata.favorite = true }
                 metadata.status = Int(k_metadataStatusNormal)
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                           
 #if !EXTENSION
                 if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -220,12 +221,15 @@ import NCCommunication
                 errorDescription = ""
                 
                 metadata.status = Int(k_metadataStatusNormal)
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                 
             } else {
                 
                 metadata.status = Int(k_metadataStatusDownloadError)
                 metadata.sessionError = errorDescription
+                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
             }
             
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
