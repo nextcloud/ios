@@ -175,9 +175,7 @@ import NCCommunication
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
-        if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) {
-            return
-        }
+        if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
         
         metadata.status = Int(k_metadataStatusInDownload)
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
