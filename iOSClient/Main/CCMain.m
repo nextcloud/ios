@@ -2671,7 +2671,6 @@
         return;
     }
     
-    // se è in corso una sessione
     if (self.metadata.status != k_metadataStatusNormal)
         return;
     
