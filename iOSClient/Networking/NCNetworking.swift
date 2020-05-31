@@ -168,6 +168,7 @@ import NCCommunication
     }
     
     //MARK: - Download
+    
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
         
         var metadata = metadata
