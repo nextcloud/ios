@@ -599,9 +599,8 @@
     
     self.metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
-    // if is in download [do not touch]
-    if (self.metadata.status == k_metadataStatusWaitDownload || self.metadata.status == k_metadataStatusInDownload || self.metadata.status == k_metadataStatusDownloading)
-        return;
+    if (self.metadata.status != k_metadataStatusNormal)
+    return;
     
     // File
     if (self.metadata.directory == NO) {
