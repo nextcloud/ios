@@ -144,13 +144,7 @@ extension NCDetailNavigationController {
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             
-                            metadata.session = k_download_session
-                            metadata.sessionError = ""
-                            metadata.sessionSelector = selectorLoadOffline
-                            metadata.status = Int(k_metadataStatusWaitDownload)
-
-                            NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            self.appDelegate.startLoadAutoDownloadUpload()
+                            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline)
                             
                         } else {
                             NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)

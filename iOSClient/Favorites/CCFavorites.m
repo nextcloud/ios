@@ -647,16 +647,7 @@
                         [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
                     }
                     
-                    self.metadata.session = k_download_session;
-                    self.metadata.sessionError = @"";
-                    self.metadata.sessionSelector = selectorLoadFileViewFavorite;
-                    self.metadata.status = k_metadataStatusWaitDownload;
-                        
-                    // Add Metadata for Download
-                    [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.metadata.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
-                    
-                    [appDelegate startLoadAutoDownloadUpload];
+                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileViewFavorite setFavorite:false];
                 }
             }
         }

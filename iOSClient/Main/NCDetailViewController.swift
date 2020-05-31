@@ -368,18 +368,12 @@ class NCDetailViewController: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                metadata.session = k_download_session
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.status = Int(k_metadataStatusWaitDownload)
-                
-                self.metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                
+
+                NCNetworking.shared.download(metadata: metadata, selector: "")
+
                 if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
                     metadatas[index] = self.metadata!
-                }
-                
-                appDelegate.startLoadAutoDownloadUpload()
+                }                
             }
         }
     }
@@ -685,15 +679,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND session != ''", metadata.ocId)) == nil {
                 
-                let metadata = NCManageDatabase.sharedInstance.initNewMetadata(metadata)
-                                          
-                metadata.session = k_download_session
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.status = Int(k_metadataStatusWaitDownload)
-                                          
-                NCManageDatabase.sharedInstance.addMetadata(metadata)
-                appDelegate.startLoadAutoDownloadUpload()
+                NCNetworking.shared.download(metadata: metadata, selector: "")
             }
             
             completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
@@ -716,7 +702,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 
                 if errorCode == 0 && account == metadata.account {
                     
-                    _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
                     if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                         completion(index, image, metadata, ZoomScale.default, nil)

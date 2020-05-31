@@ -486,22 +486,12 @@ extension CCMain {
                         action: { menuAction in
                             if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
                                 
-                                metadata.session = k_download_session
-                                metadata.sessionError = ""
-                                metadata.sessionSelector = selectorLoadOffline
-                                metadata.status = Int(k_metadataStatusWaitDownload)
-                                NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline)
                                 
                                 if let metadataLivePhoto = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
-                                    metadataLivePhoto.session = k_download_session
-                                    metadataLivePhoto.sessionError = ""
-                                    metadataLivePhoto.sessionSelector = selectorLoadOffline
-                                    metadataLivePhoto.status = Int(k_metadataStatusWaitDownload)
-                                    NCManageDatabase.sharedInstance.addMetadata(metadataLivePhoto)
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline)
                                 }
                                 
-                                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
-                                appDelegate.startLoadAutoDownloadUpload()
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                                 DispatchQueue.main.async {

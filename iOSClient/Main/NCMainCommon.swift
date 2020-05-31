@@ -873,13 +873,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                                     
         } else {
             
-            metadata.session = k_download_session
-            metadata.sessionError = ""
-            metadata.sessionSelector = selector //selectorOpenIn
-            metadata.status = Int(k_metadataStatusWaitDownload)
-            
-            NCManageDatabase.sharedInstance.addMetadata(metadata)
-            reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
+            NCNetworking.shared.download(metadata: metadata, selector: selector)
         }
     }
 

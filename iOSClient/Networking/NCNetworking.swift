@@ -167,6 +167,61 @@ import NCCommunication
         return result
     }
     
+    //MARK: - Download
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
+        
+        var metadata = metadata
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
+        
+        if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) {
+            return
+        }
+        
+        metadata.status = Int(k_metadataStatusInDownload)
+        if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+        
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+            
+            metadata.status = Int(k_metadataStatusDownloading)
+            metadata.sessionTaskIdentifier = task.taskIdentifier
+            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            
+        }, progressHandler: { (progress) in
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            
+        }) { (account, etag, date, length, errorCode, errorDescription) in
+            
+            var errorCode = errorCode
+            var errorDescription = errorDescription ?? ""
+            
+            if errorCode  == 0 || errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue){
+               
+                errorCode = 0
+                errorDescription = ""
+
+                metadata.date = date ?? NSDate()
+                metadata.etag = etag ?? ""
+                if setFavorite { metadata.favorite = true }
+                metadata.status = Int(k_metadataStatusNormal)
+                
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                
+            } else {
+                
+                metadata.status = Int(k_metadataStatusDownloadError)
+                metadata.sessionError = errorDescription
+            }
+            
+            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+        }
+    }
+    
     //MARK: - WebDav Read file, folder
     
     @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {

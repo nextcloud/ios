@@ -290,9 +290,7 @@
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
     NSString *oldServerUrl;
-    NSMutableArray *metadataToAdd = [NSMutableArray new];
     NSMutableArray *serverUrlToReload = [NSMutableArray new];
-
 
     for (tableMetadata *metadata in metadatas) {
         
@@ -303,16 +301,9 @@
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:metadata.account];
         }
         
-        metadata.session = k_download_session;
-        metadata.sessionError = @"";
-        metadata.sessionSelector = selectorDownloadSynchronize;
-        metadata.status = k_metadataStatusWaitDownload;
-        
-        [metadataToAdd addObject:metadata];
+        [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
     }
-    
-    [[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd];
-    
+        
     for (NSString *serverUrl in serverUrlToReload) {
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
     }

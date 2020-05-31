@@ -183,7 +183,7 @@
     [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal ocId:metadataForUpload.ocId action:k_action_NULL];
 
-    [appDelegate startLoadAutoDownloadUpload];
+    [appDelegate startLoadAutoUpload];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

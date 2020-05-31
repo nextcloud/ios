@@ -44,7 +44,7 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
+@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
@@ -149,8 +149,8 @@
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 // Task Networking
-- (void)loadAutoDownloadUpload;
-- (void)startLoadAutoDownloadUpload;
+- (void)loadAutoUpload;
+- (void)startLoadAutoUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

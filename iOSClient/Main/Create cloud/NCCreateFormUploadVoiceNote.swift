@@ -267,7 +267,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         NCManageDatabase.sharedInstance.addMetadata(metadata)
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
 
-        self.appDelegate.startLoadAutoDownloadUpload()
+        self.appDelegate.startLoadAutoUpload()
         
         self.dismiss(animated: true, completion: nil)
     }

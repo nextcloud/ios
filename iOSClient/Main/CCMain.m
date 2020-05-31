@@ -534,18 +534,8 @@
         }
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
-                       
-            metadata.favorite = favorite;
-            metadata.session = k_download_session;
-            metadata.sessionError = @"";
-            metadata.sessionSelector = selectorDownloadSynchronize;
-            metadata.status = k_metadataStatusWaitDownload;
-                           
-            // Add Metadata for Download
-            [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
-                    
-            [appDelegate startLoadAutoDownloadUpload];
+                   
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -814,7 +804,7 @@
                         [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
                             
-                        [appDelegate startLoadAutoDownloadUpload];
+                        [appDelegate startLoadAutoUpload];
                     }
 
                 } else {
@@ -934,15 +924,7 @@
             
             if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                metadata.session = k_download_session;
-                metadata.sessionError = @"";
-                metadata.sessionSelector = selectorSave;
-                metadata.status = k_metadataStatusWaitDownload;
-                    
-                // Add Metadata for Download
-                [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                
-                [appDelegate startLoadAutoDownloadUpload];
+                [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorSave setFavorite:false];
             }
         }
         
@@ -1133,7 +1115,7 @@
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
-        [appDelegate startLoadAutoDownloadUpload];
+        [appDelegate startLoadAutoUpload];
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
 }
@@ -1938,16 +1920,7 @@
         
     } else {
         
-        self.metadata.session = k_download_session;
-        self.metadata.sessionError = @"";
-        self.metadata.sessionSelector = selectorLoadCopy;
-        self.metadata.status = k_metadataStatusWaitDownload;
-            
-        // Add Metadata for Download
-        [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
-        
-        [appDelegate startLoadAutoDownloadUpload];
+        [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadCopy setFavorite:false];
     }
 }
 
@@ -1967,16 +1940,7 @@
             
         } else {
 
-            metadata.session = k_download_session;
-            metadata.sessionError = @"";
-            metadata.sessionSelector = selectorLoadCopy;
-            metadata.status = k_metadataStatusWaitDownload;
-                
-            // Add Metadata for Download
-            [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
-            
-            [appDelegate startLoadAutoDownloadUpload];
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorLoadCopy setFavorite:false];
         }
     }
     
@@ -2062,7 +2026,7 @@
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     
-    [appDelegate startLoadAutoDownloadUpload];
+    [appDelegate startLoadAutoUpload];
 }
 
 #pragma mark -
@@ -2753,16 +2717,7 @@
                         [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
                     }
                    
-                    self.metadata.session = k_download_session;
-                    self.metadata.sessionError = @"";
-                    self.metadata.sessionSelector = selectorLoadFileView;
-                    self.metadata.status = k_metadataStatusWaitDownload;
-                    
-                    // Add Metadata for Download
-                    [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:self.metadata.ocId action:k_action_MOD];
-                    
-                    [appDelegate startLoadAutoDownloadUpload];
+                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileView setFavorite:false];
                 }
             }
         }

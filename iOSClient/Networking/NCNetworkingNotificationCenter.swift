@@ -66,7 +66,6 @@ import Foundation
                     // Synchronized
                     if selector == selectorDownloadSynchronize {
                         appDelegate.updateApplicationIconBadgeNumber()
-                        appDelegate.startLoadAutoDownloadUpload()
                         return
                     }
                     
@@ -137,13 +136,11 @@ import Foundation
                     
                     // Save to Photo Album
                     if selector == selectorSave {
-                        
                         appDelegate.activeMain.save(toPhotoAlbum: metadata)
                     }
                     
                     // Copy File
                     if selector == selectorLoadCopy {
-                        
                         appDelegate.activeMain.copyFile(toPasteboard: metadata)
                     }
                     
@@ -152,9 +149,7 @@ import Foundation
                         
                         NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
                     }
-                                
-                    appDelegate.startLoadAutoDownloadUpload()
-                    
+                                         
                 } else {
                     
                     // File do not exists on server, remove in local
@@ -172,9 +167,7 @@ import Foundation
                     } else {
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
-                }
-            
-                appDelegate.startLoadAutoDownloadUpload()
+                }            
             }
         }
     }
@@ -201,7 +194,7 @@ import Foundation
                 
                 if metadata.account == appDelegate.activeAccount {
                     if errorCode == 0 {
-                        appDelegate.startLoadAutoDownloadUpload()
+                        appDelegate.startLoadAutoUpload()
                     } else {
                         if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorDescription != "" {
                             NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
