@@ -141,54 +141,62 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
         
-        var actionReloadDatasource = k_action_NULL
-        var metadata = metadata
-        
         if metadata.session.count == 0 { return }
-        guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
+        let serverUrl = metadata.serverUrl
+
+        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
+            
+            NCCommunication.shared.getDownloadTask(taskIdentifier: metadata.sessionTaskIdentifier) { (task) in
+                if task != nil {
+                    task?.cancel()
+                } else {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                        
+                        metadata.session = ""
+                        metadata.sessionError = ""
+                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                        metadata.status = Int(k_metadataStatusNormal)
+                        
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    }
+                }
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+            }
+            
+        } else {
         
-        session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
-            
-            var cancel = false
-            
-            // DOWNLOAD
-            if metadata.session.count > 0 && metadata.session.contains("download") {
-                for task in downloadTasks {
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                        cancel = true
-                    }
-                }
-                if cancel == false {
-                    NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                }
-                actionReloadDatasource = k_action_MOD
-            }
-            
-            // UPLOAD
-            if metadata.session.count > 0 && metadata.session.contains("upload") {
-                for task in uploadTasks {
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        if uploadStatusForcedStart {
-                            metadata.status = Int(k_metadataStatusUploadForcedStart)
-                            metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+            var actionReloadDatasource = k_action_NULL
+            guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
+            var metadata = metadata
+
+            session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
+                
+                var cancel = false
+                
+                if metadata.session.count > 0 && metadata.session.contains("upload") {
+                    for task in uploadTasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                            if uploadStatusForcedStart {
+                                metadata.status = Int(k_metadataStatusUploadForcedStart)
+                                metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                            }
+                            task.cancel()
+                            cancel = true
                         }
-                        task.cancel()
-                        cancel = true
                     }
-                }
-                if cancel == false {
-                    do {
-                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    if cancel == false {
+                        do {
+                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                        }
+                        catch { }
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
-                    catch { }
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    actionReloadDatasource = k_action_DEL
                 }
-                actionReloadDatasource = k_action_DEL
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: actionReloadDatasource)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: actionReloadDatasource)
+                }
             }
         }
     }

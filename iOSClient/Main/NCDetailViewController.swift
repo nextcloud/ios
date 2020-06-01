@@ -819,7 +819,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     
                     if errorCode == 0 && account == metadata.account {
                         
-                        _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                         self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
                     }
                 }

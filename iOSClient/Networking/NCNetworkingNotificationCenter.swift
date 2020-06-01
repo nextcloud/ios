@@ -61,8 +61,6 @@ import Foundation
                 
                 if errorCode == 0 {
                     
-                    NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: Int32(k_action_MOD))
-                    
                     // Synchronized
                     if selector == selectorDownloadSynchronize {
                         appDelegate.updateApplicationIconBadgeNumber()
@@ -167,7 +165,9 @@ import Foundation
                     } else {
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
-                }            
+                }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
             }
         }
     }

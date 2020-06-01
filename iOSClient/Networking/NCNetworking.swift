@@ -246,7 +246,7 @@ import NCCommunication
             }
             
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-
+            
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
         }
     }
