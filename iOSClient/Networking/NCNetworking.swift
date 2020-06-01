@@ -240,9 +240,7 @@ import Alamofire
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
                 #endif
-                
-               
-                
+                                
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
                 
             } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 {
