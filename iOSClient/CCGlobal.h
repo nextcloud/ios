@@ -311,7 +311,7 @@
 
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
-#define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"          // userInfo: serverUrl
+#define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"          // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_changeTheming              @"changeTheming"
 #define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
 #define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"             // userInfo: metadata, type

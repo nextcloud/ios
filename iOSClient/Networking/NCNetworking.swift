@@ -174,7 +174,6 @@ import Alamofire
     @objc func cancelDownload(metadata: tableMetadata) {
         
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
-        let serverUlr = metadata.serverUrl
         
         if let request = downloadRequest[fileNameLocalPath] {
             request.cancel()
@@ -189,7 +188,7 @@ import Alamofire
             }
         }
         
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
     }
     
     @objc func verifyDownloadRequestLost() {
@@ -267,7 +266,7 @@ import Alamofire
                 
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
 
             } else {
                 
@@ -295,7 +294,6 @@ import Alamofire
     @objc func cancelUpload(metadata: tableMetadata) {
         
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
-        let serverUlr = metadata.serverUrl
         
         if let request = uploadRequest[fileNameLocalPath] {
             request.cancel()
@@ -304,7 +302,7 @@ import Alamofire
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
     }
     
     @objc func verifyUploadRequestLost() {

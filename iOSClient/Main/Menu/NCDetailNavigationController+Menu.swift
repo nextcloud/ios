@@ -149,7 +149,7 @@ extension NCDetailNavigationController {
                         } else {
                             NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:
-                            k_notificationCenter_clearDateReadDataSource), object: nil)
+                                k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                         }
                     }
                 )
