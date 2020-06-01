@@ -178,6 +178,7 @@ import NCCommunication
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
         
         metadata.status = Int(k_metadataStatusInDownload)
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
@@ -202,9 +203,12 @@ import NCCommunication
                 metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 if setFavorite { metadata.favorite = true }
-                metadata.status = Int(k_metadataStatusNormal)
+                
+                metadata.session = ""
+                metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                          
+                metadata.status = Int(k_metadataStatusNormal)
+
                 #if !EXTENSION
                 if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     
@@ -218,17 +222,20 @@ import NCCommunication
                 errorCode = 0
                 errorDescription = ""
                 
-                metadata.status = Int(k_metadataStatusNormal)
+                metadata.session = ""
+                metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                metadata.status = Int(k_metadataStatusNormal)
 
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                 
             } else {
                 
-                metadata.status = Int(k_metadataStatusDownloadError)
+                metadata.session = ""
                 metadata.sessionError = errorDescription
                 metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                
+                metadata.status = Int(k_metadataStatusDownloadError)
+
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
@@ -276,7 +283,7 @@ import NCCommunication
             
             #if !EXTENSION
             if e2eEncrypted {
-                NCNetworkingE2EE.shared.upload(metadataForUpload: metadataForUpload!, account: account)
+                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
             }
             #endif
             
@@ -304,7 +311,7 @@ import NCCommunication
                 
                 #if !EXTENSION
                 if e2eEncrypted {
-                    NCNetworkingE2EE.shared.upload(metadataForUpload: metadataForUpload!, account: account)
+                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
                 }
                 #endif
             }
