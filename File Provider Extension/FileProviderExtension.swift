@@ -348,7 +348,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 fileURL.stopAccessingSecurityScopedResource()
                                 
                 let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "")
-                metadata.session = k_upload_session_extension
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierExtension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)
                 

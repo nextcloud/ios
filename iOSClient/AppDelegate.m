@@ -1343,7 +1343,8 @@
     
     // Upload in pending
     //
-    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", k_upload_session_extension, k_metadataStatusInUpload] sorted:nil ascending:true];
+    NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
+    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", sessionExtension, k_metadataStatusInUpload] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasInUpload) {
         if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
             metadata.status = k_metadataStatusWaitUpload;
@@ -1371,7 +1372,8 @@
 {
     // UPLOAD
     //
-    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+    NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", sessionExtension, k_metadataStatusUploading] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasUploading) {
         
         NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];

@@ -188,9 +188,11 @@
         }
     }
     
+    /*
     if (!([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) &&(metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
+    */
     
     return NO;
 }

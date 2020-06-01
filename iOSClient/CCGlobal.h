@@ -125,9 +125,6 @@
 #define k_download_session_default                      @"download.default"
 #define k_upload_session_default                        @"upload.default"
 
-// Session Download Upload Extension
-#define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
-
 // OperationQueue
 #define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"
 #define k_download_queue                                @"it.twsweb.Crypto-Cloud.download.queue"

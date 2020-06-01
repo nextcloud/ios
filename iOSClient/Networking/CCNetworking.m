@@ -185,27 +185,6 @@
     return sessionUploadForeground;
 }
 
-- (NSURLSession *)sessionUploadExtension
-{
-    static NSURLSession *sessionUpload = nil;
-    
-    if (sessionUpload == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_extension];
-        
-        configuration.allowsCellularAccess = YES;
-        configuration.sessionSendsLaunchEvents = YES;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        configuration.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
-        
-        sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUpload.sessionDescription = k_upload_session_extension;
-    }
-    return sessionUpload;
-}
-
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
     if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
@@ -216,8 +195,6 @@
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
     
-    if ([sessionDescription isEqualToString:k_upload_session_extension]) return [self sessionUploadExtension];
-
     return nil;
 }
 
@@ -797,7 +774,6 @@
                 if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
                 else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
                 else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-                else if ([metadata.session isEqualToString:k_upload_session_extension]) sessionUpload = [self sessionUploadExtension];
                 
                 [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
                 NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
@@ -828,7 +804,6 @@
          if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
          else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
          else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-         else if ([metadata.session isEqualToString:k_upload_session_extension]) sessionUpload = [self sessionUploadExtension];
          
          NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
          

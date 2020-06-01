@@ -653,6 +653,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             
             cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
             
+            cell.labelTitle.isEnabled = true
+            cell.labelInfoFile.isEnabled = true
+            
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
             //var totalBytesExpected : Double = 0
@@ -704,17 +707,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 }
             }
             
-            // Session Upload Extension
-            if metadata.session == k_upload_session_extension {
-                
-                cell.labelTitle.isEnabled = false
-                cell.labelInfoFile.isEnabled = false
-                
-            } else {
-                
-                cell.labelTitle.isEnabled = true
-                cell.labelInfoFile.isEnabled = true
-            }
+           
             
             // downloadFile
             if metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError {
