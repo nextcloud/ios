@@ -23,6 +23,7 @@
 
 import FileProvider
 import NCCommunication
+import Alamofire
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
@@ -202,6 +203,8 @@ class FileProviderExtension: NSFileProviderExtension {
         
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+        var downloadRequest: DownloadRequest?
+        var task: URLSessionTask?
         
         if let _ = outstandingSessionTasks[url] {
             completionHandler(nil)
@@ -221,14 +224,20 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  taskHandler: { (task) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
             metadata.status = Int(k_metadataStatusDownloading)
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+            downloadRequest = request
             self.outstandingSessionTasks[url] = task
-            NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             
         }, progressHandler: { (progress) in
+            
+            if task == nil && downloadRequest?.task != nil {
+                task = downloadRequest?.task
+                self.outstandingSessionTasks[url] = task
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
+            }
             
         }) { (account, etag, date, length, errorCode, errorDescription) in
             

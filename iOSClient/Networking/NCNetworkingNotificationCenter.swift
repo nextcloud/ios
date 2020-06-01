@@ -44,7 +44,7 @@ import Foundation
     @objc func downloadFileStart(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionDownloadTask {
+            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String {
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
                 appDelegate.updateApplicationIconBadgeNumber()

@@ -692,7 +692,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             metadata.status = Int(k_metadataStatusInDownload)
             
-            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+            NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                 
                 metadata.status = Int(k_metadataStatusDownloading)
                 
@@ -807,7 +807,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                                 
-                NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+                NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                     
                 }, progressHandler: { (progress) in
                                     

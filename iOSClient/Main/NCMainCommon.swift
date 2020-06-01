@@ -102,7 +102,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         let account = dic["account"] as? NSString ?? ""
         let ocId = dic["ocId"] as? NSString ?? ""
         let serverUrl = dic["serverUrl"] as? String ?? ""
-        let status = dic["status"] as? Int ?? Int(k_taskIdentifierDone)
+        let status = dic["status"] as? Int ?? Int(k_metadataStatusNormal)
         let progress = dic["progress"] as? CGFloat ?? 0
         let totalBytes = dic["totalBytes"] as? Double ?? 0
         let totalBytesExpected = dic["totalBytesExpected"] as? Double ?? 0
@@ -142,27 +142,11 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
         
         if metadata.session.count == 0 { return }
-        let serverUrl = metadata.serverUrl
 
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
-            
-            NCCommunication.shared.getDownloadTask(taskIdentifier: metadata.sessionTaskIdentifier) { (task) in
-                if task != nil {
-                    task?.cancel()
-                } else {
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                        
-                        metadata.session = ""
-                        metadata.sessionError = ""
-                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                        metadata.status = Int(k_metadataStatusNormal)
-                        
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    }
-                }
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
-            }
-            
+            NCNetworking.shared.cancelDownload(metadata: metadata)
+        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
+            NCNetworking.shared.cancelUpload(metadata: metadata)
         } else {
         
             var actionReloadDatasource = k_action_NULL

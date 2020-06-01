@@ -261,17 +261,6 @@
             
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
-    
-    /*
-    __block UIBackgroundTaskIdentifier background_task;
-        
-    background_task = [application beginBackgroundTaskWithExpirationHandler:^ {
-            
-        //Clean up code. Tell the system that we are done.
-        [application endBackgroundTask: background_task];
-        background_task = UIBackgroundTaskInvalid;
-    }];
-    */
 }
 
 //

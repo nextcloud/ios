@@ -24,6 +24,7 @@
 import Foundation
 import OpenSSL
 import NCCommunication
+import Alamofire
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Double, fileName: String, ServerUrl: String, session: URLSession, task: URLSessionTask)
@@ -38,10 +39,11 @@ import NCCommunication
         return instance
     }()
         
-    // Protocol
     var delegate: NCNetworkingDelegate?
     var lastReachability: Bool = true
-        
+    var downloadRequest = [String:DownloadRequest]()
+    var uploadRequest = [String:UploadRequest]()
+
     //MARK: - Communication Delegate
        
     func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
@@ -169,6 +171,27 @@ import NCCommunication
     
     //MARK: - Transfer
     
+    @objc func cancelDownload(metadata: tableMetadata) {
+        
+        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
+        let serverUlr = metadata.serverUrl
+        
+        if let request = downloadRequest[fileNameLocalPath] {
+            request.cancel()
+        } else {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.status = Int(k_metadataStatusNormal)
+                
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
+            }
+        }
+        
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
+    }
+    
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
         
         var metadata = metadata
@@ -181,13 +204,13 @@ import NCCommunication
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
         
-        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+        NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
+            self.downloadRequest[fileNameLocalPath] = request
             metadata.status = Int(k_metadataStatusDownloading)
-            metadata.sessionTaskIdentifier = task.taskIdentifier
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
             
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
             
         }, progressHandler: { (progress) in
             
@@ -195,6 +218,7 @@ import NCCommunication
             
         }) { (account, etag, date, length, errorCode, errorDescription) in
             
+            self.downloadRequest[fileNameLocalPath] = nil
             var errorCode = errorCode
             var errorDescription = errorDescription ?? ""
             
@@ -206,7 +230,6 @@ import NCCommunication
                 
                 metadata.session = ""
                 metadata.sessionError = ""
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                 metadata.status = Int(k_metadataStatusNormal)
 
                 #if !EXTENSION
@@ -224,7 +247,6 @@ import NCCommunication
                 
                 metadata.session = ""
                 metadata.sessionError = ""
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                 metadata.status = Int(k_metadataStatusNormal)
 
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
@@ -233,7 +255,6 @@ import NCCommunication
                 
                 metadata.session = ""
                 metadata.sessionError = errorDescription
-                metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                 metadata.status = Int(k_metadataStatusDownloadError)
 
                 #if !EXTENSION
@@ -249,6 +270,21 @@ import NCCommunication
             
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
         }
+    }
+    
+    @objc func cancelUpload(metadata: tableMetadata) {
+        
+        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
+        let serverUlr = metadata.serverUrl
+        
+        if let request = uploadRequest[fileNameLocalPath] {
+            request.cancel()
+        } else {
+            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        }
+
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
     }
     
     @objc func upload(metadata: tableMetadata, e2eEncrypted: Bool) {

@@ -233,13 +233,13 @@ import CFNetwork
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
-                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], taskHandler: { (task) in
+                NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], requestHandler: { (request) in
                     
+                    NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
                     metadata.status = Int(k_metadataStatusUploading)
-                    metadata.sessionTaskIdentifier = task.taskIdentifier
                     if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                     
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":serverUrl, "account": metadata.account])
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
                     
                 }, progressHandler: { (progress) in
                     
@@ -247,6 +247,8 @@ import CFNetwork
                     
                 }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
                 
+                    NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
+                    
                     if (errorCode == 0 && date != nil && etag != nil && ocId != nil) {
                             
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
@@ -258,7 +260,6 @@ import CFNetwork
                         
                         metadata.session = ""
                         metadata.sessionError = ""
-                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                         metadata.status = Int(k_metadataStatusNormal)
                                                     
                         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
@@ -297,7 +298,6 @@ import CFNetwork
                         
                         metadata.session = ""
                         metadata.sessionError = errorDescription ?? ""
-                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                         metadata.status = Int(k_metadataStatusUploadError)
                        
                         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }

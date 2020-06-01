@@ -495,9 +495,9 @@ import NCCommunication
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + name + ".png"
 
-        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, taskHandler: { (task) in
+        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
             
-        }, progressHandler: { (progress) in
+        }, progressHandler: { (_) in
             
         }) { (account, etag, date, lenght, errorCode, errorDescription) in
             
