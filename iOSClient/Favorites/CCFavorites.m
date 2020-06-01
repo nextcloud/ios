@@ -599,8 +599,9 @@
     
     self.metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
-    if (self.metadata.status != k_metadataStatusNormal)
-    return;
+    if (self.metadata.status != k_metadataStatusNormal && self.metadata.status != k_metadataStatusDownloadError) {
+        return;
+    }
     
     // File
     if (self.metadata.directory == NO) {

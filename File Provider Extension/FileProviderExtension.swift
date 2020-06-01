@@ -208,7 +208,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+        guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -223,8 +223,9 @@ class FileProviderExtension: NSFileProviderExtension {
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  taskHandler: { (task) in
             
+            metadata.status = Int(k_metadataStatusDownloading)
+            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
             self.outstandingSessionTasks[url] = task
-            
             NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             
         }, progressHandler: { (progress) in
@@ -236,16 +237,20 @@ class FileProviderExtension: NSFileProviderExtension {
             if errorCode == 0  {
                 
                 metadata.status = Int(k_metadataStatusNormal)
-                guard let metadataDownloaded = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-                _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataDownloaded)
+                metadata.date = date ?? NSDate()
+                metadata.etag = etag ?? ""
+                
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
                 completionHandler(nil)
                 
             } else {
                 
-                // Error
-                NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusDownloadError), predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                
+                metadata.status = Int(k_metadataStatusDownloadError)
+                metadata.sessionError = errorDescription ?? ""
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
+
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
         }

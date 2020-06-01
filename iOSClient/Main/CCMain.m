@@ -2671,8 +2671,9 @@
         return;
     }
     
-    if (self.metadata.status != k_metadataStatusNormal)
+    if (self.metadata.status != k_metadataStatusNormal && self.metadata.status != k_metadataStatusDownloadError) {
         return;
+    }
     
     // file
     if (self.metadata.directory == NO) {
