@@ -1,6 +1,7 @@
 github "Alamofire/Alamofire" "5.1.0"
 github "AssistoLab/DropDown" "v2.3.13"
 github "CocoaLumberjack/CocoaLumberjack" "3.6.1"
+github "FabrizioBrancati/Queuer" "2.1.1"
 github "MortimerGoro/MGSwipeTableCell" "1.6.8"
 github "SVGKit/SVGKit" "d9432035c6e2587358a0b838d00c2658ce16e7a2"
 github "SwiftyJSON/SwiftyJSON" "5.0.0"

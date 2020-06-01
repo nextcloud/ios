@@ -210,6 +210,7 @@
 		F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */; };
 		F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */; };
 		F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */; };
+		F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F76FDEAA24859C3D0095B6C2 /* Queuer.framework */; };
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
@@ -630,6 +631,7 @@
 		F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerPDF.storyboard; sourceTree = "<group>"; };
 		F76E71E42244DF6900690001 /* Zip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Zip.framework; path = Carthage/Build/iOS/Zip.framework; sourceTree = "<group>"; };
 		F76F23321ED4600700C40023 /* Share-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Share-Bridging-Header.h"; sourceTree = "<group>"; };
+		F76FDEAA24859C3D0095B6C2 /* Queuer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Queuer.framework; path = Carthage/Build/iOS/Queuer.framework; sourceTree = "<group>"; };
 		F771E3D020E2392D00AFB62D /* File Provider Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F771E3D420E2392D00AFB62D /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
@@ -866,6 +868,7 @@
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
+				F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */,
 				F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */,
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
@@ -1691,6 +1694,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F76FDEAA24859C3D0095B6C2 /* Queuer.framework */,
 				F710C5EF2471A6D1009AD8B7 /* Sentry.framework */,
 				F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */,
 				F7D2C772246470CA008513AE /* XLForm.framework */,
@@ -2111,6 +2115,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Sentry.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Queuer.framework",
 			);
 			outputPaths = (
 			);
