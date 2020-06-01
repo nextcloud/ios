@@ -68,7 +68,7 @@ extension AppDelegate {
             )
         )
 
-#if HC
+        #if HC
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
@@ -78,7 +78,7 @@ extension AppDelegate {
                 }
             )
         )
-#endif
+        #endif
       
         if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_text}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_text})!

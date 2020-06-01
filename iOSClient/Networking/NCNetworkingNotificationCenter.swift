@@ -89,7 +89,7 @@ import Foundation
                             metadata.typeFile = k_metadataTypeFile_unknown
                         }
                         
-        #if HC
+                        #if HC
                         if metadata.typeFile == k_metadataTypeFile_imagemeter {
                             
                             if !IMUtility.shared.IMUnzip(metadata: metadata) {
@@ -107,12 +107,12 @@ import Foundation
                             
                             return
                         }
-        #else
+                        #else
                         if metadata.typeFile == k_metadataTypeFile_imagemeter {
                             NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
                             return
                         }
-        #endif
+                        #endif
                         
                         if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 

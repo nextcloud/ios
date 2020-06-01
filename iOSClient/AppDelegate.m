@@ -240,7 +240,7 @@
     [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
    
     // Brand
-#if defined(HC)
+    #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     if (account.hcIsTrial == true || account.hcTrialExpired == true || account.hcNextGroupExpirationGroupExpired == true) {
         
@@ -249,7 +249,7 @@
         
         [self.window.rootViewController presentViewController:vc animated:YES completion:nil];
     }
-#endif
+    #endif
 }
 
 //
@@ -1212,8 +1212,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-//                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
-                    [[NCNetworkingE2EE shared] uploadWithMetadata:metadata];
+                    [[NCNetworking shared] uploadWithMetadata:metadata e2eEncrypted:true];
                     
                     break;
                                         
@@ -1662,9 +1661,9 @@
 
 - (BOOL)upgrade
 {
-#ifdef DEBUG
+    #ifdef DEBUG
     //self.maintenanceMode = YES;
-#endif
+    #endif
     
     NSString *actualVersion = [CCUtility getVersion];
     NSString *actualBuild = [CCUtility getBuild];

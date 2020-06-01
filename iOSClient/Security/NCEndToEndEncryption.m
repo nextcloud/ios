@@ -197,10 +197,10 @@
     if(keyBytes)
         free(keyBytes);
     
-#ifdef DEBUG
+    #ifdef DEBUG
     // Save to disk [DEBUG MODE]
     [self saveToDiskPEMWithCert:x509 key:pkey directory:directory];
-#endif
+    #endif
     
     return YES;
 }

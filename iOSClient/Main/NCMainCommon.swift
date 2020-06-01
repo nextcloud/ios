@@ -1023,7 +1023,7 @@ class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-#if HC
+    #if HC
     // IMImagemeterViewerDelegate
     func closeImagemeterViewer(metadata: tableMetadata?, bundleDirectory: String) {
         guard let metadata = metadata else { return }
@@ -1051,7 +1051,7 @@ class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
         // Remove bundle directory
         try? FileManager.default.removeItem(atPath: bundleDirectory)
     }
-#endif
+    #endif
     
     @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
         operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
