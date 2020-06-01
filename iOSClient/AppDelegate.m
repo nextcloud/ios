@@ -234,6 +234,8 @@
     }
 
     // verify upload task lost
+    [[NCNetworking shared] verifyDownloadRequestLost];
+    [[NCNetworking shared] verifyUploadRequestLost];
     [self verifyTaskLost];
     
     // verify delete Asset Local Identifiers in auto upload

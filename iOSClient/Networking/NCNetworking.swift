@@ -169,7 +169,7 @@ import Alamofire
         return result
     }
     
-    //MARK: - Transfer
+    //MARK: - Download
     
     @objc func cancelDownload(metadata: tableMetadata) {
         
@@ -190,6 +190,22 @@ import Alamofire
         }
         
         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
+    }
+    
+    @objc func verifyDownloadRequestLost() {
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusDownloading)), sorted: nil, ascending: true) {
+            for metadata in metadatas {
+                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
+                let request = downloadRequest[fileNameLocalPath]
+                if request == nil {
+                    metadata.session = ""
+                    metadata.sessionError = ""
+                    metadata.status = Int(k_metadataStatusNormal)
+                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                }
+            }
+        }
     }
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
@@ -274,6 +290,8 @@ import Alamofire
         }
     }
     
+    //MARK: - Upload
+
     @objc func cancelUpload(metadata: tableMetadata) {
         
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
@@ -287,6 +305,20 @@ import Alamofire
         }
 
         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUlr])
+    }
+    
+    @objc func verifyUploadRequestLost() {
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusUploading)), sorted: nil, ascending: true) {
+            for metadata in metadatas {
+                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
+                let request = uploadRequest[fileNameLocalPath]
+                if request == nil {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                }
+            }
+        }
     }
     
     @objc func upload(metadata: tableMetadata, e2eEncrypted: Bool) {
