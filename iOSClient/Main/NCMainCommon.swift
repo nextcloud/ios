@@ -475,7 +475,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         }
         
         // CCCell
-        if metadata.status == k_metadataStatusNormal {
+        if metadata.status == k_metadataStatusNormal || metadata.status == k_metadataStatusDownloadError {
             
             // NORMAL
             
@@ -633,6 +633,18 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // More Image
             cell.more.image = NCMainCommonImages.cellMoreImage
             
+            // downloadFile Error
+            if metadata.status == k_metadataStatusDownloadError {
+                
+                cell.status.image = UIImage.init(named: "statuserror")
+                
+                if metadata.sessionError.count == 0 {
+                    cell.labelInfoFile.text = NSLocalizedString("_error_", comment: "") + ", " + NSLocalizedString("_file_not_downloaded_", comment: "")
+                } else {
+                    cell.labelInfoFile.text = metadata.sessionError
+                }
+            }
+            
             return cell
             
         } else {
@@ -705,26 +717,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 } else {
                     cell.file.image = UIImage.init(named: "file")
                 }
-            }
-            
-           
-            
-            // downloadFile
-            if metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError {
-                //
-            }
-            
-            // downloadFile Error
-            if metadata.status == k_metadataStatusDownloadError {
-                
-                cell.status.image = UIImage.init(named: "statuserror")
-                
-                if metadata.sessionError.count == 0 {
-                    cell.labelInfoFile.text = NSLocalizedString("_error_", comment: "") + ", " + NSLocalizedString("_file_not_downloaded_", comment: "")
-                } else {
-                    cell.labelInfoFile.text = metadata.sessionError
-                }
-            }
+            }           
             
             // uploadFile
             if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError {
