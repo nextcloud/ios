@@ -195,7 +195,8 @@ import Alamofire
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
         
         var metadata = metadata
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let serverUrl = metadata.serverUrl
+        let serverUrlFileName = serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
@@ -210,19 +211,17 @@ import Alamofire
             metadata.status = Int(k_metadataStatusDownloading)
             if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
             
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account":metadata.account])
             
         }, progressHandler: { (progress) in
             
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, etag, date, length, errorCode, errorDescription) in
             
             self.downloadRequest[fileNameLocalPath] = nil
-            var errorCode = errorCode
-            var errorDescription = errorDescription ?? ""
             
-            if errorCode  == 0 {
+            if errorCode == 0 {
                
                 metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
@@ -233,24 +232,26 @@ import Alamofire
                 metadata.status = Int(k_metadataStatusNormal)
 
                 #if !EXTENSION
-                if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, serverUrl)) {
                     
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
                 #endif
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
-            } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
                 
-                errorCode = 0
-                errorDescription = ""
+            } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 {
                 
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
 
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                                
+
             } else {
                 
                 metadata.session = ""
@@ -264,11 +265,9 @@ import Alamofire
                     CCUtility.setCertificateError(metadata.account, error: true)
                 }
                 #endif
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
-            
-            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-            
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
         }
     }
     

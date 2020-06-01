@@ -269,7 +269,7 @@ import CFNetwork
                         
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                                                         
-                    } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                    } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 {
                         
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -297,12 +297,12 @@ import CFNetwork
                     } else {
                         
                         metadata.session = ""
-                        metadata.sessionError = errorDescription ?? ""
+                        metadata.sessionError = errorDescription
                         metadata.status = Int(k_metadataStatusUploadError)
                        
                         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                     }
                         
                     NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in }
