@@ -52,9 +52,7 @@
     self = [super init];
     
     // Initialization Sessions
-    [self sessionDownload];
-    [self sessionDownloadForeground];
-    [self sessionWWanDownload];
+    
 
     [self sessionUpload];
     [self sessionWWanUpload];
@@ -67,64 +65,6 @@
 #pragma mark =====  Session =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSURLSession *)sessionDownload
-{
-    static NSURLSession *sessionDownload = nil;
-    
-    if (sessionDownload == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session];
-        
-        configuration.allowsCellularAccess = YES;
-        configuration.sessionSendsLaunchEvents = YES;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        
-        sessionDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownload.sessionDescription = k_download_session;
-    }
-    return sessionDownload;
-}
-
-- (NSURLSession *)sessionDownloadForeground
-{
-    static NSURLSession *sessionDownloadForeground = nil;
-    
-    if (sessionDownloadForeground == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    
-        configuration.allowsCellularAccess = YES;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-    
-        sessionDownloadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionDownloadForeground.sessionDescription = k_download_session_foreground;
-    }
-    return sessionDownloadForeground;
-}
-
-- (NSURLSession *)sessionWWanDownload
-{
-    static NSURLSession *sessionWWanDownload = nil;
-    
-    if (sessionWWanDownload == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_wwan];
-        
-        configuration.allowsCellularAccess = NO;
-        configuration.sessionSendsLaunchEvents = YES;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        
-        sessionWWanDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanDownload.sessionDescription = k_download_session_wwan;
-    }
-    return sessionWWanDownload;
-}
 
 - (NSURLSession *)sessionUpload
 {
@@ -187,10 +127,6 @@
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
-    if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
-    if ([sessionDescription isEqualToString:k_download_session_foreground]) return [self sessionDownloadForeground];
-    if ([sessionDescription isEqualToString:k_download_session_wwan]) return [self sessionWWanDownload];
-
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
@@ -200,10 +136,7 @@
 
 - (void)invalidateAndCancelAllSession
 {
-    [[self sessionDownload] invalidateAndCancel];
-    [[self sessionDownloadForeground] invalidateAndCancel];
-    [[self sessionWWanDownload] invalidateAndCancel];
-    
+ 
     [[self sessionUpload] invalidateAndCancel];
     [[self sessionWWanUpload] invalidateAndCancel];
     [[self sessionUploadForeground] invalidateAndCancel];
@@ -255,43 +188,6 @@
             errorCode = error.code;
     }
 
-    // ----------------------- DOWNLOAD -----------------------
-    
-    if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:task.taskIdentifier];
-        if (metadata) {
-            
-            NSString *etag = metadata.etag;
-            //NSString *ocId = metadata.ocId;
-            NSDictionary *fields = [httpResponse allHeaderFields];
-            
-            if (errorCode == 0) {
-            
-                if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]] != nil) {
-                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
-                } else if ([CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]] != nil) {
-                    etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"ETag"]];
-                }
-            
-                NSString *dateString = [fields objectForKey:@"Date"];
-                if (dateString) {
-                    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-                        date = [NSDate date];
-                    }
-                } else {
-                    date = [NSDate date];
-                }
-            }
-            
-            if (fileName.length > 0 && serverUrl.length > 0) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self downloadFileSuccessFailure:fileName ocId:metadata.ocId etag:etag date:date serverUrl:serverUrl selector:metadata.sessionSelector errorCode:errorCode];
-                });
-            }
-        }
-    }
-    
     // ------------------------ UPLOAD -----------------------
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
@@ -337,214 +233,6 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Download =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
-{
-    // No Password
-    if ([CCUtility getPassword:metadata.account].length == 0) {
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(kOCErrorServerUnauthorized), @"errorDescription": @"_bad_username_password_"}];
-        return;
-    } else if ([CCUtility getCertificateError:metadata.account]) {
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(NSURLErrorServerCertificateUntrusted), @"errorDescription": @"_ssl_certificate_untrusted_"}];
-        return;
-    }
-    
-    // File exists ?
-    tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-    if (localfile != nil && [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
-            
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(0), @"errorDescription": @""}];
-        return;
-    }
-    
-    [self downloaURLSession:metadata taskStatus:taskStatus];
-}
-
-- (void)downloaURLSession:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
-{
-    NSURLSession *sessionDownload;
-    NSURL *url;
-    NSMutableURLRequest *request;
-    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-    if (tableAccount == nil) {
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Download error, account not found"}];
-        return;
-    }
-    
-    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", metadata.serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding];
-        
-    url = [NSURL URLWithString:serverFileUrl];
-    request = [NSMutableURLRequest requestWithURL:url];
-        
-    NSData *authData = [[NSString stringWithFormat:@"%@:%@", tableAccount.user, [CCUtility getPassword:tableAccount.account]] dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
-    [request setValue:authValue forHTTPHeaderField:@"Authorization"];
-    [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
-    
-    if ([metadata.session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
-    else if ([metadata.session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
-    else if ([metadata.session isEqualToString:k_download_session_wwan]) sessionDownload = [self sessionWWanDownload];
-    
-    NSURLSessionDownloadTask *downloadTask = [sessionDownload downloadTaskWithRequest:request];
-    
-    if (downloadTask == nil) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:NSLocalizedString(@"_not_possible_download_", nil) sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-        NSString *errorDescription = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_not_possible_download_", nil), metadata.fileNameView];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": metadata.sessionSelector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": errorDescription}];
-        
-    } else {
-        
-        // Manage uploadTask cancel,suspend,resume
-        if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
-        else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
-        else if (taskStatus == k_taskStatusResume) [downloadTask resume];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionTaskIdentifier:downloadTask.taskIdentifier status:k_metadataStatusDownloading predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-        
-        NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", metadata.ocId, (unsigned long)downloadTask.taskIdentifier);
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadFileStart object:nil userInfo:@{@"ocId": metadata.ocId, @"task": downloadTask, @"serverUrl": metadata.serverUrl, @"account": metadata.account}];
-    }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
-{
-    NSString *url = [[[downloadTask currentRequest].URL absoluteString] stringByRemovingPercentEncoding];
-    NSString *fileName = [url lastPathComponent];
-    NSString *serverUrl = [self getServerUrlFromUrl:url];
-    if (!serverUrl) return;
-    
-    if (totalBytesExpectedToWrite < 1) {
-        totalBytesExpectedToWrite = totalBytesWritten;
-    }
-        
-    float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:downloadTask.taskIdentifier];
-    if (metadata) {
-        NSDictionary *userInfo = @{@"account": (metadata.account), @"ocId": (metadata.ocId), @"serverUrl": (serverUrl), @"status": ([NSNumber numberWithLong:k_metadataStatusInDownload]), @"progress": ([NSNumber numberWithFloat:progress]), @"totalBytes": ([NSNumber numberWithLongLong:totalBytesWritten]), @"totalBytesExpected": ([NSNumber numberWithLongLong:totalBytesExpectedToWrite])};
-        if (userInfo)
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_progressTask object:nil userInfo:userInfo];
-    } else {
-        NSLog(@"[LOG] metadata not found");
-    }
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
-{
-    NSString *url = [[[downloadTask currentRequest].URL absoluteString] stringByRemovingPercentEncoding];
-    if (!url)
-        return;
-
-    NSString *fileName = [url lastPathComponent];
-    NSString *serverUrl = [self getServerUrlFromUrl:url];
-    if (!serverUrl) return;
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName serverUrl:serverUrl taskIdentifier:downloadTask.taskIdentifier];
-    if (!metadata) {
-        
-        NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", url);
-        return;
-    }
-    
-    NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)downloadTask.response;
-    
-    if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
-        
-        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName];
-        NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
-        
-        [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
-        [[NSFileManager defaultManager] copyItemAtURL:location toURL:destinationURL error:nil];
-    }
-}
-
-- (void)downloadFileSuccessFailure:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorCode:(NSInteger)errorCode
-{
-#ifndef EXTENSION
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.listProgressMetadata removeObjectForKey:ocId];
-#endif
-    
-    NSString *errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-    
-    if (errorCode != 0) {
-        
-        if (errorCode == kCFURLErrorCancelled) {
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-            
-        } else {
-            
-            if (metadata && (errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden)) {
-#ifndef EXTENSION
-                [[NCNetworkingCheckRemoteUser shared] checkRemoteUserWithAccount:metadata.account];
-#endif
-            } else if (metadata && errorCode == NSURLErrorServerCertificateUntrusted) {
-                [CCUtility setCertificateError:metadata.account error:YES];
-            }
-            
-            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
-        
-    } else {
-        
-        if (!metadata) {
-            
-            NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", fileName);
-            return;
-        }
-        
-        metadata.session = @"";
-        metadata.sessionError = @"";
-        metadata.sessionSelector = @"";
-        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-        metadata.status = k_metadataStatusNormal;
-            
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
-        (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-        
-        // E2EE Decrypted
-        tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier == %@ AND serverUrl == %@", fileName, serverUrl]];
-        if (object) {
-            BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileName:metadata.fileName fileNameView:metadata.fileNameView ocId:metadata.ocId key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
-            if (!result) {
-                
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": [NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName]}];
-                return;
-            }
-        }
-        
-        // Exif
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
-        
-        // Icon
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]] == NO) {
-            [CCGraphics createNewImageFrom:metadata.fileNameView ocId:metadata.ocId filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
-        }
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:@{@"metadata": metadata, @"selector": selector, @"errorCode": @(0), @"errorDescription": @""}];
-    }
-    
-    // NSNotificationCenter
-    NSDictionary* userInfo = @{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_downloadedFile object:nil userInfo:userInfo];
-}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Upload =====

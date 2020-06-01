@@ -42,9 +42,6 @@
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
 - (void)invalidateAndCancelAllSession;
 
-//#pragma mark ===== Download =====
-//- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
-
 #pragma mark ===== Upload =====
 
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;

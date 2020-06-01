@@ -272,7 +272,6 @@ import NCCommunication
             metadata.typeFile = internalContenType.typeFile
             metadata.date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
-            metadata.session = k_upload_session_default
                
             if metadata.size > Double(k_max_filesize_E2EE) {
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
@@ -300,7 +299,6 @@ import NCCommunication
                 CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
                 extractMetadata.fileName = fileNameIdentifier
                 extractMetadata.e2eEncrypted = true
-                extractMetadata.session = k_upload_session_default
 
                 if e2eEncrypted && (extractMetadata.size > Double(k_max_filesize_E2EE)) {
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
