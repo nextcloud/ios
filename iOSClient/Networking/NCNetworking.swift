@@ -230,6 +230,9 @@ import Alamofire
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
+                
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
 
                 #if !EXTENSION
                 if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, serverUrl)) {
@@ -237,8 +240,8 @@ import Alamofire
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
                 #endif
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                
+               
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
                 
@@ -247,16 +250,18 @@ import Alamofire
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
+                
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
-
 
             } else {
                 
                 metadata.session = ""
                 metadata.sessionError = errorDescription
                 metadata.status = Int(k_metadataStatusDownloadError)
+                
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
 
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
