@@ -33,7 +33,7 @@
 @class tableMetadata;
 @class NCNetworkingE2EE;
 
-@interface CCNetworking : NSObject <NSURLSessionTaskDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate>
+@interface CCNetworking : NSObject <NSURLSessionTaskDelegate, NSURLSessionDelegate>
 
 + (CCNetworking *)sharedNetworking;
 
