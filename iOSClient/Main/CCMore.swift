@@ -38,22 +38,22 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var quotaMenu = [OCExternalSites]()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
+
     var listExternalSite: [tableExternalSites]?
-    var tabAccount : tableAccount?
-    
+    var tabAccount: tableAccount?
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
+
         appDelegate.activeMore = self
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         tableView.delegate = self
         tableView.dataSource = self
-        
+
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
 
         // create tap gesture recognizer
@@ -68,18 +68,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
-        
+
         super.viewWillAppear(animated)
-        
+
         // Clear
         functionMenu.removeAll()
         externalSiteMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
-        
+
         var item = OCExternalSites.init()
 
         // ITEM : Transfer
@@ -88,21 +88,21 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.icon = "load"
         item.url = "segueTransfers"
         functionMenu.append(item)
-        
+
         // ITEM : Notification
         item = OCExternalSites.init()
         item.name = "_notification_"
         item.icon = "notification"
         item.url = "segueNotification"
         functionMenu.append(item)
-        
+
         // ITEM : Activity
         item = OCExternalSites.init()
         item.name = "_activity_"
         item.icon = "activity"
         item.url = "segueActivity"
         functionMenu.append(item)
-        
+
         // ITEM : Shares
         item = OCExternalSites.init()
         item.name = "_list_shares_"
@@ -116,40 +116,40 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.icon = "offline"
         item.url = "segueOffline"
         functionMenu.append(item)
-        
+
         // ITEM : Scan
         item = OCExternalSites.init()
         item.name = "_scanned_images_"
         item.icon = "scan"
         item.url = "openStoryboardScan"
         functionMenu.append(item)
-        
+
         // ITEM : Trash
         let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= Int(k_trash_version_available) {
-            
+
             item = OCExternalSites.init()
             item.name = "_trash_view_"
             item.icon = "trash"
             item.url = "segueTrash"
             functionMenu.append(item)
         }
-        
+
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
-        
+
             listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.activeAccount)
-            
+
             if listExternalSite != nil {
-                
+
                 for table in listExternalSite! {
-            
+
                     item = OCExternalSites.init()
-            
+
                     item.name = table.name
                     item.url = table.url
                     item.icon = table.icon
-            
+
                     if (table.type == "link") {
                         item.icon = "world"
                         externalSiteMenu.append(item)
@@ -164,31 +164,31 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 }
             }
         }
-        
+
         // ITEM : Settings
         item = OCExternalSites.init()
         item.name = "_settings_"
         item.icon = "settings"
         item.url = "segueSettings"
         settingsMenu.append(item)
-        
+
         if (quotaMenu.count > 0) {
-            
+
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
         }
-        
+
         changeUserProfile()
         tableView.reloadData()
     }
-    
+
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
 
         viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
     }
-    
+
     @objc func changeUserProfile() {
         // Display Name user & Quota
         var quota: String = ""
@@ -304,7 +304,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             if ((numberOfSections(in: tableView) == 3 && indexPath.section == 2) || (numberOfSections(in: tableView) == 4 && indexPath.section == 3)) {
                 item = settingsMenu[indexPath.row]
             }
-            
+
             cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.sharedInstance.textView
@@ -314,117 +314,117 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+
         var item: OCExternalSites = OCExternalSites.init()
-        
+
         if indexPath.section == 0 {
             tapImageLogoManageAccount()
             return
         }
-        
+
         // Menu Function
         if indexPath.section == 1 {
             item = functionMenu[indexPath.row]
         }
-        
+
         // Menu External Site
         if (numberOfSections(in: tableView) == 4 && indexPath.section == 2) {
             item = externalSiteMenu[indexPath.row]
         }
-        
+
         // Menu Settings
         if ((numberOfSections(in: tableView) == 3 && indexPath.section == 2) || (numberOfSections(in: tableView) == 4 && indexPath.section == 3)) {
             item = settingsMenu[indexPath.row]
         }
-        
+
         // Action
         if item.url.contains("segue") && !item.url.contains("//") {
-            
+
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
-        
+
         } else if item.url.contains("openStoryboard") && !item.url.contains("//") {
-            
-            let nameStoryboard =  item.url.replacingOccurrences(of: "openStoryboard", with: "")
+
+            let nameStoryboard = item.url.replacingOccurrences(of: "openStoryboard", with: "")
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             let controller = storyboard.instantiateInitialViewController()! //instantiateViewController(withIdentifier: nameStoryboard)
             self.present(controller, animated: true, completion: nil)
-            
+
         } else if item.url.contains("//") {
-            
+
             if (self.splitViewController?.isCollapsed)! {
-                
+
                 let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                 browserWebVC.urlBase = item.url
                 browserWebVC.isHiddenButtonExit = true
-                
+
                 self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
-                
+
             } else {
-                
+
                 let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                 browserWebVC.urlBase = item.url
 
                 self.present(browserWebVC, animated: true, completion: nil)
             }
-            
+
         } else if item.url == "logout" {
-            
+
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-            
-            let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                
+
+            let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action: UIAlertAction) in
+
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
-                
-                self.appDelegate.openLoginView(self, selector: Int(k_intro_login), openLoginWeb:false)
+
+                self.appDelegate.openLoginView(self, selector: Int(k_intro_login), openLoginWeb: false)
             }
-            
-            let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                print("You've pressed No button");
+
+            let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action: UIAlertAction) in
+                print("You've pressed No button")
             }
-            
+
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
-            self.present(alertController, animated: true, completion:nil)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
-    
+
     @objc func tapLabelQuotaExternalSite() {
-        
+
         if (quotaMenu.count > 0) {
-            
+
             let item = quotaMenu[0]
-            
+
             if (self.splitViewController?.isCollapsed)! {
-                
+
                 let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                 browserWebVC.urlBase = item.url
                 browserWebVC.isHiddenButtonExit = true
-                
+
                 self.navigationController?.pushViewController(browserWebVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
-                
+
             } else {
-                
+
                 let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
                 browserWebVC.urlBase = item.url
-                
+
                 self.present(browserWebVC, animated: true, completion: nil)
             }
         }
     }
-    
+
     @objc func tapImageLogoManageAccount() {
-        
+
         let controller = CCManageAccount.init()
-        
+
         self.navigationController?.pushViewController(controller, animated: true)
     }
 }
 
 class CCCellMore: UITableViewCell {
-    
+
     @IBOutlet weak var labelText: UILabel!
     @IBOutlet weak var imageIcon: UIImageView!
 }
