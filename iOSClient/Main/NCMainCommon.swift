@@ -481,7 +481,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.local.image = nil
             cell.comment.image = nil
             cell.shared.isUserInteractionEnabled = false
-            cell.viewShared.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
             // change color selection
