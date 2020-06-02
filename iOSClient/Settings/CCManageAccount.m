@@ -72,7 +72,7 @@
         CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
         
         CGSize imageSize = avatarImageView.bounds.size;
-        UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+        UIGraphicsBeginImageContextWithOptions(imageSize, NO, UIScreen.mainScreen.scale);
         CGContextRef context = UIGraphicsGetCurrentContext();
         [avatarImageView.layer renderInContext:context];
         avatar = UIGraphicsGetImageFromCurrentImageContext();

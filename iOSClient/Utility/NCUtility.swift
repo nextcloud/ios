@@ -383,14 +383,13 @@ class NCUtility: NSObject {
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
         let size = Int(k_avatar_size)
         
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
-        let avatarImageView = CCAvatar.init(image: image, borderColor: .clear, borderWidth: 0)
-        //avatarImageView?.alpha = alpha
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
+        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: Float(1 * UIScreen.main.scale))
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
         guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }

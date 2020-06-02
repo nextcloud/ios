@@ -107,7 +107,7 @@
     sz.width /= scale;
     sz.height /= scale;
     
-    UIGraphicsBeginImageContextWithOptions(sz, NO, scale);
+    UIGraphicsBeginImageContextWithOptions(sz, NO, UIScreen.mainScreen.scale);
     [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
