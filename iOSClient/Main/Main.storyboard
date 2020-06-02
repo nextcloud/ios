@@ -44,7 +44,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
                     <connections>
                         <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
@@ -98,7 +98,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="NXp-TT-qTB"/>
                     <connections>
                         <outlet property="txtTermini" destination="vYq-of-LmL" id="hA3-bm-4ke"/>
@@ -113,7 +113,7 @@
         <scene sceneID="eDq-6m-h8d">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
@@ -379,7 +379,7 @@
         <!--Transfers-->
         <scene sceneID="UaS-db-kwR">
             <objects>
-                <viewController storyboardIdentifier="CCTransfers" id="Gtp-25-3Em" customClass="CCTransfers" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCTransfers" extendedLayoutIncludesOpaqueBars="YES" id="Gtp-25-3Em" customClass="CCTransfers" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fak-dH-6Vp">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -409,7 +409,7 @@
         <!--Shares-->
         <scene sceneID="GFd-66-qSy">
             <objects>
-                <viewController storyboardIdentifier="NCShares" id="7jW-Ey-7M7" customClass="NCShares" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCShares" extendedLayoutIncludesOpaqueBars="YES" id="7jW-Ey-7M7" customClass="NCShares" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="y16-gC-0XR">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
