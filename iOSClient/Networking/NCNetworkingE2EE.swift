@@ -182,10 +182,9 @@ import CFNetwork
     func upload(metadata: tableMetadata, account: tableAccount) {
         
         var metadata = metadata
-        let object = tableE2eEncryption()
+        let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
-        var e2eMetadataKey = ""
-        var e2eMetadataKeyIndex = 0
+        
         let serverUrl = metadata.serverUrl
 
         metadata.fileName = CCUtility.generateRandomIdentifier()!
@@ -200,30 +199,29 @@ import CFNetwork
             return
         }
         
-        if let object = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)) {
-            e2eMetadataKey = object.metadataKey
-            e2eMetadataKeyIndex = object.metadataKeyIndex
+        if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)) {
+            objectE2eEncryption.metadataKey = result.metadataKey
+            objectE2eEncryption.metadataKeyIndex = result.metadataKeyIndex
         } else {
             let key = NCEndToEndEncryption.sharedManager()?.generateKey(16) as NSData?
-            e2eMetadataKey = key!.base64EncodedString()
+            objectE2eEncryption.metadataKey = key!.base64EncodedString()
+            objectE2eEncryption.metadataKeyIndex = 0
         }
         
-        object.account = metadata.account
-        object.authenticationTag = authenticationTag as String?
-        object.fileName = metadata.fileNameView
-        object.fileNameIdentifier = metadata.fileName
-        object.fileNamePath = fileNameLocalPath
-        object.key = key! as String
-        object.initializationVector = initializationVector! as String
-        object.metadataKey = e2eMetadataKey
-        object.metadataKeyIndex = e2eMetadataKeyIndex
-        object.mimeType = metadata.contentType
-        object.serverUrl = serverUrl
+        objectE2eEncryption.account = metadata.account
+        objectE2eEncryption.authenticationTag = authenticationTag as String?
+        objectE2eEncryption.fileName = metadata.fileNameView
+        objectE2eEncryption.fileNameIdentifier = metadata.fileName
+        objectE2eEncryption.fileNamePath = fileNameLocalPath
+        objectE2eEncryption.key = key! as String
+        objectE2eEncryption.initializationVector = initializationVector! as String
+        objectE2eEncryption.mimeType = metadata.contentType
+        objectE2eEncryption.serverUrl = serverUrl
         
         let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)!
-        object.version = Int(e2eeApiVersion) ?? 1
+        objectE2eEncryption.version = Int(e2eeApiVersion) ?? 1
         
-        if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
+        if NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption) == false {
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
             return
         }
