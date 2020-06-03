@@ -187,6 +187,10 @@ import CFNetwork
         var e2eMetadataKey = ""
         var e2eMetadataKeyIndex = 0
         let serverUrl = metadata.serverUrl
+
+        metadata.fileName = CCUtility.generateRandomIdentifier()!
+        metadata.e2eEncrypted = true
+        
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
         

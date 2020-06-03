@@ -329,7 +329,6 @@ import Alamofire
         var metadataForUpload: tableMetadata?
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        let fileNameIdentifier = CCUtility.generateRandomIdentifier()!
            
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"Internal error"])
@@ -337,9 +336,7 @@ import Alamofire
         }
            
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-               
-            metadata.fileName = fileNameIdentifier
-            metadata.e2eEncrypted = true
+
             metadata.contentType = internalContenType.contentType
             metadata.iconName = internalContenType.iconName
             metadata.typeFile = internalContenType.typeFile
@@ -370,8 +367,6 @@ import Alamofire
                        
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
-                extractMetadata.fileName = fileNameIdentifier
-                extractMetadata.e2eEncrypted = true
 
                 if e2eEncrypted && (extractMetadata.size > Double(k_max_filesize_E2EE)) {
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
