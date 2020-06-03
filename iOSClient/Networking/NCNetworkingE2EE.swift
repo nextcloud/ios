@@ -187,7 +187,7 @@ import CFNetwork
         var e2eMetadataKey = ""
         var e2eMetadataKeyIndex = 0
         let serverUrl = metadata.serverUrl
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
         
         if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
