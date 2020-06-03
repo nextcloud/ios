@@ -33,20 +33,12 @@ import Queuer
     
     let transferQueue = Queuer(name: "transferQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
 
-    
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
-        let concurrentOperation = ConcurrentOperation { _ in
+        let concurrentOperation = ConcurrentOperation { operation in
             
             NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
-                self.finish()
             }
-            
-            
         }
         concurrentOperation.addToQueue(transferQueue)
     }
-    
-    
-    
-   
 }
