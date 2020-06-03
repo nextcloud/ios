@@ -32,13 +32,21 @@ import Queuer
     }()
     
     let transferQueue = Queuer(name: "transferQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
+    let semaphore = Semaphore()
 
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
         let concurrentOperation = ConcurrentOperation { operation in
             
             NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
+                
+                self.semaphore.continue()
             }
         }
         concurrentOperation.addToQueue(transferQueue)
+        
+        debugPrint("[LOG] Download ADD QUEUE")
+
+        semaphore.wait()
     }
 }
+
