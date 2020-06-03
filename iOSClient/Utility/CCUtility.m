@@ -1458,6 +1458,7 @@
                 
                 NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                 fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                newMetadata.contentType = @"image/jpeg";
             }
             
             NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
