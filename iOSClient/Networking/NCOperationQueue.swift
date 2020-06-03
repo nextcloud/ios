@@ -38,7 +38,7 @@ import Queuer
         let concurrentOperation = ConcurrentOperation { _ in
             
             NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
-                
+                self.finish()
             }
             
             
@@ -46,13 +46,7 @@ import Queuer
         concurrentOperation.addToQueue(transferQueue)
     }
     
-    override func execute() {
-        
-    }
     
-    override func finish(success: Bool = true) {
-        
-    }
     
    
 }

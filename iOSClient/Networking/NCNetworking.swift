@@ -221,6 +221,8 @@ import Alamofire
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
         
+        debugPrint("[LOG] Download Request: " + "\(self.downloadRequest.count)")
+        
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
