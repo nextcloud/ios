@@ -546,7 +546,8 @@
     [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:url account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
-            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:url deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
+            NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
+            [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 if (errorCode == 0) {
                 
                     NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
