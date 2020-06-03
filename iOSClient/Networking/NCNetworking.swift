@@ -235,8 +235,8 @@ import Alamofire
             
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
-        }) { (account, etag, date, length, errorCode, errorDescription) in
-            
+        }) { (account, etag, date, length, error, errorCode, errorDescription) in
+                        
             self.downloadRequest[fileNameLocalPath] = nil
             
             if errorCode == 0 {
@@ -261,7 +261,7 @@ import Alamofire
                                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
                 
-            } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 {
+            } else if error?.isExplicitlyCancelledError ?? false {
                 
                 metadata.session = ""
                 metadata.sessionError = ""

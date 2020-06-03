@@ -149,7 +149,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                             
                         }, progressHandler: { (_) in
                             
-                        }, completionHandler: { (account, etag, date, lenght, errorCode, errorDescription) in
+                        }, completionHandler: { (account, etag, date, lenght, error, errorCode, errorDescription) in
                             
                             if errorCode == 0 && account == self.metadata.account {
                                 if type == "print" {

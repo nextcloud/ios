@@ -700,7 +700,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                                 
                 self.progress(Float(progress.fractionCompleted))
                 
-            }) { (account, etag, date, length, errorCode, errorDescription) in
+            }) { (account, etag, date, length, error, errorCode, errorDescription) in
                 
                 if errorCode == 0 && account == metadata.account {
                     
@@ -813,7 +813,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                                     
                     self.progress(Float(progress.fractionCompleted))
                     
-                }) { (account, etag, date, length, errorCode, errorDescription) in
+                }) { (account, etag, date, length, error, errorCode, errorDescription) in
                     
                     self.progress(0)
                     

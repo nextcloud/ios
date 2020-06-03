@@ -499,7 +499,7 @@ import NCCommunication
             
         }, progressHandler: { (_) in
             
-        }) { (account, etag, date, lenght, errorCode, errorDescription) in
+        }) { (account, etag, date, lenght, error, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])

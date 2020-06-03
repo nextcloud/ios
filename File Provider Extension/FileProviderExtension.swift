@@ -239,7 +239,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             }
             
-        }) { (account, etag, date, length, errorCode, errorDescription) in
+        }) { (account, etag, date, length, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
             
@@ -257,7 +257,7 @@ class FileProviderExtension: NSFileProviderExtension {
             } else {
                 
                 metadata.status = Int(k_metadataStatusDownloadError)
-                metadata.sessionError = errorDescription ?? ""
+                metadata.sessionError = errorDescription
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
 
                 completionHandler(NSFileProviderError(.noSuchItem))
