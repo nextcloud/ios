@@ -23,6 +23,7 @@ import Foundation
 import OpenSSL
 import NCCommunication
 import CFNetwork
+import Alamofire
 
 @objc class NCNetworkingE2EE: NSObject {
     @objc public static let shared: NCNetworkingE2EE = {
@@ -247,7 +248,7 @@ import CFNetwork
                     
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
-                }) { (account, ocId, etag, date, size, errorCode, errorDescription) in
+                }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
                     
@@ -271,7 +272,7 @@ import CFNetwork
                         
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                                                         
-                    } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 {
+                    } else if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) || errorCode == 200 || error?.isExplicitlyCancelledError ?? false { 
                         
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
