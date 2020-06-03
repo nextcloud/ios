@@ -107,7 +107,7 @@
     sz.width /= scale;
     sz.height /= scale;
     
-    UIGraphicsBeginImageContextWithOptions(sz, NO, scale);
+    UIGraphicsBeginImageContextWithOptions(sz, NO, UIScreen.mainScreen.scale);
     [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -172,7 +172,7 @@
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier, image.size.height*multiplier);
+    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier / (2 / UIScreen.mainScreen.scale), image.size.height*multiplier / (2 / UIScreen.mainScreen.scale));
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -181,12 +181,12 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, width, height);
+    CGRect rect = CGRectMake(0, 0, width / (2 / UIScreen.mainScreen.scale), height / (2 / UIScreen.mainScreen.scale));
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -196,7 +196,7 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:2 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -25,7 +25,7 @@
         <!--Settings-->
         <scene sceneID="8L1-Aq-u4E">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="amx-XG-NId" customClass="CCSettings" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="amx-XG-NId" customClass="CCSettings" sceneMemberID="viewController">
                     <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="qPP-0c-bH9">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -44,7 +44,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
                     <connections>
                         <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
@@ -67,7 +67,7 @@
         <!--Acknowledgements-->
         <scene sceneID="h9y-Lj-jxB">
             <objects>
-                <viewController id="Wu3-ow-y4h" customClass="Acknowledgements" sceneMemberID="viewController">
+                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Wu3-ow-y4h" customClass="Acknowledgements" sceneMemberID="viewController">
                     <view key="view" opaque="NO" contentMode="scaleToFill" id="HYE-hK-m2I">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="786"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -98,7 +98,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
                     </view>
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="NXp-TT-qTB"/>
                     <connections>
                         <outlet property="txtTermini" destination="vYq-of-LmL" id="hA3-bm-4ke"/>
@@ -112,8 +112,8 @@
         <!--Navigation Controller-->
         <scene sceneID="eDq-6m-h8d">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout"/>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
@@ -379,7 +379,7 @@
         <!--Transfers-->
         <scene sceneID="UaS-db-kwR">
             <objects>
-                <viewController storyboardIdentifier="CCTransfers" id="Gtp-25-3Em" customClass="CCTransfers" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CCTransfers" extendedLayoutIncludesOpaqueBars="YES" id="Gtp-25-3Em" customClass="CCTransfers" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fak-dH-6Vp">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -409,7 +409,7 @@
         <!--Shares-->
         <scene sceneID="GFd-66-qSy">
             <objects>
-                <viewController storyboardIdentifier="NCShares" id="7jW-Ey-7M7" customClass="NCShares" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCShares" extendedLayoutIncludesOpaqueBars="YES" id="7jW-Ey-7M7" customClass="NCShares" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="y16-gC-0XR">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -479,25 +479,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qW6-AL-KO3">
-                                <rect key="frame" x="0.0" y="88" width="414" height="100"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="GJt-sN-4QE"/>
-                                </constraints>
-                            </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="disclosureIndicator" translatesAutoresizingMaskIntoConstraints="NO" id="Lgd-72-bTD">
-                                <rect key="frame" x="381" y="125" width="24" height="26"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="26" id="9SQ-KV-aJa"/>
-                                    <constraint firstAttribute="width" constant="24" id="KBe-Dy-an6"/>
-                                </constraints>
-                            </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
-                                <rect key="frame" x="0.0" y="188" width="414" height="549"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="50" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
+                                <rect key="frame" x="0.0" y="88" width="414" height="649"/>
+                                <inset key="separatorInset" minX="56" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <view key="tableFooterView" contentMode="scaleToFill" id="xPg-6F-Qcc">
+                                    <rect key="frame" x="0.0" y="106" width="414" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </view>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="55.5" width="414" height="50"/>
+                                        <rect key="frame" x="0.0" y="28" width="414" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" multipleTouchEnabled="YES" contentMode="center" tableViewCell="V1G-2M-Q0I" id="mMB-QG-hoe">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
@@ -536,27 +528,6 @@
                                     <outlet property="delegate" destination="Frr-j9-xav" id="46E-kI-GUB"/>
                                 </connections>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avatar" translatesAutoresizingMaskIntoConstraints="NO" id="oJg-wO-2iv" customClass="NCAvatar" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="15" y="113" width="50" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="moA-ZW-N2y"/>
-                                    <constraint firstAttribute="height" constant="50" id="nQ1-8m-5h7"/>
-                                </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aqE-Wq-B1A">
-                                <rect key="frame" x="78" y="128" width="78" height="20"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J2k-UZ-XQQ" userLabel="View Quota">
                                 <rect key="frame" x="0.0" y="737" width="414" height="60"/>
                                 <subviews>
@@ -601,34 +572,21 @@
                         </subviews>
                         <constraints>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="09d-e0-Lbe"/>
-                            <constraint firstItem="Lgd-72-bTD" firstAttribute="centerY" secondItem="oJg-wO-2iv" secondAttribute="centerY" id="Aiq-NC-J8Z"/>
-                            <constraint firstItem="oJg-wO-2iv" firstAttribute="centerY" secondItem="qW6-AL-KO3" secondAttribute="centerY" id="HRF-rA-WKN"/>
-                            <constraint firstItem="qW6-AL-KO3" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="IHF-zg-7RG"/>
-                            <constraint firstItem="qW6-AL-KO3" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="Nyf-TZ-gLf"/>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="VDo-ak-TEq"/>
                             <constraint firstItem="2rd-9k-q51" firstAttribute="bottom" secondItem="J2k-UZ-XQQ" secondAttribute="bottom" constant="16" id="bRS-IM-13l"/>
-                            <constraint firstItem="aqE-Wq-B1A" firstAttribute="centerY" secondItem="oJg-wO-2iv" secondAttribute="centerY" id="dJY-KW-vIJ"/>
-                            <constraint firstItem="aqE-Wq-B1A" firstAttribute="leading" secondItem="oJg-wO-2iv" secondAttribute="trailing" constant="13" id="fPO-DW-Ccp"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Lgd-72-bTD" secondAttribute="trailing" constant="-11" id="gS9-A6-G0U"/>
-                            <constraint firstItem="aKC-5k-tLM" firstAttribute="top" secondItem="2rd-9k-q51" secondAttribute="top" constant="100" id="hWq-1x-oDU"/>
+                            <constraint firstItem="aKC-5k-tLM" firstAttribute="top" secondItem="2rd-9k-q51" secondAttribute="top" id="hWq-1x-oDU"/>
                             <constraint firstItem="J2k-UZ-XQQ" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="i8w-Kx-CNe"/>
                             <constraint firstItem="J2k-UZ-XQQ" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="j44-Hn-Qa3"/>
-                            <constraint firstItem="qW6-AL-KO3" firstAttribute="top" secondItem="hLP-ql-OiA" secondAttribute="topMargin" id="lp3-X7-9wg"/>
-                            <constraint firstItem="qW6-AL-KO3" firstAttribute="leading" secondItem="oJg-wO-2iv" secondAttribute="trailing" constant="-65" id="qCO-yk-KNN"/>
                             <constraint firstItem="J2k-UZ-XQQ" firstAttribute="top" secondItem="aKC-5k-tLM" secondAttribute="bottom" id="zy7-iS-wLE"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="2rd-9k-q51"/>
                     </view>
                     <navigationItem key="navigationItem" id="UOD-r3-Kgi"/>
                     <connections>
-                        <outlet property="disclosureIndicator" destination="Lgd-72-bTD" id="nUk-W9-H48"/>
                         <outlet property="labelQuota" destination="DAP-np-Q1J" id="d1L-oC-pxP"/>
                         <outlet property="labelQuotaExternalSite" destination="vfl-ZC-XFd" id="Zdx-nY-00O"/>
-                        <outlet property="labelUsername" destination="aqE-Wq-B1A" id="UMl-sE-W5x"/>
                         <outlet property="progressQuota" destination="uGf-Fa-QQ3" id="cAN-mW-Ckd"/>
                         <outlet property="tableView" destination="aKC-5k-tLM" id="XrN-XG-w8l"/>
-                        <outlet property="themingAvatar" destination="oJg-wO-2iv" id="Z0Z-Jb-3eG"/>
-                        <outlet property="themingBackground" destination="qW6-AL-KO3" id="JAV-fL-ZXh"/>
                         <outlet property="viewQuota" destination="J2k-UZ-XQQ" id="I2M-eR-p56"/>
                     </connections>
                 </viewController>
@@ -657,8 +615,6 @@
         <segue reference="2Qm-A6-CfB"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="avatar" width="25" height="25"/>
-        <image name="disclosureIndicator" width="26" height="28"/>
         <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
     </resources>
