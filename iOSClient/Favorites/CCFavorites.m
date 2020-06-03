@@ -647,7 +647,7 @@
                         [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
                     }
                     
-                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileViewFavorite setFavorite:false];
+                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileViewFavorite setFavorite:false completion:^(NSInteger errorCode) { }];
                 }
             }
         }

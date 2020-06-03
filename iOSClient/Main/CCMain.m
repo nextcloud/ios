@@ -535,7 +535,7 @@
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
                    
-            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true];
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true completion:^(NSInteger errorCode) { }];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -924,7 +924,7 @@
             
             if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorSave setFavorite:false];
+                [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorSave setFavorite:false completion:^(NSInteger errorCode) { }];
             }
         }
         
@@ -1920,7 +1920,7 @@
         
     } else {
         
-        [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadCopy setFavorite:false];
+        [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
     }
 }
 
@@ -1940,7 +1940,7 @@
             
         } else {
 
-            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorLoadCopy setFavorite:false];
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
         }
     }
     
@@ -2717,7 +2717,7 @@
                         [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
                     }
                    
-                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileView setFavorite:false];
+                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileView setFavorite:false completion:^(NSInteger errorCode) { }];
                 }
             }
         }

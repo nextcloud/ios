@@ -300,8 +300,9 @@
             [serverUrlToReload addObject:metadata.serverUrl];
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:metadata.account];
         }
-        
-        [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
+
+        [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
+        //[[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
     }
         
     for (NSString *serverUrl in serverUrlToReload) {

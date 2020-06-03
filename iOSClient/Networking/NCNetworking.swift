@@ -40,6 +40,7 @@ import Alamofire
     }()
         
     var delegate: NCNetworkingDelegate?
+    
     var lastReachability: Bool = true
     var downloadRequest = [String:DownloadRequest]()
     var uploadRequest = [String:UploadRequest]()
@@ -207,7 +208,7 @@ import Alamofire
         }
     }
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
         
         var metadata = metadata
         let serverUrl = metadata.serverUrl
@@ -286,6 +287,8 @@ import Alamofire
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
+            
+            completion(errorCode)
         }
     }
     

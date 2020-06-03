@@ -144,8 +144,7 @@ extension NCDetailNavigationController {
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             
-                            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline)
-                            
+                            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
                         } else {
                             NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                             NotificationCenter.default.post(name: Notification.Name.init(rawValue:

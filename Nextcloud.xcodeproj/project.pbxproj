@@ -132,6 +132,7 @@
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F7267A82225DFCE100D6DB7D /* AFNetworking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7267A81225DFCE100D6DB7D /* AFNetworking.framework */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
+		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */; };
 		F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72E0B9C21AD60BC00898D7B /* WeScan.framework */; };
@@ -537,6 +538,7 @@
 		F728B2BB23E83AD200E12DA0 /* Notification_Service_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Notification_Service_Extension.plist; sourceTree = "<group>"; };
 		F728B2BC23E83AD200E12DA0 /* Notification_Service_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notification_Service_Extension.entitlements; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
+		F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOperationQueue.swift; sourceTree = "<group>"; };
 		F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotificationEncryption.m; sourceTree = "<group>"; };
 		F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotificationEncryption.h; sourceTree = "<group>"; };
 		F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerNextcloudText.swift; sourceTree = "<group>"; };
@@ -1163,6 +1165,7 @@
 			isa = PBXGroup;
 			children = (
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
+				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
@@ -2260,6 +2263,7 @@
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
 				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
+				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
