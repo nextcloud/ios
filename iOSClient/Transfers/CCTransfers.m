@@ -80,18 +80,16 @@
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource:) name:k_notificationCenter_reloadDataSource object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
 
     [self changeTheming];
-    
-    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
         
-    [self reloadDatasource:nil action:k_action_NULL];
+    [self reloadDatasource];
 }
 
 - (void)changeTheming
@@ -235,7 +233,6 @@
         [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
         [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -264,17 +261,7 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource:(NSNotification *)notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    NSString *ocId = userInfo[@"ocId"];
-    NSString *serverUrl = userInfo[@"serverUrl"];
-    
-    [self reloadDatasource:ocId action:<#(NSInteger)#>
-}
-
-
-- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
+- (void)reloadDatasource
 {
     // test
     if (appDelegate.activeAccount.length == 0 || self.view.window == nil)

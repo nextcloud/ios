@@ -181,7 +181,6 @@
     
     // Add Medtadata for upload
     [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal ocId:metadataForUpload.ocId action:k_action_NULL];
 
     [appDelegate startLoadAutoUpload];
     

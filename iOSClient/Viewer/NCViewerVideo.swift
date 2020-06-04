@@ -107,8 +107,7 @@ class NCViewerVideo: NSObject {
                 _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
-                // reload Data Source
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl:self.metadata.serverUrl, ocId: self.metadata.ocId, action: k_action_MOD)
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":self.metadata.ocId,"serverUrl":self.metadata.serverUrl])
             }
         }
     }

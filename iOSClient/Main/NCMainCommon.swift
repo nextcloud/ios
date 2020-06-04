@@ -179,7 +179,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: actionReloadDatasource)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])                    
                 }
             }
         }

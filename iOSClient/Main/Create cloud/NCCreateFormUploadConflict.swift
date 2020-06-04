@@ -228,8 +228,7 @@ extension NCCreateFormUploadConflictDelegate {
         } else {
             
             NCManageDatabase.sharedInstance.addMetadatas(metadatasNOConflict)
-            appDelegate.startLoadAutoUpload()
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: nil, action: Int32(k_action_NULL))
+            appDelegate.startLoadAutoUpload()            
         }
                 
         dismiss(animated: true)

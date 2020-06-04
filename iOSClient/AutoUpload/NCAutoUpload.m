@@ -462,7 +462,6 @@
     // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     });    
 }
 

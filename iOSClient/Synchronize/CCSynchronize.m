@@ -78,7 +78,6 @@
         if (errorCode == kOCErrorServerPathNotFound) {
             
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:serverUrl account:account];
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         }
         
         return;
@@ -87,7 +86,7 @@
     // Add/update self Folder
     if (!metadataFolder || !metadatas || [metadatas count] == 0) {
         if (metadataFolder.serverUrl != nil) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
+           // [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
         }
         return;
     }
@@ -95,9 +94,6 @@
     // Add metadata and update etag Directory
     [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId fileId:metadataFolder.fileId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
-    
-    // reload folder ../ *
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -143,11 +139,6 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([metadatasNotPresents count] > 0)
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
-        });
         
         // ----- Test : (MODIFY) -----
         
@@ -232,8 +223,6 @@
                 
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-                
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
         }
     }];
 }
@@ -302,10 +291,6 @@
         }
 
         [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
-    }
-        
-    for (NSString *serverUrl in serverUrlToReload) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
     }
 }
 
