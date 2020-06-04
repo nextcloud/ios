@@ -51,6 +51,8 @@ import NCCommunication
     }
 }
 
+//MARK: -
+
 class NCOperationDownload: ConcurrentOperation {
    
     private var metadata: tableMetadata
@@ -69,6 +71,8 @@ class NCOperationDownload: ConcurrentOperation {
         }
     }
 }
+
+//MARK: -
 
 class NCOperationReadFolderSync: ConcurrentOperation {
    
@@ -98,6 +102,7 @@ class NCOperationReadFolderSync: ConcurrentOperation {
     }
 }
 
+//MARK: -
 
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
