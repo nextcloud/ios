@@ -265,7 +265,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                    
         NCManageDatabase.sharedInstance.addMetadata(metadata)
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":self.serverUrl])
         
         self.appDelegate.startLoadAutoUpload()
         

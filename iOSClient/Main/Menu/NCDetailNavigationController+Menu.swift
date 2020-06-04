@@ -147,8 +147,6 @@ extension NCDetailNavigationController {
                             NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
                         } else {
                             NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                            NotificationCenter.default.post(name: Notification.Name.init(rawValue:
-                                k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                         }
                     }
                 )

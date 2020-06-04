@@ -452,11 +452,6 @@
     if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
         [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
-        
-        // Update icon badge number
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
     }
     
     // end loadingcand reload
@@ -475,11 +470,6 @@
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Update icon badge number
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
     }
 }
 

@@ -67,8 +67,6 @@
     // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     
     // Metadata
     self.metadata = [tableMetadata new];
@@ -122,26 +120,6 @@
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
-}
-
-- (void)deleteFile:(NSNotification *)notification
-{
-    if (self.view.window == nil) { return; }
-
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
-}
-
-- (void)favoriteFile:(NSNotification *)notification
-{
-    if (self.view.window == nil) { return; }
-    
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    
 }
 
 #pragma --------------------------------------------------------------------------------------------

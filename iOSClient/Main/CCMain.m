@@ -129,10 +129,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(renameFile:) name:k_notificationCenter_renameFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
     // Search
@@ -540,22 +538,6 @@
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
-}
-
-- (void)renameFile:(NSNotification *)notification {
-    if (self.view.window == nil) { return; }
-
-    NSDictionary *userInfo = notification.userInfo;
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
-}
-
-- (void)createFolder:(NSNotification *)notification {
-    if (self.view.window == nil) { return; }
-    
-    NSDictionary *userInfo = notification.userInfo;
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
 }
 
 #pragma --------------------------------------------------------------------------------------------

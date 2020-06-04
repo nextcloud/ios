@@ -133,9 +133,6 @@
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
-// ApplicationIconBadgeNumber
-- (void)updateApplicationIconBadgeNumber;
-
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
 - (NSString *)getTabBarControllerActiveServerUrl;

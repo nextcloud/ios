@@ -43,13 +43,9 @@ import Foundation
 
     @objc func downloadFileStart(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String {
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":ocId,"serverUrl":serverUrl])
-                appDelegate.updateApplicationIconBadgeNumber()
-            }
-        }
+//        if let userInfo = notification.userInfo as NSDictionary? {
+//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String { }
+//        }
     }
     
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -63,7 +59,6 @@ import Foundation
                     
                     // Synchronized
                     if selector == selectorDownloadSynchronize {
-                        appDelegate.updateApplicationIconBadgeNumber()
                         return
                     }
                     
@@ -174,13 +169,9 @@ import Foundation
 
     @objc func uploadFileStart(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask {
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":ocId,"serverUrl":serverUrl])
-                appDelegate.updateApplicationIconBadgeNumber()
-            }
-        }
+//        if let userInfo = notification.userInfo as NSDictionary? {
+//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask { }
+//        }
     }
     
     @objc func uploadedFile(_ notification: NSNotification) {

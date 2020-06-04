@@ -563,7 +563,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         NCManageDatabase.sharedInstance.addMetadata(metadata)
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
 
         self.appDelegate.startLoadAutoUpload()
                         
