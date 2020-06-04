@@ -112,7 +112,6 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     }
                 }
             }
-            
             self.finish()
         }
     }
