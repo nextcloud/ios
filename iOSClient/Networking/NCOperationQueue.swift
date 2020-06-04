@@ -24,6 +24,7 @@
 
 import Foundation
 import Queuer
+import NCCommunication
 
 @objc class NCOperationQueue: NSObject {
     @objc public static let shared: NCOperationQueue = {
@@ -32,9 +33,16 @@ import Queuer
     }()
     
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
+    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+    }
+    
+    @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+        if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
+        }
     }
 }
 
@@ -52,6 +60,59 @@ class NCOperationDownload: ConcurrentOperation {
     
     override func start() {
         NCNetworking.shared.download(metadata: self.metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
+            self.finish()
+        }
+    }
+}
+
+class NCOperationDownloadThumbnail: ConcurrentOperation {
+   
+    private var metadata: tableMetadata
+    private var activeUrl: String
+    private var view: Any
+    private var indexPath: IndexPath
+    
+    init(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+        self.metadata = metadata
+        self.activeUrl = activeUrl
+        self.view = view
+        self.indexPath = indexPath
+    }
+    
+    override func start() {
+            
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+            
+            if errorCode == 0 && data != nil  {
+                if let image = UIImage.init(data: data!) {
+                    
+                    if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                        if let cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) {
+                            if cell is NCListCell {
+                                (cell as! NCListCell).imageItem.image = image
+                            } else if cell is NCGridCell {
+                                (cell as! NCGridCell).imageItem.image = image
+                            } else if cell is NCGridMediaCell {
+                                (cell as! NCGridMediaCell).imageItem.image = image
+                            }
+                        }
+                    }
+                    
+                    if self.view is UITableView && CCUtility.fileProviderStorageIconExists(self.metadata.ocId, fileNameView: self.metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                        if let cell = (self.view as! UITableView).cellForRow(at: self.indexPath) {
+                            if cell is CCCellMainTransfer {
+                                (cell as! CCCellMainTransfer).file.image = image
+                            } else if cell is CCCellMain {
+                                (cell as! CCCellMain).file.image = image
+                            }
+                        }
+                    }
+                }
+            }
+            
             self.finish()
         }
     }

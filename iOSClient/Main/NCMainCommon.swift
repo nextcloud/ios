@@ -40,13 +40,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     var metadataEditPhoto: tableMetadata?
     var docController: UIDocumentInteractionController?
 
-    lazy var operationQueueReloadDatasource: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "Reload main datasource queue"
-        queue.maxConcurrentOperationCount = 1
-        return queue
-    }()
-    
     //MARK: -
     
     struct NCMainCommonImages {
@@ -225,7 +218,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         
         // Download preview
         if downloadThumbnail {
-            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: collectionView, indexPath: indexPath)
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: collectionView, indexPath: indexPath)
         }
         
         var isShare = false
@@ -483,7 +476,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.labelTitle.text = metadata.fileNameView
             
             // Download preview
-            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: tableView, indexPath: indexPath)
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
             
             // Share
             var isShare = false
@@ -942,191 +935,6 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         })
     }
 }
-
-//MARK: - Networking Main
-
-class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
-    @objc static let sharedInstance: NCNetworkingMain = {
-        let instance = NCNetworkingMain()
-        return instance
-    }()
-    
-    lazy var operationQueueNetworkingMain: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "com.nextcloud.operationQueueNetworkingMain"
-        queue.maxConcurrentOperationCount = 1
-        return queue
-    }()
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-    #if HC
-    // IMImagemeterViewerDelegate
-    func closeImagemeterViewer(metadata: tableMetadata?, bundleDirectory: String) {
-        guard let metadata = metadata else { return }
-        
-        let ocIdTemp = NSUUID().uuidString.lowercased()
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName)!
-        let bundleDirectoryURL = URL(fileURLWithPath: bundleDirectory)
-        let fileNameZipUrl = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: metadata.fileName))
-        
-        // Create IMI
-        try? FileManager.default.removeItem(at: fileNameZipUrl)
-        do {
-            try FileManager().zipItem(at: bundleDirectoryURL, to:fileNameZipUrl)
-        } catch {
-            NCContentPresenter.shared.messageNotification("_error_", description: "Creation of IMI archive failed with error", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-            return
-        }
-        
-        // Verify if is changed
-        if IMUtility.shared.IMIsChange(metadata: metadata, fileNameZipUrl: fileNameZipUrl) {
-            let com = IMCommunication.init()
-            _ = com.uploadFileIMI(serverUrl: metadata.serverUrl, fileName: metadata.fileName, fileNameLocalPath: fileNameLocalPath, ocId: ocIdTemp)
-        }
-        
-        // Remove bundle directory
-        try? FileManager.default.removeItem(atPath: bundleDirectory)
-    }
-    #endif
-    
-    @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
-        operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
-    }
-    
-    func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
-        
-        if !metadata.isInvalidated && metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
-                        
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                    
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
-                
-                if errorCode == 0 && data != nil  {
-                    if let image = UIImage.init(data: data!) {
-                        
-                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
-                                if cell is NCListCell {
-                                    (cell as! NCListCell).imageItem.image = image
-                                } else if cell is NCGridCell {
-                                    (cell as! NCGridCell).imageItem.image = image
-                                } else if cell is NCGridMediaCell {
-                                    (cell as! NCGridMediaCell).imageItem.image = image
-                                }
-                            }
-                        }
-                        
-                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                                if cell is CCCellMainTransfer {
-                                    (cell as! CCCellMainTransfer).file.image = image
-                                } else if cell is CCCellMain {
-                                    (cell as! CCCellMain).file.image = image
-                                }
-                            }
-                        }
-                    }
-                }
-                return closure()
-            }
-        }
-        return closure()
-    }
-}
-
-//MARK: - Operation Networking Main
-
-class NCOperationNetworkingMain: Operation {
-    
-    private var _executing : Bool = false
-    override var isExecuting : Bool {
-        get { return _executing }
-        set {
-            guard _executing != newValue else { return }
-            willChangeValue(forKey: "isExecuting")
-            _executing = newValue
-            didChangeValue(forKey: "isExecuting")
-        }
-    }
-
-    private var _finished : Bool = false
-    override var isFinished : Bool {
-        get { return _finished }
-        set {
-            guard _finished != newValue else { return }
-            willChangeValue(forKey: "isFinished")
-            _finished = newValue
-            didChangeValue(forKey: "isFinished")
-        }
-    }
-    
-    private var metadata: tableMetadata?
-    private var view: Any?
-    private var indexPath: IndexPath?
-    private var networkingFunc: String = ""
-
-    init(metadata: tableMetadata?, view: Any?, indexPath: IndexPath?, networkingFunc: String) {
-        super.init()
-        
-        if metadata != nil { self.metadata = metadata! }
-        if view != nil { self.view = view! }
-        if indexPath != nil { self.indexPath = indexPath! }
-        
-        self.networkingFunc = networkingFunc
-    }
-    
-    override func start() {
-        if !Thread.isMainThread {
-            
-            self.performSelector(onMainThread:#selector(start), with: nil, waitUntilDone: false)
-            
-        } else {
-        
-            isExecuting = true
-        
-            if isCancelled {
-                finish()
-            } else {
-                poolNetworking()
-            }
-        }
-    }
-    
-    func finish() {
-        isExecuting = false
-        isFinished = true
-    }
-    
-    override func cancel() {
-        super.cancel()
-        
-        if isExecuting {
-            complete()
-        }
-    }
-    
-    func complete() {
-        finish()
-        
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
-    }
-    
-    func poolNetworking() {
-        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        
-        switch networkingFunc {
-        case "downloadThumbnail":
-            NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata!, view: view!, indexPath: indexPath!) {
-                self.complete()
-            }
-        default:
-            print("error")
-        }
-    }
-}
-
 
 //MARK: - Function Main
 

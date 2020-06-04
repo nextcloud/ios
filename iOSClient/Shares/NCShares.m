@@ -286,7 +286,7 @@
                 
                 cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
                 
-                [[NCNetworkingMain sharedInstance] downloadThumbnailWith:metadata view:tableView indexPath:indexPath];
+                [[NCOperationQueue shared] downloadThumbnailWithMetadata:metadata activeUrl:appDelegate.activeUrl view:tableView indexPath:indexPath];
             }
         }
         
