@@ -37,13 +37,7 @@
 
 + (CCNetworking *)sharedNetworking;
 
-#pragma mark ===== Session =====
-
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
-- (void)invalidateAndCancelAllSession;
-
-#pragma mark ===== Upload =====
-
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end

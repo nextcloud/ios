@@ -50,10 +50,7 @@
 - (id)init
 {    
     self = [super init];
-    
-    // Initialization Sessions
-    
-
+        
     [self sessionUpload];
     [self sessionWWanUpload];
     
@@ -111,13 +108,6 @@
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     
     return nil;
-}
-
-- (void)invalidateAndCancelAllSession
-{
- 
-    [[self sessionUpload] invalidateAndCancel];
-    [[self sessionWWanUpload] invalidateAndCancel];
 }
 
 #pragma --------------------------------------------------------------------------------------------
