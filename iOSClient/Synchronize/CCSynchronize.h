@@ -35,7 +35,7 @@
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 - (void)readFile:(NSString *)ocId fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 
-- (void)readFolderSuccessFailureWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 

@@ -90,12 +90,14 @@ class NCOperationReadFolderSync: ConcurrentOperation {
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 && files != nil {
-            
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
-                    CCSynchronize.shared()?.readFolderSuccessFailure(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector, message: errorDescription, errorCode: errorCode)
-                    
+                    if metadatas.count > 0 {
+                        CCSynchronize.shared()?.readFolder(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector)
+                    }
                 }
+            } else if errorCode == 404 {
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.serverUrl, account: account)
             }
             self.finish()
         }

@@ -59,30 +59,10 @@
     [[NCOperationQueue shared] readFolderSyncWithServerUrl:serverUrl selector:selector account:account];
 }
 
-- (void)readFolderSuccessFailureWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    // ERROR
-    if (errorCode != 0 || ![account isEqualToString:appDelegate.activeAccount]) {
-        
-        // Folder not present, remove it
-        if (errorCode == kOCErrorServerPathNotFound) {
-            
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:serverUrl account:account];
-        }
-        
-        return;
-    }
-    
-    // Add/update self Folder
-    if (!metadataFolder || !metadatas || [metadatas count] == 0) {
-        if (metadataFolder.serverUrl != nil) {
-           // [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataFolder.serverUrl ocId:nil action:k_action_NULL];
-        }
-        return;
-    }
-    
     // Add metadata and update etag Directory
     [[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:metadataFolder.etag ocId:metadataFolder.ocId fileId:metadataFolder.fileId encrypted:metadataFolder.e2eEncrypted richWorkspace:nil account:appDelegate.activeAccount];
