@@ -149,7 +149,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             NCNetworking.shared.cancelUpload(metadata: metadata)
         } else {
         
-            var actionReloadDatasource = k_action_NULL
             guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
             var metadata = metadata
 
@@ -175,7 +174,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                         catch { }
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
-                    actionReloadDatasource = k_action_DEL
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

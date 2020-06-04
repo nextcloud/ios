@@ -31,7 +31,7 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    @objc var metadata: tableMetadata?
+    @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
     
     override func viewDidLoad() {
@@ -83,9 +83,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        appDelegate.activeMain?.reloadDatasource(self.appDelegate.activeMain?.serverUrl, ocId: nil, action: Int(k_action_NULL))
-        appDelegate.activeFavorites?.reloadDatasource(nil, action: Int(k_action_NULL))
-        appDelegate.activeOffline?.loadDatasource()
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
     }
     
     @objc func exitTapped() {
@@ -133,17 +131,17 @@ extension NCSharePaging: PagingViewControllerDataSource {
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
-            viewController.filterFileId = metadata!.fileId
+            viewController.filterFileId = metadata.fileId
             viewController.objectType = "files"
             return viewController
         case 1:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
-            viewController.metadata = metadata!
+            viewController.metadata = metadata
             viewController.height = height
             return viewController
         case 2:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
-            viewController.metadata = metadata!
+            viewController.metadata = metadata
             viewController.height = height
             return viewController
         default:

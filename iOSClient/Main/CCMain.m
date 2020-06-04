@@ -421,6 +421,7 @@
     } else {
         
         // reload datasource
+        
         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
     }
     

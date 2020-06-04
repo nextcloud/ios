@@ -254,11 +254,6 @@
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
 
-// Cell Reload Data Source
-#define k_action_NULL                                   0
-#define k_action_MOD                                    1
-#define k_action_DEL                                    2
-
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
