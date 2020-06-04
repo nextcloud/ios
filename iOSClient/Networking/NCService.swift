@@ -69,9 +69,27 @@ class NCService: NSObject {
                 self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
                 
                 // Call func thath required the userdID
-                self.appDelegate.activeFavorites.listingFavorites()
-                self.appDelegate.activeMedia.reloadDataSource(loadNetworkDatasource: true) { }
-                NCFunctionMain.sharedInstance.synchronizeOffline()
+//                self.appDelegate.activeFavorites.listingFavorites()
+//                self.appDelegate.activeMedia.reloadDataSource(loadNetworkDatasource: true) { }
+                
+                // Synchronize
+                let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true)
+                if (directories != nil) {
+                    for directory: tableDirectory in directories! {
+                        CCSynchronize.shared()?.readFolder(directory.serverUrl, selector: selectorReadFolderWithDownload, account: tableAccount.account)
+                    }
+                }
+                
+                let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
+                if (files != nil) {
+                    for file: tableLocalFile in files! {
+                        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
+                            continue
+                        }
+                        CCSynchronize.shared()?.readFile(metadata.ocId, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: tableAccount.account)
+                    }
+                }
+
                 
                 DispatchQueue.global().async {
                     

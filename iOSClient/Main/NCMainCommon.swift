@@ -935,37 +935,3 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         })
     }
 }
-
-//MARK: - Function Main
-
-class NCFunctionMain: NSObject {
-    
-    @objc static let sharedInstance: NCFunctionMain = {
-        let instance = NCFunctionMain()
-        return instance
-    }()
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    @objc func synchronizeOffline() {
-        
-        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
-        if (directories != nil) {
-            for directory: tableDirectory in directories! {
-                CCSynchronize.shared()?.readFolder(directory.serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
-            }
-        }
-        
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
-        if (files != nil) {
-            for file: tableLocalFile in files! {
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
-                    continue
-                }
-                CCSynchronize.shared()?.readFile(metadata.ocId, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: appDelegate.activeAccount)
-            }
-        }
-    }
-}
-
-
