@@ -79,8 +79,9 @@
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource:) name:k_notificationCenter_reloadDataSource object:nil];
+
     [self changeTheming];
     
     [self reloadDatasource:nil action:k_action_NULL];
@@ -262,6 +263,16 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)reloadDatasource:(NSNotification *)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSString *ocId = userInfo[@"ocId"];
+    NSString *serverUrl = userInfo[@"serverUrl"];
+    
+    [self reloadDatasource:ocId action:<#(NSInteger)#>
+}
+
 
 - (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
 {

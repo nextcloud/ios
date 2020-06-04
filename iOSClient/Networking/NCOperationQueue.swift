@@ -38,7 +38,7 @@ import Queuer
     }
 }
 
-@objc class NCOperationDownload: ConcurrentOperation {
+class NCOperationDownload: ConcurrentOperation {
    
     private var metadata: tableMetadata
     private var selector: String

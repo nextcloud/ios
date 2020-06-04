@@ -247,7 +247,7 @@
                      if (![filesOcId containsObject:metadata.ocId])
                          [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
                  
-                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_clearDateReadDataSource object:nil];
+                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil];
              }];
         
          } else if (errorCode != 0) {

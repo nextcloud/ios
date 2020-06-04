@@ -75,7 +75,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("fileName")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -95,7 +95,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("date")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -115,7 +115,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("size")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -128,7 +128,7 @@ extension CCMain {
                 on: CCUtility.getDirectoryOnTop(),
                 action: { menuAction in
                     CCUtility.setDirectoryOnTop(!CCUtility.getDirectoryOnTop())
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )

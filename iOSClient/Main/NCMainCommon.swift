@@ -796,37 +796,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
       
         return metadata
     }
-    
-    @objc func reloadDatasource(ServerUrl: String?, ocId: String?, action: Int32) {
-        
-        if operationQueueReloadDatasource.operationCount > 0 {
-            return
-        }
-        
-       
-        if self.appDelegate.activeMain != nil && ServerUrl != nil && self.appDelegate.activeMain.serverUrl == ServerUrl {
-            self.operationQueueReloadDatasource.addOperation {
-                DispatchQueue.main.async {
-                    self.appDelegate.activeMain.reloadDatasource(ServerUrl, ocId: ocId, action: Int(action))
-                }
-            }
-        }
-        if self.appDelegate.activeFavorites != nil && self.appDelegate.activeFavorites.viewIfLoaded?.window != nil {
-            self.operationQueueReloadDatasource.addOperation {
-                DispatchQueue.main.async {
-                    self.appDelegate.activeFavorites.reloadDatasource(ocId, action: Int(action))
-                }
-            }
-        }
-        if self.appDelegate.activeTransfers != nil && self.appDelegate.activeTransfers.viewIfLoaded?.window != nil {
-            self.operationQueueReloadDatasource.addOperation {
-                DispatchQueue.main.async {
-                    self.appDelegate.activeTransfers.reloadDatasource(ocId, action: Int(action))
-                }
-            }
-        }
-    }
-    
+
     @objc func isValidIndexPath(_ indexPath: IndexPath, view: Any) -> Bool {
         
         if view is UICollectionView {

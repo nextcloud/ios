@@ -311,13 +311,13 @@
 
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
-#define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"          // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_changeTheming              @"changeTheming"
 #define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
 #define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"             // userInfo: metadata, type
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
+#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                // userInfo: ocId?, serverUrl?
 
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription

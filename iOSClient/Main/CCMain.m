@@ -124,7 +124,7 @@
     self.searchController.searchBar.delegate = self;
     
     // Notification
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:k_notificationCenter_clearDateReadDataSource object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource:) name:k_notificationCenter_reloadDataSource object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:k_notificationCenter_setTitleMain object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
@@ -2127,11 +2127,15 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)clearDateReadDataSource:(NSNotification *)notification
+- (void)reloadDatasource:(NSNotification *)notification
 {
     _dateReadDataSource = Nil;
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+    NSDictionary *userInfo = notification.userInfo;
+    NSString *ocId = userInfo[@"ocId"];
+    NSString *serverUrl = userInfo[@"serverUrl"];
+    
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:ocId action:k_action_NULL];
 }
 
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action

@@ -80,7 +80,6 @@
 
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action;
 
-- (void)clearDateReadDataSource:(NSNotification *)notification;
 
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;

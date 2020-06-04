@@ -189,7 +189,7 @@ import Alamofire
             }
         }
         
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
     }
     
     @objc func verifyDownloadRequestLost() {
@@ -269,7 +269,7 @@ import Alamofire
                 
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
 
             } else {
                 
@@ -307,7 +307,7 @@ import Alamofire
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         }
 
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
     }
     
     @objc func verifyUploadRequestLost() {

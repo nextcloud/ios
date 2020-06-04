@@ -277,7 +277,7 @@ import Alamofire
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
                         
                     } else if errorCode == 401 || errorCode == 403 {
                         
@@ -286,7 +286,7 @@ import Alamofire
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
                         
                     } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                         
@@ -295,7 +295,7 @@ import Alamofire
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
                         
                     } else {
                         
