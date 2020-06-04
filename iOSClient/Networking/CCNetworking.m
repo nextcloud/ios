@@ -56,7 +56,6 @@
 
     [self sessionUpload];
     [self sessionWWanUpload];
-    [self sessionUploadForeground];
     
     return self;
 }
@@ -106,30 +105,10 @@
     return sessionWWanUpload;
 }
 
-- (NSURLSession *)sessionUploadForeground
-{
-    static NSURLSession *sessionUploadForeground;
-    
-    if (sessionUploadForeground == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        
-        configuration.allowsCellularAccess = YES;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        
-        sessionUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUploadForeground.sessionDescription = k_upload_session_foreground;
-    }
-    return sessionUploadForeground;
-}
-
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
-    if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
     
     return nil;
 }
@@ -139,7 +118,6 @@
  
     [[self sessionUpload] invalidateAndCancel];
     [[self sessionWWanUpload] invalidateAndCancel];
-    [[self sessionUploadForeground] invalidateAndCancel];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -451,7 +429,6 @@
      NSURLSession *sessionUpload;
      if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
      else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
-     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
      
      NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
      
