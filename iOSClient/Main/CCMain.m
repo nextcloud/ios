@@ -233,11 +233,6 @@
     if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
         self.serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     }
-    
-    // Query data source
-    if (self.searchController.isActive == false) {
-        [self  reloadDatasource:self.serverUrl ocId:nil];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -274,6 +269,11 @@
     
     // Title
     [self setTitle];
+    
+    // Query data source
+    if (self.searchController.isActive == false) {
+        [self reloadDatasource:self.serverUrl ocId:nil];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -2063,7 +2063,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil || self.view.window == nil)
+    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
         return;
     
     // Se non siamo nella dir appropriata esci
