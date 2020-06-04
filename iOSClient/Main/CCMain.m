@@ -2063,7 +2063,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
+    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil) // || self.view.window == nil)
         return;
     
     // Se non siamo nella dir appropriata esci
