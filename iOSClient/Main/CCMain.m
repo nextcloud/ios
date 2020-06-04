@@ -409,10 +409,7 @@
         
         NSLog(@"[LOG] Request Service Server Nextcloud");
         [[NCService shared] startRequestServicesServer];
-        
-        // Clear datasorce
-        [self reloadDatasource:_serverUrl ocId:nil];
-        
+                
         // Read this folder
         [self readFileReloadFolder];
                 
@@ -453,8 +450,6 @@
             } else {
                 if (self.searchController.isActive) {
                     [self readFolder:self.serverUrl];
-                } else {
-                    [self reloadDatasource:_serverUrl ocId:nil];
                 }
             }
         }
@@ -468,16 +463,12 @@
     if (self.view.window == nil) { return; }
     
     NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    tableMetadata *metadataNew = userInfo[@"metadataNew"];
+//    tableMetadata *metadata = userInfo[@"metadata"];
+//    tableMetadata *metadataNew = userInfo[@"metadataNew"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode == 0) {
-        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [metadataNew.serverUrl isEqualToString:self.serverUrl]) {
-            [self reloadDatasource:self.serverUrl ocId:nil];
-        }
-    } else {
+    if (errorCode != 0) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
@@ -487,16 +478,12 @@
     if (self.view.window == nil) { return; }
     
     NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
+//    tableMetadata *metadata = userInfo[@"metadata"];
+//    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode == 0) {
-        if ([metadata.serverUrl isEqualToString:self.serverUrl] || [serverUrlTo isEqualToString:self.serverUrl]) {
-            [self reloadDatasource:_serverUrl ocId:nil];
-        }
-    } else {
+    if (errorCode != 0) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
@@ -515,9 +502,7 @@
         _dateReadDataSource = nil;
         if (self.searchController.isActive) {
             [self readFolder:self.serverUrl];
-        } else {
-            [self reloadDatasource:_serverUrl ocId:metadata.ocId];
-        }
+        } 
         
         if (metadata.directory && favorite) {
                        
@@ -1137,9 +1122,7 @@
                             if (result == false) {
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:-999];
                             }
-                            
-                            [self reloadDatasource:_serverUrl ocId:nil];
-                            
+                                                        
                         } else if (errorCode != kOCErrorServerPathNotFound) {
                             
                             [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1152,10 +1135,6 @@
                 }
             }
             
-            if ([serverUrl isEqualToString:_serverUrl]) {
-                [self reloadDatasource:_serverUrl ocId:nil];
-            }
-        
         } else {
             [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
@@ -1173,11 +1152,6 @@
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
     self.richWorkspaceText = directory.richWorkspace;
     [self setTableViewHeader];
-    
-    // Load Datasource
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [self reloadDatasource:_serverUrl ocId:nil];
-    });
     
     [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
         
@@ -1381,10 +1355,7 @@
 // DELEGATE : Select
 - (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
-    if (serverUrl == nil) {
-        [self reloadDatasource:_serverUrl ocId:nil];
-    } else {
-        
+    if (serverUrl != nil) {
         // E2EE DENIED
         if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
             
