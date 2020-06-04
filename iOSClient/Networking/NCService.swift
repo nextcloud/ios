@@ -72,7 +72,7 @@ class NCService: NSObject {
                 
                     self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
                 
-                    // Synchronize
+                    // Synchronize Offline ---
                     let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true)
                     if (directories != nil) {
                         for directory: tableDirectory in directories! {
@@ -89,7 +89,7 @@ class NCService: NSObject {
                             CCSynchronize.shared()?.readFile(metadata.ocId, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: tableAccount.account)
                         }
                     }
-
+                    // ---
                         
                     let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
