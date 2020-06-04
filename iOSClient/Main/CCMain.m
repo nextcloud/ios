@@ -2020,6 +2020,8 @@
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataLivePhoto.ocId]];
                 [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadataLivePhoto.ocId] error:nil];
             }
+            
+            [self reloadDatasource:metadata.serverUrl ocId:metadata.ocId];
         }]];
     }
     

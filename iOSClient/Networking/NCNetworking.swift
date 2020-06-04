@@ -240,9 +240,7 @@ import Alamofire
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
                         
             self.downloadRequest[fileNameLocalPath] = nil
-            var errorCode = errorCode
-            var errorDescription = errorDescription
-            
+           
             if errorCode == 0 {
                
                 metadata.date = date ?? NSDate()
@@ -263,11 +261,10 @@ import Alamofire
                 }
                 #endif
                                 
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+                
             } else if error?.isExplicitlyCancelledError ?? false {
-                
-                errorCode = 0
-                errorDescription = ""
-                
+                                
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
@@ -289,9 +286,10 @@ import Alamofire
                     CCUtility.setCertificateError(metadata.account, error: true)
                 }
                 #endif
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
             
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             
             completion(errorCode)
