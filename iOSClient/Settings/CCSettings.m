@@ -184,6 +184,7 @@
     [section addFormRow:row];
     
     self.tableView.showsVerticalScrollIndicator = NO;
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 35, 0);
     self.form = form;
 }
 
