@@ -413,7 +413,7 @@
         [[NCService shared] startRequestServicesServer];
         
         // Clear datasorce
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
         
         // Read this folder
         [self readFileReloadFolder];
@@ -421,8 +421,7 @@
     } else {
         
         // reload datasource
-        
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
     }
     
     // Registeration push notification
@@ -457,7 +456,7 @@
                 if (self.searchController.isActive) {
                     [self readFolder:self.serverUrl];
                 } else {
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+                    [self reloadDatasource:_serverUrl ocId:nil];
                 }
             }
         }
@@ -478,7 +477,7 @@
     
     if (errorCode == 0) {
         if ([metadata.serverUrl isEqualToString:self.serverUrl] || [metadataNew.serverUrl isEqualToString:self.serverUrl]) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            [self reloadDatasource:self.serverUrl ocId:nil];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -497,7 +496,7 @@
     
     if (errorCode == 0) {
         if ([metadata.serverUrl isEqualToString:self.serverUrl] || [serverUrlTo isEqualToString:self.serverUrl]) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            [self reloadDatasource:_serverUrl ocId:nil];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -519,7 +518,7 @@
         if (self.searchController.isActive) {
             [self readFolder:self.serverUrl];
         } else {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:metadata.ocId action:k_action_MOD];
+            [self reloadDatasource:_serverUrl ocId:metadata.ocId];
         }
         
         if (metadata.directory && favorite) {
@@ -549,12 +548,6 @@
     NSDictionary *userInfo = notification.userInfo;
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
-    
-    if (errorCode == 0) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-    }
 }
 
 - (void)createFolder:(NSNotification *)notification {
@@ -563,12 +556,6 @@
     NSDictionary *userInfo = notification.userInfo;
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
-    
-    if (errorCode == 0) {
-        [self reloadDatasource:self.serverUrl ocId:nil action:k_action_NULL];
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -803,8 +790,6 @@
                     } else {
                         
                         [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-                            
                         [appDelegate startLoadAutoUpload];
                     }
 
@@ -839,7 +824,6 @@
 
 -(void)dismissFormUploadAssets
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
 }
 
 - (void)openAssetsPickerController
@@ -930,8 +914,6 @@
         }
         
         [_hud hideHud];
-        
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     });
     
     [self tableViewSelect:false];
@@ -1117,7 +1099,6 @@
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
         
         [appDelegate startLoadAutoUpload];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
     }
 }
 
@@ -1175,7 +1156,7 @@
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:-999];
                             }
                             
-                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                            [self reloadDatasource:_serverUrl ocId:nil];
                             
                         } else if (errorCode != kOCErrorServerPathNotFound) {
                             
@@ -1190,7 +1171,7 @@
             }
             
             if ([serverUrl isEqualToString:_serverUrl]) {
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:nil action:k_action_NULL];
+                [self reloadDatasource:_serverUrl ocId:nil];
             }
         
         } else {
@@ -1213,7 +1194,7 @@
     
     // Load Datasource
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
     });
     
     [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
@@ -1259,7 +1240,7 @@
                  _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasDB];
                  _metadataFolder = nil;
                  
-                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl ocId:nil action:k_action_NULL];
+                 [self reloadDatasource:_serverUrl ocId:nil];
                  [self tableViewReloadData];
                  [self setTitle];
              }];
@@ -1318,14 +1299,14 @@
         
         if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
 
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+            [self reloadDatasource:_serverUrl ocId:nil];
         }
         
     } else {
         
         [self createRefreshControl];
 
-        [self reloadDatasource:self.serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
     }
 }
 
@@ -1344,7 +1325,7 @@
         _dateReadDataSource = nil;
         _searchResultMetadatas = [NSMutableArray new];
         
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
     }
 
 }
@@ -1419,7 +1400,7 @@
 - (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
     if (serverUrl == nil) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
+        [self reloadDatasource:_serverUrl ocId:nil];
     } else {
         
         // E2EE DENIED
@@ -1549,7 +1530,6 @@
         [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
         [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -2019,14 +1999,10 @@
                             
                 // Add Medtadata for upload
                 [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                
-                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
             }
         }
     }
-    
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
-    
+        
     [appDelegate startLoadAutoUpload];
 }
 
@@ -2097,8 +2073,6 @@
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataLivePhoto.ocId]];
                 [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadataLivePhoto.ocId] error:nil];
             }
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl ocId:nil action:k_action_NULL];
         }]];
     }
     
@@ -2136,10 +2110,10 @@
     NSString *ocId = userInfo[@"ocId"];
     NSString *serverUrl = userInfo[@"serverUrl"];
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl ocId:ocId action:k_action_NULL];
+    [self reloadDatasource:_serverUrl ocId:ocId];
 }
 
-- (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action
+- (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId
 {
     // test
     if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil || self.view.window == nil)

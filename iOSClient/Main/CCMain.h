@@ -78,9 +78,6 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets urls:(NSMutableArray *)urls serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId action:(NSInteger)action;
-
-
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;
 - (void)createFolder;

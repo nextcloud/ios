@@ -175,10 +175,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
                 }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])                    
-                }
             }
         }
     }
@@ -208,10 +204,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                     }
                 }
             }
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            return
         }
     }
     
