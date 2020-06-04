@@ -278,18 +278,7 @@
 // MULTI THREAD
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
-    NSString *oldServerUrl;
-    NSMutableArray *serverUrlToReload = [NSMutableArray new];
-
     for (tableMetadata *metadata in metadatas) {
-        
-        // Clear date for dorce refresh view
-        if (![oldServerUrl isEqualToString:metadata.serverUrl]) {
-            oldServerUrl = metadata.serverUrl;
-            [serverUrlToReload addObject:metadata.serverUrl];
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:metadata.serverUrl account:metadata.account];
-        }
-
         [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
     }
 }

@@ -185,10 +185,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
         
-        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];
-        
-        // force reload
-        [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
+        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];        
     }
     
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {

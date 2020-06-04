@@ -1224,30 +1224,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func clearDateRead(serverUrl: String, account: String) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-
-                var predicate = NSPredicate()
-            
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)
-                
-                guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
-                    return
-                }
-                
-                result.dateReadDirectory = nil
-                result.etag = ""
-                realm.add(result, update: .all)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     @objc func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         
         let realm = try! Realm()
@@ -1274,26 +1250,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDateReadDirectory(serverUrl: String, account: String) {
-        
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-            realm.cancelWrite()
-            return
-        }
-            
-        result.dateReadDirectory = NSDate()
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     @objc func renameDirectory(ocId: String, serverUrl: String) {
         
         let realm = try! Realm()
@@ -1309,25 +1265,6 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func setClearAllDateReadDirectory() {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-            
-                let results = realm.objects(tableDirectory.self)
-
-                for result in results {
-                    result.dateReadDirectory = nil;
-                    result.etag = ""
-                }
-            }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
@@ -1894,10 +1831,7 @@ class NCManageDatabase: NSObject {
     
     @discardableResult
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-            
-        let serverUrl = metadata.serverUrl
-        let account = metadata.account
-        
+
         let realm = try! Realm()
 
         do {
@@ -1908,9 +1842,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return nil
         }
-        
-        self.setDateReadDirectory(serverUrl: serverUrl, account: account)
-        
+                
         return tableMetadata.init(value: metadata)
     }
     
@@ -1933,9 +1865,6 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        for (serverUrl, account) in directoryToClearDate {
-            self.setDateReadDirectory(serverUrl: serverUrl, account: account)
-        }
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
@@ -2008,10 +1937,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return
         }
-        
-        for (serverUrl, account) in directoryToClearDate {
-            self.setDateReadDirectory(serverUrl: serverUrl, account: account)
-        }
     }
     
     @discardableResult
@@ -2079,14 +2004,10 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        self.setDateReadDirectory(serverUrl: result!.serverUrl, account: result!.account)
         return tableMetadata.init(value: result!)
     }
     
     @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-        
-        let account = metadata.account
-        let serverUrl = metadata.serverUrl
         
         let realm = try! Realm()
 
@@ -2098,9 +2019,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return nil
         }
-        
-        self.setDateReadDirectory(serverUrl: serverUrl, account: account)
-        
+                
         return tableMetadata.init(value: metadata)
     }
     
@@ -2132,9 +2051,6 @@ class NCManageDatabase: NSObject {
         
         result.sessionTaskIdentifier = sessionTaskIdentifier
         result.status = status
-
-        let account = result.account
-        let serverUrl = result.serverUrl
         
         do {
             try realm.commitWrite()
@@ -2142,9 +2058,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return
         }
-        
-        // Update Date Read Directory
-        self.setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
     
     @objc func setMetadataFavorite(ocId: String, favorite: Bool) {
@@ -2159,9 +2072,6 @@ class NCManageDatabase: NSObject {
         }
         
         result.favorite = favorite
-
-        let account = result.account
-        let serverUrl = result.serverUrl
         
         do {
             try realm.commitWrite()
@@ -2169,9 +2079,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return
         }
-        
-        // Update Date Read Directory
-        setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
    
     @objc func setMetadataEncrypted(ocId: String, encrypted: Bool) {
@@ -2186,9 +2093,6 @@ class NCManageDatabase: NSObject {
         }
            
         result.e2eEncrypted = encrypted
-
-        let account = result.account
-        let serverUrl = result.serverUrl
            
         do {
             try realm.commitWrite()
@@ -2196,9 +2100,6 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return
         }
-           
-        // Update Date Read Directory
-        setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
        
     @objc func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
@@ -2213,19 +2114,13 @@ class NCManageDatabase: NSObject {
         }
                 
         result.fileNameView = newFileNameView
-        
-        let account = result.account
-        let serverUrl = result.serverUrl
-    
+            
         do {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return
         }
-    
-        // Update Date Read Directory
-        setDateReadDirectory(serverUrl: serverUrl, account: account)
     }
     
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {

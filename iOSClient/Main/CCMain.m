@@ -53,7 +53,6 @@
     
     // Datasource
     CCSectionDataSourceMetadata *sectionDataSource;
-    NSDate *_dateReadDataSource;
     
     // Search
     NSString *_searchFileName;
@@ -366,9 +365,7 @@
 // Settings Advanced : removeAllFiles
 //
 - (void)initializeMain:(NSNotification *)notification
-{
-    _dateReadDataSource = nil;
-    
+{    
     // test
     if (appDelegate.activeAccount.length == 0)
         return;
@@ -499,7 +496,6 @@
     BOOL favorite = [userInfo[@"favorite"] boolValue];
     
     if (errorCode == 0) {
-        _dateReadDataSource = nil;
         if (self.searchController.isActive) {
             [self readFolder:self.serverUrl];
         } 
@@ -1085,7 +1081,6 @@
     // Search Mode
     if (self.searchController.isActive) {
         
-        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl account:appDelegate.activeAccount];
         _searchFileName = @""; // forced reload searchg
         [self updateSearchResultsForSearchController:self.searchController];
         
@@ -1278,7 +1273,6 @@
         [self.searchController setActive:NO];
     
         _searchFileName = @"";
-        _dateReadDataSource = nil;
         _searchResultMetadatas = [NSMutableArray new];
         
         [self reloadDatasource:_serverUrl ocId:nil];
@@ -2057,13 +2051,11 @@
 
 - (void)reloadDatasource:(NSNotification *)notification
 {
-    _dateReadDataSource = Nil;
-    
     NSDictionary *userInfo = notification.userInfo;
     NSString *ocId = userInfo[@"ocId"];
     NSString *serverUrl = userInfo[@"serverUrl"];
     
-    [self reloadDatasource:_serverUrl ocId:ocId];
+    [self reloadDatasource:serverUrl ocId:ocId];
 }
 
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId
@@ -2123,36 +2115,15 @@
     else
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tableDirectory.ocId]];
     
-    // Remove optimization for encrypted directory
-    if (_metadataFolder.e2eEncrypted)
-        _dateReadDataSource = nil;
-
-    NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
-    
-    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
-        
-        NSLog(@"[LOG] Rebuild Data Source File : %@", _serverUrl);
-
-        _dateReadDataSource = [NSDate date];
-    
-        // Data Source
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-            CCSectionDataSourceMetadata *sectionDataSourceTemp = [self queryDatasourceWithReloadData:NO serverUrl:serverUrl];
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [self queryDatasourceWithReloadData:NO serverUrl:serverUrl];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                sectionDataSource = sectionDataSourceTemp;
-                [self tableViewReloadData];
-            });
+        dispatch_async(dispatch_get_main_queue(), ^{
+            sectionDataSource = sectionDataSourceTemp;
+            [self tableViewReloadData];
         });
-        
-    } else {
-        
-        [self tableViewReloadData];
-
-         NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
-    }
+    });
     
     // BLINK
     if (self.blinkFileNamePath != nil) {

@@ -325,9 +325,7 @@ extension CCMain {
                             if(isOffline) {
                                 CCSynchronize.shared()?.readFolder(serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
                             }
-                            DispatchQueue.main.async {
-                                self.tableView.reloadRows(at: [indexPath], with: .none)
-                            }
+                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                         }
                     )
                 )
@@ -496,9 +494,7 @@ extension CCMain {
                                 
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadRows(at: [indexPath], with: .none)
-                                }
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                             }
                         }
                     )
