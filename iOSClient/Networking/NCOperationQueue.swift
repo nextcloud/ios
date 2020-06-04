@@ -31,19 +31,14 @@ import Queuer
         return instance
     }()
     
-    let transferQueue = Queuer(name: "transferQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
+    let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
-        transferQueue.addOperation(NCOperation.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
     }
-
-    //  @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
-//           operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
-//       }
 }
 
-
-@objc class NCOperation: ConcurrentOperation {
+@objc class NCOperationDownload: ConcurrentOperation {
    
     private var metadata: tableMetadata
     private var selector: String
@@ -60,29 +55,5 @@ import Queuer
             self.finish()
         }
     }
-    
-    /*
-    override func finish(success: Bool = true) {
-        self.finish()
-    }
-    */
-    
-   
-/*
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
-        let concurrentOperation = ConcurrentOperation { operation in
-            
-            NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
-                self.semaphore.wait()
-            }
-        }
-        concurrentOperation.addToQueue(transferQueue)
-        
-        debugPrint("[LOG] Download ADD QUEUE")
-
-        semaphore.wait()
-    }
- 
- */
 }
 
