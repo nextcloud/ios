@@ -111,8 +111,9 @@ class NCGridLayout: UICollectionViewFlowLayout {
 
 class NCGridMediaLayout: UICollectionViewFlowLayout {
     
-    var preferenceWidth: CGFloat = 110
-    var marginLeftRight: CGFloat = 1
+    var increasing = true
+    var itemPerLine: CGFloat = 3
+    var marginLeftRight: CGFloat = 6
     var numItems: Int = 0
     
     override init() {
@@ -120,8 +121,8 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
         
         sectionHeadersPinToVisibleBounds = false
         
-        minimumInteritemSpacing = 1
-        minimumLineSpacing = 1
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = marginLeftRight
         
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
@@ -135,9 +136,9 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                self.numItems = Int(collectionView.frame.width / preferenceWidth)
-                let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemPerLine - 1)) / itemPerLine
                 let itemHeight: CGFloat = itemWidth
+                
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             
@@ -152,4 +153,21 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
     }
+}
+extension UICollectionView {
+
+var centerPoint : CGPoint {
+
+    get {
+        return CGPoint(x: self.center.x + self.contentOffset.x, y: self.center.y + self.contentOffset.y);
+    }
+}
+
+var centerCellIndexPath: IndexPath? {
+
+    if let centerIndexPath: IndexPath  = self.indexPathForItem(at: self.centerPoint) {
+        return centerIndexPath
+    }
+    return nil
+}
 }

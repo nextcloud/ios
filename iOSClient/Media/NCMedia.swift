@@ -47,6 +47,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private let footerHeight: CGFloat = 50
     
     private var stepImageWidth: CGFloat = 10
+    private let kMaxImageGrid: CGFloat = 5
     
     private var isDistantPast = false
 
@@ -84,7 +85,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0);
                 
         gridLayout = NCGridMediaLayout()
-        gridLayout.preferenceWidth = CGFloat(CCUtility.getMediaWidthImage())
+        gridLayout.itemPerLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
@@ -237,29 +238,21 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     // MARK: IBAction
     
     @objc func touchUpInsideMenuButtonSwitch(_ sender: Any) {
-        
-        let itemSizeStart = self.gridLayout.itemSize
-        
+                
         UIView.animate(withDuration: 0.0, animations: {
-            
-            if self.gridLayout.numItems == 1 && self.stepImageWidth > 0 {
-                self.stepImageWidth = -10
-            } else if itemSizeStart.width < 50 {
-                self.stepImageWidth = 10
+            if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid && self.gridLayout.increasing) {
+                self.gridLayout.itemPerLine+=1
+            } else {
+                self.gridLayout.increasing = false
+                self.gridLayout.itemPerLine-=1
+            }
+            if(self.gridLayout.itemPerLine == 0) {
+                self.gridLayout.increasing = true
+                self.gridLayout.itemPerLine = 2
             }
             
-            repeat {
-                self.gridLayout.preferenceWidth = self.gridLayout.preferenceWidth + self.stepImageWidth
-            } while (self.gridLayout.itemSize == itemSizeStart)
-            
-            CCUtility.setMediaWidthImage(Int(self.gridLayout?.preferenceWidth ?? 80))
             self.collectionView.collectionViewLayout.invalidateLayout()
-            
-            if self.stepImageWidth < 0 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.selectSearchSections()
-                }
-            }
+            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
         })
     }
     
@@ -485,6 +478,10 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageStatus.image = nil
         cell.imageLocal.image = nil
         cell.imageFavorite.image = nil
+        cell.imageItem.layer.masksToBounds = true
+        cell.imageItem.layer.cornerRadius = 6
+        cell.imageVisualEffect.layer.cornerRadius = 6
+        cell.imageVisualEffect.clipsToBounds = true
                     
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))

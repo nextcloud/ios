@@ -475,6 +475,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
             cell.accessoryType = UITableViewCell.AccessoryType.none
             cell.file.image = nil
+            cell.file.layer.cornerRadius = 6
+            cell.file.layer.masksToBounds = true
             cell.status.image = nil
             cell.favorite.image = nil
             cell.shared.image = nil
@@ -646,6 +648,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
             cell.accessoryType = UITableViewCell.AccessoryType.none
             cell.file.image = nil
+            cell.file.layer.cornerRadius = 6
+            cell.file.layer.masksToBounds = true
             cell.status.image = nil
             cell.user.image = nil
             
