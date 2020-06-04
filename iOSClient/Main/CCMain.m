@@ -236,7 +236,7 @@
     
     // Query data source
     if (self.searchController.isActive == false) {
-        [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
+        [self  reloadDatasource:self.serverUrl ocId:nil];
     }
 }
 
@@ -2064,6 +2064,10 @@
     if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil || self.view.window == nil)
         return;
     
+    // Se non siamo nella dir appropriata esci
+    if ([serverUrl isEqualToString:self.serverUrl] == NO || self.serverUrl == nil)
+        return;
+    
     // Search Mode
     if (self.searchController.isActive) {
         
@@ -2098,26 +2102,21 @@
         return;
     }
     
-    // Se non siamo nella dir appropriata esci
-    if ([serverUrl isEqualToString:self.serverUrl] == NO || self.serverUrl == nil) {
-        return;
-    }
-    
-    // Controllo data lettura Data Source
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
-    if (tableDirectory == nil) {
-        return;
-    }
-    
     // Get MetadataFolder
     if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, k_serverUrl_root]];
     else
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", tableDirectory.ocId]];
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [self queryDatasourceWithReloadData:NO serverUrl:serverUrl];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] sorted:nil ascending:NO];
+        
+        // [CCUtility getGroupBySettings]
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
             
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
@@ -2149,32 +2148,6 @@
             }
         });
     }
-}
-
-- (CCSectionDataSourceMetadata *)queryDatasourceWithReloadData:(BOOL)withReloadData serverUrl:(NSString *)serverUrl
-{
-    // test
-    if (appDelegate.activeAccount.length == 0 || serverUrl == nil) {
-        return nil;
-    }
-    
-    // get auto upload folder
-    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
-    
-    CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
-
-    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] sorted:nil ascending:NO];
-    
-    // [CCUtility getGroupBySettings]
-    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
-    
-    if (withReloadData) {
-        sectionDataSource = sectionDataSourceTemp;
-        [self tableViewReloadData];
-    }
-    
-    return sectionDataSourceTemp;
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows
