@@ -25,21 +25,55 @@
 import Foundation
 import Queuer
 
-@objc class NCOperationQueue: ConcurrentOperation {
+@objc class NCOperationQueue: NSObject {
     @objc public static let shared: NCOperationQueue = {
         let instance = NCOperationQueue()
         return instance
     }()
     
     let transferQueue = Queuer(name: "transferQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    let semaphore = Semaphore()
+    
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+        transferQueue.addOperation(NCOperation.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+    }
 
+    //  @objc func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath) {
+//           operationQueueNetworkingMain.addOperation(NCOperationNetworkingMain.init(metadata: metadata, view: view, indexPath: indexPath, networkingFunc: "downloadThumbnail"))
+//       }
+}
+
+
+@objc class NCOperation: ConcurrentOperation {
+   
+    private var metadata: tableMetadata
+    private var selector: String
+    private var setFavorite: Bool
+    
+    init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+        self.metadata = metadata
+        self.selector = selector
+        self.setFavorite = setFavorite
+    }
+    
+    override func start() {
+        NCNetworking.shared.download(metadata: self.metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
+            self.finish()
+        }
+    }
+    
+    /*
+    override func finish(success: Bool = true) {
+        self.finish()
+    }
+    */
+    
+   
+/*
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
         let concurrentOperation = ConcurrentOperation { operation in
             
             NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
-                
-                self.semaphore.continue()
+                self.semaphore.wait()
             }
         }
         concurrentOperation.addToQueue(transferQueue)
@@ -48,5 +82,7 @@ import Queuer
 
         semaphore.wait()
     }
+ 
+ */
 }
 

@@ -302,7 +302,6 @@
         }
 
         [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false];
-        //[[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false completion:^(NSInteger errorCode) { }];
     }
         
     for (NSString *serverUrl in serverUrlToReload) {
