@@ -27,7 +27,7 @@ extension AppDelegate {
             navBarAppearance.configureWithOpaqueBackground()
             
             navBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
-            navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.tabBar
 
             viewController.navigationController?.navigationBar.standardAppearance = navBarAppearance
         } else {

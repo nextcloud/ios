@@ -183,9 +183,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
 
-        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
     }
 
@@ -271,7 +271,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let selectionColor: UIView = UIView()
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
         cell.selectedBackgroundView = selectionColor
-        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
         cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
         if (indexPath.section == 0) {
