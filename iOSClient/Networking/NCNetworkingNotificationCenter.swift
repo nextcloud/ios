@@ -159,8 +159,6 @@ import Foundation
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
         }
     }
@@ -178,9 +176,7 @@ import Foundation
     
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
-                                
+                                                
                 if metadata.account == appDelegate.activeAccount {
                     if errorCode == 0 {
                         appDelegate.startLoadAutoUpload()

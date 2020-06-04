@@ -409,7 +409,6 @@
     NSMutableURLRequest *request;
     PHAsset *asset;
     NSError *error;
-    NSString *serverUrl = metadata.serverUrl;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
@@ -447,66 +446,28 @@
             [request setValue:[NSString stringWithFormat:@"%ld", dateFileCreation] forHTTPHeaderField:@"X-OC-Mtime"];
         }
     }
+         
+     // NSURLSession
+     NSURLSession *sessionUpload;
+     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
      
-    // E2EE : CREATE AND SEND METADATA
-    if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-         
-#ifndef EXTENSION
-        
-        [[NCNetworkingE2EE shared] sendE2EMetadataWithAccount:tableAccount.account serverUrl:serverUrl fileNameRename:nil fileNameNewRename:nil deleteE2eEncryption:nil url:tableAccount.url upload:true completion:^(NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) {
-            
-            if (errorCode == 0) {
-                
-                // NSURLSession
-                NSURLSession *sessionUpload;
-                if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
-                else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
-                else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-                
-                [request setValue:e2eToken forHTTPHeaderField:@"e2e-token"];
-                NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
-                
-                // Manage uploadTask cancel,suspend,resume
-                if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-                else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-                else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-                
-                // *** E2EE ***
-                [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusUploading predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                
-                NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
-                                                                
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:@{@"ocId": metadata.ocId, @"task": uploadTask, @"serverUrl": metadata.serverUrl, @"account": metadata.account}];
-                
-            } else {
-                [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:errorDescription sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorDescription}];
-            }
-        }];
-#endif
-        
-     } else {
+     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
+     
+     // Manage uploadTask cancel,suspend,resume
+     if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+     else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+     else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+     
+     // *** PLAIN ***
+     [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusUploading predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+     
+     NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
+     
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:@{@"ocId": metadata.ocId, @"task": uploadTask, @"serverUrl": metadata.serverUrl, @"account": metadata.account}];
     
-         // NSURLSession
-         NSURLSession *sessionUpload;
-         if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
-         else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
-         else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-         
-         NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
-         
-         // Manage uploadTask cancel,suspend,resume
-         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-         else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-         
-         // *** PLAIN ***
-         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusUploading predicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-         
-         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
-         
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadFileStart object:nil userInfo:@{@"ocId": metadata.ocId, @"task": uploadTask, @"serverUrl": metadata.serverUrl, @"account": metadata.account}];
-     }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil userInfo:@{@"ocId": metadata.ocId,@"serverUrl": metadata.serverUrl}];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
@@ -539,7 +500,6 @@
 {
     NSString *tempocId = metadata.ocId;
     NSString *errorMessage = @"";
-    BOOL isE2EEDirectory = false;
 
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
@@ -548,12 +508,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
         return;
     }
-    
-    // is this a E2EE Directory ?
-    if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:false account:tableAccount.account] && [CCUtility isEndToEndEnabled:tableAccount.account]) {
-        isE2EEDirectory = true;
-    }
-    
+
     // ERRORE
     if (errorCode != 0) {
         
@@ -615,11 +570,6 @@
             
             // Add metadata ocId
             metadata.date = date;
-            if (isE2EEDirectory) {
-                metadata.e2eEncrypted = true;
-            } else {
-                metadata.e2eEncrypted = false;
-            }
             metadata.etag = etag;
             metadata.ocId = ocId;
             metadata.session = @"";
@@ -645,11 +595,6 @@
             
             // Replace Metadata
             metadata.date = date;
-            if (isE2EEDirectory) {
-                metadata.e2eEncrypted = true;
-            } else {
-                metadata.e2eEncrypted = false;
-            }
             metadata.etag = etag;
             metadata.ocId = ocId;
             metadata.session = @"";
@@ -698,18 +643,9 @@
             (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         }
     }
-        
-#ifndef EXTENSION
-
-    // E2EE : UNLOCK
-    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", metadata.account, metadata.serverUrl, k_metadataStatusInUpload, k_metadataStatusUploading]];
-    
-    if (isE2EEDirectory && e2eeMetadataInSession == nil) {
-        [[NCNetworkingE2EE shared] unlockWithAccount:tableAccount.account serverUrl:serverUrl completion:^(tableDirectory *directory, NSString *e2eToken, NSInteger errorCode, NSString *errorDescription) { }];
-    }
-#endif
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(errorCode), @"errorDescription": errorMessage}];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil userInfo:@{@"ocId": metadata.ocId,@"serverUrl": metadata.serverUrl}];
 }
 
 #pragma --------------------------------------------------------------------------------------------
