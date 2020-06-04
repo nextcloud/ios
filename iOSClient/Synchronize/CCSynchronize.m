@@ -40,13 +40,7 @@
     @synchronized(self)
     {
         if (!sharedSynchronize) {
-            
             sharedSynchronize = [CCSynchronize new];
-            sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
-            
-            sharedSynchronize->_operationSynchronizeQueue = [NSOperationQueue new];
-            sharedSynchronize->_operationSynchronizeQueue.name = @"com.nextcloud.operationSynchronizeQueue";
-            sharedSynchronize->_operationSynchronizeQueue.maxConcurrentOperationCount = 1;
         }
         return sharedSynchronize;
     }
@@ -62,9 +56,7 @@
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
 {
-    id operation = [[CCOperationSynchronize alloc] initWithDelegate:self serverUrl:serverUrl selector:selector account:account];
-
-    [self.operationSynchronizeQueue addOperation:operation];
+    [[NCOperationQueue shared] readFolderSyncWithServerUrl:serverUrl selector:selector account:account];
 }
 
 - (void)readFolderSuccessFailureWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -285,86 +277,3 @@
 
 @end
 
-@implementation CCOperationSynchronize
-
-- (id)initWithDelegate:(id)delegate serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account
-{
-    self = [super init];
-    
-    if (self) {
-        self.delegate = delegate;
-        self.serverUrl = serverUrl;
-        self.selector = selector;
-        self.account = account;
-    }
-    
-    return self;
-}
-
-- (void)start
-{
-    if (![NSThread isMainThread]) {
-        [self performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:NO];
-        return;
-    }
-    
-    [self willChangeValueForKey:@"isExecuting"];
-    _isExecuting = YES;
-    [self didChangeValueForKey:@"isExecuting"];
-    
-    if (self.isCancelled) {
-        
-        [self finish];
-        
-    } else {
-        
-        [self poolNetworking];
-    }
-}
-
-- (void)finish
-{
-    [self willChangeValueForKey:@"isExecuting"];
-    [self willChangeValueForKey:@"isFinished"];
-    
-    _isExecuting = NO;
-    _isFinished = YES;
-    
-    [self didChangeValueForKey:@"isExecuting"];
-    [self didChangeValueForKey:@"isFinished"];
-}
-
-- (void)cancel
-{
-    if (_isExecuting) {
-        
-        [self complete];
-    }
-    
-    [super cancel];
-}
-
-- (void)poolNetworking
-{
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    
-    [[NCCommunication shared] readFileOrFolderWithServerUrlFileName:self.serverUrl depth:@"1" showHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
-               
-        [[NCManageDatabase sharedInstance] convertNCCommunicationFilesToMetadatas:files useMetadataFolder:true account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
-            
-            if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailureWithAccount:serverUrl:metadataFolder:metadatas:selector:message:errorCode:)])
-                [self.delegate readFolderSuccessFailureWithAccount:self.account serverUrl:self.serverUrl metadataFolder:metadataFolder metadatas:metadatas selector:self.selector message:errorDescription errorCode:errorCode];
-            
-            [self complete];
-        }];
-    }];
-}
-
-- (void)complete
-{
-    [self finish];
-    
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-}
-
-@end

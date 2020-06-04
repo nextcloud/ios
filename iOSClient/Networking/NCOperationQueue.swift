@@ -33,10 +33,15 @@ import NCCommunication
     }()
     
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
+    let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+    }
+    
+    @objc func readFolderSync(serverUrl: String, selector: String ,account: String) {
+        readFolderSyncQueue.addOperation(NCOperationReadFolderSync.init(serverUrl: serverUrl, selector: selector, account: account))
     }
     
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
@@ -64,6 +69,35 @@ class NCOperationDownload: ConcurrentOperation {
         }
     }
 }
+
+class NCOperationReadFolderSync: ConcurrentOperation {
+   
+    private var serverUrl: String
+    private var selector: String
+    private var account: String
+    
+    init(serverUrl: String, selector: String, account: String) {
+        self.serverUrl = serverUrl
+        self.selector = selector
+        self.account = account
+    }
+    
+    override func start() {
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+            
+            if errorCode == 0 && files != nil {
+            
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    
+                    CCSynchronize.shared()?.readFolderSuccessFailure(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector, message: errorDescription, errorCode: errorCode)
+                    
+                }
+            }
+            self.finish()
+        }
+    }
+}
+
 
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
