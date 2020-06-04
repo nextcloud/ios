@@ -276,7 +276,7 @@
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 [CCUtility setFavoriteOffline:true];
-                [self synchronizeFavorites];
+                [appDelegate.activeFavorites listingFavorites];
             }]];
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
@@ -423,31 +423,6 @@
 
         [self presentViewController:passcodeViewController animated:YES completion:nil];
     }
-}
-
-- (void)synchronizeFavorites
-{    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount]  sorted:nil ascending:NO];
-    
-    for (tableMetadata *metadata in metadatas) {
-        
-        if (metadata.directory) {
-        
-            NSString *serverUrl = [CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName];
-            NSString *serverUrlBeginWith = serverUrl;
-            
-            if (![serverUrl hasSuffix:@"/"])
-                serverUrlBeginWith = [serverUrl stringByAppendingString:@"/"];
-
-            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (serverUrl == %@ OR serverUrl BEGINSWITH %@)", appDelegate.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
-            
-            for (tableDirectory *directory in directories) {
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil userInfo:@{@"serverUrl": directory.serverUrl}];
-            }
-        } 
-    }
-    
-    [appDelegate.activeFavorites listingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------

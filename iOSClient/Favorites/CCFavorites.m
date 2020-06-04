@@ -67,7 +67,8 @@
     // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
+
     // Metadata
     self.metadata = [tableMetadata new];
     
@@ -410,7 +411,7 @@
 - (void)reloadDatasource
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || self.view.window == nil) {
+    if (appDelegate.activeAccount.length == 0) { // || self.view.window == nil) {
         return;
     }
     
