@@ -186,10 +186,10 @@ import Alamofire
                 metadata.status = Int(k_metadataStatusNormal)
                 
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
         }
-        
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
     }
     
     @objc func verifyDownloadRequestLost() {
@@ -203,6 +203,8 @@ import Alamofire
                     metadata.sessionError = ""
                     metadata.status = Int(k_metadataStatusNormal)
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                 }
             }
         }
@@ -221,8 +223,8 @@ import Alamofire
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
         
-        debugPrint("[LOG] Download Request: " + "\(self.downloadRequest.count)")
-        
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+                
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
@@ -238,6 +240,8 @@ import Alamofire
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
                         
             self.downloadRequest[fileNameLocalPath] = nil
+            var errorCode = errorCode
+            var errorDescription = errorDescription
             
             if errorCode == 0 {
                
@@ -259,18 +263,17 @@ import Alamofire
                 }
                 #endif
                                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
-                
             } else if error?.isExplicitlyCancelledError ?? false {
+                
+                errorCode = 0
+                errorDescription = ""
                 
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
                 
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
-
+            
             } else {
                 
                 metadata.session = ""
@@ -286,9 +289,10 @@ import Alamofire
                     CCUtility.setCertificateError(metadata.account, error: true)
                 }
                 #endif
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             
             completion(errorCode)
         }
@@ -305,9 +309,9 @@ import Alamofire
         } else {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
         }
-
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
     }
     
     @objc func verifyUploadRequestLost() {
@@ -319,6 +323,8 @@ import Alamofire
                 if request == nil {
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
                 }
             }
         }
@@ -423,6 +429,8 @@ import Alamofire
                         NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                     }
                     
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                    
                     completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
                 }
             
@@ -500,6 +508,9 @@ import Alamofire
                         self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                
             } else if errorCode == 405 && overwrite {
                 self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": 0], errorDescription: "", completion: completion)
             } else {
@@ -570,6 +581,8 @@ import Alamofire
                 if metadata.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
             }
             
             self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -602,6 +615,8 @@ import Alamofire
     
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
             
             self.NotificationPost(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -695,6 +710,8 @@ import Alamofire
                         try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
                     
             self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -746,6 +763,9 @@ import Alamofire
                 
                 NCManageDatabase.sharedInstance.clearDateRead(serverUrl: metadata.serverUrl, account: account)
                 NCManageDatabase.sharedInstance.clearDateRead(serverUrl: serverUrlTo, account: account)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrlTo])
             }
                     
             self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -782,6 +802,8 @@ import Alamofire
         
         NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { (account, errorCode, errorDescription) in
                     
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrlTo])
+
             self.NotificationPost(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
