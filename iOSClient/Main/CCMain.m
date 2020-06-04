@@ -872,7 +872,7 @@
             
             if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorSave setFavorite:false completion:^(NSInteger errorCode) { }];
+                [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorSave setFavorite:false];                
             }
         }
         
