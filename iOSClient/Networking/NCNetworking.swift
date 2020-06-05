@@ -431,7 +431,33 @@ import Alamofire
                 return
             }
             
-            if errorCode == 0 {
+            if errorCode == 0 && ocId != nil {
+                
+                CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    
+                metadata.date = date ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId!
+                
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.status = Int(k_metadataStatusNormal)
+                        
+                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+
+                if CCUtility.getDisableLocalCacheAfterUpload() {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                } else {
+                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+
+                }
+                
+                #if !EXTENSION
+                CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
+                #endif
                 
             } else if errorCode == NSURLErrorCancelled {
                 
@@ -472,7 +498,7 @@ import Alamofire
             } else {
                 
                 metadata.session = ""
-                metadata.sessionError = ""
+                metadata.sessionError = errorDescription
                 metadata.status = Int(k_metadataStatusUploadError)
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
