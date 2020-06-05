@@ -93,7 +93,6 @@
     self.arrayMoveServerUrlTo = [NSMutableArray new];
     self.arrayCopyMetadata = [NSMutableArray new];
     self.arrayCopyServerUrlTo = [NSMutableArray new];
-    self.sessionPendingStatusInUpload = [NSMutableArray new];
     
     // Push Notification
     [application registerForRemoteNotifications];
@@ -235,7 +234,7 @@
     // verify upload task lost
     [[NCNetworking shared] verifyDownloadRequestLost];
     [[NCNetworking shared] verifyUploadRequestLost];
-    [self verifyTaskLost];
+    [self verifyUploadBackgroundLost];
     
     // verify delete Asset Local Identifiers in auto upload
     [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
@@ -1314,24 +1313,6 @@
         }
     }
     
-    // Upload in pending
-    //
-    /*
-    NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
-    NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", sessionExtension, k_metadataStatusInUpload] sorted:nil ascending:true];
-    for (tableMetadata *metadata in metadatasInUpload) {
-        if ([self.sessionPendingStatusInUpload containsObject:metadata.ocId]) {
-            metadata.status = k_metadataStatusWaitUpload;
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-        } else {
-            [self.sessionPendingStatusInUpload addObject:metadata.ocId];
-        }
-    }
-    if (metadatasInUpload.count == 0) {
-        [self.sessionPendingStatusInUpload removeAllObjects];
-    }
-    */
-    
     // Start Timer
     _timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(loadAutoUpload) userInfo:nil repeats:YES];
 }
@@ -1343,10 +1324,8 @@
     }
 }
 
-- (void)verifyTaskLost
+- (void)verifyUploadBackgroundLost
 {
-    // UPLOAD
-    //
     NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
     NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", sessionExtension, k_metadataStatusUploading] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasUploading) {
