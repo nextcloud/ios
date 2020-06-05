@@ -112,10 +112,6 @@
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-// Session
-#define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
-
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"

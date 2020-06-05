@@ -37,8 +37,8 @@
 
 + (CCNetworking *)sharedNetworking;
 
-- (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
-- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
+//- (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
+//- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end
 

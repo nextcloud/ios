@@ -1190,7 +1190,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata e2eEncrypted:true];
+                    [[NCNetworking shared] uploadWithMetadata:metadata];
                     
                     break;
                                         
@@ -1199,8 +1199,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    //[[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
-                    [[NCNetworking shared] uploadWithMetadata:metadata e2eEncrypted:false];
+                    [[NCNetworking shared] uploadWithMetadata:metadata];
                     
                     counterUpload++;
                     sizeUpload = sizeUpload + metadata.size;
@@ -1243,8 +1242,8 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                                           
-                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
-                
+                [[NCNetworking shared] uploadWithMetadata:metadata];
+                                
                 break;
                 
             } else {
@@ -1252,7 +1251,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                            
-                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                [[NCNetworking shared] uploadWithMetadata:metadata];
                            
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
@@ -1298,7 +1297,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    [[NCNetworking shared] uploadWithMetadata:metadata];
                     
                     break;
                     
@@ -1307,7 +1306,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    [[NCNetworking shared] uploadWithMetadata:metadata];
                     
                     counterUpload++;
                     sizeUpload = sizeUpload + metadata.size;
@@ -1357,7 +1356,14 @@
     NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", sessionExtension, k_metadataStatusUploading] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasUploading) {
         
-        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+        NSURLSession *session;
+        if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierBackground]) {
+            session = NCCommunicationBackground.shared.sessionManagerTransfer;
+        } else if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan]) {
+            session = NCCommunicationBackground.shared.sessionManagerTransferWWan;
+        } else if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierExtension]) {
+            session = NCCommunicationBackground.shared.sessionManagerTransferExtension;
+        }
         
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             

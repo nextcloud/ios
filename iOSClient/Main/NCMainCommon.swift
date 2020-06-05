@@ -142,10 +142,18 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             NCNetworking.shared.cancelUpload(metadata: metadata)
         } else {
         
-            guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else { return }
+            var session: URLSession?
+            if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
+                session = NCCommunicationBackground.shared.sessionManagerTransfer
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
+                session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
+                session = NCCommunicationBackground.shared.sessionManagerTransferExtension
+            }
+            
             var metadata = metadata
 
-            session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
+            session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
                 
                 var cancel = false
                 

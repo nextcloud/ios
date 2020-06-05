@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAudioPlayerDelegate, NCCreateFormUploadConflictDelegate {
     
@@ -230,7 +231,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         
         let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, url: "", contentType: "")
         
-        metadataForUpload.session = k_upload_session
+        metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         

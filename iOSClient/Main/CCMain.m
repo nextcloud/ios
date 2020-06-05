@@ -731,7 +731,7 @@
                     
                     tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:serverUrl url:@"" contentType:@""];
                     
-                    metadataForUpload.session = k_upload_session;
+                    metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
@@ -792,7 +792,7 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
                 
-                NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets urls:(NSMutableArray *)urls cryptated:NO session:k_upload_session delegate:self];
+                NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets urls:(NSMutableArray *)urls cryptated:NO session:NCCommunicationCommon.shared.sessionIdentifierBackground delegate:self];
                 
                 UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
                 [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -1933,7 +1933,7 @@
                 // Prepare record metadata
                 tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
             
-                metadataForUpload.session = k_upload_session;
+                metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
                 metadataForUpload.sessionSelector = selectorUploadFile;
                 metadataForUpload.size = metadata.size;
                 metadataForUpload.status = k_metadataStatusWaitUpload;

@@ -412,7 +412,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //Create metadata for upload
         let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, url: appDelegate.activeUrl, contentType: "")
         
-        metadataForUpload.session = k_upload_session
+        metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 

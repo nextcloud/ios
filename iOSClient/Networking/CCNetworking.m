@@ -68,7 +68,7 @@
     
     if (sessionUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@""];
         
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
@@ -77,7 +77,7 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
 
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUpload.sessionDescription = k_upload_session;
+        sessionUpload.sessionDescription = @"";
     }
     return sessionUpload;
 }
@@ -88,7 +88,7 @@
     
     if (sessionWWanUpload == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@""];
         
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
@@ -97,15 +97,14 @@
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanUpload.sessionDescription = k_upload_session_wwan;
+        sessionWWanUpload.sessionDescription = @"";
     }
     return sessionWWanUpload;
 }
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
-    if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
-    if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
+   
     
     return nil;
 }
@@ -417,8 +416,8 @@
          
      // NSURLSession
      NSURLSession *sessionUpload;
-     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
-     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+//     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+//     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
      
      NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileName]]];
      
@@ -491,7 +490,7 @@
                 
                 errorCode = 0;
                 
-                metadata.session = k_upload_session;
+                //metadata.session = k_upload_session;
                 metadata.sessionError = @"";
                 metadata.sessionTaskIdentifier = 0;
                 metadata.status = k_metadataStatusInUpload;

@@ -320,9 +320,10 @@ import Alamofire
         }
     }
     
-    @objc func upload(metadata: tableMetadata, e2eEncrypted: Bool) {
+    @objc func upload(metadata: tableMetadata) {
            
         var metadataForUpload: tableMetadata?
+        var e2eEncrypted = false
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
            
@@ -331,6 +332,10 @@ import Alamofire
             return
         }
            
+        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
+            e2eEncrypted = true
+        }
+        
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
             metadata.contentType = internalContenType.contentType
@@ -386,10 +391,17 @@ import Alamofire
     
     private func uploadFile(metadata: tableMetadata, account: tableAccount) {
         
+        var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         
-        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: "", session: NCCommunicationBackground.shared.sessionManagerTransferExtension) {
+        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground || metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
+            session = NCCommunicationBackground.shared.sessionManagerTransfer
+        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
+            session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+        }
+        
+        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: "", session: session!) {
          
             metadata.status = Int(k_metadataStatusUploading)
             metadata.sessionError = ""
