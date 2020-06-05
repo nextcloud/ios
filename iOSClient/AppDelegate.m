@@ -1099,15 +1099,11 @@
 {
     NSLog(@"[LOG] Start handle Events For Background URLSession: %@", identifier);
     
-    // after 20 sec
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
+    dispatch_async(dispatch_get_main_queue(), ^{
         self.backgroundSessionCompletionHandler = completionHandler;
         void (^completionHandler)() = self.backgroundSessionCompletionHandler;
         self.backgroundSessionCompletionHandler = nil;
         completionHandler();
-        
-        NSLog(@"[LOG] End 20 sec. Start handle Events For Background URLSession: %@", identifier);
     });
 }
 
