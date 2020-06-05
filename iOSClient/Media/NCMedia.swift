@@ -144,7 +144,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.reloadDataThenPerform {
-                self.downloadThumbnail()
             }
         }
     }
@@ -303,7 +302,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         self.isEditMode = false
                         self.selectocId.removeAll()
                         self.reloadDataThenPerform {
-                            self.downloadThumbnail()
                         }
                     }
                 )
@@ -474,7 +472,9 @@ extension NCMedia: UICollectionViewDataSource {
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-                            
+        
+        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView as Any, indexPath: indexPath)
+
         cell.imageStatus.image = nil
         cell.imageLocal.image = nil
         cell.imageFavorite.image = nil
@@ -484,8 +484,10 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageVisualEffect.clipsToBounds = true
                     
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+            cell.imageItem.backgroundColor = nil
             cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        } else {
+        } else if(!metadata.hasPreview) {
+            cell.imageItem.backgroundColor = nil
             if metadata.iconName.count > 0 {
                 cell.imageItem.image = UIImage.init(named: metadata.iconName)
             } else {
@@ -569,7 +571,6 @@ extension NCMedia {
                 }
                 
                 self.reloadDataThenPerform {
-                    self.downloadThumbnail()
                 }
                 
                 completion()
@@ -673,7 +674,6 @@ extension NCMedia {
                     }
                     
                     self.reloadDataThenPerform {
-                        self.downloadThumbnail()
                     }
                 }
              
@@ -706,7 +706,6 @@ extension NCMedia {
         }
         
         reloadDataThenPerform {
-            self.downloadThumbnail()
         }
     }
     
@@ -739,17 +738,6 @@ extension NCMedia {
             } else {
                 gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
                 search(lteDate: lteDate, gteDate: gteDate!, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search [refresh window]")
-            }
-        }
-    }
-    
-    private func downloadThumbnail() {
-        guard let collectionView = self.collectionView else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for item in collectionView.indexPathsForVisibleItems {
-                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
-                    NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView as Any, indexPath: item)
-                }
             }
         }
     }

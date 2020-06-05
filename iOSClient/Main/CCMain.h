@@ -29,8 +29,6 @@
 
 #import "NSString+TruncateToWidth.h"
 #import "CCLogin.h"
-#import "CCCellMain.h"
-#import "CCCellMainTransfer.h"
 #import "CCGraphics.h"
 #import "CCSection.h"
 #import "CCUtility.h"

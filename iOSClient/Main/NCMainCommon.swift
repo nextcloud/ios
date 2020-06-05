@@ -295,7 +295,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -420,7 +420,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -472,26 +472,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // NORMAL
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMain", for: indexPath) as! CCCellMain
-            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
-            cell.accessoryType = UITableViewCell.AccessoryType.none
-            cell.file.image = nil
-            cell.file.layer.cornerRadius = 6
-            cell.file.layer.masksToBounds = true
-            cell.status.image = nil
-            cell.favorite.image = nil
-            cell.shared.image = nil
-            cell.local.image = nil
-            cell.comment.image = nil
-            cell.shared.isUserInteractionEnabled = false
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            
-            // change color selection
-            let selectionColor = UIView()
-            selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
-            cell.selectedBackgroundView = selectionColor
-            cell.tintColor = NCBrandColor.sharedInstance.brandElement
-            
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             cell.labelTitle.text = metadata.fileNameView
             
             // Download preview
@@ -546,8 +526,10 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // File Image
                 if iconFileExists {
+                    cell.file.backgroundColor = nil
                     cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview){
+                    cell.file.backgroundColor = nil
                     if metadata.iconName.count > 0 {
                         cell.file.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -645,24 +627,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // TRASNFER
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMainTransfer", for: indexPath) as! CCCellMainTransfer
-            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
-            cell.accessoryType = UITableViewCell.AccessoryType.none
-            cell.file.image = nil
-            cell.file.layer.cornerRadius = 6
-            cell.file.layer.masksToBounds = true
-            cell.status.image = nil
-            cell.user.image = nil
-            
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            
-            cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
-            
-            cell.labelTitle.isEnabled = true
-            cell.labelInfoFile.isEnabled = true
-            
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
             //var totalBytesExpected : Double = 0
@@ -706,7 +671,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
             if iconFileExists {
                 cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            } else {
+            } else if(!metadata.hasPreview){
                 if metadata.iconName.count > 0 {
                     cell.file.image = UIImage.init(named: metadata.iconName)
                 } else {
@@ -1041,37 +1006,50 @@ class NCNetworkingMain: NSObject, IMImagemeterViewerDelegate {
     func downloadThumbnail(with metadata: tableMetadata, view: Any, indexPath: IndexPath, closure: @escaping () -> ()) {
         
         if !metadata.isInvalidated && metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
-                        
+            var cell: NCImageCellProtocol?
+            
+            if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                cell = (view as! UICollectionView).cellForItem(at: indexPath) as? NCImageCellProtocol
+            } else  if view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                cell = (view as! UITableView).cellForRow(at: indexPath) as? NCImageCellProtocol
+            }
+            
+            if (cell != nil) {
+                cell!.filePreviewImageView.image = nil
+                cell!.filePreviewImageView.backgroundColor = UIColor.lightGray
+            }
+            
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+                var cell: NCImageCellProtocol?
                 
-                if errorCode == 0 && data != nil  {
-                    if let image = UIImage.init(data: data!) {
-                        
-                        if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UICollectionView).cellForItem(at: indexPath) {
-                                if cell is NCListCell {
-                                    (cell as! NCListCell).imageItem.image = image
-                                } else if cell is NCGridCell {
-                                    (cell as! NCGridCell).imageItem.image = image
-                                } else if cell is NCGridMediaCell {
-                                    (cell as! NCGridMediaCell).imageItem.image = image
-                                }
-                            }
+                if view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                    cell = (view as! UICollectionView).cellForItem(at: indexPath) as? NCImageCellProtocol
+                } else  if view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
+                    cell = (view as! UITableView).cellForRow(at: indexPath) as? NCImageCellProtocol
+                }
+                
+                if (cell != nil) {
+                    var previewImage: UIImage!
+                    if errorCode == 0 && data != nil {
+                        if let image = UIImage(data: data!) {
+                            previewImage = image
                         }
-                        
-                        if view is UITableView && CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(indexPath, view: view) {
-                            if let cell = (view as! UITableView).cellForRow(at: indexPath) {
-                                if cell is CCCellMainTransfer {
-                                    (cell as! CCCellMainTransfer).file.image = image
-                                } else if cell is CCCellMain {
-                                    (cell as! CCCellMain).file.image = image
-                                }
-                            }
+                    } else {
+                        if metadata.iconName.count > 0 {
+                            previewImage = UIImage(named: metadata.iconName)
+                        } else {
+                            previewImage = UIImage(named: "file")
                         }
                     }
+                    cell!.filePreviewImageView.backgroundColor = nil
+                    UIView.transition(with: cell!.filePreviewImageView,
+                    duration: 0.75,
+                    options: .transitionCrossDissolve,
+                    animations: { cell!.filePreviewImageView.image = previewImage!},
+                    completion: nil)
                 }
                 return closure()
             }

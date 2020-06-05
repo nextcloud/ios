@@ -24,7 +24,6 @@
 #import <Foundation/Foundation.h>
 
 #import "CCHud.h"
-#import "CCCellMain.h"
 
 @class tableMetadata;
 

@@ -25,7 +25,6 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "CCSection.h"
-#import "CCCellMainTransfer.h"
 #import "NCBridgeSwift.h"
 
 #define download 1

@@ -14,6 +14,9 @@
 		2C33C48623E2C475005F963B /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3704EB2923D5A58400455C5B /* NCMenu.storyboard */; };
+		370D26AD248A3BB800121797 /* CCCellMainTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AC248A3BB800121797 /* CCCellMainTransfer.swift */; };
+		370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */; };
+		370D26B1248A3E1A00121797 /* CCCellMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26B0248A3E1A00121797 /* CCCellMain.swift */; };
 		371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift */; };
 		371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */; };
 		3757A35523D9D76300EC369E /* NCMenuPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3757A35423D9D76300EC369E /* NCMenuPanelController.swift */; };
@@ -239,10 +242,8 @@
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
 		F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
 		F77B0E8F1D118A16002130FE /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
-		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
 		F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = F777F0311C29717F00CE81CB /* PHAsset+Utility.m */; };
 		F77B0ED91D118A16002130FE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F67BAD1A24D27800EE80DA /* main.m */; };
@@ -407,6 +408,9 @@
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
 		3704EB2923D5A58400455C5B /* NCMenu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMenu.storyboard; sourceTree = "<group>"; };
+		370D26AC248A3BB800121797 /* CCCellMainTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMainTransfer.swift; sourceTree = "<group>"; };
+		370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImageCellProtocol.swift; sourceTree = "<group>"; };
+		370D26B0248A3E1A00121797 /* CCCellMain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMain.swift; sourceTree = "<group>"; };
 		371B5A2D23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainMenuTableViewController.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3757A35423D9D76300EC369E /* NCMenuPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuPanelController.swift; sourceTree = "<group>"; };
@@ -423,10 +427,7 @@
 		F700510222DF6897003A3356 /* Parchment.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parchment.framework; path = Carthage/Build/iOS/Parchment.framework; sourceTree = "<group>"; };
 		F700510422DF6A89003A3356 /* NCShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShare.swift; sourceTree = "<group>"; };
 		F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadVoiceNote.swift; sourceTree = "<group>"; };
-		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
-		F70211F71BAC56E9003FC03E /* CCCellMainTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMainTransfer.h; sourceTree = "<group>"; };
-		F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMainTransfer.m; sourceTree = "<group>"; };
 		F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMainTransfer.xib; sourceTree = "<group>"; };
 		F70211FA1BAC56E9003FC03E /* CCMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMain.h; sourceTree = "<group>"; };
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMain.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -836,7 +837,6 @@
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
 		F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPeekPop.m; sourceTree = "<group>"; };
-		F7FFEACE1F82BB23005E5C17 /* CCCellMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1229,13 +1229,12 @@
 		F78ACD3E21903BA20088454D /* Cell */ = {
 			isa = PBXGroup;
 			children = (
-				F7FFEACE1F82BB23005E5C17 /* CCCellMain.h */,
-				F70211F51BAC56E9003FC03E /* CCCellMain.m */,
+				370D26B0248A3E1A00121797 /* CCCellMain.swift */,
 				F70211F61BAC56E9003FC03E /* CCCellMain.xib */,
-				F70211F71BAC56E9003FC03E /* CCCellMainTransfer.h */,
-				F70211F81BAC56E9003FC03E /* CCCellMainTransfer.m */,
+				370D26AC248A3BB800121797 /* CCCellMainTransfer.swift */,
 				F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */,
 				F78ACD3F21903CC20088454D /* NCGridCell.swift */,
+				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
 				F77444F322281649000D5EB0 /* NCGridMediaCell.swift */,
 				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
@@ -2234,6 +2233,7 @@
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
+				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
@@ -2243,6 +2243,7 @@
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
+				370D26AD248A3BB800121797 /* CCCellMainTransfer.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
@@ -2339,7 +2340,6 @@
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
 				F77B0E8F1D118A16002130FE /* CCSection.m in Sources */,
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
-				F77B0E921D118A16002130FE /* CCCellMainTransfer.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
@@ -2372,12 +2372,12 @@
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
 				F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
+				370D26B1248A3E1A00121797 /* CCCellMain.swift in Sources */,
 				F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
-				F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,

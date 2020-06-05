@@ -24,19 +24,26 @@
 import Foundation
 import UIKit
 
-class NCGridMediaCell: UICollectionViewCell {
-    
+class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
+
     @IBOutlet weak var imageItem: UIImageView!
-    
+
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-    
+
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
+
+    var filePreviewImageView: UIImageView {
+        get {
+            return imageItem
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageItem.backgroundColor = UIColor.lightGray
     }
 }
 
