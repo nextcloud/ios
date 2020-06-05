@@ -1138,7 +1138,7 @@
         sizeUpload = sizeUpload + metadata.size;
     }
     
-    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] PROCESS-AUTO-UPLOAD Upload %ld - %@", counterUpload, [CCUtility transformedSize:sizeUpload]]);
+    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] PROCESS-AUTO-UPLOAD %ld - %@", counterUpload, [CCUtility transformedSize:sizeUpload]]);
     
     // Stop Timer
     [_timerProcessAutoUpload invalidate];
@@ -1310,6 +1310,22 @@
             } else {
                 break;
             }
+        }
+    }
+    
+    // No upload available ? --> Retry Upload in Error
+    //
+    if (counterUpload == 0) {
+        
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusUploadError] sorted:nil ascending:NO];
+        for (tableMetadata *metadata in metadatas) {
+            
+            metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+            metadata.sessionError = @"";
+            metadata.sessionTaskIdentifier = 0;
+            metadata.status = k_metadataStatusInUpload;
+            
+            [[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
     }
     
