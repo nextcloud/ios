@@ -291,7 +291,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -416,7 +416,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -468,25 +468,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // NORMAL
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMain", for: indexPath) as! CCCellMain
-            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
-            cell.accessoryType = UITableViewCell.AccessoryType.none
-            cell.file.image = nil
-            cell.status.image = nil
-            cell.favorite.image = nil
-            cell.shared.image = nil
-            cell.local.image = nil
-            cell.comment.image = nil
-            cell.shared.isUserInteractionEnabled = false
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            
-            // change color selection
-            let selectionColor = UIView()
-            selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
-            cell.selectedBackgroundView = selectionColor
-            cell.tintColor = NCBrandColor.sharedInstance.brandElement
-            
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
             cell.labelTitle.text = metadata.fileNameView
+            cell.filePreviewImageView.image = nil
+            cell.filePreviewImageView.backgroundColor = UIColor.lightGray
             
             // Download preview
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
@@ -504,7 +488,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // lable Info
                 cell.labelInfoFile.text = CCUtility.dateDiff(metadata.date as Date)
-                
+                cell.file.backgroundColor = nil
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
                     cell.file.image = NCMainCommonImages.cellFolderEncryptedImage
@@ -540,8 +524,10 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // File Image
                 if iconFileExists {
+                    cell.file.backgroundColor = nil
                     cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                } else {
+                } else if(!metadata.hasPreview){
+                    cell.file.backgroundColor = nil
                     if metadata.iconName.count > 0 {
                         cell.file.image = UIImage.init(named: metadata.iconName)
                     } else {
@@ -639,22 +625,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // TRASNFER
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMainTransfer", for: indexPath) as! CCCellMainTransfer
-            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
-            cell.accessoryType = UITableViewCell.AccessoryType.none
-            cell.file.image = nil
-            cell.status.image = nil
-            cell.user.image = nil
-            
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            
-            cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
-            
-            cell.labelTitle.isEnabled = true
-            cell.labelInfoFile.isEnabled = true
-            
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
             //var totalBytesExpected : Double = 0
@@ -698,7 +669,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
             if iconFileExists {
                 cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            } else {
+            } else if(!metadata.hasPreview){
                 if metadata.iconName.count > 0 {
                     cell.file.image = UIImage.init(named: metadata.iconName)
                 } else {

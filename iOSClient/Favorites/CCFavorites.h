@@ -24,8 +24,6 @@
 #import <UIKit/UIKit.h>
 #import <DZNEmptyDataSet/UIScrollView+EmptyDataSet.h>
 
-#import "CCCellMain.h"
-#import "CCCellMainTransfer.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCGraphics.h"

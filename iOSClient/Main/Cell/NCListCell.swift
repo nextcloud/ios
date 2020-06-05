@@ -24,7 +24,7 @@
 import Foundation
 import UIKit
 
-class NCListCell: UICollectionViewCell {
+class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
@@ -45,6 +45,12 @@ class NCListCell: UICollectionViewCell {
     @IBOutlet weak var buttonMore: UIButton!
     
     @IBOutlet weak var separator: UIView!
+    
+    var filePreviewImageView : UIImageView {
+        get{
+         return imageItem
+        }
+    }
 
     var delegate: NCListCellDelegate?
     
@@ -57,6 +63,11 @@ class NCListCell: UICollectionViewCell {
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
 
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageItem.backgroundColor = nil
     }
     
     @IBAction func touchUpInsideShare(_ sender: Any) {

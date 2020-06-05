@@ -479,17 +479,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="50" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
-                                <rect key="frame" x="0.0" y="88" width="414" height="649"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
+                                <rect key="frame" x="0.0" y="88" width="414" height="643"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <inset key="separatorInset" minX="56" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="xPg-6F-Qcc">
-                                    <rect key="frame" x="0.0" y="106" width="414" height="44"/>
+                                    <rect key="frame" x="0.0" y="123.5" width="414" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="V1G-2M-Q0I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="50"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="414" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" multipleTouchEnabled="YES" contentMode="center" tableViewCell="V1G-2M-Q0I" id="mMB-QG-hoe">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
@@ -529,10 +530,10 @@
                                 </connections>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J2k-UZ-XQQ" userLabel="View Quota">
-                                <rect key="frame" x="0.0" y="737" width="414" height="60"/>
+                                <rect key="frame" x="0.0" y="731" width="414" height="66"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAP-np-Q1J">
-                                        <rect key="frame" x="35" y="2" width="344" height="20"/>
+                                        <rect key="frame" x="35" y="8" width="344" height="20"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="o78-Yq-dPq"/>
@@ -542,10 +543,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uGf-Fa-QQ3">
-                                        <rect key="frame" x="35" y="25" width="344" height="2"/>
+                                        <rect key="frame" x="35" y="31" width="344" height="2"/>
                                     </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfl-ZC-XFd">
-                                        <rect key="frame" x="35" y="29" width="344" height="20"/>
+                                        <rect key="frame" x="35" y="35" width="344" height="20"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="B11-kS-b2d"/>
@@ -557,13 +558,13 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="Cch-sg-vfH"/>
+                                    <constraint firstAttribute="height" constant="66" id="Cch-sg-vfH"/>
                                     <constraint firstItem="uGf-Fa-QQ3" firstAttribute="top" secondItem="DAP-np-Q1J" secondAttribute="bottom" constant="3" id="DmS-I9-ex2"/>
                                     <constraint firstItem="vfl-ZC-XFd" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="F1b-zE-5hN"/>
                                     <constraint firstAttribute="trailing" secondItem="DAP-np-Q1J" secondAttribute="trailing" constant="35" id="KIR-Gg-7ty"/>
                                     <constraint firstItem="DAP-np-Q1J" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="MWW-b2-p9J"/>
                                     <constraint firstItem="vfl-ZC-XFd" firstAttribute="top" secondItem="uGf-Fa-QQ3" secondAttribute="bottom" constant="2" id="Tbu-4L-brV"/>
-                                    <constraint firstItem="DAP-np-Q1J" firstAttribute="top" secondItem="J2k-UZ-XQQ" secondAttribute="top" constant="2" id="jKE-pS-hcH"/>
+                                    <constraint firstItem="DAP-np-Q1J" firstAttribute="top" secondItem="J2k-UZ-XQQ" secondAttribute="top" constant="8" id="jKE-pS-hcH"/>
                                     <constraint firstAttribute="trailing" secondItem="vfl-ZC-XFd" secondAttribute="trailing" constant="35" id="q1x-Mf-7lg"/>
                                     <constraint firstAttribute="trailing" secondItem="uGf-Fa-QQ3" secondAttribute="trailing" constant="35" id="toK-Xd-ifL"/>
                                     <constraint firstItem="uGf-Fa-QQ3" firstAttribute="leading" secondItem="J2k-UZ-XQQ" secondAttribute="leading" constant="35" id="w2K-Il-yFz"/>

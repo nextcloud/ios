@@ -134,39 +134,40 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
     }
     
     override func start() {
-            
+
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            
+
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
-            
-            if errorCode == 0 && data != nil  {
-                if let image = UIImage.init(data: data!) {
-                    
-                    if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
-                        if let cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) {
-                            if cell is NCListCell {
-                                (cell as! NCListCell).imageItem.image = image
-                            } else if cell is NCGridCell {
-                                (cell as! NCGridCell).imageItem.image = image
-                            } else if cell is NCGridMediaCell {
-                                (cell as! NCGridMediaCell).imageItem.image = image
-                            }
-                        }
+            var cell: NCImageCellProtocol?
+            if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
+            } else if self.view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+            }
+
+            if (cell != nil) {
+                var previewImage: UIImage!
+                if errorCode == 0 && data != nil {
+                    if let image = UIImage(data: data!) {
+                        previewImage = image
                     }
-                    
-                    if self.view is UITableView && CCUtility.fileProviderStorageIconExists(self.metadata.ocId, fileNameView: self.metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
-                        if let cell = (self.view as! UITableView).cellForRow(at: self.indexPath) {
-                            if cell is CCCellMainTransfer {
-                                (cell as! CCCellMainTransfer).file.image = image
-                            } else if cell is CCCellMain {
-                                (cell as! CCCellMain).file.image = image
-                            }
-                        }
+                } else {
+                    if self.metadata.iconName.count > 0 {
+                        previewImage = UIImage(named: self.metadata.iconName)
+                    } else {
+                        previewImage = UIImage(named: "file")
                     }
                 }
+                cell!.filePreviewImageView.backgroundColor = nil
+                UIView.transition(with: cell!.filePreviewImageView,
+                    duration: 0.75,
+                    options: .transitionCrossDissolve,
+                    animations: { cell!.filePreviewImageView.image = previewImage! },
+                    completion: nil)
             }
             self.finish()
+
         }
     }
 }

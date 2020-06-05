@@ -18,8 +18,10 @@ extension CCMain {
                 navBarAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 navBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-                self.navigationController?.navigationBar.standardAppearance = navBarAppearance
                 self.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+                navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.tabBar
+                self.navigationController?.navigationBar.standardAppearance = navBarAppearance
+
             } else {
                 self.navigationController?.navigationBar.barStyle = .default
                 self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
@@ -40,8 +42,9 @@ extension CCMain {
                 navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.backgroundView
                 navBarAppearance.shadowColor = .clear
                 navBarAppearance.shadowImage = UIImage()
-                self.navigationController?.navigationBar.standardAppearance = navBarAppearance
                 self.navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
+                navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.tabBar
+                self.navigationController?.navigationBar.standardAppearance = navBarAppearance
             } else {
                 self.navigationController?.navigationBar.barStyle = .default
                 self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
