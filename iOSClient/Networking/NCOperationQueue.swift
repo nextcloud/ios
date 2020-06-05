@@ -36,7 +36,7 @@ import NCCommunication
     let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     
-    // Download
+    // Download file
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
     }
@@ -52,11 +52,14 @@ import NCCommunication
         readFolderSyncQueue.addOperation(NCOperationReadFolderSync.init(serverUrl: serverUrl, selector: selector, account: account))
     }
     
-    //
+    // Download Thumbnail
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
         }
+    }
+    @objc func downloadThumbnailCancelAll() {
+        downloadThumbnailQueue.cancelAll()
     }
 }
 
@@ -135,39 +138,44 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
     
     override func start() {
 
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-
-        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
-            
-            var cell: NCImageCellProtocol?
-            if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
-                cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
-            } else if self.view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
-                cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
-            }
-
-            if (cell != nil) {
-                var previewImage: UIImage!
-                if errorCode == 0 && data != nil {
-                    if let image = UIImage(data: data!) {
-                        previewImage = image
-                    }
-                } else {
-                    if self.metadata.iconName.count > 0 {
-                        previewImage = UIImage(named: self.metadata.iconName)
-                    } else {
-                        previewImage = UIImage(named: "file")
-                    }
-                }
-                cell!.filePreviewImageView.backgroundColor = nil
-                UIView.transition(with: cell!.filePreviewImageView,
-                    duration: 0.75,
-                    options: .transitionCrossDissolve,
-                    animations: { cell!.filePreviewImageView.image = previewImage! },
-                    completion: nil)
-            }
+        if isCancelled {
             self.finish()
+        } else {
+        
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+                
+                var cell: NCImageCellProtocol?
+                if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                    cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
+                } else if self.view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                    cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                }
+
+                if (cell != nil) {
+                    var previewImage: UIImage!
+                    if errorCode == 0 && data != nil {
+                        if let image = UIImage(data: data!) {
+                            previewImage = image
+                        }
+                    } else {
+                        if self.metadata.iconName.count > 0 {
+                            previewImage = UIImage(named: self.metadata.iconName)
+                        } else {
+                            previewImage = UIImage(named: "file")
+                        }
+                    }
+                    cell!.filePreviewImageView.backgroundColor = nil
+                    UIView.transition(with: cell!.filePreviewImageView,
+                        duration: 0.75,
+                        options: .transitionCrossDissolve,
+                        animations: { cell!.filePreviewImageView.image = previewImage! },
+                        completion: nil)
+                }
+                self.finish()
+            }
         }
     }
 }
