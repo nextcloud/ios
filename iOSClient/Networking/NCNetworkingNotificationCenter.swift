@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/04/2020.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -43,13 +43,9 @@ import Foundation
 
     @objc func downloadFileStart(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String {
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-                appDelegate.updateApplicationIconBadgeNumber()
-            }
-        }
+//        if let userInfo = notification.userInfo as NSDictionary? {
+//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String { }
+//        }
     }
     
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -63,7 +59,6 @@ import Foundation
                     
                     // Synchronized
                     if selector == selectorDownloadSynchronize {
-                        appDelegate.updateApplicationIconBadgeNumber()
                         return
                     }
                     
@@ -160,14 +155,10 @@ import Foundation
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
-                        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: Int32(k_action_DEL))
-                        
                     } else {
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
         }
     }
@@ -176,22 +167,16 @@ import Foundation
 
     @objc func uploadFileStart(_ notification: NSNotification) {
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask {
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, ocId: ocId, action: Int32(k_action_MOD))
-                appDelegate.updateApplicationIconBadgeNumber()
-            }
-        }
+//        if let userInfo = notification.userInfo as NSDictionary? {
+//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask { }
+//        }
     }
     
     @objc func uploadedFile(_ notification: NSNotification) {
     
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: metadata.serverUrl, ocId: metadata.ocId, action: Int32(k_action_MOD))
-                
+                                                
                 if metadata.account == appDelegate.activeAccount {
                     if errorCode == 0 {
                         appDelegate.startLoadAutoUpload()

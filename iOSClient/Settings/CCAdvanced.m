@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/11/15.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2015 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -185,10 +185,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
         
-        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];
-        
-        // force reload
-        [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
+        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];        
     }
     
     if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
@@ -291,9 +288,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_exit_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        
-        [[CCNetworking sharedNetworking] invalidateAndCancelAllSession];
-        
+                
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
         [KTVHTTPCache cacheDeleteAllCaches];

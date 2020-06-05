@@ -376,10 +376,10 @@
 
         // Select type of session
         
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = k_upload_session_wwan;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
         
         NSDateFormatter *formatter = [NSDateFormatter new];
         
@@ -452,17 +452,11 @@
     if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
         [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
-        
-        // Update icon badge number
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
     }
     
     // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     });    
 }
 
@@ -476,11 +470,6 @@
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Update icon badge number
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
     }
 }
 

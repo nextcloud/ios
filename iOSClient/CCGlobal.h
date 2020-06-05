@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 13/10/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -84,7 +84,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         107
+#define k_databaseSchemaVersion                         108
 
 // Intro selector
 #define k_intro_login                                   0
@@ -111,11 +111,6 @@
 #define k_permission_can_delete                         @"D"
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
-
-// Session
-#define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
-#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
@@ -254,11 +249,6 @@
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
 
-// Cell Reload Data Source
-#define k_action_NULL                                   0
-#define k_action_MOD                                    1
-#define k_action_DEL                                    2
-
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
@@ -311,13 +301,13 @@
 
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
-#define k_notificationCenter_clearDateReadDataSource    @"clearDateReadDataSource"          // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_changeTheming              @"changeTheming"
 #define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
 #define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"             // userInfo: metadata, type
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
+#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                // userInfo: ocId?, serverUrl?
 
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription

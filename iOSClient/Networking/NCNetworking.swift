@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 23/10/19.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -27,10 +27,10 @@ import NCCommunication
 import Alamofire
 
 @objc public protocol NCNetworkingDelegate {
-    @objc optional func downloadProgress(_ progress: Double, fileName: String, ServerUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func uploadProgress(_ progress: Double, fileName: String, ServerUrl: String, session: URLSession, task: URLSessionTask)
-    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Double, description: String?, error: Error?, statusCode: Int)
-    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, error: Error?, statusCode: Int)
+    @objc optional func downloadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
+    @objc optional func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
+    @objc optional func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Double, description: String?, task: URLSessionTask, error: Error?, statusCode: Int)
+    @objc optional func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: Error?, statusCode: Int)
 }
 
 @objc class NCNetworking: NSObject, NCCommunicationCommonDelegate {
@@ -77,20 +77,12 @@ import Alamofire
         }
     }
     
-    func downloadProgress(_ progress: Double, fileName: String, ServerUrl: String, session: URLSession, task: URLSessionTask) {
-        delegate?.downloadProgress?(progress, fileName: fileName, ServerUrl: ServerUrl, session: session, task: task)
+    func downloadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+        delegate?.downloadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
     }
     
-    func uploadProgress(_ progress: Double, fileName: String, ServerUrl: String, session: URLSession, task: URLSessionTask) {
-        delegate?.uploadProgress?(progress, fileName: fileName, ServerUrl: ServerUrl, session: session, task: task)
-    }
-    
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, error: Error?, statusCode: Int) {
-        delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, error: error, statusCode: statusCode)
-    }
-    
-    func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Double, description: String?, error: Error?, statusCode: Int) {
-        delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, error: error, statusCode: statusCode)
+    func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: NSDate?, dateLastModified: NSDate?, length: Double, description: String?, task: URLSessionTask, error: Error?, statusCode: Int) {
+        delegate?.downloadComplete?(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, description: description, task: task, error: error, statusCode: statusCode)
     }
     
     //MARK: - Pinning check
@@ -186,10 +178,10 @@ import Alamofire
                 metadata.status = Int(k_metadataStatusNormal)
                 
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
         }
-        
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
     }
     
     @objc func verifyDownloadRequestLost() {
@@ -203,6 +195,8 @@ import Alamofire
                     metadata.sessionError = ""
                     metadata.status = Int(k_metadataStatusNormal)
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                 }
             }
         }
@@ -221,8 +215,8 @@ import Alamofire
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
         
-        debugPrint("[LOG] Download Request: " + "\(self.downloadRequest.count)")
-        
+        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+                
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
@@ -238,7 +232,7 @@ import Alamofire
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
                         
             self.downloadRequest[fileNameLocalPath] = nil
-            
+           
             if errorCode == 0 {
                
                 metadata.date = date ?? NSDate()
@@ -262,15 +256,13 @@ import Alamofire
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
                 
             } else if error?.isExplicitlyCancelledError ?? false {
-                
+                                
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.status = Int(k_metadataStatusNormal)
                 
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-                
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
-
+            
             } else {
                 
                 metadata.session = ""
@@ -290,6 +282,8 @@ import Alamofire
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_downloadedFile), object: nil, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
             
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+            
             completion(errorCode)
         }
     }
@@ -305,9 +299,9 @@ import Alamofire
         } else {
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
         }
-
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
     }
     
     @objc func verifyUploadRequestLost() {
@@ -319,14 +313,17 @@ import Alamofire
                 if request == nil {
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
                 }
             }
         }
     }
     
-    @objc func upload(metadata: tableMetadata, e2eEncrypted: Bool) {
+    @objc func upload(metadata: tableMetadata) {
            
         var metadataForUpload: tableMetadata?
+        var e2eEncrypted = false
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
            
@@ -335,6 +332,10 @@ import Alamofire
             return
         }
            
+        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
+            e2eEncrypted = true
+        }
+        
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
 
             metadata.contentType = internalContenType.contentType
@@ -349,13 +350,15 @@ import Alamofire
             }
                
             metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
-            
-            #if !EXTENSION
+           
             if e2eEncrypted {
+                #if !EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
+                #endif
+            } else {
+                uploadFile(metadata: metadataForUpload!, account: account)
             }
-            #endif
-            
+           
         } else {
                
             CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadata, notification: true) { (extractMetadata, fileNamePath) in
@@ -374,15 +377,78 @@ import Alamofire
                 }
                        
                 metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
-                
-                #if !EXTENSION
+               
                 if e2eEncrypted {
+                    #if !EXTENSION
                     NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
+                    #endif
+                } else {
+                    self.uploadFile(metadata: metadataForUpload!, account: account)
                 }
-                #endif
             }
         }
     }
+    
+    private func uploadFile(metadata: tableMetadata, account: tableAccount) {
+        
+        var session: URLSession?
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        
+        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground || metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
+            session = NCCommunicationBackground.shared.sessionManagerTransfer
+        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
+            session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+        }
+        
+        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: "", session: session!) {
+         
+            metadata.status = Int(k_metadataStatusUploading)
+            metadata.sessionError = ""
+            metadata.sessionTaskIdentifier = task.taskIdentifier
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+        }
+    }
+    
+    func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
+        delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) {
+                        
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+        }
+    }
+    
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, error: Error?, statusCode: Int) {
+        if delegate != nil {
+            delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, error: error, statusCode: statusCode)
+        } else {
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) else {
+                return
+            }
+            
+            if error == nil && statusCode >= 200 && statusCode < 300 {
+                
+            } else if error != nil && (error! as NSError).code == NSURLErrorCancelled {
+                
+                if metadata.status == k_metadataStatusUploadForcedStart {
+                    
+                } else {
+                    
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                        
+                }
+            }
+            
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+        }
+    }
+    
     
     //MARK: - WebDav Read file, folder
     
@@ -396,7 +462,6 @@ import Alamofire
                     
                     // Add directory
                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                    NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: serverUrl, account: account)
                     
                     // Add other directories
                     for metadata in metadatasFolder {
@@ -422,6 +487,8 @@ import Alamofire
                     if metadatasInUpload != nil {
                         NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
                     }
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
                     
                     completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
                 }
@@ -500,6 +567,9 @@ import Alamofire
                         self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrl])
+                
             } else if errorCode == 405 && overwrite {
                 self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": 0], errorDescription: "", completion: completion)
             } else {
@@ -570,6 +640,8 @@ import Alamofire
                 if metadata.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
             }
             
             self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -602,6 +674,8 @@ import Alamofire
     
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
             
             self.NotificationPost(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -695,6 +769,8 @@ import Alamofire
                         try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
                 }
+                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
             }
                     
             self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -743,9 +819,9 @@ import Alamofire
                     metadataNew = metadataMove
                 }
                 NCManageDatabase.sharedInstance.moveMedia(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
-                
-                NCManageDatabase.sharedInstance.clearDateRead(serverUrl: metadata.serverUrl, account: account)
-                NCManageDatabase.sharedInstance.clearDateRead(serverUrl: serverUrlTo, account: account)
+                                
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
+                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrlTo])
             }
                     
             self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
@@ -782,6 +858,8 @@ import Alamofire
         
         NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { (account, errorCode, errorDescription) in
                     
+            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":serverUrlTo])
+
             self.NotificationPost(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }

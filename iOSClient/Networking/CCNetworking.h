@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/06/15.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2015 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -37,14 +37,8 @@
 
 + (CCNetworking *)sharedNetworking;
 
-#pragma mark ===== Session =====
-
-- (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
-- (void)invalidateAndCancelAllSession;
-
-#pragma mark ===== Upload =====
-
-- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
+//- (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
+//- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end
 

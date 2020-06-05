@@ -28,5 +28,4 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action;
 @end

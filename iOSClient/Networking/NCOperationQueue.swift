@@ -24,29 +24,150 @@
 
 import Foundation
 import Queuer
+import NCCommunication
 
-@objc class NCOperationQueue: ConcurrentOperation {
+@objc class NCOperationQueue: NSObject {
     @objc public static let shared: NCOperationQueue = {
         let instance = NCOperationQueue()
         return instance
     }()
     
-    let transferQueue = Queuer(name: "transferQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    let semaphore = Semaphore()
+    var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
+    let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    
+    // Download
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+    }
+    @objc func downloadCancelAll() {
+        downloadQueue.cancelAll()
+    }
+    @objc func downloadCount() -> Int {
+        return downloadQueue.operationCount
+    }
+    
+    //
+    @objc func readFolderSync(serverUrl: String, selector: String ,account: String) {
+        readFolderSyncQueue.addOperation(NCOperationReadFolderSync.init(serverUrl: serverUrl, selector: selector, account: account))
+    }
+    
+    //
+    @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+        if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
+        }
+    }
+}
 
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false) {
-        let concurrentOperation = ConcurrentOperation { operation in
-            
-            NCNetworking.shared.download(metadata: metadata, selector: selector, setFavorite: setFavorite) { (errorCode) in
-                
-                self.semaphore.continue()
+//MARK: -
+
+class NCOperationDownload: ConcurrentOperation {
+   
+    private var metadata: tableMetadata
+    private var selector: String
+    private var setFavorite: Bool
+    
+    init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+        self.metadata = metadata
+        self.selector = selector
+        self.setFavorite = setFavorite
+    }
+    
+    override func start() {
+        if isCancelled {
+            self.finish()
+        } else {
+            NCNetworking.shared.download(metadata: self.metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
+                self.finish()
             }
         }
-        concurrentOperation.addToQueue(transferQueue)
-        
-        debugPrint("[LOG] Download ADD QUEUE")
+    }
+}
 
-        semaphore.wait()
+//MARK: -
+
+class NCOperationReadFolderSync: ConcurrentOperation {
+   
+    private var serverUrl: String
+    private var selector: String
+    private var account: String
+    
+    init(serverUrl: String, selector: String, account: String) {
+        self.serverUrl = serverUrl
+        self.selector = selector
+        self.account = account
+    }
+    
+    override func start() {
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+            
+            if errorCode == 0 && files != nil {
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    
+                    if metadatas.count > 0 {
+                        CCSynchronize.shared()?.readFolder(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector)
+                    }
+                }
+            } else if errorCode == 404 {
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.serverUrl, account: account)
+            }
+            self.finish()
+        }
+    }
+}
+
+//MARK: -
+
+class NCOperationDownloadThumbnail: ConcurrentOperation {
+   
+    private var metadata: tableMetadata
+    private var activeUrl: String
+    private var view: Any
+    private var indexPath: IndexPath
+    
+    init(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+        self.metadata = metadata
+        self.activeUrl = activeUrl
+        self.view = view
+        self.indexPath = indexPath
+    }
+    
+    override func start() {
+            
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+            
+            if errorCode == 0 && data != nil  {
+                if let image = UIImage.init(data: data!) {
+                    
+                    if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                        if let cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) {
+                            if cell is NCListCell {
+                                (cell as! NCListCell).imageItem.image = image
+                            } else if cell is NCGridCell {
+                                (cell as! NCGridCell).imageItem.image = image
+                            } else if cell is NCGridMediaCell {
+                                (cell as! NCGridMediaCell).imageItem.image = image
+                            }
+                        }
+                    }
+                    
+                    if self.view is UITableView && CCUtility.fileProviderStorageIconExists(self.metadata.ocId, fileNameView: self.metadata.fileName) && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                        if let cell = (self.view as! UITableView).cellForRow(at: self.indexPath) {
+                            if cell is CCCellMainTransfer {
+                                (cell as! CCCellMainTransfer).file.image = image
+                            } else if cell is CCCellMain {
+                                (cell as! CCCellMain).file.image = image
+                            }
+                        }
+                    }
+                }
+            }
+            self.finish()
+        }
     }
 }
 

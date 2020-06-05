@@ -75,7 +75,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("fileName")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -95,7 +95,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("date")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -115,7 +115,7 @@ extension CCMain {
                         CCUtility.setOrderSettings("size")
                     }
                     self.SetSortButtonText()
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -128,7 +128,7 @@ extension CCMain {
                 on: CCUtility.getDirectoryOnTop(),
                 action: { menuAction in
                     CCUtility.setDirectoryOnTop(!CCUtility.getDirectoryOnTop())
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_clearDateReadDataSource), object: nil)
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil)
                 }
             )
         )
@@ -325,9 +325,7 @@ extension CCMain {
                             if(isOffline) {
                                 CCSynchronize.shared()?.readFolder(serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
                             }
-                            DispatchQueue.main.async {
-                                self.tableView.reloadRows(at: [indexPath], with: .none)
-                            }
+                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                         }
                     )
                 )
@@ -345,7 +343,8 @@ extension CCMain {
                                     NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl))
                                     NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                     NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
-                                    NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
+                                    
+                                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                                 } else {
                                     NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
                                 }
@@ -367,7 +366,8 @@ extension CCMain {
                                     NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
                                     NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                     NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
-                                    NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
+                                    
+                                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                                 } else {
                                     NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
                                 }
@@ -494,9 +494,7 @@ extension CCMain {
                                 
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadRows(at: [indexPath], with: .none)
-                                }
+                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
                             }
                         }
                     )

@@ -78,18 +78,17 @@
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
-    // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
+
     [self changeTheming];
-    
-    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
         
-    [self reloadDatasource:nil action:k_action_NULL];
+    [self reloadDatasource];
 }
 
 - (void)changeTheming
@@ -230,10 +229,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
-        [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -253,8 +249,8 @@
         [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
     } else {
         metadataForRecognizer.status = k_metadataStatusInUpload;
-        metadataForRecognizer.session = k_upload_session;
-        [[CCNetworking sharedNetworking] uploadFile:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] taskStatus:k_taskStatusResume];
+        metadataForRecognizer.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        [[NCNetworking shared] uploadWithMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer]];
     }
 }
 
@@ -262,7 +258,7 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
+- (void)reloadDatasource
 {
     // test
     if (appDelegate.activeAccount.length == 0 || self.view.window == nil)
@@ -316,8 +312,8 @@
 
     NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] sorted:nil ascending:NO] count];
 
-    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
-    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] sorted:nil ascending:NO] count];
+    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] sorted:nil ascending:NO] count];
     
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [sectionDataSource.sections objectAtIndex:section];
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
@@ -413,7 +409,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
+        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -430,7 +426,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
+        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] sorted:nil ascending:NO] count];
        
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);

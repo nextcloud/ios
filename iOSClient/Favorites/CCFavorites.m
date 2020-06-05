@@ -67,9 +67,8 @@
     // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
+
     // Metadata
     self.metadata = [tableMetadata new];
     
@@ -96,9 +95,6 @@
         self.title = NSLocalizedString(@"_favorites_", nil);
     
     [self changeTheming];
-    
-    // Query data source
-    [self queryDatasource];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -108,7 +104,7 @@
     // Active Main
     appDelegate.activeFavorites = self;
     
-    [self reloadDatasource:nil action:k_action_NULL];
+    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -125,35 +121,6 @@
 - (void)changeTheming
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
-}
-
-- (void)deleteFile:(NSNotification *)notification
-{
-    if (self.view.window == nil) { return; }
-
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
-    
-    if (errorCode == 0 && metadata) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_DEL];
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-    }
-}
-
-- (void)favoriteFile:(NSNotification *)notification
-{
-    if (self.view.window == nil) { return; }
-    
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    
-    if (errorCode == 0) {
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadata.serverUrl ocId:metadata.ocId action:k_action_MOD];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -246,8 +213,6 @@
                  for (tableMetadata *metadata in allRecordFavorite)
                      if (![filesOcId containsObject:metadata.ocId])
                          [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
-                 
-                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_clearDateReadDataSource object:nil];
              }];
         
          } else if (errorCode != 0) {
@@ -316,7 +281,6 @@
         [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
         [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -444,20 +408,10 @@
     return metadata;
 }
 
-- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
+- (void)reloadDatasource
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || self.view.window == nil) {
-        return;
-    }
-    
-    [self queryDatasource];
-}
-
-- (void)queryDatasource
-{
-    // test
-    if (appDelegate.activeAccount.length == 0) {
+    if (appDelegate.activeAccount.length == 0) { // || self.view.window == nil) {
         return;
     }
     
