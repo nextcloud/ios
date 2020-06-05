@@ -68,6 +68,8 @@ class NCContentPresenter: NSObject {
                        
         // No notification message
         if errorCode == -999 { return }         // Cancelled transfer
+        else if errorCode == 200 { return }     // Transfer stopped
+        else if errorCode == 207 { return }     // WebDAV multistatus
         else if errorCode == -1001 { return }   // Time out
         else if errorCode == -1005 { return }   // Connection lost
         else if errorCode == 0 && type == messageType.error { return }
