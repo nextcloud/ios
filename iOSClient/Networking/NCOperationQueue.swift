@@ -43,6 +43,9 @@ import NCCommunication
     @objc func downloadCancelAll() {
         downloadQueue.cancelAll()
     }
+    @objc func downloadCount() -> Int {
+        return downloadQueue.operationCount
+    }
     
     //
     @objc func readFolderSync(serverUrl: String, selector: String ,account: String) {
