@@ -139,6 +139,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+            
             var cell: NCImageCellProtocol?
             if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
                 cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
@@ -167,7 +168,6 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
                     completion: nil)
             }
             self.finish()
-
         }
     }
 }
