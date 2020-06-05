@@ -1199,7 +1199,8 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    //[[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                    [[NCNetworking shared] uploadWithMetadata:metadata e2eEncrypted:false];
                     
                     counterUpload++;
                     sizeUpload = sizeUpload + metadata.size;
@@ -1321,6 +1322,7 @@
     
     // Upload in pending
     //
+    /*
     NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
     NSArray *metadatasInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d AND sessionTaskIdentifier == 0", sessionExtension, k_metadataStatusInUpload] sorted:nil ascending:true];
     for (tableMetadata *metadata in metadatasInUpload) {
@@ -1334,6 +1336,7 @@
     if (metadatasInUpload.count == 0) {
         [self.sessionPendingStatusInUpload removeAllObjects];
     }
+    */
     
     // Start Timer
     _timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(loadAutoUpload) userInfo:nil repeats:YES];
