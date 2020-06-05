@@ -1314,7 +1314,6 @@
     }
     
     // No upload available ? --> Retry Upload in Error
-    //
     if (counterUpload == 0) {
         
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d", k_metadataStatusUploadError] sorted:nil ascending:NO];
