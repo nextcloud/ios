@@ -980,43 +980,47 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    if ([NCBrandOptions sharedInstance].use_themingColor) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
-
-        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
-        
-        UIColor *color = NCBrandColor.sharedInstance.brand;
-        BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
-        
-        if (isTooLight) {
-            color = [NCBrandColor.sharedInstance.brand darkerBy:10];
-        } else if (isTooDark) {
-            color = [NCBrandColor.sharedInstance.brand lighterBy:10];
-        }
-        
-        NCBrandColor.sharedInstance.brand = color;
+        if ([NCBrandOptions sharedInstance].use_themingColor) {
             
-    } else {
-    
-        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-        NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
-        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
-    }
+            NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
+            NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+            NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
+
+            [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
+            
+            UIColor *color = NCBrandColor.sharedInstance.brand;
+            BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
+            BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
+            
+            if (isTooLight) {
+                color = [NCBrandColor.sharedInstance.brand darkerBy:10];
+            } else if (isTooDark) {
+                color = [NCBrandColor.sharedInstance.brand lighterBy:10];
+            }
+            
+            NCBrandColor.sharedInstance.brand = color;
+                
+        } else {
         
-    [[NCMainCommon sharedInstance] createImagesThemingColor];
+            NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
+            NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+            NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
+        }
+            
+        [[NCMainCommon sharedInstance] createImagesThemingColor];
+    
+        [NCBrandColor.sharedInstance setDarkMode];
+    });
+                   
+    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
-    // Dark Mode
-    [NCBrandColor.sharedInstance setDarkMode];
-    
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
@@ -1036,23 +1040,7 @@
         viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
         viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     }
-    
-    //tabBar button Plus
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-        if ([navigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                [tabBarController.tabBar setNeedsDisplay];
-                UIButton *button = [tabBarController.view viewWithTag:99];
-                UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
-                [button setImage:buttonImage forState:UIControlStateNormal];
-                button.backgroundColor = NCBrandColor.sharedInstance.brand;
-            }
-        }
-    }
-                
+
     // TableView
     if (tableView) {
         if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
@@ -1067,9 +1055,6 @@
         else collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
         [collectionView reloadData];
     }
-    
-    // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 }
 
 #pragma --------------------------------------------------------------------------------------------

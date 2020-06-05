@@ -339,13 +339,10 @@
     if (searchTextView && [searchTextView isKindOfClass:[UITextField class]]) {
         searchTextView.textColor = NCBrandColor.sharedInstance.textView;
     }
-    
     // Rich Workspace
     [self.viewRichWorkspace loadWithRichWorkspaceText:self.richWorkspaceText];
-    
     // Title
     [self setTitle];
-    
     // Reload Table View
     [self tableViewReloadData];
 }
