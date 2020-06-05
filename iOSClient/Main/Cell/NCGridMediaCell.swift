@@ -43,6 +43,7 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        imageItem.image = nil
         imageItem.backgroundColor = UIColor.lightGray
     }
 }

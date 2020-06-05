@@ -472,12 +472,12 @@ extension NCMedia: UICollectionViewDataSource {
         }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-        
-        NCNetworkingMain.sharedInstance.downloadThumbnail(with: metadata, view: self.collectionView as Any, indexPath: indexPath)
-
+        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+        cell.imageItem.backgroundColor = UIColor.lightGray
         cell.imageStatus.image = nil
         cell.imageLocal.image = nil
         cell.imageFavorite.image = nil
+        cell.imageItem.image = nil
         cell.imageItem.layer.masksToBounds = true
         cell.imageItem.layer.cornerRadius = 6
         cell.imageVisualEffect.layer.cornerRadius = 6
@@ -571,6 +571,7 @@ extension NCMedia {
                 }
                 
                 self.reloadDataThenPerform {
+                    self.downloadThumbnail()
                 }
                 
                 completion()
@@ -741,6 +742,18 @@ extension NCMedia {
             }
         }
     }
+    
+    private func downloadThumbnail() {
+        guard let collectionView = self.collectionView else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            for item in collectionView.indexPathsForVisibleItems {
+                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
+                    NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: item)
+                }
+            }
+        }
+    }
+
 }
 
 // MARK: - ScrollView

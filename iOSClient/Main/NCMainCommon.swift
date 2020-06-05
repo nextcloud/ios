@@ -466,6 +466,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMain", for: indexPath) as! CCCellMain
             cell.labelTitle.text = metadata.fileNameView
+            cell.filePreviewImageView.image = nil
+            cell.filePreviewImageView.backgroundColor = UIColor.lightGray
             
             // Download preview
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
@@ -483,7 +485,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // lable Info
                 cell.labelInfoFile.text = CCUtility.dateDiff(metadata.date as Date)
-                
+                cell.file.backgroundColor = nil
                 // File Image & Image Title Segue
                 if metadata.e2eEncrypted {
                     cell.file.image = NCMainCommonImages.cellFolderEncryptedImage
