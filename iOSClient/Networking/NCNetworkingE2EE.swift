@@ -255,7 +255,7 @@ import Alamofire
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
                     
-                    if (errorCode == 0 && ocId != nil) {
+                    if errorCode == 0 && ocId != nil {
                             
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))

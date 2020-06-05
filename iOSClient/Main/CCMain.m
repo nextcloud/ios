@@ -1112,7 +1112,7 @@
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:-999];
                             }
                                                         
-                        } else if (errorCode != kOCErrorServerPathNotFound) {
+                        } else if (errorCode != 404) {
                             
                             [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         }

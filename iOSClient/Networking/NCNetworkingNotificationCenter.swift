@@ -146,7 +146,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == kOCErrorServerPathNotFound || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
+                    if (errorCode == 404 || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -181,7 +181,7 @@ import Foundation
                     if errorCode == 0 {
                         appDelegate.startLoadAutoUpload()
                     } else {
-                        if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorDescription != "" {
+                        if errorCode != -999 && errorCode != 401 && errorDescription != "" {
                             NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }

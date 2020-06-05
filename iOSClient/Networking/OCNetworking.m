@@ -22,6 +22,9 @@
 //
 
 #import "OCNetworking.h"
+#import "OCFrameworkConstants.h"
+#import "OCCommunication.h"
+#import "OCErrorMsg.h"
 
 #import "CCUtility.h"
 #import "CCGraphics.h"
