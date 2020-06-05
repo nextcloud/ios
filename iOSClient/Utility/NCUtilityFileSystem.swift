@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
     @objc static let shared: NCUtilityFileSystem = {

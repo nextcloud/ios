@@ -437,7 +437,7 @@
                 }];
                 
                 while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
-                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
+                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
             }
             
             [metadataFull addObject:metadataForUpload];

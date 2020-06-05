@@ -115,7 +115,7 @@ class NCService: NSObject {
                 
             } else {
                 
-                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
+                if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
@@ -209,7 +209,7 @@ class NCService: NSObject {
                 
                 self.appDelegate.settingThemingColorBrand()
                 
-                if errorCode == kOCErrorServerUnauthorized || errorCode == kOCErrorServerForbidden {
+                if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 

@@ -205,11 +205,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         switch Double(tabAccount.quotaTotal) {
-        case Double(k_quota_space_not_computed):
+        case Double(-1):
             quota = "0"
-        case Double(k_quota_space_unknown):
+        case Double(-2):
             quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-        case Double(k_quota_space_unlimited):
+        case Double(-3):
             quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
         default:
             quota = CCUtility.transformedSize(Double(tabAccount.quotaTotal))

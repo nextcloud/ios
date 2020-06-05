@@ -23,7 +23,6 @@
 
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
-#import "CCNetworking.h"
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "NCBridgeSwift.h"

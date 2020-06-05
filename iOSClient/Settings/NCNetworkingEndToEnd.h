@@ -22,7 +22,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CCNetworking.h"
 
 @interface NCNetworkingEndToEnd : NSObject
 
