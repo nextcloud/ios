@@ -232,9 +232,9 @@
     }
 
     // verify upload task lost
-    [[NCNetworking shared] verifyDownloadRequestLost];
-    [[NCNetworking shared] verifyUploadRequestLost];
-    [self verifyUploadBackgroundLost];
+    //[[NCNetworking shared] verifyDownloadRequestLost];
+    //[[NCNetworking shared] verifyUploadRequestLost];
+    //[self verifyUploadBackgroundLost];
     
     // verify delete Asset Local Identifiers in auto upload
     [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
@@ -1316,6 +1316,7 @@
     }
 }
 
+/*
 - (void)verifyUploadBackgroundLost
 {
     NSString *sessionBackground = [[NCCommunicationCommon shared] sessionIdentifierBackground];
@@ -1354,6 +1355,7 @@
         }];
     }
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== OpenURL  =====
