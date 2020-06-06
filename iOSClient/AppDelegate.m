@@ -1118,7 +1118,6 @@
     tableMetadata *metadataForUpload;
     long counterUpload = 0;
     NSUInteger sizeUpload = 0;
-    NSMutableArray *uploaded = [NSMutableArray new];
     NSPredicate *predicate;
     
     long maxConcurrentOperationUpload = k_maxConcurrentOperation;
@@ -1159,53 +1158,31 @@
                 
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:predicate sorted:@"date" ascending:YES];
         
-        // Verify modify file
-        if ([uploaded containsObject:[NSString stringWithFormat:@"%@%@%@", metadataForUpload.account, metadataForUpload.serverUrl, metadataForUpload.fileName]]) {
-            break;
-        }
-        
         if (metadataForUpload) {
-            
-            // Verify modify file
-            BOOL isAleadyInUpload = false;
-            for (tableMetadata *metadata in metadatasUpload) {
-                if ([metadataForUpload.account isEqualToString:metadata.account] && [metadataForUpload.serverUrl isEqualToString:metadata.serverUrl] && [metadataForUpload.fileName isEqualToString:metadata.fileName]) {
-                    isAleadyInUpload = true;
-                }
-            }
-            
-            if (isAleadyInUpload == false) {
+                            
+            if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
                 
-                if ([CCUtility isFolderEncrypted:metadataForUpload.serverUrl e2eEncrypted:metadataForUpload.e2eEncrypted account:metadataForUpload.account]) {
-                
-                    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
-                    maxConcurrentOperationUpload = 1;
+                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) { break; }
+                maxConcurrentOperationUpload = 1;
                     
-                    metadataForUpload.status = k_metadataStatusInUpload;
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata];
                     
-                    break;
-                                        
-                } else {
-                    
-                    metadataForUpload.status = k_metadataStatusInUpload;
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                    
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
-                    
-                    counterUpload++;
-                    sizeUpload = sizeUpload + metadata.size;
-                    
-                    // For verify modify file
-                    [uploaded addObject:[NSString stringWithFormat:@"%@%@%@", metadata.account, metadata.serverUrl, metadata.fileName]];
-                }
-                
-            } else {
                 break;
+                                        
+            } else {
+                    
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    
+                [[NCNetworking shared] uploadWithMetadata:metadata];
+                    
+                counterUpload++;
+                sizeUpload = sizeUpload + metadata.size;
             }
-            
+                
         } else {
             break;
         }
@@ -1341,8 +1318,11 @@
 
 - (void)verifyUploadBackgroundLost
 {
-    NSString *sessionExtension = [[NCCommunicationCommon shared] sessionIdentifierExtension];
-    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != %@ AND status == %d", sessionExtension, k_metadataStatusUploading] sorted:nil ascending:true];
+    NSString *sessionBackground = [[NCCommunicationCommon shared] sessionIdentifierBackground];
+    NSString *sessionBackgroundWWan = [[NCCommunicationCommon shared] sessionIdentifierBackgroundWWan];
+    
+    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusUploading] sorted:nil ascending:true];
+    
     for (tableMetadata *metadata in metadatasUploading) {
         
         NSURLSession *session;

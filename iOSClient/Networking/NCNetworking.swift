@@ -306,7 +306,7 @@ import Alamofire
     
     @objc func verifyUploadRequestLost() {
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusUploading)), sorted: nil, ascending: true) {
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCCommunicationCommon.shared.sessionIdentifierUpload ,Int(k_metadataStatusUploading)), sorted: nil, ascending: true) {
             for metadata in metadatas {
                 guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
                 let request = uploadRequest[fileNameLocalPath]
