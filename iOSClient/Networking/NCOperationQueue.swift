@@ -57,12 +57,20 @@ import NCCommunication
     
     // Download Thumbnail
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
-        if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+        if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) && !existsDownloadThumbnail(metadata: metadata) {
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
         }
     }
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
+    }
+    private func existsDownloadThumbnail(metadata: tableMetadata) -> Bool {
+        for operation in  downloadThumbnailQueue.operations {
+            if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -131,10 +139,10 @@ class NCOperationReadFolderSync: ConcurrentOperation {
 
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
-    private var metadata: tableMetadata
-    private var activeUrl: String
-    private var view: Any
-    private var indexPath: IndexPath
+    var metadata: tableMetadata
+    var activeUrl: String
+    var view: Any
+    var indexPath: IndexPath
     
     init(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
         self.metadata = metadata
@@ -186,4 +194,5 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         }
     }
 }
+
 
