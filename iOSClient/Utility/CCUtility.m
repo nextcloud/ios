@@ -1426,6 +1426,7 @@
     }
     
     PHAsset *asset = result[0];
+    NSDate *creationDate = asset.creationDate;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     if (tableAccount == nil) {
@@ -1481,12 +1482,8 @@
             [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
             
-            if (attributes[NSFileCreationDate]) {
-                newMetadata.creationDate = attributes[NSFileCreationDate];
-            }
-            if (attributes[NSFileModificationDate]) {
-                newMetadata.date = attributes[NSFileModificationDate];
-            }
+            newMetadata.creationDate = creationDate;
+            newMetadata.date = attributes[NSFileModificationDate];
             newMetadata.size = [attributes[NSFileSize] longValue];
             
             if (newMetadata.e2eEncrypted) {
@@ -1544,9 +1541,7 @@
                             
                         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                         
-                        if (attributes[NSFileCreationDate]) {
-                            newMetadata.creationDate = attributes[NSFileCreationDate];
-                        }
+                        newMetadata.creationDate = creationDate;
                         if (attributes[NSFileModificationDate]) {
                             newMetadata.date = attributes[NSFileModificationDate];
                         }
