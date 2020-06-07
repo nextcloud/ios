@@ -537,12 +537,18 @@ import Alamofire
                     }
                     
                     if !findTask {
-                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
-                        metadata.sessionError = ""
-                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                        metadata.status = Int(k_metadataStatusWaitUpload)
-                        
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                                if metadata.sessionTaskIdentifier != Int(k_taskIdentifierDone) {
+                                    metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+                                    metadata.sessionError = ""
+                                    metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                                    metadata.status = Int(k_metadataStatusWaitUpload)
+                                    
+                                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                }
+                            }
+                        }
                     }
                 })
             }
