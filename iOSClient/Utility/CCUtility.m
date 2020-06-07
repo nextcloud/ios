@@ -1481,6 +1481,9 @@
             [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
             
+            if (attributes[NSFileCreationDate]) {
+                newMetadata.creationDate = attributes[NSFileCreationDate];
+            }
             if (attributes[NSFileModificationDate]) {
                 newMetadata.date = attributes[NSFileModificationDate];
             }
@@ -1541,6 +1544,9 @@
                             
                         NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                         
+                        if (attributes[NSFileCreationDate]) {
+                            newMetadata.creationDate = attributes[NSFileCreationDate];
+                        }
                         if (attributes[NSFileModificationDate]) {
                             newMetadata.date = attributes[NSFileModificationDate];
                         }
