@@ -1029,6 +1029,7 @@
         viewController.tabBarController.tabBar.translucent = NO;
         viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
         viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+        viewController.tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     }
 
     // TableView
