@@ -973,39 +973,36 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    if ([NCBrandOptions sharedInstance].use_themingColor) {
         
-        if ([NCBrandOptions sharedInstance].use_themingColor) {
-            
-            NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
-            NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-            NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
 
-            [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
-            
-            UIColor *color = NCBrandColor.sharedInstance.brand;
-            BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
-            BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
-            
-            if (isTooLight) {
-                color = [NCBrandColor.sharedInstance.brand darkerBy:10];
-            } else if (isTooDark) {
-                color = [NCBrandColor.sharedInstance.brand lighterBy:10];
-            }
-            
-            NCBrandColor.sharedInstance.brand = color;
-                
-        } else {
+        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
         
-            NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-            NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
-            NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
+        UIColor *color = NCBrandColor.sharedInstance.brand;
+        BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
+        BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
+        
+        if (isTooLight) {
+            color = [NCBrandColor.sharedInstance.brand darkerBy:10];
+        } else if (isTooDark) {
+            color = [NCBrandColor.sharedInstance.brand lighterBy:10];
         }
+        
+        NCBrandColor.sharedInstance.brand = color;
             
-        [[NCMainCommon sharedInstance] createImagesThemingColor];
+    } else {
     
-        [NCBrandColor.sharedInstance setDarkMode];
-    });
+        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
+    }
+        
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
+
+    [NCBrandColor.sharedInstance setDarkMode];
                    
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
@@ -1028,6 +1025,7 @@
     [self configureNavBarForViewController:viewController];
     
     //tabBar
+    UIColor *x = viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
     if (viewController.tabBarController.tabBar) {
         viewController.tabBarController.tabBar.translucent = NO;
         viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
