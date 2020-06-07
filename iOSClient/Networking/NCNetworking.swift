@@ -367,7 +367,7 @@ import Alamofire
             session = NCCommunicationBackground.shared.sessionManagerTransferWWan
         }
         
-        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: "", session: session!) {
+        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: "", session: session!) {
          
             metadata.status = Int(k_metadataStatusUploading)
             metadata.sessionError = ""
