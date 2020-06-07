@@ -626,7 +626,9 @@ extension NCMedia {
         }
         loadingSearch = true
         
-        NCCommunication.shared.searchMedia(lteDateLastModified: lteDate, gteDateLastModified: gteDate, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        let elementDate = "d:getlastmodified/"
+        
+        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.refreshControl.endRefreshing()
             NCUtility.sharedInstance.stopActivityIndicator()

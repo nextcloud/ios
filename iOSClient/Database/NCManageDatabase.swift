@@ -1737,8 +1737,11 @@ class NCManageDatabase: NSObject {
         metadata.account = account
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
-        metadata.creationDate = file.creationDate
         metadata.date = file.date
+        metadata.creationDate = file.date
+        if let date = file.creationDate {
+            metadata.creationDate = date
+        }
         metadata.directory = file.directory
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
