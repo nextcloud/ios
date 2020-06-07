@@ -184,24 +184,6 @@ import Alamofire
         }
     }
     
-    @objc func verifyDownloadRequestLost() {
-        
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusDownloading)), sorted: nil, ascending: true) {
-            for metadata in metadatas {
-                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
-                let request = downloadRequest[fileNameLocalPath]
-                if request == nil {
-                    metadata.session = ""
-                    metadata.sessionError = ""
-                    metadata.status = Int(k_metadataStatusNormal)
-                    NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
-                }
-            }
-        }
-    }
-    
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
         
         var metadata = metadata
@@ -301,22 +283,6 @@ import Alamofire
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
-        }
-    }
-    
-    @objc func verifyUploadRequestLost() {
-        
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCCommunicationCommon.shared.sessionIdentifierUpload ,Int(k_metadataStatusUploading)), sorted: nil, ascending: true) {
-            for metadata in metadatas {
-                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
-                let request = uploadRequest[fileNameLocalPath]
-                if request == nil {
-                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
-                }
-            }
         }
     }
     
@@ -510,6 +476,78 @@ import Alamofire
         }
     }
     
+    //MARK: - Download / Upload
+    
+    @objc func verifyTransfer() {
+        
+        var session: URLSession?
+        
+        // download
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusDownloading)), sorted: nil, ascending: true) {
+            for metadata in metadatas {
+                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
+                let request = downloadRequest[fileNameLocalPath]
+                if request == nil {
+                    metadata.session = ""
+                    metadata.sessionError = ""
+                    metadata.status = Int(k_metadataStatusNormal)
+                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
+                }
+            }
+        }
+        
+        // upload
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCCommunicationCommon.shared.sessionIdentifierUpload ,Int(k_metadataStatusUploading)), sorted: nil, ascending: true) {
+            for metadata in metadatas {
+                guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { continue }
+                let request = uploadRequest[fileNameLocalPath]
+                if request == nil {
+                    CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["serverUrl":metadata.serverUrl])
+                }
+            }
+        }
+        
+        // upload background
+        let sessionBackground = NCCommunicationCommon.shared.sessionIdentifierBackground
+        let sessionBackgroundWWan = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusUploading), sorted: nil, ascending: true) {
+        
+            for metadata in metadatas {
+                
+                if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
+                    session = NCCommunicationBackground.shared.sessionManagerTransfer
+                } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
+                    session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+                } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
+                    session = NCCommunicationBackground.shared.sessionManagerTransferExtension
+                }
+                
+                var findTask = false
+                
+                session?.getAllTasks(completionHandler: { (tasks) in
+                    for task in tasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                            findTask = true
+                        }
+                    }
+                    
+                    if !findTask {
+                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+                        metadata.sessionError = ""
+                        metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                        metadata.status = Int(k_metadataStatusWaitUpload)
+                        
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    }
+                })
+            }
+        }
+    }
     
     //MARK: - WebDav Read file, folder
     

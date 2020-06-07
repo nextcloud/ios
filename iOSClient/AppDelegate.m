@@ -231,11 +231,6 @@
         [[NCService shared] middlewarePing];
     }
 
-    // verify upload task lost
-    //[[NCNetworking shared] verifyDownloadRequestLost];
-    //[[NCNetworking shared] verifyUploadRequestLost];
-    //[self verifyUploadBackgroundLost];
-    
     // verify delete Asset Local Identifiers in auto upload
     [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
    
@@ -1315,47 +1310,6 @@
         [self performSelectorOnMainThread:@selector(loadAutoUpload) withObject:nil waitUntilDone:YES];
     }
 }
-
-/*
-- (void)verifyUploadBackgroundLost
-{
-    NSString *sessionBackground = [[NCCommunicationCommon shared] sessionIdentifierBackground];
-    NSString *sessionBackgroundWWan = [[NCCommunicationCommon shared] sessionIdentifierBackgroundWWan];
-    
-    NSArray *metadatasUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusUploading] sorted:nil ascending:true];
-    
-    for (tableMetadata *metadata in metadatasUploading) {
-        
-        NSURLSession *session;
-        if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierBackground]) {
-            session = NCCommunicationBackground.shared.sessionManagerTransfer;
-        } else if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan]) {
-            session = NCCommunicationBackground.shared.sessionManagerTransferWWan;
-        } else if ([metadata.session isEqualToString:NCCommunicationCommon.shared.sessionIdentifierExtension]) {
-            session = NCCommunicationBackground.shared.sessionManagerTransferExtension;
-        }
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            NSURLSessionTask *findTask;
-            
-            for (NSURLSessionTask *task in uploadTasks) {
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                    findTask = task;
-                }
-            }
-            
-            if (!findTask) {
-                
-                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                metadata.status = k_metadataStatusWaitUpload;
-                
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-        }];
-    }
-}
-*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== OpenURL  =====
