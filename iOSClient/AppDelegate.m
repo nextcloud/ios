@@ -1025,7 +1025,6 @@
     [self configureNavBarForViewController:viewController];
     
     //tabBar
-    UIColor *x = viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
     if (viewController.tabBarController.tabBar) {
         viewController.tabBarController.tabBar.translucent = NO;
         viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
