@@ -307,7 +307,12 @@ import Alamofire
             metadata.contentType = internalContenType.contentType
             metadata.iconName = internalContenType.iconName
             metadata.typeFile = internalContenType.typeFile
-            metadata.date = NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) as NSDate
+            if let date = NCUtilityFileSystem.shared.getFileCreationDate(filePath: fileNameLocalPath) {
+                 metadata.creationDate = date
+            }
+            if let date =  NCUtilityFileSystem.shared.getFileModificationDate(filePath: fileNameLocalPath) {
+                metadata.date = date
+            }
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
                
             if metadata.size > Double(k_max_filesize_E2EE) {

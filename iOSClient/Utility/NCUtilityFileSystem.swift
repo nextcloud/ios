@@ -55,13 +55,22 @@ class NCUtilityFileSystem: NSObject {
         return 0
     }
     
-    @objc func getFileModificationDate(filePath: String) -> Date {
+    @objc func getFileModificationDate(filePath: String) -> NSDate? {
         
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.modificationDate] as? Date ?? Date()
+            return attributes[FileAttributeKey.modificationDate] as? NSDate
         } catch { }
-        return Date()
+        return nil
+    }
+    
+    @objc func getFileCreationDate(filePath: String) -> NSDate? {
+        
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: filePath)
+            return attributes[FileAttributeKey.creationDate] as? NSDate
+        } catch { }
+        return nil
     }
 }
 
