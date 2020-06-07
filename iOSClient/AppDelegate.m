@@ -1000,9 +1000,23 @@
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
         
-    [[NCMainCommon sharedInstance] createImagesThemingColor];
-
     [NCBrandColor.sharedInstance setDarkMode];
+    [[NCMainCommon sharedInstance] createImagesThemingColor];
+    
+    // Tab bar
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
+        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
+            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                tabBarController.tabBar.translucent = NO;
+                tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
+                tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+            }
+        }
+    }
                    
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
@@ -1011,27 +1025,12 @@
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
+    [self configureNavBarForViewController:viewController];
+
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        
-    // NavigationBar
-    if (viewController.navigationController.navigationBar) {
-        if (!NCCommunication.shared.isNetworkReachable) {
-           [viewController.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : NCBrandColor.sharedInstance.connectionNo}];
-        }
-    }
-    
-    [self configureNavBarForViewController:viewController];
-    
-    //tabBar
-    if (viewController.tabBarController.tabBar) {
-        viewController.tabBarController.tabBar.translucent = NO;
-        viewController.tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
-        viewController.tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-        viewController.tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    }
-
+            
     // TableView
     if (tableView) {
         if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
