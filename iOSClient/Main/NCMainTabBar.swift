@@ -35,6 +35,7 @@ import Foundation
         }
         set {
             fillColor = newValue
+            self.setNeedsDisplay()
         }
     }
     
