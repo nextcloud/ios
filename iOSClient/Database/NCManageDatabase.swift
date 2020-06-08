@@ -1737,11 +1737,12 @@ class NCManageDatabase: NSObject {
         metadata.account = account
         metadata.commentsUnread = file.commentsUnread
         metadata.contentType = file.contentType
-        metadata.date = file.date
-        metadata.creationDate = file.date
         if let date = file.creationDate {
             metadata.creationDate = date
+        } else {
+            metadata.creationDate = file.date
         }
+        metadata.date = file.date
         metadata.directory = file.directory
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
@@ -1763,6 +1764,11 @@ class NCManageDatabase: NSObject {
         metadata.serverUrl = file.serverUrl
         metadata.size = file.size
         metadata.typeFile = file.typeFile
+        if let date = file.uploadDate {
+            metadata.uploadDate = date
+        } else {
+            metadata.uploadDate = file.date
+        }
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
@@ -1821,6 +1827,7 @@ class NCManageDatabase: NSObject {
         
         metadata.account = account
         metadata.contentType = results.contentType
+        metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.iconName = results.iconName
         metadata.ocId = ocId
@@ -1828,6 +1835,7 @@ class NCManageDatabase: NSObject {
         metadata.fileNameView = fileName
         metadata.serverUrl = serverUrl
         metadata.typeFile = results.typeFile
+        metadata.uploadDate = Date() as NSDate
         metadata.url = url
         return metadata
     }
@@ -1887,6 +1895,11 @@ class NCManageDatabase: NSObject {
                     metadata.account = account
                     metadata.commentsUnread = file.commentsUnread
                     metadata.contentType = file.contentType
+                    if let date = file.creationDate {
+                        metadata.creationDate = date
+                    } else {
+                        metadata.creationDate = file.date
+                    }
                     metadata.date = file.date
                     metadata.directory = file.directory
                     metadata.e2eEncrypted = file.e2eEncrypted
@@ -1908,6 +1921,11 @@ class NCManageDatabase: NSObject {
                     metadata.serverUrl = file.serverUrl
                     metadata.size = file.size
                     metadata.typeFile = file.typeFile
+                    if let date = file.uploadDate {
+                        metadata.uploadDate = date
+                    } else {
+                        metadata.uploadDate = file.date
+                    }
                     
                     realm.add(metadata, update: .all)
                 }
@@ -2374,12 +2392,12 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getMedias(account: String, predicate: NSPredicate) -> [tableMetadata]? {
+    @objc func getMedias(account: String, predicate: NSPredicate, sortKeyPath: String) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: sortKeyPath, ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
         let results = realm.objects(tableMedia.self).filter(predicate).sorted(by: sortProperties)
         if results.count == 0 {
             return nil
