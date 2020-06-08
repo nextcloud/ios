@@ -116,9 +116,6 @@
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
 
-// TaskIdentifier
-#define k_taskIdentifierDone                            0
-
 // TaskStatus
 #define k_taskStatusCancel                              -1
 #define k_taskStatusResume                              -2

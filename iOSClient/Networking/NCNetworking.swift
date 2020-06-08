@@ -413,6 +413,7 @@ import Alamofire
                 
                 metadata.session = ""
                 metadata.sessionError = ""
+                metadata.sessionTaskIdentifier = 0
                 metadata.status = Int(k_metadataStatusNormal)
                         
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
@@ -470,6 +471,7 @@ import Alamofire
                 
                 metadata.session = ""
                 metadata.sessionError = errorDescription
+                metadata.sessionTaskIdentifier = 0
                 metadata.status = Int(k_metadataStatusUploadError)
                 
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
@@ -543,15 +545,14 @@ import Alamofire
                     
                     if !findTask {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                                if metadata.sessionTaskIdentifier != Int(k_taskIdentifierDone) {
-                                    metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
-                                    metadata.sessionError = ""
-                                    metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                                    metadata.status = Int(k_metadataStatusWaitUpload)
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, k_metadataStatusUploading)) {
                                     
-                                    NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                }
+                                metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+                                metadata.sessionError = ""
+                                metadata.sessionTaskIdentifier = 0
+                                metadata.status = Int(k_metadataStatusWaitUpload)
+                                    
+                                NCManageDatabase.sharedInstance.addMetadata(metadata)
                             }
                         }
                     }
@@ -560,19 +561,18 @@ import Alamofire
         }
         
         // verify k_metadataStatusInUpload
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusInUpload), sorted: nil, ascending: true) {
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionBackground, sessionBackgroundWWan, k_metadataStatusInUpload), sorted: nil, ascending: true) {
             
             for metadata in metadatas {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                        if metadata.sessionTaskIdentifier == Int(k_taskIdentifierDone) {
-                            metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
-                            metadata.sessionError = ""
-                            metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                            metadata.status = Int(k_metadataStatusWaitUpload)
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, k_metadataStatusInUpload)) {
+                       
+                        metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+                        metadata.sessionError = ""
+                        metadata.sessionTaskIdentifier = 0
+                        metadata.status = Int(k_metadataStatusWaitUpload)
                             
-                            NCManageDatabase.sharedInstance.addMetadata(metadata)
-                        }
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                     }
                 }
             }
