@@ -622,7 +622,9 @@ extension NCMedia {
         }
         
         if addPast {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 60)
+            DispatchQueue.main.async {
+                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 60)
+            }
         }
         loadingSearch = true
         
@@ -638,45 +640,51 @@ extension NCMedia {
                 var isDifferent: Bool = false
                 var newInsert: Int = 0
             
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                DispatchQueue.global().async {
                     
-                    let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
-                    let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
-                    isDifferent = difference.isDifferent
-                    newInsert = difference.newInsert
-                    
-                    self.loadingSearch = false
-
-                    print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
-
-                    if isDifferent {
-                        self.reloadDataSource(loadNetworkDatasource: false) { }
-                    }
-                    
-                    if (isDifferent == false || newInsert+insertPrevius < 100) && addPast && setDistantPast == false {
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         
-                        switch totalDistance {
-                        case 0...89:
-                            if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
-                                gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
-                                self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -90 gg")
+                        let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
+                        let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
+                        isDifferent = difference.isDifferent
+                        newInsert = difference.newInsert
+                        
+                        self.loadingSearch = false
+
+                        print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
+
+                        if isDifferent {
+                            DispatchQueue.main.async {
+                                self.reloadDataSource(loadNetworkDatasource: false) { }
                             }
-                        case 90...179:
-                            if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
-                                gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
-                                self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -180 gg")
-                            }
-                        case 180...364:
-                            if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
-                                gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
-                                self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -365 gg")
-                            }
-                        default:
-                            self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: true, debug: "search recursive distant pass")
                         }
-                    }
-                    
-                    self.reloadDataThenPerform {
+                        
+                        if (isDifferent == false || newInsert+insertPrevius < 100) && addPast && setDistantPast == false {
+                            
+                            switch totalDistance {
+                            case 0...89:
+                                if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
+                                    gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
+                                    self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -90 gg")
+                                }
+                            case 90...179:
+                                if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
+                                    gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
+                                    self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -180 gg")
+                                }
+                            case 180...364:
+                                if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
+                                    gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
+                                    self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -365 gg")
+                                }
+                            default:
+                                self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: true, debug: "search recursive distant pass")
+                            }
+                        }
+                        
+//                        DispatchQueue.main.async {
+//                            self.reloadDataThenPerform {}
+//                        }
                     }
                 }
              
