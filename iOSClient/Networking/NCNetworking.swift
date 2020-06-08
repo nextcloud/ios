@@ -558,6 +558,25 @@ import Alamofire
                 })
             }
         }
+        
+        // verify k_metadataStatusInUpload
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusInUpload), sorted: nil, ascending: true) {
+            
+            for metadata in metadatas {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                        if metadata.sessionTaskIdentifier == Int(k_taskIdentifierDone) {
+                            metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+                            metadata.sessionError = ""
+                            metadata.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                            metadata.status = Int(k_metadataStatusWaitUpload)
+                            
+                            NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        }
+                    }
+                }
+            }
+        }
     }
     
     //MARK: - WebDav Read file, folder
