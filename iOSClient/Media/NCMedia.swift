@@ -332,15 +332,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        let photoDataSource: NSMutableArray = []
-        
-        for ocId: String in sectionDatasource.allOcId as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: ocId) as! tableMetadata
-            if metadata.typeFile == k_metadataTypeFile_image {
-                photoDataSource.add(metadata)
-            }
-        }
-        
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             

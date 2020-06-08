@@ -2416,6 +2416,7 @@ class NCManageDatabase: NSObject {
         }
                 
         var metadatas = [tableMetadata]()
+        var metadatasMOVLivePhoto = [tableMetadata]()
         
         // For Live Photo
         var fileNameImages = [String]()
@@ -2432,9 +2433,15 @@ class NCManageDatabase: NSObject {
 
             if !(ext == "MOV" && fileNameImages.contains(fileName)) {
                 metadatas.append(tableMetadata.init(value: metadata))
+            } else {
+                metadatasMOVLivePhoto.append(tableMetadata.init(value: metadata))
             }
         }
-      
+        
+        if metadatasMOVLivePhoto.count > 0 {
+            self.addMetadatas(metadatasMOVLivePhoto)
+        }
+        
         return metadatas
     }
     
