@@ -2392,12 +2392,12 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
    
-    @objc func getMedias(account: String, predicate: NSPredicate, sortKeyPath: String) -> [tableMetadata]? {
+    @objc func getMedias(account: String, predicate: NSPredicate) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: sortKeyPath, ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
         let results = realm.objects(tableMedia.self).filter(predicate).sorted(by: sortProperties)
         if results.count == 0 {
             return nil
