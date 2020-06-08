@@ -335,6 +335,7 @@ class tableMedia: Object {
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
     @objc dynamic var typeFile = ""
+    @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
     
     override static func primaryKey() -> String {
@@ -381,6 +382,7 @@ class tableMetadata: Object {
     @objc dynamic var trashbinOriginalLocation = ""
     @objc dynamic var trashbinDeletionTime = NSDate()
     @objc dynamic var typeFile = ""
+    @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
 
     override static func primaryKey() -> String {
