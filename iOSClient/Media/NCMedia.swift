@@ -623,7 +623,8 @@ extension NCMedia {
         
         if addPast {
             DispatchQueue.main.async {
-                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 60)
+                let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
             }
         }
         loadingSearch = true
