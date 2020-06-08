@@ -422,7 +422,6 @@ import Alamofire
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } else {
                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-
                 }
                 
                 #if !EXTENSION
@@ -447,7 +446,6 @@ import Alamofire
                     
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                                        
                 }
                 
             } else if errorCode == 401 || errorCode == 403 {
@@ -458,7 +456,6 @@ import Alamofire
                 
                 CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                
                 
             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                 
