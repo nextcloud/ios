@@ -29,12 +29,22 @@ import Foundation
         return UITraitCollection(horizontalSizeClass: .compact)
     }
 
+    override var backgroundColor: UIColor? {
+        get {
+            return self.fillColor
+        }
+        set {
+            fillColor = newValue
+        }
+    }
+    
+    private var fillColor: UIColor!
     private var shapeLayer: CALayer?
 
     private func addShape() {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = createPath()
-        shapeLayer.fillColor = NCBrandColor.sharedInstance.tabBar.cgColor
+        shapeLayer.fillColor = backgroundColor?.cgColor
 
 
         if let oldShapeLayer = self.shapeLayer {

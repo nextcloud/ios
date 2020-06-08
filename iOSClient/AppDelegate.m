@@ -1013,7 +1013,7 @@
                 tabBarController.tabBar.translucent = NO;
                 tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
                 tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
             }
         }
     }
