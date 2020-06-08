@@ -1003,21 +1003,6 @@
     [NCBrandColor.sharedInstance setDarkMode];
     [[NCMainCommon sharedInstance] createImagesThemingColor];
     
-    // Tab bar
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
-        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                tabBarController.tabBar.translucent = NO;
-                tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
-                tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
-            }
-        }
-    }
-                   
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
@@ -1035,6 +1020,7 @@
             UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
                 tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
+                tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brand;
                 [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brand;
             }
         }
