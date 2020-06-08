@@ -417,7 +417,7 @@ class NCDetailViewController: UIViewController {
         if let splitViewController = self.splitViewController as? NCSplitViewController {
             if splitViewController.isCollapsed {
                 if let navigationController = splitViewController.viewControllers.last as? UINavigationController {
-                    navigationController.popToRootViewController(animated: true)
+                    navigationController.popViewController(animated: true)
                 }
             } else {
                 
