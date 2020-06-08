@@ -40,11 +40,27 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
             return imageItem
         }
     }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        initCell()
+    }
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageItem.image = nil
+        initCell()
+    }
+    
+    func initCell() {
         imageItem.backgroundColor = UIColor.lightGray
+        imageStatus.image = nil
+        imageLocal.image = nil
+        imageFavorite.image = nil
+        imageItem.image = nil
+        imageItem.layer.masksToBounds = true
+        imageItem.layer.cornerRadius = 6
+        imageVisualEffect.layer.cornerRadius = 6
+        imageVisualEffect.clipsToBounds = true
     }
 }
 
