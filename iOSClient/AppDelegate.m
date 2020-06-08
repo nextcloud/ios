@@ -1025,6 +1025,21 @@
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
+    [NCBrandColor.sharedInstance setDarkMode];
+    
+    //Tab bar
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
+        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
+            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
+            }
+        }
+    }
+    
+    // Nav bar
     [self configureNavBarForViewController:viewController];
 
     // View
