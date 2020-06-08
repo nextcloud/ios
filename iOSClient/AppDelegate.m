@@ -1001,7 +1001,9 @@
     }
         
     [NCBrandColor.sharedInstance setDarkMode];
-    [[NCMainCommon sharedInstance] createImagesThemingColor];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[NCMainCommon sharedInstance] createImagesThemingColor];
+    });
     
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
