@@ -201,7 +201,7 @@ extension NCDetailNavigationController {
         }
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+            if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && CCUtility.fileProviderStorageSize(metadataLive.ocId, fileNameView: metadataLive.fileNameView) > 0 {
                     actions.append(
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),

@@ -453,25 +453,6 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
-        
-        if metadata.typeFile != k_metadataTypeFile_image && metadata.typeFile != k_metadataTypeFile_video  { return nil }
-        if !CCUtility.getLivePhoto() {return nil }
-        let ext = (metadata.fileNameView as NSString).pathExtension.lowercased()
-        
-        if ext == "mov" {
-            
-            let fileNameJPG = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
-            let fileNameHEIC = (metadata.fileNameView as NSString).deletingPathExtension + ".heic"
-            return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (fileNameView LIKE[c] %@ OR fileNameView LIKE[c] %@)", metadata.account, metadata.serverUrl, fileNameJPG, fileNameHEIC))
-            
-        } else {
-            
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName))
-        }
-    }
-    
     @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
        
         guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {

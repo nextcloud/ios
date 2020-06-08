@@ -2360,6 +2360,35 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+           
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if metadata.typeFile != k_metadataTypeFile_image && metadata.typeFile != k_metadataTypeFile_video  { return nil }
+        if !CCUtility.getLivePhoto() {return nil }
+        let ext = (metadata.fileNameView as NSString).pathExtension.lowercased()
+        var predicate = NSPredicate()
+        
+        if ext == "mov" {
+               
+            let fileNameJPG = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
+            let fileNameHEIC = (metadata.fileNameView as NSString).deletingPathExtension + ".heic"
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (fileNameView LIKE[c] %@ OR fileNameView LIKE[c] %@)", metadata.account, metadata.serverUrl, fileNameJPG, fileNameHEIC)
+            
+        } else {
+               
+            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)
+        }
+        
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+            return nil
+        }
+        
+        return tableMetadata.init(value: result)
+    }
+    
     //MARK: -
     //MARK: Table Media
  

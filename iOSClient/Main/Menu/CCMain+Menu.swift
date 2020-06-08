@@ -488,7 +488,7 @@ extension CCMain {
                                 
                                 NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
                                 
-                                if let metadataLivePhoto = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+                                if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
                                     NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
                                 }
                                 

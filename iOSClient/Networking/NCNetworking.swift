@@ -709,7 +709,7 @@ import Alamofire
     @objc func deleteMetadata(_ metadata: tableMetadata, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
-        let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
+        let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         
         if isDirectoryEncrypted {
             #if !EXTENSION
@@ -778,7 +778,7 @@ import Alamofire
 
     @objc func favoriteMetadata(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
             favoriteMetadataPlain(metadataLive, url: url) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     self.favoriteMetadataPlain(metadata, url: url, completion: completion)
@@ -813,7 +813,7 @@ import Alamofire
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
-        let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata)
+        let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
         if isDirectoryEncrypted {
@@ -907,7 +907,7 @@ import Alamofire
     
     @objc func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
             moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     self.moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
@@ -958,7 +958,7 @@ import Alamofire
     
     @objc func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        if let metadataLive = NCUtility.sharedInstance.isLivePhoto(metadata: metadata) {
+        if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
             copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     self.copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite, completion: completion)
