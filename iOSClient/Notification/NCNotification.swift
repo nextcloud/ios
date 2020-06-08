@@ -68,6 +68,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     
     // MARK: - DZNEmpty
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        return -height
+    }
+    
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
     }

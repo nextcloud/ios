@@ -127,6 +127,12 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
+{
+    //CGFloat height = self.tabBarController.tabBar.frame.size.height;
+    return 0;
+}
+
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
     return NCBrandColor.sharedInstance.backgroundView;

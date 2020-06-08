@@ -86,9 +86,10 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     // MARK: DZNEmpty
     
     func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
-        return insets.top/2
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        return -height
     }
-    
+
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         if filterFileId == nil {
             return NCBrandColor.sharedInstance.backgroundView
