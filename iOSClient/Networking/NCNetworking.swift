@@ -516,7 +516,7 @@ import Alamofire
             }
         }
         
-        // upload background
+        // k_metadataStatusUploading (BACKGROUND)
         let sessionBackground = NCCommunicationCommon.shared.sessionIdentifierBackground
         let sessionBackgroundWWan = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, k_metadataStatusUploading), sorted: nil, ascending: true) {
@@ -557,7 +557,7 @@ import Alamofire
             }
         }
         
-        // verify k_metadataStatusInUpload
+        // verify k_metadataStatusInUpload (BACKGROUND)
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionBackground, sessionBackgroundWWan, k_metadataStatusInUpload), sorted: nil, ascending: true) {
             
             for metadata in metadatas {
