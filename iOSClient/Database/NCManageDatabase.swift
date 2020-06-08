@@ -62,13 +62,7 @@ class NCManageDatabase: NSObject {
                 schemaVersion: UInt64(k_databaseSchemaVersion),
                 
                 migrationBlock: { migration, oldSchemaVersion in
-                    
-                    if oldSchemaVersion < 41 {
-                        migration.deleteData(forType: tableActivity.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                    }
-                    
+                                        
                     if oldSchemaVersion < 61 {
                         migration.deleteData(forType: tableShare.className())
                     }
@@ -92,29 +86,12 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 78 {
-                        migration.deleteData(forType: tableActivity.className())
-                        migration.deleteData(forType: tableActivityPreview.className())
-                        migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableComments.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableMetadata.className())
-                        migration.deleteData(forType: tableMedia.className())
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
-                        migration.deleteData(forType: tableTag.className())
-                        migration.deleteData(forType: tableTrash.className())
-                    }
-                    
                     if oldSchemaVersion < 87 {
                         migration.deleteData(forType: tableActivity.className())
                         migration.deleteData(forType: tableActivityPreview.className())
                         migration.deleteData(forType: tableActivitySubjectRich.className())
-                        migration.deleteData(forType: tableCapabilities.className())
-                        migration.deleteData(forType: tableComments.className())
                         migration.deleteData(forType: tableDirectEditingCreators.className())
                         migration.deleteData(forType: tableDirectEditingEditors.className())
-                        migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableExternalSites.className())
                         migration.deleteData(forType: tableGPS.className())
                         migration.deleteData(forType: tableShare.className())
@@ -125,7 +102,6 @@ class NCManageDatabase: NSObject {
                     if oldSchemaVersion < 95 {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableDirectory.className())
-                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                     if oldSchemaVersion < 104 {
@@ -134,6 +110,11 @@ class NCManageDatabase: NSObject {
                     
                     if oldSchemaVersion < 107 {
                         migration.deleteData(forType: tableComments.className())
+                    }
+                    
+                    if oldSchemaVersion < 110 {
+                        migration.deleteData(forType: tableMetadata.className())
+                        migration.deleteData(forType: tableMedia.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1769,6 +1750,7 @@ class NCManageDatabase: NSObject {
         } else {
             metadata.uploadDate = file.date
         }
+        metadata.urlBase = file.urlBase
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
@@ -1926,6 +1908,7 @@ class NCManageDatabase: NSObject {
                     } else {
                         metadata.uploadDate = file.date
                     }
+                    metadata.urlBase = file.urlBase
                     
                     realm.add(metadata, update: .all)
                 }

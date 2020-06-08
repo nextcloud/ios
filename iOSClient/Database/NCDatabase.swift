@@ -337,7 +337,8 @@ class tableMedia: Object {
     @objc dynamic var typeFile = ""
     @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
-    
+    @objc dynamic var urlBase = ""
+
     override static func primaryKey() -> String {
         return "ocId"
     }
@@ -384,6 +385,7 @@ class tableMetadata: Object {
     @objc dynamic var typeFile = ""
     @objc dynamic var uploadDate = NSDate()
     @objc dynamic var url = ""
+    @objc dynamic var urlBase = ""
 
     override static func primaryKey() -> String {
         return "ocId"
