@@ -473,15 +473,6 @@ extension NCMedia: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
-        cell.imageItem.backgroundColor = UIColor.lightGray
-        cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
-        cell.imageFavorite.image = nil
-        cell.imageItem.image = nil
-        cell.imageItem.layer.masksToBounds = true
-        cell.imageItem.layer.cornerRadius = 6
-        cell.imageVisualEffect.layer.cornerRadius = 6
-        cell.imageVisualEffect.clipsToBounds = true
                     
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.backgroundColor = nil
