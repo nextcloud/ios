@@ -182,7 +182,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
         //
-        self.updateNewPhotoVideo()
+        //self.updateNewPhotoVideo()
         
         // Reload Data Source
         self.reloadDataSource(loadNetworkDatasource: true) { }
@@ -641,19 +641,20 @@ extension NCMedia {
     func updateNewPhotoVideo() {
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
-        let gteDate = tableAccount?.dateUpdateMedia
-        if gteDate == nil {
+        let fromDate = tableAccount?.dateUpdateMedia
+        if fromDate == nil {
             NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(Date() as NSDate)
             return
         }
-        let lteDate = Date()
+        let lteDate: TimeInterval = Date().timeIntervalSince1970
+        let gteDate: TimeInterval = fromDate!.timeIntervalSince1970
         
         let elementDate = "nc:upload_time/"//"upload_time xmlns=\"http://nextcloud.org/ns\"/"
         
-        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate! as Date, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             if errorCode == 0 && files != nil && files!.count > 0 {
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(lteDate as NSDate)
+                //NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(lteDate as NSDate)
                 self.reloadDataSource(loadNetworkDatasource: false) {}
             }
         }
