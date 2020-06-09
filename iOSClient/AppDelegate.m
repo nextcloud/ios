@@ -1021,6 +1021,7 @@
         if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
             UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
                 tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
                 tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
                 [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brandElement;
