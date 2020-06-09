@@ -746,6 +746,17 @@ extension NCMedia {
             }
         }
     }
+    
+    private func removeDeletedFile() {
+        guard let collectionView = self.collectionView else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            for item in collectionView.indexPathsForVisibleItems {
+                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
+                    NCOperationQueue.shared.removeDeletedFile(metadata: metadata)
+                }
+            }
+        }
+    }
 
 }
 

@@ -35,7 +35,8 @@ import NCCommunication
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
     private let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    
+    private let removeDeletedFileQueue = Queuer(name: "removeDeletedFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+
     // Download file
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
@@ -60,15 +61,22 @@ import NCCommunication
         if metadata.hasPreview && (!CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
             
             for operation in  downloadThumbnailQueue.operations {
-                if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
-                    return
-                }
+                if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId { return }
             }
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
         }
     }
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
+    }
+    
+    // Remove deleted file
+    @objc func removeDeletedFile(metadata: tableMetadata) {
+        
+        for operation in  removeDeletedFileQueue.operations {
+            if (operation as! NCOperationRemoveDeletedFileQueue).metadata.ocId == metadata.ocId { return }
+        }
+        removeDeletedFileQueue.addOperation(NCOperationRemoveDeletedFileQueue.init(metadata: metadata))
     }
 }
 
@@ -192,5 +200,33 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         }
     }
 }
+
+//MARK: -
+
+class NCOperationRemoveDeletedFileQueue: ConcurrentOperation {
+   
+    var metadata: tableMetadata
+    
+    init(metadata: tableMetadata) {
+        self.metadata = metadata
+    }
+    
+    override func start() {
+
+        if isCancelled {
+            self.finish()
+        } else {
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                if errorCode == 404 {
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: ["metadata": self.metadata, "errorCode": errorCode])
+                }
+                self.finish()
+           }
+        }
+    }
+}
+
 
 
