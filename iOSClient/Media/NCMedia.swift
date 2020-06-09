@@ -767,10 +767,12 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             selectSearchSections()
+            self.removeDeletedFile()
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         selectSearchSections()
+        self.removeDeletedFile()
     }
 }
