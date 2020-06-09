@@ -294,54 +294,6 @@ class tableLocalFile: Object {
     }
 }
 
-class tableMedia: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var commentsUnread: Bool = false
-    @objc dynamic var contentType = ""
-    @objc dynamic var creationDate = NSDate()
-    @objc dynamic var date = NSDate()
-    @objc dynamic var directory: Bool = false
-    @objc dynamic var deleteAssetLocalIdentifier: Bool = false
-    @objc dynamic var e2eEncrypted: Bool = false
-    @objc dynamic var edited: Bool = false
-    @objc dynamic var etag = ""
-    @objc dynamic var favorite: Bool = false
-    @objc dynamic var fileId = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileNameView = ""
-    @objc dynamic var hasPreview: Bool = false
-    @objc dynamic var iconName = ""
-    @objc dynamic var mountType = ""
-    @objc dynamic var ocId = ""
-    @objc dynamic var ownerId = ""
-    @objc dynamic var ownerDisplayName = ""
-    @objc dynamic var permissions = ""
-    @objc dynamic var quotaUsedBytes: Double = 0
-    @objc dynamic var quotaAvailableBytes: Double = 0
-    @objc dynamic var resourceType = ""
-    @objc dynamic var richWorkspace: String?
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-    @objc dynamic var sessionError = ""
-    @objc dynamic var sessionSelector = ""
-    @objc dynamic var sessionTaskIdentifier: Int = 0
-    @objc dynamic var size: Double = 0
-    @objc dynamic var status: Int = 0
-    @objc dynamic var trashbinFileName = ""
-    @objc dynamic var trashbinOriginalLocation = ""
-    @objc dynamic var trashbinDeletionTime = NSDate()
-    @objc dynamic var typeFile = ""
-    @objc dynamic var uploadDate = NSDate()
-    @objc dynamic var url = ""
-    @objc dynamic var urlBase = ""
-
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
 class tableMetadata: Object {
     
     @objc dynamic var account = ""

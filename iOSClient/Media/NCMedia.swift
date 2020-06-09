@@ -595,8 +595,8 @@ extension NCMedia {
         
         DispatchQueue.global().async {
             
-            let metadatas = NCManageDatabase.sharedInstance.getMedias(account: self.appDelegate.activeAccount, predicate: NSPredicate(format: "account == %@", self.appDelegate.activeAccount))
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: false, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatasMedia(account: self.appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: true, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
                 
@@ -625,7 +625,7 @@ extension NCMedia {
         
         // copy in arrayDeleteMetadata
         for ocId in selectocId {
-            if let metadata = NCManageDatabase.sharedInstance.getMedia(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
                 appDelegate.arrayDeleteMetadata.add(metadata)
             }
         }
@@ -682,7 +682,7 @@ extension NCMedia {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         
                         let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
-                        let difference = NCManageDatabase.sharedInstance.createTableMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
+                        let difference = NCManageDatabase.sharedInstance.updateMetadatasMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
                         isDifferent = difference.isDifferent
                         newInsert = difference.newInsert
                         
@@ -749,7 +749,7 @@ extension NCMedia {
             
         } else {
             
-            let gteDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
+            let gteDate = NCManageDatabase.sharedInstance.getMetadataMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
             search(lteDate: Date(), gteDate: gteDate, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search today, first date record")
         }
         
@@ -764,7 +764,7 @@ extension NCMedia {
         }
         
         let sections = NSMutableSet()
-        let lastDate = NCManageDatabase.sharedInstance.getTableMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
+        let lastDate = NCManageDatabase.sharedInstance.getMetadataMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
         var gteDate: Date?
         
         for item in collectionView.indexPathsForVisibleItems {
