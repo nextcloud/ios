@@ -748,6 +748,7 @@ extension NCMedia {
     }
     
     private func removeDeletedFile() {
+        return;
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for item in collectionView.indexPathsForVisibleItems {
