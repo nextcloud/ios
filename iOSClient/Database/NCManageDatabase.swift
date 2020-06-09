@@ -674,28 +674,6 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
-    @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
-        
-        guard let activeAccount = self.getAccountActive() else {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
-                    return
-                }
-                
-                result.dateSearchContentTypeImageVideo = date
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     //MARK: -
     //MARK: Table Activity
 

@@ -44,7 +44,6 @@ class tableAccount: Object {
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
     @objc dynamic var businessSize: String = ""
     @objc dynamic var businessType = ""
-    @objc dynamic var dateSearchContentTypeImageVideo = NSDate.distantPast
     @objc dynamic var city = ""
     @objc dynamic var company = ""
     @objc dynamic var country = ""
@@ -55,7 +54,6 @@ class tableAccount: Object {
     @objc dynamic var language = ""
     @objc dynamic var lastLogin: Double = 0
     @objc dynamic var locale = ""
-    @objc dynamic var optimization = NSDate()
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
     @objc dynamic var quota: Double = 0
