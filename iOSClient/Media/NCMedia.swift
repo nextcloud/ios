@@ -113,12 +113,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         
         plusButton = UIBarButtonItem(title: " + ", style: .plain, target: self, action: #selector(dezoomGrid))
-        plusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
+        plusButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
         separatorButton = UIBarButtonItem(title: "/", style: .plain, target: nil, action: nil)
         separatorButton.isEnabled = false
         separatorButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.brandElement], for: .disabled)
         minusButton =  UIBarButtonItem(title: " - ", style: .plain, target: self, action: #selector(zoomGrid))
-        minusButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
+        minusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
         gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
         self.navigationItem.leftBarButtonItem = gridButton
 
@@ -140,10 +140,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         UIView.animate(withDuration: 0.0, animations: {
             if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid) {
                 self.gridLayout.itemPerLine += 1
-                self.minusButton.isEnabled = true
+                self.plusButton.isEnabled = true
             }
             if(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1) {
-                self.plusButton.isEnabled = false
+                self.minusButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -155,10 +155,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         UIView.animate(withDuration: 0.0, animations: {
             if(self.gridLayout.itemPerLine - 1 > 0) {
                 self.gridLayout.itemPerLine -= 1
-                self.plusButton.isEnabled = true
+                self.minusButton.isEnabled = true
             }
             if(self.gridLayout.itemPerLine == 1) {
-                self.minusButton.isEnabled = false
+                self.plusButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
