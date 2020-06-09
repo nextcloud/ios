@@ -112,12 +112,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         
-        plusButton = UIBarButtonItem(title: " + ", style: .plain, target: self, action: #selector(zoomGrid))
+        plusButton = UIBarButtonItem(title: " + ", style: .plain, target: self, action: #selector(dezoomGrid))
         plusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
         separatorButton = UIBarButtonItem(title: "/", style: .plain, target: nil, action: nil)
         separatorButton.isEnabled = false
         separatorButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.brandElement], for: .disabled)
-        minusButton =  UIBarButtonItem(title: " - ", style: .plain, target: self, action: #selector(dezoomGrid))
+        minusButton =  UIBarButtonItem(title: " - ", style: .plain, target: self, action: #selector(zoomGrid))
         minusButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
         gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
         self.navigationItem.leftBarButtonItem = gridButton
