@@ -213,7 +213,7 @@ class tableDirectory: Object {
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
-    @objc dynamic var richWorkspace = ""
+    @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
@@ -323,7 +323,7 @@ class tableMedia: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
-    @objc dynamic var richWorkspace = ""
+    @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -371,7 +371,7 @@ class tableMetadata: Object {
     @objc dynamic var quotaUsedBytes: Double = 0
     @objc dynamic var quotaAvailableBytes: Double = 0
     @objc dynamic var resourceType = ""
-    @objc dynamic var richWorkspace = ""
+    @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""

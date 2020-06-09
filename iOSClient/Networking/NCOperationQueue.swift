@@ -223,7 +223,7 @@ class NCOperationRemoveDeletedFileQueue: ConcurrentOperation {
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: ["metadata": self.metadata, "errorCode": errorCode])
                 }
                 self.finish()
-           }
+            }
         }
     }
 }

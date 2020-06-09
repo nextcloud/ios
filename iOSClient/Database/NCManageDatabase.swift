@@ -111,7 +111,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableComments.className())
                     }
                     
-                    if oldSchemaVersion < 110 {
+                    if oldSchemaVersion < 111 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableMedia.className())
                         migration.deleteData(forType: tableDirectory.className())
@@ -1270,7 +1270,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(ocId: String, serverUrl: String, richWorkspace: String, account: String) {
+    @objc func setDirectory(ocId: String, serverUrl: String, richWorkspace: String?, account: String) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1284,7 +1284,9 @@ class NCManageDatabase: NSObject {
             addObject.ocId = ocId
         }
         addObject.account = account
-        addObject.richWorkspace = richWorkspace
+        if let richWorkspace = richWorkspace {
+            addObject.richWorkspace = richWorkspace
+        }
         addObject.serverUrl = serverUrl
         
         realm.add(addObject, update: .all)

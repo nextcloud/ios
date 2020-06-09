@@ -58,12 +58,12 @@ import MarkdownKit
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.activeAccount) { (account, metadata, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata!.ocId, serverUrl: self.serverUrl, richWorkspace: metadata!.richWorkspace, account: account)
-                if self.richWorkspaceText != metadata?.richWorkspace {
+                guard let metadata = metadata else { return }
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
                     self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadata!.richWorkspace
-                    self.textView.attributedText = self.markdownParser.parse(metadata!.richWorkspace)
+                    self.richWorkspaceText = metadata.richWorkspace!
+                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
                 }
             }
         }
