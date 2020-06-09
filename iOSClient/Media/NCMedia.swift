@@ -28,6 +28,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     @IBOutlet weak var collectionView : UICollectionView!
     
+    //Grid control buttons
+    private var plusButton: UIBarButtonItem!
+    private var separatorButton: UIBarButtonItem!
+    private var minusButton: UIBarButtonItem!
+    private var gridButton: UIBarButtonItem!
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var sectionDatasource = CCSectionDataSourceMetadata()
 
@@ -70,8 +76,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonMore))
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonSwitch))
-
         // Cell
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
@@ -108,8 +112,58 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         
+        plusButton = UIBarButtonItem(title: " + ", style: .plain, target: self, action: #selector(zoomGrid))
+        plusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
+        separatorButton = UIBarButtonItem(title: "/", style: .plain, target: nil, action: nil)
+        separatorButton.isEnabled = false
+        separatorButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.brandElement], for: .disabled)
+        minusButton =  UIBarButtonItem(title: " - ", style: .plain, target: self, action: #selector(dezoomGrid))
+        minusButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
+        gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
+        self.navigationItem.leftBarButtonItem = gridButton
+
         // changeTheming
         changeTheming()
+    }
+    
+    @objc func enableZoomGridButtons() {
+        self.navigationItem.setLeftBarButtonItems([plusButton,separatorButton,minusButton], animated: true)
+    }
+    
+    @objc func removeZoomGridButtons() {
+        if self.navigationItem.leftBarButtonItems?.count != 1 {
+            self.navigationItem.setLeftBarButtonItems([gridButton], animated: true)
+        }
+    }
+    
+    @objc func zoomGrid() {
+        UIView.animate(withDuration: 0.0, animations: {
+            if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid) {
+                self.gridLayout.itemPerLine += 1
+                self.minusButton.isEnabled = true
+            }
+            if(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1) {
+                self.plusButton.isEnabled = false
+            }
+
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
+        })
+    }
+
+    @objc func dezoomGrid() {
+        UIView.animate(withDuration: 0.0, animations: {
+            if(self.gridLayout.itemPerLine - 1 > 0) {
+                self.gridLayout.itemPerLine -= 1
+                self.plusButton.isEnabled = true
+            }
+            if(self.gridLayout.itemPerLine == 1) {
+                self.minusButton.isEnabled = false
+            }
+
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -752,6 +806,10 @@ extension NCMedia {
 // MARK: - ScrollView
 
 extension NCMedia: UIScrollViewDelegate {
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.removeZoomGridButtons()
+    }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
