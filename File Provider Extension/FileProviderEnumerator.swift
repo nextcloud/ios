@@ -224,7 +224,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
     func readFileOrFolder(serverUrl: String, completionHandler: @escaping () -> Void) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
             
             var needReadFolder = true
         
@@ -238,7 +238,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if needReadFolder {
 
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, errorCode, errorDescription) in
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
                     
                     if errorCode == 0 && files != nil {
                         
