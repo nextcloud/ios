@@ -181,6 +181,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
         
+        //
+        self.updateNewPhotoVideo()
+        
         // Reload Data Source
         self.reloadDataSource(loadNetworkDatasource: true) { }
     }
@@ -632,6 +635,27 @@ extension NCMedia {
         if let metadata = appDelegate.arrayDeleteMetadata.firstObject {
             appDelegate.arrayDeleteMetadata.removeObject(at: 0)
             NCNetworking.shared.deleteMetadata(metadata as! tableMetadata, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+        }
+    }
+    
+    func updateNewPhotoVideo() {
+        
+        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        let gteDate = tableAccount?.dateUpdateMedia
+        if gteDate == nil {
+            NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(Date() as NSDate)
+            return
+        }
+        let lteDate = Date()
+        
+        let elementDate = "nc:upload_time/"//"upload_time xmlns=\"http://nextcloud.org/ns\"/"
+        
+        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate! as Date, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            if errorCode == 0 && files != nil && files!.count > 0 {
+                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(lteDate as NSDate)
+                self.reloadDataSource(loadNetworkDatasource: false) {}
+            }
         }
     }
     

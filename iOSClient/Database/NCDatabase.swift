@@ -48,6 +48,7 @@ class tableAccount: Object {
     @objc dynamic var company = ""
     @objc dynamic var country = ""
     @objc dynamic var displayName = ""
+    @objc dynamic var dateUpdateMedia: NSDate? = nil
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
     @objc dynamic var groups = ""

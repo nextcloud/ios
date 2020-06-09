@@ -672,6 +672,21 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
+    @objc func setAccountDateUpdateMedia(_ date: NSDate) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                        result.dateUpdateMedia = date
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Activity
 
