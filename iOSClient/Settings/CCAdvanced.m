@@ -237,6 +237,8 @@
     [KTVHTTPCache cacheDeleteAllCaches];
     
     [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeAccount:false];
+    [[NCManageDatabase sharedInstance] setAccountDateUpdateMediaWithClear:true];
+    [[NCManageDatabase sharedInstance] setAccountDateLteMediaWithDate:nil];
     
     [CCUtility removeGroupDirectoryProviderStorage];
     [CCUtility removeGroupLibraryDirectory];

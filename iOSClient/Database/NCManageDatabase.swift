@@ -672,14 +672,33 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
-    @objc func setAccountDateUpdateMedia() {
+    @objc func setAccountDateUpdateMedia(clear: Bool = false) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                    if clear {
+                        result.dateUpdateMedia = nil
+                    } else {
                         result.dateUpdateMedia = Date() as NSDate
+                    }
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func setAccountDateLteMedia(date: NSDate?) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.write {
+                if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                    result.dateLteMedia = date
                 }
             }
         } catch let error {
@@ -2442,19 +2461,7 @@ class NCManageDatabase: NSObject {
         
         return(isDifferent, newInsert)
     }
-    
-    @objc func getMetadataMediaDate(account: String, order: ComparisonResult) -> Date {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        if let entities = realm.objects(tableMetadata.self).filter("account == %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio).max(by: { $0.date.compare($1.date as Date) == order }) {
-            return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: entities.date as Date)!
-        }
-        
-        return Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: Date())!
-    }
-    
+
     //MARK: -
     //MARK: Table Photo Library
     

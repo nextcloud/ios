@@ -59,7 +59,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     private let refreshControl = UIRefreshControl()
     private var loadingSearch = false
-
+    
     struct cacheImages {
         static var cellPlayImage = UIImage()
         static var cellFavouriteImage = UIImage()
@@ -172,7 +172,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         // Configure Refresh Control
         refreshControl.tintColor = .lightGray
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        refreshControl.addTarget(self, action: #selector(loadNetworkDatasource), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(searchNewPhotoVideo), for: .valueChanged)
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -186,10 +186,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewDidAppear(animated)
         
         searchNewPhotoVideo()
-        
-        reloadDataThenPerform {
-            self.selectSearchSections()
-        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -219,7 +215,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                    self.reloadDataSource(loadNetworkDatasource: false) {
+                    self.reloadDataSource() {
                     
                         let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
@@ -235,7 +231,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                    self.reloadDataSource(loadNetworkDatasource: false) {
+                    self.reloadDataSource() {
                     
                         let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
@@ -251,7 +247,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                    self.reloadDataSource(loadNetworkDatasource: false) {
+                    self.reloadDataSource() {
                     
                         let userInfo: [String : Any] = ["metadata": metadata, "type": "rename"]
                         NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
@@ -329,7 +325,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
-                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                        self.reloadDataSource() { }
                     }
                 )
             )
@@ -340,7 +336,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
-                        self.reloadDataSource(loadNetworkDatasource: false) { }
+                        self.reloadDataSource() { }
                     }
                 )
             )
@@ -586,7 +582,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    public func reloadDataSource(loadNetworkDatasource: Bool, completion: @escaping ()->()) {
+    public func reloadDataSource(completion: @escaping ()->()) {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -598,19 +594,72 @@ extension NCMedia {
             self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: true, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
-                
                 self.collectionView?.reloadData()
-                
-                if loadNetworkDatasource {
-                    self.loadNetworkDatasource()
-                }
-                
-                self.reloadDataThenPerform {
-                    self.downloadThumbnail()
-                }
                 
                 completion()
             }
+        }
+    }
+    
+    @objc func searchNewPhotoVideo() {
+        
+        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        
+        //let elementDate = "nc:upload_time/"
+        //let lteDate: Int = Int(Date().timeIntervalSince1970)
+        //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
+        
+        guard let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) else { return }
+        guard var gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+        
+        if let date = tableAccount?.dateUpdateMedia {
+            gteDate = date as Date
+        }
+        
+        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            if errorCode == 0 && files != nil && files!.count > 0 {
+                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
+            }
+            self.refreshControl.endRefreshing()
+            self.reloadDataSource() {}
+        }
+    }
+    
+    private func searchOldPhotoVideo(gteDate: Date? = nil) {
+        
+        var lteDate = Date()
+        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        if let date = tableAccount?.dateLteMedia {
+            lteDate = date as Date
+        }
+
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
+        
+        
+        var gteDate = gteDate
+        if gteDate == nil {
+            gteDate = Calendar.current.date(byAdding: .day, value: -30, to: lteDate)
+        }
+
+        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate!, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            if errorCode == 0 {
+                if files != nil && files!.count > 0 {
+                    NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                    NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
+                    self.reloadDataSource() {}
+                } else {
+                    if gteDate == Calendar.current.date(byAdding: .day, value: -30, to: lteDate) {
+                        self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -90, to: lteDate))
+                    } else if gteDate == Calendar.current.date(byAdding: .day, value: -90, to: lteDate) {
+                        self.searchOldPhotoVideo(gteDate: Date.distantPast)
+                    }
+                }
+            }
+            NCUtility.sharedInstance.stopActivityIndicator()
         }
     }
     
@@ -634,185 +683,6 @@ extension NCMedia {
         }
     }
     
-    func searchNewPhotoVideo() {
-        
-        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
-        let fromDate = tableAccount?.dateUpdateMedia
-        if fromDate == nil { NCManageDatabase.sharedInstance.setAccountDateUpdateMedia() }
-        
-        //let elementDate = "nc:upload_time/"
-        //let lteDate: Int = Int(Date().timeIntervalSince1970)
-        //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
-        
-        guard let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) else { return }
-        let gteDate = fromDate!
-        
-        let elementDate = "d:getlastmodified/"
-
-        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
-            if errorCode == 0 && files != nil && files!.count > 0 {
-                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
-            }
-            self.reloadDataSource(loadNetworkDatasource: false) {}
-        }
-    }
-    
-    func search(lteDate: Date, gteDate: Date, addPast: Bool, insertPrevius: Int,setDistantPast: Bool, debug: String) {
-        
-        // ----- DEBUG -----
-        #if DEBUG
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy HH:mm"
-        print("[LOG] Search: addPast \(addPast), distantPass: \(setDistantPast), Lte: " + dateFormatter.string(from: lteDate) + " - Gte: " + dateFormatter.string(from: gteDate) + " DEBUG: " + debug)
-        #endif
-        // -----------------
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        if addPast && loadingSearch {
-            return
-        }
-        
-        if setDistantPast {
-            isDistantPast = true
-        }
-        
-        if addPast {
-            DispatchQueue.main.async {
-                let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-                NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
-            }
-        }
-        loadingSearch = true
-        
-        let elementDate = "d:getlastmodified/"
-        
-        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
-            
-            self.refreshControl.endRefreshing()
-            NCUtility.sharedInstance.stopActivityIndicator()
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files != nil {
-                                    
-                var isDifferent: Bool = false
-                var newInsert: Int = 0
-            
-                DispatchQueue.global().async {
-                    
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                        
-                        let totalDistance = Calendar.current.dateComponents([Calendar.Component.day], from: gteDate, to: lteDate).value(for: .day) ?? 0
-                        let difference = NCManageDatabase.sharedInstance.updateMetadatasMedia(metadatas, lteDate: lteDate, gteDate: gteDate, account: account)
-                        isDifferent = difference.isDifferent
-                        newInsert = difference.newInsert
-                        
-                        self.loadingSearch = false
-
-                        print("[LOG] Search: Totale Distance \(totalDistance) - It's Different \(isDifferent) - New insert \(newInsert)")
-
-                        if isDifferent {
-                            DispatchQueue.main.async {
-                                self.reloadDataSource(loadNetworkDatasource: false) { }
-                            }
-                        }
-                        
-                        if (isDifferent == false || newInsert+insertPrevius < 100) && addPast && setDistantPast == false {
-                            
-                            switch totalDistance {
-                            case 0...89:
-                                if var gteDate90 = Calendar.current.date(byAdding: .day, value: -90, to: gteDate) {
-                                    gteDate90 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate90) ?? Date()
-                                    self.search(lteDate: lteDate, gteDate: gteDate90, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -90 gg")
-                                }
-                            case 90...179:
-                                if var gteDate180 = Calendar.current.date(byAdding: .day, value: -180, to: gteDate) {
-                                    gteDate180 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate180) ?? Date()
-                                    self.search(lteDate: lteDate, gteDate: gteDate180, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -180 gg")
-                                }
-                            case 180...364:
-                                if var gteDate365 = Calendar.current.date(byAdding: .day, value: -365, to: gteDate) {
-                                    gteDate365 = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: gteDate365) ?? Date()
-                                    self.search(lteDate: lteDate, gteDate: gteDate365, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: false, debug: "search recursive -365 gg")
-                                }
-                            default:
-                                self.search(lteDate: lteDate, gteDate: NSDate.distantPast, addPast: addPast, insertPrevius: newInsert+insertPrevius, setDistantPast: true, debug: "search recursive distant pass")
-                            }
-                        }
-                        
-//                        DispatchQueue.main.async {
-//                            self.reloadDataThenPerform {}
-//                        }
-                    }
-                }
-             
-            } else {
-                
-                self.loadingSearch = false
-                
-                self.reloadDataSource(loadNetworkDatasource: false) { }
-            }
-        }
-    }
-    
-    @objc private func loadNetworkDatasource() {
-        
-        isDistantPast = false
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        if sectionDatasource.allRecordsDataSource.count == 0 {
-            
-            let gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-            search(lteDate: Date(), gteDate: gteDate!, addPast: true, insertPrevius: 0, setDistantPast: false, debug: "search (add past) today, -30 gg")
-            
-        } else {
-            
-            let gteDate = NCManageDatabase.sharedInstance.getMetadataMediaDate(account: self.appDelegate.activeAccount, order: .orderedAscending)
-            search(lteDate: Date(), gteDate: gteDate, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search today, first date record")
-        }
-        
-        reloadDataThenPerform {
-        }
-    }
-    
-    private func selectSearchSections() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        let sections = NSMutableSet()
-        let lastDate = NCManageDatabase.sharedInstance.getMetadataMediaDate(account: self.appDelegate.activeAccount, order: .orderedDescending)
-        var gteDate: Date?
-        
-        for item in collectionView.indexPathsForVisibleItems {
-            if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: sectionDatasource) {
-                if let date = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: metadata.date as Date) {
-                    sections.add(date)
-                }
-            }
-        }
-        let sortedSections = sections.sorted { (date1, date2) -> Bool in
-            (date1 as! Date).compare(date2 as! Date) == .orderedDescending
-        }
-        
-        if sortedSections.count >= 1 {
-            let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: sortedSections.first as! Date)!
-            if lastDate == sortedSections.last as! Date {
-                gteDate = Calendar.current.date(byAdding: .day, value: -30, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: true, insertPrevius: 0, setDistantPast: false, debug: "search (add past) last record, -30 gg")
-            } else {
-                gteDate = Calendar.current.date(byAdding: .day, value: -1, to: sortedSections.last as! Date)!
-                search(lteDate: lteDate, gteDate: gteDate!, addPast: false, insertPrevius: 0, setDistantPast: false, debug: "search [refresh window]")
-            }
-        }
-    }
-    
     private func downloadThumbnail() {
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -825,7 +695,6 @@ extension NCMedia {
     }
     
     private func removeDeletedFile() {
-        return;
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for item in collectionView.indexPathsForVisibleItems {
@@ -848,13 +717,19 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            selectSearchSections()
             self.removeDeletedFile()
+            
+            if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
+                searchOldPhotoVideo()
+            }
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        selectSearchSections()
         self.removeDeletedFile()
+        
+        if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
+            searchOldPhotoVideo()
+        }
     }
 }
