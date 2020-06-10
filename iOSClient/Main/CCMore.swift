@@ -23,6 +23,7 @@
 
 
 import UIKit
+import NCCommunication
 
 class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -32,10 +33,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var progressQuota: UIProgressView!
     @IBOutlet weak var viewQuota: UIView!
 
-    var functionMenu = [OCExternalSites]()
-    var externalSiteMenu = [OCExternalSites]()
-    var settingsMenu = [OCExternalSites]()
-    var quotaMenu = [OCExternalSites]()
+    var functionMenu = [NCCommunicationExternalSite]()
+    var externalSiteMenu = [NCCommunicationExternalSite]()
+    var settingsMenu = [NCCommunicationExternalSite]()
+    var quotaMenu = [NCCommunicationExternalSite]()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -70,8 +71,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-
         super.viewWillAppear(animated)
+        
+        var item = NCCommunicationExternalSite()
 
         // Clear
         functionMenu.removeAll()
@@ -79,46 +81,44 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
-
-        var item = OCExternalSites.init()
-
+        
         // ITEM : Transfer
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_transfers_"
         item.icon = "load"
         item.url = "segueTransfers"
         functionMenu.append(item)
 
         // ITEM : Notification
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_notification_"
         item.icon = "notification"
         item.url = "segueNotification"
         functionMenu.append(item)
 
         // ITEM : Activity
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_activity_"
         item.icon = "activity"
         item.url = "segueActivity"
         functionMenu.append(item)
 
         // ITEM : Shares
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_list_shares_"
         item.icon = "shareFill"
         item.url = "segueShares"
         functionMenu.append(item)
 
         // ITEM : Offline
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_manage_file_offline_"
         item.icon = "offline"
         item.url = "segueOffline"
         functionMenu.append(item)
 
         // ITEM : Scan
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_scanned_images_"
         item.icon = "scan"
         item.url = "openStoryboardScan"
@@ -128,7 +128,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= Int(k_trash_version_available) {
 
-            item = OCExternalSites.init()
+            item = NCCommunicationExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
             item.url = "segueTrash"
@@ -144,8 +144,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
                 for table in listExternalSite! {
 
-                    item = OCExternalSites.init()
-
+                    item = NCCommunicationExternalSite()
                     item.name = table.name
                     item.url = table.url
                     item.icon = table.icon
@@ -166,7 +165,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Settings
-        item = OCExternalSites.init()
+        item = NCCommunicationExternalSite()
         item.name = "_settings_"
         item.icon = "settings"
         item.url = "segueSettings"
@@ -265,7 +264,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
-        var item: OCExternalSites = OCExternalSites.init()
+        var item = NCCommunicationExternalSite()
 
         // change color selection and disclosure indicator
         let selectionColor: UIView = UIView()
@@ -315,7 +314,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // method to run when table view cell is tapped
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        var item: OCExternalSites = OCExternalSites.init()
+        var item = NCCommunicationExternalSite()
 
         if indexPath.section == 0 {
             tapImageLogoManageAccount()
