@@ -33,10 +33,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var progressQuota: UIProgressView!
     @IBOutlet weak var viewQuota: UIView!
 
-    var functionMenu = [NCCommunicationExternalSite]()
-    var externalSiteMenu = [NCCommunicationExternalSite]()
-    var settingsMenu = [NCCommunicationExternalSite]()
-    var quotaMenu = [NCCommunicationExternalSite]()
+    var functionMenu: [NCCommunicationExternalSite] = []
+    var externalSiteMenu: [NCCommunicationExternalSite] = []
+    var settingsMenu: [NCCommunicationExternalSite] = []
+    var quotaMenu: [NCCommunicationExternalSite] = []
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -232,6 +232,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         var cont = 0
+        
         if (section == 0) {
             cont = tabAccount == nil ? 0 : 1
         } else if (section == 1) {
