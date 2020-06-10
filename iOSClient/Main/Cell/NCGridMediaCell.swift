@@ -34,6 +34,8 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
+    
+    var date: Date?
 
     var filePreviewImageView: UIImageView {
         get {

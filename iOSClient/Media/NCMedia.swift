@@ -49,7 +49,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     private var gridLayout: NCGridMediaLayout!
         
-    private let sectionHeaderHeight: CGFloat = 50
+    private let sectionHeaderHeight: CGFloat = 10
     private let footerHeight: CGFloat = 50
     
     private var stepImageWidth: CGFloat = 10
@@ -454,10 +454,28 @@ extension NCMedia: UICollectionViewDataSource {
         CATransaction.commit()
     }
     
+    func updateLabelDate() {
+        if let cell = collectionView?.visibleCells.first as? NCGridMediaCell {
+            if cell.date != nil {
+                //self.dataLabel.text = CCUtility.getTitleSectionDate(cell.date)
+            }
+        }
+    }
+    
+    /*
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        if kind == UICollectionView.elementKindSectionHeader {
+        switch kind {
+        case UICollectionView.elementKindSectionFooter:
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            footer.setTitleLabel(sectionDatasource: sectionDatasource)
+            return footer
             
+        default:
+            return UICollectionReusableView()
+        }
+            /*
+      
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionMediaHeader
             
             header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
@@ -471,16 +489,10 @@ extension NCMedia: UICollectionViewDataSource {
             header.labelLeadingConstraint.constant = leading
             
             return header
-            
-        } else {
-            
-            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-            
-            footer.setTitleLabel(sectionDatasource: sectionDatasource)
-            
-            return footer
-        }
+      
+        */
     }
+    */
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         let sections = sectionDatasource.sectionArrayRow.allKeys.count
@@ -508,7 +520,7 @@ extension NCMedia: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
-                    
+
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.backgroundColor = nil
             cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
@@ -520,7 +532,8 @@ extension NCMedia: UICollectionViewDataSource {
                 cell.imageItem.image = UIImage.init(named: "file")
             }
         }
-                    
+        cell.date = metadata.date as Date
+
         // image status
         if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             cell.imageStatus.image = cacheImages.cellPlayImage
@@ -586,10 +599,12 @@ extension NCMedia {
         DispatchQueue.global().async {
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatasMedia(account: self.appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "date", filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: true, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: true, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
             
             DispatchQueue.main.async {
-                self.collectionView?.reloadData()
+                self.reloadDataThenPerform {
+                    self.updateLabelDate()
+                }
             }
         }
     }
@@ -697,7 +712,6 @@ extension NCMedia {
             }
         }
     }
-
 }
 
 // MARK: - ScrollView
@@ -706,6 +720,7 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.removeZoomGridButtons()
+        updateLabelDate()
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {

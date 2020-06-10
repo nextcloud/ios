@@ -344,6 +344,7 @@
 		F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */; };
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
+		F7E72B0024913AD300127FCC /* NCMediaView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7E72AFF24913AD300127FCC /* NCMediaView.xib */; };
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
@@ -815,6 +816,7 @@
 		F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAudioRecorderViewController.storyboard; sourceTree = "<group>"; };
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareComments.swift; sourceTree = "<group>"; };
+		F7E72AFF24913AD300127FCC /* NCMediaView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMediaView.xib; sourceTree = "<group>"; };
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
 		F7E9C41520F4CA870040CF18 /* CCTransfers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTransfers.h; sourceTree = "<group>"; };
 		F7E9C41820F4CA870040CF18 /* CCTransfers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCTransfers.m; sourceTree = "<group>"; };
@@ -1604,6 +1606,7 @@
 			children = (
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
+				F7E72AFF24913AD300127FCC /* NCMediaView.xib */,
 			);
 			path = Media;
 			sourceTree = "<group>";
@@ -2011,6 +2014,7 @@
 				F739513A221B127F00D986C8 /* NCSectionMediaHeader.xib in Resources */,
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
 				F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */,
+				F7E72B0024913AD300127FCC /* NCMediaView.xib in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
