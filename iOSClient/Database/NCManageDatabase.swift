@@ -1763,7 +1763,7 @@ class NCManageDatabase: NSObject {
     
         var counter: Int = 0
         var isEncrypted: Bool = false
-        var listServerUrl = [String:Bool]()
+        var listServerUrl = [String: Bool]()
         
         var metadataFolder = tableMetadata()
         var metadataFolders = [tableMetadata]()
@@ -1835,7 +1835,7 @@ class NCManageDatabase: NSObject {
     @discardableResult
     @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
         
-        var directoryToClearDate = [String:String]()
+        var directoryToClearDate = [String: String]()
 
         let realm = try! Realm()
 
@@ -1914,7 +1914,7 @@ class NCManageDatabase: NSObject {
     
     @objc func deleteMetadata(predicate: NSPredicate) {
         
-        var directoryToClearDate = [String:String]()
+        var directoryToClearDate = [String: String]()
         
         let realm = try! Realm()
 
@@ -2268,9 +2268,9 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String:NSNumber] {
+    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
         
-        var listIdentifierRank = [String:NSNumber]()
+        var listIdentifierRank = [String: NSNumber]()
 
         let realm = try! Realm()
         realm.refresh()

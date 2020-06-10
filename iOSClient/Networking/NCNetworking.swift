@@ -42,8 +42,8 @@ import Alamofire
     var delegate: NCNetworkingDelegate?
     
     var lastReachability: Bool = true
-    var downloadRequest = [String:DownloadRequest]()
-    var uploadRequest = [String:UploadRequest]()
+    var downloadRequest = [String: DownloadRequest]()
+    var uploadRequest = [String: UploadRequest]()
 
     //MARK: - Communication Delegate
        
@@ -740,7 +740,7 @@ import Alamofire
         }
     }
     
-    func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String:String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func deleteMetadataPlain(_ metadata: tableMetadata, addCustomHeaders: [String: String]?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         // verify permission
         let permission = NCUtility.sharedInstance.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)

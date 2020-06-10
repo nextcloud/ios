@@ -180,16 +180,15 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-        
-        //
-        //self.updateNewPhotoVideo()
-        
+                
         // Reload Data Source
         self.reloadDataSource(loadNetworkDatasource: true) { }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        searchNewPhotoVideo()
         
         reloadDataThenPerform {
             self.selectSearchSections()
@@ -638,7 +637,7 @@ extension NCMedia {
         }
     }
     
-    func updateNewPhotoVideo() {
+    func searchNewPhotoVideo() {
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         let fromDate = tableAccount?.dateUpdateMedia
@@ -646,10 +645,10 @@ extension NCMedia {
             NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(Date() as NSDate)
             return
         }
-        let lteDate: TimeInterval = Date().timeIntervalSince1970
-        let gteDate: TimeInterval = fromDate!.timeIntervalSince1970
+        let lteDate: Int = Int(Date().timeIntervalSince1970)
+        let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
         
-        let elementDate = "nc:upload_time/"//"upload_time xmlns=\"http://nextcloud.org/ns\"/"
+        let elementDate = "nc:upload_time/"
         
         NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             if errorCode == 0 && files != nil && files!.count > 0 {

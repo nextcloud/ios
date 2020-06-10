@@ -43,7 +43,7 @@ class fileProviderData: NSObject {
     var currentAnchor: UInt64 = 0
 
     // Rank favorite
-    var listFavoriteIdentifierRank = [String:NSNumber]()
+    var listFavoriteIdentifierRank = [String: NSNumber]()
     
     // Item for signalEnumerator
     var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()

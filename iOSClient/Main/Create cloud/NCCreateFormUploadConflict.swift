@@ -59,7 +59,7 @@ extension NCCreateFormUploadConflictDelegate {
     
     var metadatasConflictNewFiles = [String]()
     var metadatasConflictAlreadyExistingFiles = [String]()
-    var fileNamesPath = [String:String]()
+    var fileNamesPath = [String: String]()
 
     // MARK: - Cicle
 

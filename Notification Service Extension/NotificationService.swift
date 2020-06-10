@@ -46,7 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
                     guard let data = decryptedMessage.data(using: .utf8) else {
                         continue
                     }
-                    let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
+                    let json = try JSONSerialization.jsonObject(with: data) as! [String: AnyObject]
                     if let subject = json["subject"] as? String {
                         bestAttemptContent.body = subject
                     }
