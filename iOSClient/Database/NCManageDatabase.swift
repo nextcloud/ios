@@ -672,14 +672,14 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
-    @objc func setAccountDateUpdateMedia(_ date: NSDate) {
+    @objc func setAccountDateUpdateMedia() {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                        result.dateUpdateMedia = date
+                        result.dateUpdateMedia = Date() as NSDate
                 }
             }
         } catch let error {

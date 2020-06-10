@@ -180,9 +180,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-                
-        // Reload Data Source
-        self.reloadDataSource(loadNetworkDatasource: true) { }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -641,21 +638,23 @@ extension NCMedia {
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         let fromDate = tableAccount?.dateUpdateMedia
-        if fromDate == nil {
-            NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(Date() as NSDate)
-            return
-        }
-        let lteDate: Int = Int(Date().timeIntervalSince1970)
-        let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
+        if fromDate == nil { NCManageDatabase.sharedInstance.setAccountDateUpdateMedia() }
         
-        let elementDate = "nc:upload_time/"
+        //let elementDate = "nc:upload_time/"
+        //let lteDate: Int = Int(Date().timeIntervalSince1970)
+        //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
         
+        guard let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) else { return }
+        let gteDate = fromDate!
+        
+        let elementDate = "d:getlastmodified/"
+
         NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: elementDate ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             if errorCode == 0 && files != nil && files!.count > 0 {
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                //NCManageDatabase.sharedInstance.setAccountDateUpdateMedia(lteDate as NSDate)
-                self.reloadDataSource(loadNetworkDatasource: false) {}
+                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
             }
+            self.reloadDataSource(loadNetworkDatasource: false) {}
         }
     }
     
