@@ -782,7 +782,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
         let allActivity = Array(results.map { tableActivity.init(value:$0) })
         if filterFileId != nil {
-            var resultsFilter = [tableActivity]()
+            var resultsFilter: [tableActivity] = []
             for result in results {
                 let resultsActivitySubjectRich = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d", result.account, result.idActivity)
                 for resultActivitySubjectRich in resultsActivitySubjectRich {
@@ -823,7 +823,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        var results = [tableActivityPreview]()
+        var results: [tableActivityPreview] = []
         
         for id in orderKeysId {
             if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
@@ -924,7 +924,7 @@ class NCManageDatabase: NSObject {
     @objc func getCapabilitiesServerArray(account: String, elements: Array<String>) -> [String]? {
 
         let realm = try! Realm()
-        var resultArray = [String]()
+        var resultArray: [String] = []
         realm.refresh()
         
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
@@ -1763,11 +1763,11 @@ class NCManageDatabase: NSObject {
     
         var counter: Int = 0
         var isEncrypted: Bool = false
-        var listServerUrl = [String: Bool]()
+        var listServerUrl: [String: Bool] = [:]
         
         var metadataFolder = tableMetadata()
-        var metadataFolders = [tableMetadata]()
-        var metadatas = [tableMetadata]()
+        var metadataFolders: [tableMetadata] = []
+        var metadatas: [tableMetadata] = []
 
         for file in files {
                         
@@ -1835,7 +1835,7 @@ class NCManageDatabase: NSObject {
     @discardableResult
     @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
         
-        var directoryToClearDate = [String: String]()
+        var directoryToClearDate: [String: String] = [:]
 
         let realm = try! Realm()
 
@@ -1914,7 +1914,7 @@ class NCManageDatabase: NSObject {
     
     @objc func deleteMetadata(predicate: NSPredicate) {
         
-        var directoryToClearDate = [String: String]()
+        var directoryToClearDate: [String: String] = [:]
         
         let realm = try! Realm()
 
@@ -2179,7 +2179,7 @@ class NCManageDatabase: NSObject {
         realm.refresh()
         
         let results: Results<tableMetadata>
-        var finals = [tableMetadata]()
+        var finals: [tableMetadata] = []
                     
         if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
             results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -2188,7 +2188,7 @@ class NCManageDatabase: NSObject {
         }
         
         // For Live Photo
-        var fileNameImages = [String]()
+        var fileNameImages: [String] = []
         let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
         filtered.forEach { print($0)
             let fileName = ($0.fileNameView as NSString).deletingPathExtension
@@ -2224,7 +2224,7 @@ class NCManageDatabase: NSObject {
         
             let nFrom = (page - 1) * limit
             let nTo = nFrom + (limit - 1)
-            var metadatas = [tableMetadata]()
+            var metadatas: [tableMetadata] = []
             
             for n in nFrom...nTo {
                 if n == results.count {
@@ -2270,7 +2270,7 @@ class NCManageDatabase: NSObject {
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
         
-        var listIdentifierRank = [String: NSNumber]()
+        var listIdentifierRank: [String: NSNumber] = [:]
 
         let realm = try! Realm()
         realm.refresh()
@@ -2324,7 +2324,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         realm.refresh()
-        var assetLocalIdentifiers = [String]()
+        var assetLocalIdentifiers: [String] = []
         
         let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true AND sessionSelector == %@", account, sessionSelector)
         for result in results {
@@ -2405,8 +2405,8 @@ class NCManageDatabase: NSObject {
         var numDelete: Int = 0
         var numInsert: Int = 0
         
-        var etagsDelete = [String]()
-        var etagsInsert = [String]()
+        var etagsDelete: [String] = []
+        var etagsInsert: [String] = []
         
         var isDifferent: Bool = false
         var newInsert: Int = 0

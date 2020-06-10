@@ -42,8 +42,8 @@ import Alamofire
     var delegate: NCNetworkingDelegate?
     
     var lastReachability: Bool = true
-    var downloadRequest = [String: DownloadRequest]()
-    var uploadRequest = [String: UploadRequest]()
+    var downloadRequest: [String: DownloadRequest] = [:]
+    var uploadRequest: [String: UploadRequest] = [:]
 
     //MARK: - Communication Delegate
        

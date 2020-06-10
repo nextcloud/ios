@@ -28,7 +28,7 @@ import SwiftyJSON
 class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
   
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var notifications = [NCCommunicationNotifications]()
+    var notifications: [NCCommunicationNotifications] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()

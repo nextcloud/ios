@@ -32,7 +32,7 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
     
     var searchBar = UISearchBar()
     var pdfDocument: PDFDocument?
-    var searchResultArray = [PDFSelection]()
+    var searchResultArray: [PDFSelection] = []
     
     weak var delegate: NCViewerPDFSearchDelegate?
     

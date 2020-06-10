@@ -72,9 +72,9 @@ class NCEndToEndMetadata : NSObject  {
     @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String) -> String? {
         
         let jsonEncoder = JSONEncoder.init()
-        var files = [String: e2eMetadata.filesCodable]()
+        var files: [String: e2eMetadata.filesCodable] = [:]
         var version = 1
-        var metadataKeysDictionary = [String: String]()
+        var metadataKeysDictionary: [String: String] = [:]
         
         for recordE2eEncryption in recordsE2eEncryption {
             
@@ -155,7 +155,7 @@ class NCEndToEndMetadata : NSObject  {
             let files = decode.files
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
-            var metadataKeysDictionary = [String: String]()
+            var metadataKeysDictionary: [String: String] = [:]
             
             for metadataKeyDictionaryEncrypted in metadata.metadataKeys {
                 

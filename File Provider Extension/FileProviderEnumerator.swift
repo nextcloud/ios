@@ -60,7 +60,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         /*** WorkingSet ***/
         if enumeratedItemIdentifier == .workingSet {
             
-            var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
+            var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
             
             // ***** Tags *****
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.sharedInstance.account))
@@ -144,8 +144,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
         
-        var itemsDelete = [NSFileProviderItemIdentifier]()
-        var itemsUpdate = [FileProviderItem]()
+        var itemsDelete: [NSFileProviderItemIdentifier] = []
+        var itemsUpdate: [FileProviderItem] = []
         
         // Report the deleted items
         //

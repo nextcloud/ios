@@ -55,7 +55,7 @@ class NCViewerImageCommon: NSObject {
             var datasourceAscending = true
             (_, datasourceSorted, datasourceAscending, _, _) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
             if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", metadata.account), sorted: datasourceSorted, ascending: datasourceAscending) {
-                var ocIds = [String]()
+                var ocIds: [String] = []
                 for file: tableLocalFile in files {
                     ocIds.append(file.ocId)
                 }

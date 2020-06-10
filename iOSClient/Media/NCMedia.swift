@@ -39,7 +39,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectocId = [String]()
+    private var selectocId: [String] = []
     
     private var filterTypeFileImage = false;
     private var filterTypeFileVideo = false;
@@ -313,7 +313,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     @objc func touchUpInsideMenuButtonMore(_ sender: Any) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        var actions = [NCMenuAction]()
+        var actions: [NCMenuAction] = []
 
         if !isEditMode {
             actions.append(

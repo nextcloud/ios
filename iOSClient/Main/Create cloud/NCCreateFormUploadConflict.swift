@@ -57,16 +57,16 @@ extension NCCreateFormUploadConflictDelegate {
     @objc var alwaysNewFileNameNumber: Bool = false
     @objc var textLabelDetailNewFile: String?
     
-    var metadatasConflictNewFiles = [String]()
-    var metadatasConflictAlreadyExistingFiles = [String]()
-    var fileNamesPath = [String: String]()
+    var metadatasConflictNewFiles: [String] = []
+    var metadatasConflictAlreadyExistingFiles: [String] = []
+    var fileNamesPath: [String: String] = [:]
 
     // MARK: - Cicle
 
     @objc required init?(coder aDecoder: NSCoder) {
-        self.metadatasNOConflict = [tableMetadata]()
-        self.metadatasMOV = [tableMetadata]()
-        self.metadatasUploadInConflict = [tableMetadata]()
+        self.metadatasNOConflict = []
+        self.metadatasMOV = []
+        self.metadatasUploadInConflict = []
         super.init(coder: aDecoder)
     }
     

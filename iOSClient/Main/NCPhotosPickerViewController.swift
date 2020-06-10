@@ -39,8 +39,8 @@ class NCPhotosPickerViewController: NSObject {
     
     @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?, [URL]?) -> ()) {
         
-        var selectedPhAssets = [PHAsset]()
-        var selectedUrls = [URL]()
+        var selectedPhAssets: [PHAsset] = []
+        var selectedUrls: [URL] = []
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")

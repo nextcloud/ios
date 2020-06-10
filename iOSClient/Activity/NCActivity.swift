@@ -32,10 +32,10 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var allActivities = [tableActivity]()
-    var filterActivities = [tableActivity]()
+    var allActivities: [tableActivity] = []
+    var filterActivities: [tableActivity] = []
 
-    var sectionDate = [Date]()
+    var sectionDate: [Date] = []
     var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var filterFileId: String?
@@ -127,7 +127,7 @@ class activityTableViewCell: UITableViewCell {
 
     var idActivity: Int = 0
     var account: String = ""
-    var activityPreviews = [tableActivityPreview]()
+    var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
 
     override func awakeFromNib() {
@@ -192,7 +192,7 @@ extension NCActivity: UITableViewDataSource {
             
             let results = getTableActivitiesFromSection(indexPath.section)
             let activity = results[indexPath.row]
-            var orderKeysId = [String]()
+            var orderKeysId: [String] = []
             
             cell.idActivity = activity.idActivity
             cell.account = activity.account
@@ -250,7 +250,7 @@ extension NCActivity: UITableViewDataSource {
             if activity.subjectRich.count > 0 {
                 
                 var subject = activity.subjectRich
-                var keys = [String]()
+                var keys: [String] = []
                 
                 if let regex = try? NSRegularExpression(pattern: "\\{[a-z0-9]+\\}", options: .caseInsensitive) {
                     let string = subject as NSString

@@ -37,7 +37,7 @@ import NCCommunication
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
-    var listOfTemplate = [NCCommunicationEditorTemplates]()
+    var listOfTemplate: [NCCommunicationEditorTemplates] = []
     var selectTemplate: NCCommunicationEditorTemplates?
     
     @IBOutlet weak var indicator: UIActivityIndicatorView!

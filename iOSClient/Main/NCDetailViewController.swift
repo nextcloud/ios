@@ -39,7 +39,7 @@ class NCDetailViewController: UIViewController {
     @objc var offlineFilterImage: Bool = false
     
     @objc var viewerImageViewController: NCViewerImageViewController?
-    @objc var metadatas = [tableMetadata]()
+    @objc var metadatas: [tableMetadata] = []
     
     private var maxProgress: Float = 0
     private var videoLayer: AVPlayerLayer?

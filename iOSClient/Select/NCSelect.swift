@@ -68,7 +68,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private var isEditMode = false
     private var networkInProgress = false
-    private var selectocId = [String]()
+    private var selectocId: [String] = []
     private var overwrite = false
     private var sectionDatasource = CCSectionDataSourceMetadata()
     

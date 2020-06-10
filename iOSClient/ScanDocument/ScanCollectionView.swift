@@ -26,11 +26,11 @@ import UIKit
 class DragDropViewController: UIViewController {
     
     //Data Source for collectionViewSource
-    private var itemsSource = [String]()
+    private var itemsSource: [String] = []
     
     //Data Source for collectionViewDestination
-    private var imagesDestination = [UIImage]()
-    private var itemsDestination = [String]()
+    private var imagesDestination: [UIImage] = []
+    private var itemsDestination: [String] = []
     
     //AppDelegate
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -112,7 +112,7 @@ class DragDropViewController: UIViewController {
         
         if imagesDestination.count > 0 {
             
-            var images = [UIImage]()
+            var images: [UIImage] = []
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)
@@ -281,7 +281,7 @@ class DragDropViewController: UIViewController {
     {
         collectionView.performBatchUpdates({
             
-            var indexPaths = [IndexPath]()
+            var indexPaths: [IndexPath] = []
             
             for (index, item) in coordinator.items.enumerated() {
                 

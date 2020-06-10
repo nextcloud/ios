@@ -41,7 +41,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     
     var serverUrl = ""
     var titleServerUrl = ""
-    var arrayImages = [UIImage]()
+    var arrayImages: [UIImage] = []
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password: String = ""
     var fileType = "PDF"

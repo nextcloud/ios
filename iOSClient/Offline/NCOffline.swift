@@ -34,7 +34,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
    
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectocId = [String]()
+    private var selectocId: [String] = []
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
@@ -297,7 +297,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            var actions = [NCMenuAction]()
+            var actions: [NCMenuAction] = []
 
 
             var iconHeader: UIImage!
@@ -660,7 +660,7 @@ extension NCOffline {
 
     @objc func loadDatasource() {
         
-        var ocIds = [String]()
+        var ocIds: [String] = []
         sectionDatasource = CCSectionDataSourceMetadata()
         
         if serverUrl == "" {

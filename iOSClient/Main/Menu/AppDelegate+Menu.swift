@@ -42,7 +42,7 @@ extension AppDelegate {
     }
     
     private func initMenu() -> [NCMenuAction] {
-        var actions = [NCMenuAction]()
+        var actions: [NCMenuAction] = []
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeMain.serverUrl, e2eEncrypted: false, account: appDelegate.activeAccount)

@@ -35,9 +35,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var isEditMode = false
-    private var selectocId = [String]()
+    private var selectocId: [String] = []
     
-    private var datasource = [tableTrash]()
+    private var datasource: [tableTrash] = []
     
     private var typeLayout = ""
     private var datasourceSorted = ""
@@ -194,7 +194,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     func tapOrderHeaderMenu(sender: Any) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        var actions = [NCMenuAction]()
+        var actions: [NCMenuAction] = []
         
         actions.append(
             NCMenuAction(
@@ -267,7 +267,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     func tapMoreHeaderMenu(sender: Any) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        var actions = [NCMenuAction]()
+        var actions: [NCMenuAction] = []
                 
         if isEditMode {
             actions.append(
@@ -334,7 +334,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 
-            var actions = [NCMenuAction]()
+            var actions: [NCMenuAction] = []
 
             guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return
@@ -389,7 +389,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 
-            var actions = [NCMenuAction]()
+            var actions: [NCMenuAction] = []
 
             guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
                 return

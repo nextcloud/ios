@@ -291,7 +291,7 @@ class NCUtility: NSObject {
         
         let constrainingDimension = min(bounds.width, bounds.height)
         let properBounds = CGRect(origin: .zero, size: bounds.size)
-        var attributes = [NSAttributedString.Key: Any]()
+        var attributes: [NSAttributedString.Key: Any] = [:]
         
         let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
         var bestFontSize: CGFloat = constrainingDimension
