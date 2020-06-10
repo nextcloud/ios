@@ -122,7 +122,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
         self.navigationItem.leftBarButtonItem = gridButton
 
-        // changeTheming
+        reloadDataSource()
+        
         changeTheming()
     }
     
@@ -213,13 +214,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
+                self.reloadDataSource()
+                
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    
-                    self.reloadDataSource() {
-                    
-                        let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
-                    }
+                    let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                 }
             }
         }
@@ -229,13 +228,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
+                self.reloadDataSource()
+
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    
-                    self.reloadDataSource() {
-                    
-                        let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
-                    }
+                    let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                 }
             }
         }
@@ -245,13 +242,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
+                self.reloadDataSource()
+
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    
-                    self.reloadDataSource() {
-                    
-                        let userInfo: [String : Any] = ["metadata": metadata, "type": "rename"]
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
-                    }
+                    let userInfo: [String : Any] = ["metadata": metadata, "type": "rename"]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                 }
             }
         }
@@ -325,7 +320,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
-                        self.reloadDataSource() { }
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -336,7 +331,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
-                        self.reloadDataSource() { }
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -582,7 +577,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    public func reloadDataSource(completion: @escaping ()->()) {
+    public func reloadDataSource() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -595,8 +590,6 @@ extension NCMedia {
             
             DispatchQueue.main.async {
                 self.collectionView?.reloadData()
-                
-                completion()
             }
         }
     }
@@ -623,7 +616,7 @@ extension NCMedia {
                 NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
             }
             self.refreshControl.endRefreshing()
-            self.reloadDataSource() {}
+            self.reloadDataSource()
         }
     }
     
@@ -650,7 +643,7 @@ extension NCMedia {
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                     NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
                     NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
-                    self.reloadDataSource() {}
+                    self.reloadDataSource()
                 } else {
                     if gteDate == Calendar.current.date(byAdding: .day, value: -30, to: lteDate) {
                         self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -90, to: lteDate))
