@@ -193,8 +193,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
-            self.reloadDataThenPerform {
-            }
+            self.reloadDataThenPerform { }
         }
     }
     
