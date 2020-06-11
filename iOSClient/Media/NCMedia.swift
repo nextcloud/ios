@@ -638,7 +638,7 @@ extension NCMedia {
         //let lteDate: Int = Int(Date().timeIntervalSince1970)
         //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
         
-        guard let lteDate = Calendar.current.date(byAdding: .day, value: 1, to: Date()) else { return }
+        guard let lteDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
         if let date = tableAccount?.dateUpdateMedia {
@@ -651,7 +651,9 @@ extension NCMedia {
 
             if errorCode == 0 && files != nil && files!.count > 0 {
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                if tableAccount?.dateLteMedia == nil {
+                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                }
                 NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
             }
             
