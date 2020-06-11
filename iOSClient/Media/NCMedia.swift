@@ -224,7 +224,21 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
-                self.reloadDataSource()
+                DispatchQueue.global().async {
+                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    DispatchQueue.main.async {
+                        self.metadatas = metadatas
+                        
+                        if self.metadatas.count  > 0 {
+                            self.mediaCommandView?.isHidden = false
+                        } else {
+                            self.mediaCommandView?.isHidden = true
+                        }
+                        self.reloadDataThenPerform {
+                            self.mediaCommandTitle()
+                        }
+                    }
+                }
                 
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
@@ -592,8 +606,9 @@ extension NCMedia {
         }
         
         NCManageDatabase.sharedInstance.getMetadatasMedia(account: appDelegate.activeAccount) { (metadatas) in
-            self.metadatas = metadatas
             DispatchQueue.main.async {
+                self.metadatas = metadatas
+                
                 if self.metadatas.count  > 0 {
                     self.mediaCommandView?.isHidden = false
                 } else {
@@ -748,9 +763,9 @@ class NCMediaCommandView: UIView {
     override func awakeFromNib() {
         
         gradient.frame = bounds
-        gradient.startPoint = CGPoint(x: 0, y: 0.60)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(0.5).cgColor , UIColor.clear.cgColor]
+        gradient.startPoint = CGPoint(x: 0, y: 0.50)
+        gradient.endPoint = CGPoint(x: 0, y: 0.9)
+        gradient.colors = [UIColor.black.withAlphaComponent(0.4).cgColor , UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
         
         title.text = ""
