@@ -163,12 +163,14 @@ import Alamofire
                     // Move file system
                     let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
                     let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-                    do {
-                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                    } catch { }
+                    let atPathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                    let toPathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: fileNameNew)!
                     let atPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     let toPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: fileNameNew)!
+                    
                     do {
+                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                        try FileManager.default.moveItem(atPath: atPathPreview, toPath: toPathPreview)
                         try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
                 }
