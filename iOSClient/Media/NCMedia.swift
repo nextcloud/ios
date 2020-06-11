@@ -611,7 +611,7 @@ extension NCMedia {
         
         var predicate: NSPredicate?
         
-        if filterTypeFileImage && filterTypeFileVideo {
+        if filterTypeFileImage && filterTypeFileVideo { // HAS SENSE ???
             predicate = NSPredicate(format: "account == %@ AND typeFile == ''", appDelegate.activeAccount)
         } else if filterTypeFileImage {
             predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_video)
