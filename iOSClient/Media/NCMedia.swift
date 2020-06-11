@@ -28,6 +28,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     @IBOutlet weak var collectionView : UICollectionView!
     
+    private var mediaCommandView = NCMediaCommandView()
+    
     //Grid control buttons
     private var plusButton: UIBarButtonItem!
     private var separatorButton: UIBarButtonItem!
@@ -121,7 +123,15 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         minusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
         gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
         self.navigationItem.leftBarButtonItem = gridButton
-
+        
+        mediaCommandView = (Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as! NCMediaCommandView)
+        self.view.addSubview(mediaCommandView)
+        mediaCommandView.translatesAutoresizingMaskIntoConstraints = false
+        mediaCommandView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        mediaCommandView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        mediaCommandView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        mediaCommandView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        
         reloadDataSource()
         
         changeTheming()
@@ -739,4 +749,10 @@ extension NCMedia: UIScrollViewDelegate {
             searchOldPhotoVideo()
         }
     }
+}
+
+// MARK: - Media Command View
+
+class NCMediaCommandView: UIView {
+    
 }
