@@ -492,7 +492,7 @@ class NCDetailViewController: UIViewController {
                 let editor = NCUtility.sharedInstance.isDirectEditing(metadata)!
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
                     
-                    NCUtility.sharedInstance.startActivityIndicator(view: backgroundView, bottom: 0)
+                    NCUtility.sharedInstance.startActivityIndicator(view: backgroundView)
 
                     if metadata.url == "" {
                         
@@ -541,7 +541,7 @@ class NCDetailViewController: UIViewController {
             // RichDocument: Collabora
             if NCUtility.sharedInstance.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
                 
-                NCUtility.sharedInstance.startActivityIndicator(view: backgroundView, bottom: 0)
+                NCUtility.sharedInstance.startActivityIndicator(view: backgroundView)
                 
                 if metadata.url == "" {
                     

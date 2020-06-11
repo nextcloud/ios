@@ -297,7 +297,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     
     func getNetwokingNotification() {
     
-        NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view)
 
         NCCommunication.shared.getNotifications() { (account, notifications, errorCode, errorDescription) in
          

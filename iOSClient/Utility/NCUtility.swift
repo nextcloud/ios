@@ -224,7 +224,7 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat) {
+    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
     
         guard let view = view else { return }
         

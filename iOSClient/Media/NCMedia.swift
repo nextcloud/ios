@@ -59,8 +59,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     private var isDistantPast = false
 
-    private let refreshControl = UIRefreshControl()
-    private var loadingSearch = false
+    private var oldInProgress = false
+    private var newInProgress = false
+
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -97,9 +98,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
-
-        // Add Refresh Control
-        collectionView.refreshControl = refreshControl
         
         // empty Data Source
         collectionView.emptyDataSetDelegate = self
@@ -184,11 +182,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Configure Refresh Control
-        refreshControl.tintColor = .lightGray
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        refreshControl.addTarget(self, action: #selector(searchNewPhotoVideo), for: .valueChanged)
-        
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
@@ -216,9 +209,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
-        
-        refreshControl.tintColor = .lightGray
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
@@ -294,7 +284,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         var text = "\n" + NSLocalizedString("_tutorial_photo_view_", comment: "")
 
-        if loadingSearch {
+        if oldInProgress || newInProgress {
             text = "\n" + NSLocalizedString("_search_in_progress_", comment: "")
         }
         
@@ -639,6 +629,9 @@ extension NCMedia {
     
     @objc func searchNewPhotoVideo() {
         
+        if newInProgress { return }
+        else { newInProgress = true }
+        
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
         //let elementDate = "nc:upload_time/"
@@ -651,19 +644,25 @@ extension NCMedia {
         if let date = tableAccount?.dateUpdateMedia {
             gteDate = date as Date
         }
-        
+                
         NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            
+            self.newInProgress = false
+
             if errorCode == 0 && files != nil && files!.count > 0 {
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                 NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
                 NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
             }
-            self.refreshControl.endRefreshing()
+            
             self.reloadDataSource()
         }
     }
     
     private func searchOldPhotoVideo(gteDate: Date? = nil) {
+        
+        if oldInProgress { return }
+        else { oldInProgress = true }
         
         var lteDate = Date()
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
@@ -672,30 +671,42 @@ extension NCMedia {
         }
 
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
-        
         
         var gteDate = gteDate
         if gteDate == nil {
             gteDate = Calendar.current.date(byAdding: .day, value: -30, to: lteDate)
         }
 
+        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
+
         NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate!, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            
+            self.oldInProgress = false
+            NCUtility.sharedInstance.stopActivityIndicator()
+            
             if errorCode == 0 {
                 if files != nil && files!.count > 0 {
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
-                    NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
+                    
+                    var lastDate = files?.last?.date
+                    if lastDate != nil && lastDate == tableAccount?.dateLteMedia {
+                        lastDate = Calendar.current.date(byAdding: .second, value: -1, to: lastDate! as Date) as NSDate?
+                    }
+                    
+                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: lastDate)
                     self.reloadDataSource()
+                    
                 } else {
+                    
                     if gteDate == Calendar.current.date(byAdding: .day, value: -30, to: lteDate) {
                         self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -90, to: lteDate))
                     } else if gteDate == Calendar.current.date(byAdding: .day, value: -90, to: lteDate) {
+                        self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -180, to: lteDate))
+                    } else {
                         self.searchOldPhotoVideo(gteDate: Date.distantPast)
                     }
                 }
             }
-            NCUtility.sharedInstance.stopActivityIndicator()
         }
     }
     

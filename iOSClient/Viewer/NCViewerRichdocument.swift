@@ -142,7 +142,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename
                     
                         if type == "print" {
-                            NCUtility.sharedInstance.startActivityIndicator(view: self, bottom: 0)
+                            NCUtility.sharedInstance.startActivityIndicator(view: self)
                         }
                         
                         NCCommunication.shared.download(serverUrlFileName: urlString, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
