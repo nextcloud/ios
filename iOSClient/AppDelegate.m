@@ -1005,7 +1005,6 @@
         [[NCMainCommon sharedInstance] createImagesThemingColor];
     });
     
-    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
 }
@@ -1013,7 +1012,8 @@
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
 {
     [NCBrandColor.sharedInstance setDarkMode];
-    
+    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
+
     //Tab bar
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
