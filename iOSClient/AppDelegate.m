@@ -66,18 +66,15 @@
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
-    // Verify upgrade
-    if ([self upgrade]) {
-        // Set account, if no exists clear all
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (tableAccount == nil) {
-            // remove all the keys Chain
-            [CCUtility deleteAllChainStore];
-            // remove all the App group key
-            [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
-        } else {
-            [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-        }
+    // Set account, if no exists clear all
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (tableAccount == nil) {
+        // remove all the keys Chain
+        [CCUtility deleteAllChainStore];
+        // remove all the App group key
+        [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+    } else {
+        [self settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
     }
     
     // UserDefaults
@@ -1569,90 +1566,6 @@
 - (void)maintenanceMode:(BOOL)mode
 {
     self.maintenanceMode = mode;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== UPGRADE =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)upgrade
-{
-    #ifdef DEBUG
-    //self.maintenanceMode = YES;
-    #endif
-    
-    NSString *actualVersion = [CCUtility getVersion];
-    NSString *actualBuild = [CCUtility getBuild];
-    
-    /* ---------------------- UPGRADE VERSION ----------------------- */
-    
-    // VERSION < 2.17.6
-
-    if (([actualVersion compare:@"2.17.6" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        // Remove All old Photo Library
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
-    }
-    
-    // VERSION == 2.17.6
-    if ([actualVersion isEqualToString:@"2.17.6"]) {
-        
-        // Build < 10
-        if (([actualBuild compare:@"10" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
-            
-            // Remove All old Photo Library
-            //[[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
-        }
-    }
-        
-    if (([actualVersion compare:@"2.19.1" options:NSNumericSearch] == NSOrderedAscending)) {
-
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
-    }
-    
-    if (([actualVersion compare:@"2.22.0" options:NSNumericSearch] == NSOrderedAscending)) {
-     
-        NSArray *records = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"#size > 0"] sorted:@"account" ascending:NO];
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            NSString *account = @"";
-            NSString *directoryUser = @"";
-            NSString *fileName;
-            
-            for (tableLocalFile *record in records) {
-                if (![account isEqualToString:record.account]) {
-                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", record.account]];
-                    if (tableAccount) {
-                        directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.user activeUrl:tableAccount.url];
-                        account = record.account;
-                    }
-                }
-                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.ocId];
-                if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
-                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageOcId:record.ocId fileNameView:record.fileName]];
-                }
-            }
-        });
-    }
-    
-    if ([actualVersion isEqualToString:@"2.22.9"]) {
-        if (([actualBuild compare:@"8" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivitySubjectRich class] account:nil];
-            [[NCManageDatabase sharedInstance] clearTable:[tableActivityPreview class] account:nil];
-        }
-    }
-    
-    if (([actualVersion compare:@"2.23.4" options:NSNumericSearch] == NSOrderedAscending)) {
-        NSArray *records = [[NCManageDatabase sharedInstance] getAllAccount];
-        for (tableAccount *record in records) {
-            [CCUtility setPassword:record.account password:record.password];
-            [[NCManageDatabase sharedInstance] removePasswordAccount:record.account];
-        }
-    }
-
-    return YES;
 }
 
 @end

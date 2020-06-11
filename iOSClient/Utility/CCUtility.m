@@ -60,34 +60,6 @@
 
 #pragma ------------------------------ GET/SET
 
-+ (NSString *)getVersion
-{
-    return [UICKeyChainStore stringForKey:@"version" service:k_serviceShareKeyChain];
-}
-
-+ (NSString *)setVersion
-{
-    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    
-    [UICKeyChainStore setString:version forKey:@"version" service:k_serviceShareKeyChain];
-    
-    return version;
-}
-
-+ (NSString *)getBuild
-{
-    return [UICKeyChainStore stringForKey:@"build" service:k_serviceShareKeyChain];
-}
-
-+ (NSString *)setBuild
-{
-    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    
-    [UICKeyChainStore setString:build forKey:@"build" service:k_serviceShareKeyChain];
-    
-    return build;
-}
-
 + (NSString *)getPasscode
 {
     return [UICKeyChainStore stringForKey:@"passcodeBlock" service:k_serviceShareKeyChain];
@@ -1152,12 +1124,12 @@
 
 + (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.small.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
 }
 
 + (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    return [NSString stringWithFormat:@"%@/%@.preview", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.preview.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
 }
 
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
@@ -1189,13 +1161,15 @@
     else return false;
 }
 
-+ (BOOL)fileProviderStoragePreviewExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
-    NSString *fileNamePath = [self getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileNameView];
+    NSString *fileNamePathPreview = [self getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileNameView];
+    NSString *fileNamePathIcon = [self getDirectoryProviderStorageIconOcId:ocId fileNameView:fileNameView];
     
-    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    unsigned long long fileSizePreview = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePathPreview error:nil] fileSize];
+    unsigned long long fileSizeIcon = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePathIcon error:nil] fileSize];
     
-    if (fileSize > 0) return true;
+    if (fileSizePreview > 0 && fileSizeIcon > 0) return true;
     else return false;
 }
 

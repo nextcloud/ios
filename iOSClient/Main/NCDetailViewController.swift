@@ -643,7 +643,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
-        let isPreview = CCUtility.fileProviderStoragePreviewExists(metadata.ocId, fileNameView: metadata.fileNameView)
+        let isPreview = CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
         let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
         let ext = CCUtility.getExtension(metadata.fileNameView)
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)

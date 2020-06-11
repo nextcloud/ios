@@ -538,7 +538,7 @@ extension NCTrash: UICollectionViewDataSource {
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)) {
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName))
         } else {
-            if tableTrash.hasPreview && !CCUtility.fileProviderStoragePreviewExists(tableTrash.fileId, fileNameView: tableTrash.fileName) {
+            if tableTrash.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(tableTrash.fileId, fileNameView: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
@@ -743,7 +743,7 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
+        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon), endpointTrashbin: true) { (account, imagePreview, imageIcon, errorCode, errorDescription) in

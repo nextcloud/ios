@@ -70,7 +70,7 @@ class NCViewerImageCommon: NSObject {
     
     func getThumbnailImage(metadata: tableMetadata) -> UIImage? {
         
-        if CCUtility.fileProviderStoragePreviewExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             return UIImage.init(contentsOfFile: imagePath)
         }
