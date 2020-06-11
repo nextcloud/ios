@@ -71,6 +71,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.init(coder: aDecoder)
 
         appDelegate.activeMedia = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
     }
     
     override func viewDidLoad() {
@@ -133,8 +135,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         mediaCommandView!.heightAnchor.constraint(equalToConstant: 150).isActive = true
         mediaCommandView!.isHidden = true
         
-        reloadDataSource()
-        
+        collectionView.reloadData()
         changeTheming()
     }
     
@@ -192,6 +193,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
+        mediaCommandTitle()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -599,7 +601,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 
 extension NCMedia {
 
-    public func reloadDataSource() {
+    @objc func reloadDataSource() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
