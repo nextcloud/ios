@@ -379,6 +379,10 @@ import Alamofire
             metadata.sessionTaskIdentifier = task.taskIdentifier
             NCManageDatabase.sharedInstance.addMetadata(metadata)
             
+            #if !EXTENSION
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
+            #endif
+            
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId,"serverUrl":metadata.serverUrl])
         }
