@@ -211,6 +211,8 @@ class NCDetailViewController: UIViewController {
                 
                 if (self.metadata?.typeFile == k_metadataTypeFile_image || self.metadata?.typeFile == k_metadataTypeFile_video || self.metadata?.typeFile == k_metadataTypeFile_audio) && self.mediaFilterImage {
                                         
+                    self.metadatas = appDelegate.activeMedia.metadatas
+                    
                     if type == "delete" {
                         if metadatas.count > 0 {
                             var index = viewerImageViewController!.index - 1
