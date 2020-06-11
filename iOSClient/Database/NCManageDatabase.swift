@@ -2401,7 +2401,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getMetadatasMedia(account: String, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+    @objc func getMetadatasMedia(predicate: NSPredicate, completion: @escaping (_ metadatas: [tableMetadata])->()) {
                 
         DispatchQueue.global().async {
             autoreleasepool {
@@ -2411,7 +2411,7 @@ class NCManageDatabase: NSObject {
                 var metadatas = [tableMetadata]()
                 
                 let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-                let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio)).sorted(by: sortProperties) //.distinct(by: ["fileName"])
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties) //.distinct(by: ["fileName"])
                 if (results.count > 0) {
                     
                     // For Live Photo
