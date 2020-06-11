@@ -643,7 +643,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
-        let isPreview = CCUtility.fileProviderStorageIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
+        let isPreview = CCUtility.fileProviderStoragePreviewExists(metadata.ocId, fileNameView: metadata.fileNameView)
         let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
         let ext = CCUtility.getExtension(metadata.fileNameView)
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
@@ -731,11 +731,12 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         } else if metadata.hasPreview {
                 
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
-                if errorCode == 0 && data != nil {
-                    completion(index, UIImage.init(data: data!), metadata, ZoomScale.default, nil)
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                if errorCode == 0 && imagePreview != nil {
+                    completion(index, imagePreview, metadata, ZoomScale.default, nil)
                 } else {
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }

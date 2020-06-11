@@ -743,16 +743,17 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
+        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
+        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
         
-        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview), downloadFromTrash: true) { (account, data, errorCode, errorDescription) in
+        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon), endpointTrashbin: true) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
             
-            if errorCode == 0 && data != nil && account == self.appDelegate.activeAccount {
-                if let cell = self.collectionView.cellForItem(at: indexPath), let image = UIImage.init(data: data!) {
+            if errorCode == 0 && imageIcon != nil && account == self.appDelegate.activeAccount {
+                if let cell = self.collectionView.cellForItem(at: indexPath) {
                     if cell is NCTrashListCell {
-                        (cell as! NCTrashListCell).imageItem.image = image
+                        (cell as! NCTrashListCell).imageItem.image = imageIcon
                     } else if cell is NCGridCell {
-                        (cell as! NCGridCell).imageItem.image = image
+                        (cell as! NCGridCell).imageItem.image = imageIcon
                     }
                 }
             }

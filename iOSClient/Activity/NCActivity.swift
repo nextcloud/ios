@@ -498,9 +498,9 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             
                         } else {
                             
-                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNameLocalPath: fileNamePath ,width: 0, height: 0, useInternalEndpoint: false) { (account, data, errorCode, errorDescription) in
-                                if errorCode == 0 && data != nil {
-                                    cell.imageView.image = UIImage.init(data: data!)
+                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, useInternalEndpoint: false) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
+                                if errorCode == 0 && imagePreview != nil {
+                                    cell.imageView.image = imagePreview
                                 }
                             }
                         }

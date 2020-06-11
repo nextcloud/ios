@@ -164,9 +164,10 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         } else {
         
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-            let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
 
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath, width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
                 var cell: NCImageCellProtocol?
                 if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
@@ -177,10 +178,8 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 
                 if (cell != nil) {
                     var previewImage: UIImage!
-                    if errorCode == 0 && data != nil {
-                        if let image = UIImage(data: data!) {
-                            previewImage = image
-                        }
+                    if errorCode == 0 && imageIcon != nil {
+                        previewImage = imageIcon
                     } else {
                         if self.metadata.iconName.count > 0 {
                             previewImage = UIImage(named: self.metadata.iconName)

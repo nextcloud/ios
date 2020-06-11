@@ -43,11 +43,16 @@ extension FileProviderExtension {
             if (metadata.hasPreview) {
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
-                let fileNameLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                     
-                NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNameLocalPath: fileNameLocalPath ,width: Int(k_sizePreview), height: Int(k_sizePreview)) { (account, data, errorCode, errorDescription) in
-                    if errorCode == 0 && data != nil {
-                        perThumbnailCompletionHandler(itemIdentifier, data, nil)
+                NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
+                    if errorCode == 0 && imageIcon != nil {
+                        if let data = imageIcon!.pngData() {
+                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
+                        } else {
+                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
+                        }
                     } else {
                         perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                     }

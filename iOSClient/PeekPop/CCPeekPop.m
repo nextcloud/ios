@@ -102,13 +102,13 @@
 - (void)downloadThumbnail
 {
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl activeUrl:appDelegate.activeUrl];
-    NSString *fileNameLocalPath = [CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
+    NSString *fileNamePreviewLocalPath = [CCUtility getDirectoryProviderStoragePreviewOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
+    NSString *fileNameIconLocalPath = [CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
     
-    [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNameLocalPath:fileNameLocalPath width:k_sizePreview height:k_sizePreview customUserAgent:nil addCustomHeaders:nil downloadFromTrash:false useInternalEndpoint:true completionHandler:^(NSString *account, NSData *data, NSInteger errorCode, NSString *errorDescription) {
-
-        if (errorCode == 0) {
-            UIImage *image = [UIImage imageWithData:data];
-            self.imagePreview.image = [CCGraphics scaleImage:image toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
+    [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNamePreviewLocalPath:fileNamePreviewLocalPath widthPreview:k_sizePreview heightPreview:k_sizePreview fileNameIconLocalPath:fileNameIconLocalPath sizeIcon:k_sizeIcon customUserAgent:nil addCustomHeaders:nil endpointTrashbin:false useInternalEndpoint:true completionHandler:^(NSString *account, UIImage *imagePreview, UIImage *imageIcon, NSInteger errorCode,  NSString *errorDescription) {
+        
+        if (errorCode == 0 && imagePreview != nil) {
+            self.imagePreview.image = [CCGraphics scaleImage:imagePreview toSize:CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height) isAspectRation:true];
             self.preferredContentSize = CGSizeMake(self.imagePreview.image.size.width, self.imagePreview.image.size.height + highLabelFileName);
         }
     }];

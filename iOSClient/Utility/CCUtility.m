@@ -1155,6 +1155,11 @@
     return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
 }
 
++ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView
+{
+    return [NSString stringWithFormat:@"%@/%@.preview", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
+}
+
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView];
@@ -1177,6 +1182,16 @@
 + (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
     NSString *fileNamePath = [self getDirectoryProviderStorageIconOcId:ocId fileNameView:fileNameView];
+    
+    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    
+    if (fileSize > 0) return true;
+    else return false;
+}
+
++ (BOOL)fileProviderStoragePreviewExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [self getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileNameView];
     
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
     

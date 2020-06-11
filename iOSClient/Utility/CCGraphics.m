@@ -150,6 +150,8 @@
             
             // if it is preview for Upload then trasform it in gray scale
             scaleImage = [self grayscale:scaleImage];
+            [UIImageJPEGRepresentation(scaleImage, 0.5) writeToFile:<#(nonnull NSString *)#> atomically:<#(BOOL)#>]
+            
             [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
             
         } else {
