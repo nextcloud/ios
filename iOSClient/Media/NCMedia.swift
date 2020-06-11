@@ -37,7 +37,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var gridButton: UIBarButtonItem!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var sectionDatasource = CCSectionDataSourceMetadata()
+    public var metadatas: [tableMetadata] = []
 
     private var metadataPush: tableMetadata?
     private var isEditMode = false
@@ -131,6 +131,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         mediaCommandView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView!.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        mediaCommandView!.isHidden = true
         
         reloadDataSource()
         
@@ -389,7 +390,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
                 segueViewController.metadata = metadataPush
-                segueViewController.metadatas = sectionDatasource.metadatas as! [tableMetadata]
+                segueViewController.metadatas = metadatas
                 segueViewController.mediaFilterImage = true
             }
         }
@@ -404,7 +405,7 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
         
         guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else { return nil }
+        let metadata = metadatas[indexPath.row]
         guard let cell = collectionView?.cellForItem(at: indexPath) as? NCGridMediaCell  else { return nil }
         guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
         
@@ -432,9 +433,7 @@ extension NCMedia: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return
-        }
+        let metadata = metadatas[indexPath.row]
         metadataPush = metadata
         
         if isEditMode {
@@ -503,29 +502,21 @@ extension NCMedia: UICollectionViewDataSource {
     }
     */
     
+    /*
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         let sections = sectionDatasource.sectionArrayRow.allKeys.count
         return sections
     }
+    */
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        var numberOfItemsInSection: Int = 0
-        
-        if section < sectionDatasource.sections.count {
-            let key = sectionDatasource.sections.object(at: section)
-            let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-            numberOfItemsInSection = datasource.count
-        }
-        
-        return numberOfItemsInSection
+        return metadatas.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-        }
+        let metadata = metadatas[indexPath.row]
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
@@ -586,12 +577,7 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        if (section == sections - 1) {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        }
+        return CGSize(width: collectionView.frame.width, height: 0)
     }
 }
 
@@ -605,12 +591,14 @@ extension NCMedia {
             return
         }
         
-        DispatchQueue.global().async {
-            
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatasMedia(account: self.appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: nil, filterTypeFileImage: self.filterTypeFileImage, filterTypeFileVideo: self.filterTypeFileVideo, filterLivePhoto: true, sorted: "date", ascending: false, activeAccount: self.appDelegate.activeAccount)
-            
+        NCManageDatabase.sharedInstance.getMetadatasMedia(account: appDelegate.activeAccount) { (metadatas) in
+            self.metadatas = metadatas
             DispatchQueue.main.async {
+                if self.metadatas.count  > 0 {
+                    self.mediaCommandView?.isHidden = false
+                } else {
+                    self.mediaCommandView?.isHidden = true
+                }
                 self.reloadDataThenPerform {
                     self.mediaCommandTitle()
                 }
@@ -703,10 +691,9 @@ extension NCMedia {
     private func downloadThumbnail() {
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for item in collectionView.indexPathsForVisibleItems {
-                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
-                    NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: item)
-                }
+            for indexPath in collectionView.indexPathsForVisibleItems {
+                let metadata = self.metadatas[indexPath.row]
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
             }
         }
     }
@@ -714,10 +701,9 @@ extension NCMedia {
     private func removeDeletedFile() {
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for item in collectionView.indexPathsForVisibleItems {
-                if let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(item, sectionDataSource: self.sectionDatasource) {
-                    NCOperationQueue.shared.removeDeletedFile(metadata: metadata)
-                }
+            for indexPath in collectionView.indexPathsForVisibleItems {
+                let metadata = self.metadatas[indexPath.row]
+                NCOperationQueue.shared.removeDeletedFile(metadata: metadata)
             }
         }
     }
@@ -757,7 +743,7 @@ class NCMediaCommandView: UIView {
     
     @IBOutlet weak var title : UILabel!
     
-    let gradient: CAGradientLayer = CAGradientLayer()
+    private let gradient: CAGradientLayer = CAGradientLayer()
     
     override func awakeFromNib() {
         
@@ -766,7 +752,7 @@ class NCMediaCommandView: UIView {
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(0.5).cgColor , UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
-            
+        
         title.text = ""
     }
     

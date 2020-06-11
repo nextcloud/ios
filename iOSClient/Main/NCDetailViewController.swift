@@ -210,11 +210,7 @@ class NCDetailViewController: UIViewController {
             if let type = userInfo["type"] as? String {
                 
                 if (self.metadata?.typeFile == k_metadataTypeFile_image || self.metadata?.typeFile == k_metadataTypeFile_video || self.metadata?.typeFile == k_metadataTypeFile_audio) && self.mediaFilterImage {
-                    
-                    if let metadatas = appDelegate.activeMedia.sectionDatasource.metadatas as? [tableMetadata] {
-                        self.metadatas = metadatas
-                    }
-                    
+                                        
                     if type == "delete" {
                         if metadatas.count > 0 {
                             var index = viewerImageViewController!.index - 1

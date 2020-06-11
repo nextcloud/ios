@@ -2401,18 +2401,39 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getMetadatasMedia(account: String) -> [tableMetadata]? {
+    @objc func getMetadatasMedia(account: String, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+                
+        DispatchQueue.global().async {
+            autoreleasepool {
         
-        let realm = try! Realm()
-        realm.refresh()
-        
-        
-        let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-        let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio)).sorted(by: sortProperties)
-        if (results.count > 0) {
-            return Array(results.map { tableMetadata.init(value:$0) })
-        } else {
-            return nil
+                let realm = try! Realm()
+                realm.refresh()
+                var metadatas = [tableMetadata]()
+                
+                let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+                let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio)).sorted(by: sortProperties) //.distinct(by: ["fileName"])
+                if (results.count > 0) {
+                    
+                    // For Live Photo
+                    var fileNameImages = [String]()
+                    let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
+                    filtered.forEach {
+                        let fileName = ($0.fileNameView as NSString).deletingPathExtension
+                        fileNameImages.append(fileName)
+                    }
+                    
+                    for result in results {
+                        let metadata = tableMetadata.init(value: result)
+                        let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
+                        let fileName = (metadata.fileNameView as NSString).deletingPathExtension
+                        if !(ext == "MOV" && fileNameImages.contains(fileName)) {
+                            metadatas.append(tableMetadata.init(value: metadata))
+                        }
+                    }
+                }
+                
+                completion(metadatas)
+            }
         }
     }
     
