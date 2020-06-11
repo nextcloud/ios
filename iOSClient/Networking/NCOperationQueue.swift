@@ -37,6 +37,13 @@ import NCCommunication
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let removeDeletedFileQueue = Queuer(name: "removeDeletedFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
+    @objc func cancelAllQueue() {
+        downloadCancelAll()
+        readFolderSyncCancelAll()
+        downloadThumbnailCancelAll()
+        removeDeletedFileCancelAll()
+    }
+    
     // Download file
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
@@ -77,6 +84,9 @@ import NCCommunication
             if (operation as! NCOperationRemoveDeletedFileQueue).metadata.ocId == metadata.ocId { return }
         }
         removeDeletedFileQueue.addOperation(NCOperationRemoveDeletedFileQueue.init(metadata: metadata))
+    }
+    @objc func removeDeletedFileCancelAll() {
+        removeDeletedFileQueue.cancelAll()
     }
 }
 

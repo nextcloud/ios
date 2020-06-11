@@ -231,6 +231,7 @@
     [appDelegate maintenanceMode:YES];
     
     [[NCMainCommon sharedInstance] cancelAllTransfer];
+    [[NCOperationQueue shared] cancelAllQueue];
 
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
