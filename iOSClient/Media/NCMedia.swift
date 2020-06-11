@@ -28,7 +28,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     @IBOutlet weak var collectionView : UICollectionView!
     
-    private var mediaCommandView = NCMediaCommandView()
+    private var mediaCommandView: NCMediaCommandView?
     
     //Grid control buttons
     private var plusButton: UIBarButtonItem!
@@ -124,13 +124,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
         self.navigationItem.leftBarButtonItem = gridButton
         
-        mediaCommandView = (Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as! NCMediaCommandView)
-        self.view.addSubview(mediaCommandView)
-        mediaCommandView.translatesAutoresizingMaskIntoConstraints = false
-        mediaCommandView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        mediaCommandView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        mediaCommandView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        mediaCommandView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
+        self.view.addSubview(mediaCommandView!)
+        mediaCommandView!.translatesAutoresizingMaskIntoConstraints = false
+        mediaCommandView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        mediaCommandView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        mediaCommandView!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        mediaCommandView!.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
         reloadDataSource()
         
@@ -463,10 +463,10 @@ extension NCMedia: UICollectionViewDataSource {
         CATransaction.commit()
     }
     
-    func updateLabelDate() {
+    func mediaCommandTitle() {
         if let cell = collectionView?.visibleCells.first as? NCGridMediaCell {
             if cell.date != nil {
-                //self.dataLabel.text = CCUtility.getTitleSectionDate(cell.date)
+                mediaCommandView!.title.text = CCUtility.getTitleSectionDate(cell.date)
             }
         }
     }
@@ -612,7 +612,7 @@ extension NCMedia {
             
             DispatchQueue.main.async {
                 self.reloadDataThenPerform {
-                    self.updateLabelDate()
+                    self.mediaCommandTitle()
                 }
             }
         }
@@ -729,7 +729,7 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.removeZoomGridButtons()
-        updateLabelDate()
+        mediaCommandTitle()
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -755,4 +755,23 @@ extension NCMedia: UIScrollViewDelegate {
 
 class NCMediaCommandView: UIView {
     
+    @IBOutlet weak var title : UILabel!
+    
+    let gradient: CAGradientLayer = CAGradientLayer()
+    
+    override func awakeFromNib() {
+        
+        gradient.frame = bounds
+        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(0.5).cgColor , UIColor.clear.cgColor]
+        layer.insertSublayer(gradient, at: 0)
+            
+        title.text = ""
+    }
+    
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        gradient.frame = bounds
+    }
 }
