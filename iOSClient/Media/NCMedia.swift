@@ -133,7 +133,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         mediaCommandView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         mediaCommandView!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView!.heightAnchor.constraint(equalToConstant: 150).isActive = true
-        mediaCommandView!.isHidden = true
+        if self.metadatas.count == 0 {
+            self.mediaCommandView?.isHidden = true
+        }
         
         collectionView.reloadData()
         changeTheming()
@@ -193,12 +195,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         // Title
         self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-        mediaCommandTitle()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        mediaCommandTitle()
         searchNewPhotoVideo()
     }
     
