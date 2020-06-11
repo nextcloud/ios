@@ -609,9 +609,19 @@ extension NCMedia {
             return
         }
         
-        let predicate = NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", appDelegate.activeAccount, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio)
+        var predicate: NSPredicate?
         
-        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate) { (metadatas) in
+        if filterTypeFileImage && filterTypeFileVideo {
+            predicate = NSPredicate(format: "account == %@ AND typeFile == ''", appDelegate.activeAccount)
+        } else if filterTypeFileImage {
+            predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_video)
+        } else if filterTypeFileVideo {
+            predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_image)
+        } else {
+            predicate = NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@)", appDelegate.activeAccount, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        }
+                
+        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
             DispatchQueue.main.async {
                 self.metadatas = metadatas
                 
