@@ -115,20 +115,24 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId typeFile:(NSString *)typeFile
 {
     UIImage *originalImage;
-    UIImage *scaleImage;
+    UIImage *scaleImagePreview;
+    UIImage *scaleImageIcon;
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName];
-    
-    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return nil;
+    NSString *fileNamePathPreview = [CCUtility getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileName];
+    NSString *fileNamePathIcon = [CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName];
+
+    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return;
     
     // only viedo / image
-    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
+    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return;
     
     if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
         originalImage = [UIImage imageWithContentsOfFile:fileNamePath];
+        if (originalImage == nil) { return; }
     }
     
     if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
@@ -140,27 +144,20 @@
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
 
-    scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(k_sizePreview, k_sizePreview) isAspectRation:YES];
-    scaleImage = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImage, 0.5f)];
+    scaleImagePreview = [self scaleImage:originalImage toSize:CGSizeMake(k_sizePreview, k_sizePreview) isAspectRation:YES];
+    scaleImageIcon = [self scaleImage:originalImage toSize:CGSizeMake(k_sizeIcon, k_sizeIcon) isAspectRation:YES];
+
+    scaleImagePreview = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImagePreview, 0.5f)];
+    scaleImageIcon = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImageIcon, 0.5f)];
     
     // it is request write photo  ?
-    if (writeImage && scaleImage) {
-        
-        if (filterGrayScale) {
-            
-            // if it is preview for Upload then trasform it in gray scale
-            scaleImage = [self grayscale:scaleImage];
-            [UIImageJPEGRepresentation(scaleImage, 0.5) writeToFile:<#(nonnull NSString *)#> atomically:<#(BOOL)#>]
-            
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
-            
-        } else {
-            
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
-        }
+    if (scaleImagePreview && scaleImageIcon) {
+                    
+        [UIImageJPEGRepresentation(scaleImagePreview, 0.5) writeToFile:fileNamePathPreview atomically:true];
+        [UIImageJPEGRepresentation(scaleImageIcon, 0.5) writeToFile:fileNamePathIcon atomically:true];
     }
     
-    return scaleImage;
+    return;
 }
 
 + (UIColor *)colorFromHexString:(NSString *)hexString

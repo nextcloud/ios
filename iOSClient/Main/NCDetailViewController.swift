@@ -662,7 +662,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         // Preview for Video
         if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
             
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
         }
         
         // Original only for actual

@@ -424,9 +424,7 @@ import Alamofire
                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 }
                 
-                #if !EXTENSION
-                CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
-                
+                #if !EXTENSION                
                 NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                 #endif
                 
