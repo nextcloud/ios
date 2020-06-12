@@ -73,6 +73,15 @@ import NCCommunication
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
         }
     }
+    
+    func cancelDownloadThumbnail(metadata: tableMetadata) {
+        for operation in  downloadThumbnailQueue.operations {
+            if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
+                (operation as! NCOperationDownloadThumbnail).cancel()
+            }
+        }
+    }
+    
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
     }
