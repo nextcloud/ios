@@ -325,6 +325,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     // MARK: DZNEmpty
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        return 0
+    }
+    
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
     }
