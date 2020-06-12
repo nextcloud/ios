@@ -174,26 +174,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         })
     }
     
-    @objc func touchUpInsideMenuButtonSwitch(_ sender: Any) {
-                
-        UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid && self.gridLayout.increasing) {
-                self.gridLayout.itemPerLine+=1
-            } else {
-                self.gridLayout.increasing = false
-                self.gridLayout.itemPerLine-=1
-            }
-            if(self.gridLayout.itemPerLine == 0) {
-                self.gridLayout.increasing = true
-                self.gridLayout.itemPerLine = 2
-            }
-            
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
-        })
-    }
-    
-    @objc func touchUpInsideMenuButtonMore(_ sender: Any) {
+    @objc func openMenuButtonMore(_ sender: Any) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         var actions: [NCMenuAction] = []
 
@@ -249,7 +230,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
-                        self.isEditMode = false                        
+                        self.isEditMode = false
                         // copy in arrayDeleteMetadata
                         for ocId in self.selectocId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
@@ -723,7 +704,7 @@ class NCMediaCommandView: UIView {
     }
     
     @IBAction func moreButtonPressed(_ sender: UIButton) {
-        mediaView?.touchUpInsideMenuButtonMore(sender)
+        mediaView?.openMenuButtonMore(sender)
     }
     
     @IBAction func zoomInPressed(_ sender: UIButton) {
