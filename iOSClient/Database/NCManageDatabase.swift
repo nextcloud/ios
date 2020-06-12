@@ -99,19 +99,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
-                    if oldSchemaVersion < 95 {
+                    if oldSchemaVersion < 120 {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
-                    }
-                    
-                    if oldSchemaVersion < 104 {
                         migration.deleteData(forType: tableCapabilities.className())
-                    }
-                    
-                    if oldSchemaVersion < 107 {
                         migration.deleteData(forType: tableComments.className())
-                    }
-                    
-                    if oldSchemaVersion < 113 {
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
                     }
@@ -672,7 +663,7 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
-    @objc func setAccountDateUpdateMedia(clear: Bool = false) {
+    @objc func setAccountDateUpdateNewMedia(clear: Bool = false) {
         
         let realm = try! Realm()
 
@@ -680,9 +671,9 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
                     if clear {
-                        result.dateUpdateMedia = nil
+                        result.dateUpdateNewMedia = nil
                     } else {
-                        result.dateUpdateMedia = Date() as NSDate
+                        result.dateUpdateNewMedia = Date() as NSDate
                     }
                 }
             }
@@ -691,14 +682,14 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountDateLteMedia(date: NSDate?) {
+    @objc func setAccountDateLessMedia(date: NSDate?) {
         
         let realm = try! Realm()
 
         do {
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.dateLteMedia = date
+                    result.dateLessMedia = date
                 }
             }
         } catch let error {

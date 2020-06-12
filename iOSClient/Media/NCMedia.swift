@@ -633,14 +633,14 @@ extension NCMedia {
         //let lteDate: Int = Int(Date().timeIntervalSince1970)
         //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
         
-        guard let lteDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        guard var gteDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+        guard let lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
+        guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
-        if let date = tableAccount?.dateUpdateMedia {
-            gteDate = date as Date
+        if let date = tableAccount?.dateUpdateNewMedia {
+            greaterDate = date as Date
         }
                 
-        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.newInProgress = false
             self.collectionView.reloadData()
@@ -648,38 +648,38 @@ extension NCMedia {
             if errorCode == 0 && files != nil && files!.count > 0 {
                 
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                if tableAccount?.dateLteMedia == nil {
-                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                if tableAccount?.dateLessMedia == nil {
+                    NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
                 }
-                NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
+                NCManageDatabase.sharedInstance.setAccountDateUpdateNewMedia()
                 
                 self.reloadDataSource()
             }
         }
     }
     
-    private func searchOldPhotoVideo(gteDate: Date? = nil) {
+    private func searchOldPhotoVideo(greaterDate: Date? = nil) {
         
         if oldInProgress { return }
         else { oldInProgress = true }
         collectionView.reloadData()
 
-        var lteDate = Date()
+        var lessDate = Date()
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
-        if let date = tableAccount?.dateLteMedia {
-            lteDate = date as Date
+        if let date = tableAccount?.dateLessMedia {
+            lessDate = date as Date
         }
 
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         
-        var gteDate = gteDate
-        if gteDate == nil {
-            gteDate = Calendar.current.date(byAdding: .day, value: -30, to: lteDate)
+        var greaterDate = greaterDate
+        if greaterDate == nil {
+            greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: lessDate)
         }
 
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate!, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate!, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -689,17 +689,17 @@ extension NCMedia {
                 if files != nil && files!.count > 0 {
                     
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
+                    NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
                     self.reloadDataSource()
                     
                 } else {
                     
-                    if gteDate == Calendar.current.date(byAdding: .day, value: -30, to: lteDate) {
-                        self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -90, to: lteDate))
-                    } else if gteDate == Calendar.current.date(byAdding: .day, value: -90, to: lteDate) {
-                        self.searchOldPhotoVideo(gteDate: Calendar.current.date(byAdding: .day, value: -180, to: lteDate))
+                    if greaterDate == Calendar.current.date(byAdding: .day, value: -30, to: lessDate) {
+                        self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -90, to: lessDate))
+                    } else if greaterDate == Calendar.current.date(byAdding: .day, value: -90, to: lessDate) {
+                        self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -180, to: lessDate))
                     } else {
-                        self.searchOldPhotoVideo(gteDate: Date.distantPast)
+                        self.searchOldPhotoVideo(greaterDate: Date.distantPast)
                     }
                 }
             }
