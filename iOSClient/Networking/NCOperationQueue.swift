@@ -226,7 +226,17 @@ class NCOperationRemoveDeletedFileQueue: ConcurrentOperation {
             self.finish()
         } else {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+            
+            let requestBody =
+            """
+            <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+            <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+                <d:prop>
+                </d:prop>
+            </d:propfind>
+            """
+            
+            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8)) { (account, files, responseData, errorCode, errorDescription) in
                 if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
                     NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_deleteFile), object: nil, userInfo: ["metadata": self.metadata, "errorCode": errorCode])

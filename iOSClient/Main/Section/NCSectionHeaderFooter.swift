@@ -162,35 +162,6 @@ class NCSectionHeader: UICollectionReusableView {
     }
 }
 
-class NCSectionMediaHeader: UICollectionReusableView {
-    
-    @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var labelLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var labelHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var labelWidthConstraint: NSLayoutConstraint!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
-    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {
-        
-        var title = ""
-        
-        if sectionDatasource.sections.count > section {
-            if sectionDatasource.sections.object(at: section) is String {
-                title = sectionDatasource.sections.object(at: section) as! String
-            }
-            if sectionDatasource.sections.object(at: section) is Date {
-                let titleDate = sectionDatasource.sections.object(at: section) as! Date
-                title = CCUtility.getTitleSectionDate(titleDate)
-            }
-        }
-        
-        labelSection.text = NSLocalizedString(title, comment: "")
-    }
-}
-
 class NCSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
