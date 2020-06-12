@@ -625,7 +625,7 @@ extension NCMedia {
                         self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -90, to: lessDate))
                     } else if greaterDate == Calendar.current.date(byAdding: .day, value: -90, to: lessDate) {
                         self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -180, to: lessDate))
-                    } else {
+                    } else if greaterDate == Calendar.current.date(byAdding: .day, value: -180, to: lessDate) {
                         self.searchOldPhotoVideo(greaterDate: Date.distantPast)
                     }
                 }
