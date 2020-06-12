@@ -585,7 +585,7 @@ extension NCMedia {
         }
     }
     
-    private func searchOldPhotoVideo(greaterDate: Date? = nil) {
+    private func searchOldPhotoVideo(value: Int = -30) {
         
         if oldInProgress { return }
         else { oldInProgress = true }
@@ -596,17 +596,18 @@ extension NCMedia {
         if let date = tableAccount?.dateLessMedia {
             lessDate = date as Date
         }
-
-        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
+        var greaterDate: Date
         
-        var greaterDate = greaterDate
-        if greaterDate == nil {
-            greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: lessDate)
+        if value == -999 {
+            greaterDate = Date.distantPast
+        } else {
+            greaterDate = Calendar.current.date(byAdding: .day, value:value, to: lessDate)!
         }
-
+        
+        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate!, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -621,12 +622,12 @@ extension NCMedia {
                     
                 } else {
                     
-                    if greaterDate == Calendar.current.date(byAdding: .day, value: -30, to: lessDate) {
-                        self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -90, to: lessDate))
-                    } else if greaterDate == Calendar.current.date(byAdding: .day, value: -90, to: lessDate) {
-                        self.searchOldPhotoVideo(greaterDate: Calendar.current.date(byAdding: .day, value: -180, to: lessDate))
-                    } else if greaterDate == Calendar.current.date(byAdding: .day, value: -180, to: lessDate) {
-                        self.searchOldPhotoVideo(greaterDate: Date.distantPast)
+                    if value == -30 {
+                        self.searchOldPhotoVideo(value: -90)
+                    } else if value == -90 {
+                        self.searchOldPhotoVideo(value: -180)
+                    } else if value == -180 {
+                        self.searchOldPhotoVideo(value: -999)
                     }
                 }
             }
