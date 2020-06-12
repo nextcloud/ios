@@ -79,6 +79,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
+
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonMore))
         
         // Cell
@@ -135,7 +137,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             self.mediaCommandView?.isHidden = true
         }
         
-        collectionView.reloadData()
         changeTheming()
     }
     
@@ -181,13 +182,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // get auto upload folder
-        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
-        
-        // Title
-        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -631,6 +625,7 @@ extension NCMedia {
         
         if newInProgress { return }
         else { newInProgress = true }
+        collectionView.reloadData()
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
@@ -648,16 +643,18 @@ extension NCMedia {
         NCCommunication.shared.searchMedia(lteDate: lteDate, gteDate: gteDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.newInProgress = false
+            self.collectionView.reloadData()
 
             if errorCode == 0 && files != nil && files!.count > 0 {
+                
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                 if tableAccount?.dateLteMedia == nil {
                     NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
                 }
                 NCManageDatabase.sharedInstance.setAccountDateUpdateMedia()
+                
+                self.reloadDataSource()
             }
-            
-            self.reloadDataSource()
         }
     }
     
@@ -665,7 +662,8 @@ extension NCMedia {
         
         if oldInProgress { return }
         else { oldInProgress = true }
-        
+        collectionView.reloadData()
+
         var lteDate = Date()
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         if let date = tableAccount?.dateLteMedia {
@@ -685,17 +683,13 @@ extension NCMedia {
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
-            
+            self.collectionView.reloadData()
+
             if errorCode == 0 {
                 if files != nil && files!.count > 0 {
+                    
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    
-                    var lastDate = files?.last?.date
-                    if lastDate != nil && lastDate == tableAccount?.dateLteMedia {
-                        lastDate = Calendar.current.date(byAdding: .second, value: -1, to: lastDate! as Date) as NSDate?
-                    }
-                    
-                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: lastDate)
+                    NCManageDatabase.sharedInstance.setAccountDateLteMedia(date: files?.last?.date)
                     self.reloadDataSource()
                     
                 } else {
