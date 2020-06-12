@@ -35,13 +35,13 @@ import NCCommunication
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
     private let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let removeDeletedFileQueue = Queuer(name: "removeDeletedFileQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
         readFolderSyncCancelAll()
         downloadThumbnailCancelAll()
-        removeDeletedFileCancelAll()
+        readFileForMediaCancelAll()
     }
     
     // Download file
@@ -77,16 +77,16 @@ import NCCommunication
         downloadThumbnailQueue.cancelAll()
     }
     
-    // Remove deleted file
-    @objc func removeDeletedFile(metadata: tableMetadata) {
+    // Verify exists yet file
+    @objc func readFileForMedia(metadata: tableMetadata) {
         
-        for operation in  removeDeletedFileQueue.operations {
-            if (operation as! NCOperationRemoveDeletedFileQueue).metadata.ocId == metadata.ocId { return }
+        for operation in  readFileForMediaQueue.operations {
+            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId { return }
         }
-        removeDeletedFileQueue.addOperation(NCOperationRemoveDeletedFileQueue.init(metadata: metadata))
+        readFileForMediaQueue.addOperation(NCOperationReadFileForMediaQueue.init(metadata: metadata))
     }
-    @objc func removeDeletedFileCancelAll() {
-        removeDeletedFileQueue.cancelAll()
+    @objc func readFileForMediaCancelAll() {
+        readFileForMediaQueue.cancelAll()
     }
 }
 
@@ -212,7 +212,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
 
 //MARK: -
 
-class NCOperationRemoveDeletedFileQueue: ConcurrentOperation {
+class NCOperationReadFileForMediaQueue: ConcurrentOperation {
    
     var metadata: tableMetadata
     

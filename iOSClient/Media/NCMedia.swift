@@ -118,7 +118,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewDidAppear(animated)
         
         mediaCommandTitle()
-        removeDeletedFile()
+        readFiles()
         searchNewPhotoVideo()
     }
     
@@ -231,15 +231,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
                         self.isEditMode = false
-                        // copy in arrayDeleteMetadata
                         for ocId in self.selectocId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                                self.appDelegate.arrayDeleteMetadata.add(metadata)
+                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                             }
-                        }
-                        if let metadata = self.appDelegate.arrayDeleteMetadata.firstObject {
-                            self.appDelegate.arrayDeleteMetadata.removeObject(at: 0)
-                            NCNetworking.shared.deleteMetadata(metadata as! tableMetadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                         }
                     }
                 )
@@ -271,25 +266,21 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 
-                DispatchQueue.global().async {
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                    DispatchQueue.main.async {
-                        self.metadatas = metadatas
-                        
-                        if self.metadatas.count  > 0 {
-                            self.mediaCommandView?.isHidden = false
-                        } else {
-                            self.mediaCommandView?.isHidden = true
-                        }
-                        self.reloadDataThenPerform {
-                            self.mediaCommandTitle()
-                        }
-                        
-                        if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                            let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
-                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
-                        }
-                    }
+                let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                self.metadatas = metadatas
+                    
+                if self.metadatas.count  > 0 {
+                    self.mediaCommandView?.isHidden = false
+                } else {
+                    self.mediaCommandView?.isHidden = true
+                }
+                self.reloadDataThenPerform {
+                    self.mediaCommandTitle()
+                }
+                    
+                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                    let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_synchronizationMedia), object: nil, userInfo: userInfo)
                 }
             }
         }
@@ -638,12 +629,12 @@ extension NCMedia {
         }
     }
     
-    private func removeDeletedFile() {
+    private func readFiles() {
         guard let collectionView = self.collectionView else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for indexPath in collectionView.indexPathsForVisibleItems {
                 let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.removeDeletedFile(metadata: metadata)
+                NCOperationQueue.shared.readFileForMedia(metadata: metadata)
             }
         }
     }
@@ -660,7 +651,7 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            self.removeDeletedFile()
+            self.readFiles()
             
             if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
                 searchOldPhotoVideo()
@@ -669,7 +660,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.removeDeletedFile()
+        self.readFiles()
         
         if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
             searchOldPhotoVideo()
