@@ -98,11 +98,11 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
         mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
         mediaCommandView?.collapseControlButtonView(true)
-        mediaCommandView!.translatesAutoresizingMaskIntoConstraints = false
-        mediaCommandView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        mediaCommandView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        mediaCommandView!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
-        mediaCommandView!.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
+        mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        mediaCommandView?.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
+        mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
         if self.metadatas.count == 0 {
             self.mediaCommandView?.isHidden = true
         }
@@ -137,9 +137,10 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     //MARK: - Command
     
     func mediaCommandTitle() {
+        mediaCommandView?.title.text = ""
         if let cell = collectionView?.visibleCells.first as? NCGridMediaCell {
             if cell.date != nil {
-                mediaCommandView!.title.text = CCUtility.getTitleSectionDate(cell.date)
+                mediaCommandView?.title.text = CCUtility.getTitleSectionDate(cell.date)
             }
         }
     }
