@@ -79,10 +79,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = NSLocalizedString("_media_", comment: "")
-
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(touchUpInsideMenuButtonMore))
-        
         // Cell
         collectionView.register(UINib.init(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
@@ -115,19 +111,15 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
-        
-        plusButton = UIBarButtonItem(title: " + ", style: .plain, target: self, action: #selector(dezoomGrid))
-        plusButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
-        separatorButton = UIBarButtonItem(title: "/", style: .plain, target: nil, action: nil)
-        separatorButton.isEnabled = false
-        separatorButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.brandElement], for: .disabled)
-        minusButton =  UIBarButtonItem(title: " - ", style: .plain, target: self, action: #selector(zoomGrid))
-        minusButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
-        gridButton = UIBarButtonItem(image: CCGraphics.changeThemingColorImage(UIImage(named: "grid"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(enableZoomGridButtons))
+    
         self.navigationItem.leftBarButtonItem = gridButton
         
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
+        mediaCommandView?.mediaView = self
+        mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
+        mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
+        mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView!.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         mediaCommandView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
@@ -140,24 +132,14 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         changeTheming()
     }
     
-    @objc func enableZoomGridButtons() {
-        self.navigationItem.setLeftBarButtonItems([plusButton,separatorButton,minusButton], animated: true)
-    }
-    
-    @objc func removeZoomGridButtons() {
-        if self.navigationItem.leftBarButtonItems?.count != 1 {
-            self.navigationItem.setLeftBarButtonItems([gridButton], animated: true)
-        }
-    }
-    
-    @objc func zoomGrid() {
+    @objc func zoomOutGrid() {
         UIView.animate(withDuration: 0.0, animations: {
             if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid) {
                 self.gridLayout.itemPerLine += 1
-                self.plusButton.isEnabled = true
+                self.mediaCommandView?.zoomInButton.isEnabled = true
             }
             if(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1) {
-                self.minusButton.isEnabled = false
+                self.mediaCommandView?.zoomOutButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -165,14 +147,14 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         })
     }
 
-    @objc func dezoomGrid() {
+    @objc func zoomInGrid() {
         UIView.animate(withDuration: 0.0, animations: {
             if(self.gridLayout.itemPerLine - 1 > 0) {
                 self.gridLayout.itemPerLine -= 1
-                self.minusButton.isEnabled = true
+                self.mediaCommandView?.zoomOutButton.isEnabled = true
             }
             if(self.gridLayout.itemPerLine == 1) {
-                self.plusButton.isEnabled = false
+                self.mediaCommandView?.zoomInButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -206,6 +188,12 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -752,8 +740,8 @@ extension NCMedia {
 extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        self.removeZoomGridButtons()
         mediaCommandTitle()
+        mediaCommandView?.collapseControlButtonView(true)
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -779,12 +767,23 @@ extension NCMedia: UIScrollViewDelegate {
 
 class NCMediaCommandView: UIView {
     
+    @IBOutlet weak var moreView: UIVisualEffectView!
+    @IBOutlet weak var gridSwitchButton: UIButton!
+    @IBOutlet weak var separatorView: UIView!
+    @IBOutlet weak var buttonControlWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var zoomInButton: UIButton!
+    @IBOutlet weak var zoomOutButton: UIButton!
+    @IBOutlet weak var controlButtonView: UIVisualEffectView!
     @IBOutlet weak var title : UILabel!
     
+    var mediaView:NCMedia?
     private let gradient: CAGradientLayer = CAGradientLayer()
     
     override func awakeFromNib() {
-        
+        moreView.layer.cornerRadius = 20
+        moreView.layer.masksToBounds = true
+        controlButtonView.layer.cornerRadius = 20
+        controlButtonView.layer.masksToBounds = true
         gradient.frame = bounds
         gradient.startPoint = CGPoint(x: 0, y: 0.50)
         gradient.endPoint = CGPoint(x: 0, y: 0.9)
@@ -792,6 +791,48 @@ class NCMediaCommandView: UIView {
         layer.insertSublayer(gradient, at: 0)
         
         title.text = ""
+    }
+    
+    @IBAction func moreButtonPressed(_ sender: UIButton) {
+        mediaView?.touchUpInsideMenuButtonMore(sender)
+    }
+    
+    @IBAction func zoomInPressed(_ sender: UIButton) {
+        mediaView?.zoomInGrid()
+    }
+    
+    @IBAction func zoomOutPressed(_ sender: UIButton) {
+        mediaView?.zoomOutGrid()
+    }
+    
+    @IBAction func gridSwitchButtonPressed(_ sender: Any) {
+        self.collapseControlButtonView(false)
+    }
+    
+    func collapseControlButtonView(_ collapse: Bool) {
+        if (collapse) {
+            self.buttonControlWidthConstraint.constant = 40
+            UIView.animate(withDuration: 0.5) {
+                self.zoomOutButton.isHidden = true
+                self.zoomInButton.isHidden = true
+                self.separatorView.isHidden = true
+                self.gridSwitchButton.isHidden = false
+                self.layoutIfNeeded()
+            }
+        } else {
+            self.buttonControlWidthConstraint.constant = 80
+            UIView.animate(withDuration: 0.5) {
+                self.zoomOutButton.isHidden = false
+                self.zoomInButton.isHidden = false
+                self.separatorView.isHidden = false
+                self.gridSwitchButton.isHidden = true
+                self.layoutIfNeeded()
+            }
+        }
+    }
+    
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return moreView.frame.contains(point) || controlButtonView.frame.contains(point)
     }
     
     override func layoutSublayers(of layer: CALayer) {
