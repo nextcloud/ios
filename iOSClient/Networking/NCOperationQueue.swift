@@ -181,7 +181,6 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-        
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -235,7 +234,6 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
             self.finish()
         } else {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            
             let requestBody =
             """
             <?xml version=\"1.0\" encoding=\"UTF-8\"?>
