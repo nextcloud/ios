@@ -812,7 +812,7 @@ class NCMediaCommandView: UIView {
     func collapseControlButtonView(_ collapse: Bool) {
         if (collapse) {
             self.buttonControlWidthConstraint.constant = 40
-            UIView.animate(withDuration: 0.5) {
+            UIView.animate(withDuration: 0.25) {
                 self.zoomOutButton.isHidden = true
                 self.zoomInButton.isHidden = true
                 self.separatorView.isHidden = true
@@ -821,7 +821,7 @@ class NCMediaCommandView: UIView {
             }
         } else {
             self.buttonControlWidthConstraint.constant = 80
-            UIView.animate(withDuration: 0.5) {
+            UIView.animate(withDuration: 0.25) {
                 self.zoomOutButton.isHidden = false
                 self.zoomInButton.isHidden = false
                 self.separatorView.isHidden = false
