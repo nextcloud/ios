@@ -500,6 +500,7 @@ class NCUtility: NSObject {
         return image ?? UIImage()
     }
     
+    // Delete Asset on Photos album
     @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String) {
         
         if UIApplication.shared.applicationState != .active { return }

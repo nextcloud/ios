@@ -406,6 +406,8 @@ import Alamofire
                 return
             }
             
+            guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
+            
             if errorCode == 0 && ocId != nil {
                 
                 CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
@@ -419,7 +421,12 @@ import Alamofire
                 metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = 0
                 metadata.status = Int(k_metadataStatusNormal)
-                        
+                
+                // Delete Asset on Photos album
+                if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == selectorUploadAutoUpload {
+                        metadata.deleteAssetLocalIdentifier = true;
+                }
+                
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
 
                 if CCUtility.getDisableLocalCacheAfterUpload() {
