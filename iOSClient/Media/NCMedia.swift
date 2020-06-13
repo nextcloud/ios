@@ -582,6 +582,10 @@ extension NCMedia {
                 
                 self.reloadDataSource()
             }
+            
+            if errorCode == 0 && files != nil && files!.count == 0 && self.metadatas.count == 0 {
+                self.searchOldPhotoVideo()
+            }
         }
     }
     
