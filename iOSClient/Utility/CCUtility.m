@@ -1403,7 +1403,7 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
 {
-    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
+    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
