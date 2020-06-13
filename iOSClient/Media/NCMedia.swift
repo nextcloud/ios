@@ -196,6 +196,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileImage ? "imageno" : "imageyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileImage = !self.filterTypeFileImage
+                        self.filterTypeFileVideo = false
                         self.reloadDataSource()
                     }
                 )
@@ -207,6 +208,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: filterTypeFileVideo ? "videono" : "videoyes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.filterTypeFileVideo = !self.filterTypeFileVideo
+                        self.filterTypeFileImage = false
                         self.reloadDataSource()
                     }
                 )
@@ -522,9 +524,7 @@ extension NCMedia {
         
         var predicate: NSPredicate?
         
-        if filterTypeFileImage && filterTypeFileVideo { // HAS SENSE ???
-            predicate = NSPredicate(format: "account == %@ AND typeFile == ''", appDelegate.activeAccount)
-        } else if filterTypeFileImage {
+        if filterTypeFileImage {
             predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
             predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_image)
