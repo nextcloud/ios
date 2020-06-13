@@ -228,7 +228,7 @@
         [[NCService shared] middlewarePing];
     }
 
-    // verify delete Asset Local Identifiers in auto upload
+    // verify delete Asset Local Identifiers in auto upload (Photos album)
     [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
    
     // Brand
@@ -711,7 +711,7 @@
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
    
     if (errorCode == 0) {
-        // verify delete Asset Local Identifiers in auto upload
+        // verify delete Asset Local Identifiers in auto upload (Photos album)
         [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:metadata.account sessionSelector:selectorUploadAutoUpload];
     }
 }
