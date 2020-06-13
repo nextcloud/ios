@@ -2414,11 +2414,10 @@ class NCManageDatabase: NSObject {
                     }
                     
                     for result in results {
-                        let metadata = tableMetadata.init(value: result)
-                        let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
-                        let fileName = (metadata.fileNameView as NSString).deletingPathExtension
+                        let ext = (result.fileNameView as NSString).pathExtension.uppercased()
+                        let fileName = (result.fileNameView as NSString).deletingPathExtension
                         if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                            metadatas.append(tableMetadata.init(value: metadata))
+                            metadatas.append(tableMetadata.init(value: result))
                         }
                     }
                 }
