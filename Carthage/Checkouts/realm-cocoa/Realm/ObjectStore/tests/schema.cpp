@@ -24,7 +24,6 @@
 #include "property.hpp"
 #include "schema.hpp"
 
-#include <realm/descriptor.hpp>
 #include <realm/group.hpp>
 #include <realm/table.hpp>
 
@@ -114,17 +113,9 @@ TEST_CASE("ObjectSchema") {
 
     SECTION("from a Group") {
         Group g;
-        TableRef pk = g.add_table("pk");
-        pk->add_column(type_String, "pk_table");
-        pk->add_column(type_String, "pk_property");
-        pk->add_empty_row();
-        pk->set_string(0, 0, "table");
-        pk->set_string(1, 0, "pk");
 
-        TableRef table = g.add_table("class_table");
+        TableRef table = g.add_table_with_primary_key("class_table", type_Int, "pk");
         TableRef target = g.add_table("class_target");
-
-        table->add_column(type_Int, "pk");
 
         table->add_column(type_Int, "int");
         table->add_column(type_Bool, "bool");
@@ -145,13 +136,8 @@ TEST_CASE("ObjectSchema") {
         table->add_column(type_Binary, "data?", true);
         table->add_column(type_Timestamp, "date?", true);
 
-        table->add_column(type_Table, "subtable 1");
-        size_t col = table->add_column(type_Table, "subtable 2");
-        table->get_subdescriptor(col)->add_column(type_Int, "value");
-
         auto add_list = [](TableRef table, DataType type, StringData name, bool nullable) {
-            size_t col = table->add_column(type_Table, name);
-            table->get_subdescriptor(col)->add_column(type, ObjectStore::ArrayColumnName, nullptr, nullable);
+            table->add_column_list(type, name, nullable);
         };
 
         add_list(table, type_Int, "int array", false);
@@ -169,30 +155,32 @@ TEST_CASE("ObjectSchema") {
         add_list(table, type_Binary, "data? array", true);
         add_list(table, type_Timestamp, "date? array", true);
 
-        size_t indexed_start = table->get_column_count();
-        table->add_column(type_Int, "indexed int");
-        table->add_column(type_Bool, "indexed bool");
-        table->add_column(type_String, "indexed string");
-        table->add_column(type_Timestamp, "indexed date");
+        std::vector<ColKey> indexed_cols;
+        indexed_cols.push_back(table->add_column(type_Int, "indexed int"));
+        indexed_cols.push_back(table->add_column(type_Bool, "indexed bool"));
+        indexed_cols.push_back(table->add_column(type_String, "indexed string"));
+        indexed_cols.push_back(table->add_column(type_Timestamp, "indexed date"));
 
-        table->add_column(type_Int, "indexed int?", true);
-        table->add_column(type_Bool, "indexed bool?", true);
-        table->add_column(type_String, "indexed string?", true);
-        table->add_column(type_Timestamp, "indexed date?", true);
+        indexed_cols.push_back(table->add_column(type_Int, "indexed int?", true));
+        indexed_cols.push_back(table->add_column(type_Bool, "indexed bool?", true));
+        indexed_cols.push_back(table->add_column(type_String, "indexed string?", true));
+        indexed_cols.push_back(table->add_column(type_Timestamp, "indexed date?", true));
 
-        for (size_t i = indexed_start; i < table->get_column_count(); ++i)
-            table->add_search_index(i);
+        for (auto col : indexed_cols)
+            table->add_search_index(col);
 
-        ObjectSchema os(g, "table");
+        ObjectSchema os(g, "table", table->get_key());
+        REQUIRE(os.table_key == table->get_key());
 
 #define REQUIRE_PROPERTY(name, type, ...) do { \
     Property* prop; \
     REQUIRE((prop = os.property_for_name(name))); \
     REQUIRE((*prop == Property{name, PropertyType::type, __VA_ARGS__})); \
-    REQUIRE(prop->table_column == expected_col++); \
+    REQUIRE(prop->column_key == *expected_col++); \
 } while (0)
 
-        size_t expected_col = 0;
+        auto all_column_keys = table->get_column_keys();
+        auto expected_col = all_column_keys.begin();
 
         REQUIRE(os.property_for_name("nonexistent property") == nullptr);
 
@@ -216,11 +204,6 @@ TEST_CASE("ObjectSchema") {
         REQUIRE_PROPERTY("string?", String|PropertyType::Nullable);
         REQUIRE_PROPERTY("data?", Data|PropertyType::Nullable);
         REQUIRE_PROPERTY("date?", Date|PropertyType::Nullable);
-
-        // Unsupported column type should be skipped entirely
-        REQUIRE(os.property_for_name("subtable 1") == nullptr);
-        REQUIRE(os.property_for_name("subtable 2") == nullptr);
-        expected_col += 2;
 
         REQUIRE_PROPERTY("int array", Int|PropertyType::Array);
         REQUIRE_PROPERTY("bool array", Bool|PropertyType::Array);
@@ -246,9 +229,6 @@ TEST_CASE("ObjectSchema") {
         REQUIRE_PROPERTY("indexed bool?", Bool|PropertyType::Nullable, Property::IsPrimary{false}, Property::IsIndexed{true});
         REQUIRE_PROPERTY("indexed string?", String|PropertyType::Nullable, Property::IsPrimary{false}, Property::IsIndexed{true});
         REQUIRE_PROPERTY("indexed date?", Date|PropertyType::Nullable, Property::IsPrimary{false}, Property::IsIndexed{true});
-
-        pk->set_string(1, 0, "nonexistent property");
-        REQUIRE(ObjectSchema(g, "table").primary_key_property() == nullptr);
     }
 }
 

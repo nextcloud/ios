@@ -30,6 +30,7 @@ extension NCDetailNavigationController {
         if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
             return
         }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
@@ -48,7 +49,6 @@ extension NCDetailNavigationController {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let metadataUpdated = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         var titleOffline = ""
         if (localFile == nil || localFile!.offline == false) {
             titleOffline = NSLocalizedString("_set_available_offline_", comment: "")
@@ -76,7 +76,7 @@ extension NCDetailNavigationController {
             )
         )
         
-        if metadataUpdated == nil || metadataUpdated?.session == "" {
+        if metadata.session == "" {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -136,7 +136,7 @@ extension NCDetailNavigationController {
             )
         )
         
-        if metadataUpdated == nil || metadataUpdated?.session == "" {
+        if metadata.session == "" {
             actions.append(
                 NCMenuAction(
                     title: titleOffline,
@@ -187,7 +187,7 @@ extension NCDetailNavigationController {
         
         // IMAGE - VIDEO - AUDIO
         
-        if metadataUpdated == nil || metadataUpdated?.session == "" {
+        if metadata.session == "" {
             if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
                 actions.append(
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),

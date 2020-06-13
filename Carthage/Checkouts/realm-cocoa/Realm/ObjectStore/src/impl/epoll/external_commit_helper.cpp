@@ -21,7 +21,7 @@
 #include <realm/util/fifo_helper.hpp>
 
 #include <realm/util/assert.hpp>
-#include <realm/group_shared_options.hpp>
+#include <realm/db.hpp>
 
 #include <algorithm>
 #include <errno.h>
@@ -115,7 +115,7 @@ ExternalCommitHelper::ExternalCommitHelper(RealmCoordinator& parent)
 {
     std::string path;
     std::string temp_dir = util::normalize_dir(parent.get_config().fifo_files_fallback_path);
-    std::string sys_temp_dir = util::normalize_dir(SharedGroupOptions::get_sys_tmp_dir());
+    std::string sys_temp_dir = util::normalize_dir(DBOptions::get_sys_tmp_dir());
 
     // Object Store needs to create a named pipe in order to coordinate notifications.
     // This can be a problem on some file systems (e.g. FAT32) or due to security policies in SELinux. Most commonly
@@ -126,7 +126,7 @@ ExternalCommitHelper::ExternalCommitHelper(RealmCoordinator& parent)
     // In order of priority we attempt to write the file in the following locations:
     //  1) Next to the Realm file itself
     //  2) A location defined by `Realm::Config::fifo_files_fallback_path`
-    //  3) A location defined by `SharedGroupOptions::set_sys_tmp_dir()`
+    //  3) A location defined by `DBOptions::set_sys_tmp_dir()`
     //
     // Core has a similar policy for its named pipes.
     //

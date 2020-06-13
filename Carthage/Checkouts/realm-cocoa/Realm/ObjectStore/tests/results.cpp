@@ -29,9 +29,10 @@
 #include "property.hpp"
 #include "results.hpp"
 #include "schema.hpp"
+#include "util/scheduler.hpp"
 
-#include <realm/group_shared.hpp>
-#include <realm/link_view.hpp>
+#include <realm/db.hpp>
+#include <realm/group.hpp>
 #include <realm/query_engine.hpp>
 #include <realm/query_expression.hpp>
 
@@ -43,9 +44,9 @@
 namespace realm {
 class TestHelper {
 public:
-    static SharedGroup& get_shared_group(SharedRealm const& shared_realm)
+    static DBRef& get_shared_group(SharedRealm const& shared_realm)
     {
-        return *Realm::Internal::get_shared_group(*shared_realm);
+        return Realm::Internal::get_db(*shared_realm);
     }
 };
 }
@@ -78,7 +79,6 @@ TEST_CASE("notifications: async delivery") {
     _impl::RealmCoordinator::assert_no_open_realms();
 
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -88,16 +88,16 @@ TEST_CASE("notifications: async delivery") {
         }},
     });
 
-    auto coordinator = _impl::RealmCoordinator::get_existing_coordinator(config.path);
+    auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
     auto table = r->read_group().get_table("class_object");
+    auto col = table->get_column_key("value");
 
     r->begin_transaction();
-    table->add_empty_row(10);
     for (int i = 0; i < 10; ++i)
-        table->set_int(0, i, i * 2);
+        table->create_object().set_all(i * 2);
     r->commit_transaction();
 
-    Results results(r, table->where().greater(0, 0).less(0, 10));
+    Results results(r, table->where().greater(col, 0).less(col, 10));
 
     int notification_calls = 0;
     auto token = results.add_notification_callback([&](CollectionChangeSet, std::exception_ptr err) {
@@ -107,14 +107,14 @@ TEST_CASE("notifications: async delivery") {
 
     auto make_local_change = [&] {
         r->begin_transaction();
-        table->set_int(0, 0, 4);
+        table->begin()->set(col, 4);
         r->commit_transaction();
     };
 
     auto make_remote_change = [&] {
-        auto r2 = coordinator->get_realm();
+        auto r2 = coordinator->get_realm(util::Scheduler::get_frozen());
         r2->begin_transaction();
-        r2->read_group().get_table("class_object")->set_int(0, 0, 5);
+        r2->read_group().get_table("class_object")->begin()->set(col, 5);
         r2->commit_transaction();
     };
 
@@ -375,7 +375,7 @@ TEST_CASE("notifications: async delivery") {
             token3 = results.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
                 called = true;
                 REQUIRE(c.empty());
-                REQUIRE(table->get_int(0, 0) == 5);
+                REQUIRE(table->begin()->get<int64_t>(col) == 5);
             });
         });
 
@@ -418,7 +418,7 @@ TEST_CASE("notifications: async delivery") {
             REQUIRE(!c.empty());
         });
 
-        table->set_int(0, table->add_empty_row(), 5);
+        table->create_object().set(col, 5);
         r->commit_transaction();
         advance_and_notify(*r);
     }
@@ -703,16 +703,16 @@ TEST_CASE("notifications: async delivery") {
             }
             else {
                 REQUIRE(r->is_in_transaction());
-                table->set_int(0, 0, 100);
+                table->begin()->set(col, 100);
             }
         });
         advance_and_notify(*r);
         make_remote_change();
         coordinator->on_change();
         r->begin_transaction();
-        REQUIRE(table->get_int(0, 0) == 100);
+        REQUIRE(table->begin()->get<int64_t>(col) == 100);
         r->cancel_transaction();
-        REQUIRE(table->get_int(0, 0) != 100);
+        REQUIRE(table->begin()->get<int64_t>(col) != 100);
     }
 
     SECTION("invalidate() from within notification is a no-op") {
@@ -748,7 +748,6 @@ TEST_CASE("notifications: skip") {
     _impl::RealmCoordinator::assert_no_open_realms();
 
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -758,13 +757,13 @@ TEST_CASE("notifications: skip") {
         }},
     });
 
-    auto coordinator = _impl::RealmCoordinator::get_existing_coordinator(config.path);
+    auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
     auto table = r->read_group().get_table("class_object");
+    auto col = table->get_column_key("value");
 
     r->begin_transaction();
-    table->add_empty_row(10);
     for (int i = 0; i < 10; ++i)
-        table->set_int(0, i, i * 2);
+        table->create_object().set(col, i * 2);
     r->commit_transaction();
 
     Results results(r, table->where());
@@ -779,15 +778,15 @@ TEST_CASE("notifications: skip") {
 
     auto make_local_change = [&](auto& token) {
         r->begin_transaction();
-        table->add_empty_row();
+        table->create_object();
         token.suppress_next();
         r->commit_transaction();
     };
 
     auto make_remote_change = [&] {
-        auto r2 = coordinator->get_realm();
+        auto r2 = coordinator->get_realm(util::Scheduler::get_frozen());
         r2->begin_transaction();
-        r2->read_group().get_table("class_object")->add_empty_row();
+        r2->read_group().get_table("class_object")->create_object();
         r2->commit_transaction();
     };
 
@@ -948,7 +947,7 @@ TEST_CASE("notifications: skip") {
 
         // should now produce a notification
         r->begin_transaction();
-        table->add_empty_row();
+        table->create_object();
         r->commit_transaction();
         advance_and_notify(*r);
         REQUIRE(calls1 == 2);
@@ -976,12 +975,131 @@ TEST_CASE("notifications: skip") {
     }
 }
 
-#if REALM_PLATFORM_APPLE
+TEST_CASE("notifications: TableView delivery") {
+    _impl::RealmCoordinator::assert_no_open_realms();
+
+    InMemoryTestFile config;
+    config.automatic_change_notifications = false;
+
+    auto r = Realm::get_shared_realm(config);
+    r->update_schema({
+        {"object", {
+            {"value", PropertyType::Int}
+        }},
+    });
+
+    auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
+    auto table = r->read_group().get_table("class_object");
+    auto col = table->get_column_key("value");
+
+    r->begin_transaction();
+    for (int i = 0; i < 10; ++i)
+        table->create_object().set(col, i * 2);
+    r->commit_transaction();
+
+    Results results(r, table->where());
+    results.set_update_policy(Results::UpdatePolicy::AsyncOnly);
+
+    SECTION("Initial run never happens with no callbacks") {
+        advance_and_notify(*r);
+        REQUIRE(results.get_mode() == Results::Mode::Query);
+    }
+
+    results.evaluate_query_if_needed();
+    // Create and immediately remove a callback so that the notifier gets created
+    // even though we have automatic change notifications disabled
+    static_cast<void>(results.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) {}));
+    REQUIRE(results.get_mode() == Results::Mode::TableView);
+    REQUIRE(results.size() == 0);
+
+    auto make_local_change = [&] {
+        r->begin_transaction();
+        table->create_object();
+        r->commit_transaction();
+    };
+
+    auto make_remote_change = [&] {
+        auto r2 = coordinator->get_realm(util::Scheduler::get_frozen());
+        r2->begin_transaction();
+        r2->read_group().get_table("class_object")->create_object();
+        r2->commit_transaction();
+    };
+
+    SECTION("does not update after local change with no on_change") {
+        make_local_change();
+        REQUIRE(results.size() == 0);
+    }
+
+    SECTION("TV is delivered when no commit is made") {
+        advance_and_notify(*r);
+        REQUIRE(results.get_mode() == Results::Mode::TableView);
+        REQUIRE(results.size() == 10);
+    }
+
+    SECTION("TV is not delivered when notifier version > local version") {
+        make_remote_change();
+        r->refresh();
+        REQUIRE(results.size() == 0);
+    }
+
+    SECTION("TV is delivered when notifier version = local version") {
+        make_remote_change();
+        advance_and_notify(*r);
+        REQUIRE(results.size() == 11);
+    }
+
+    SECTION("TV is delivered when previous TV wasn't used due to never refreshing") {
+        // These two generate TVs that never get used
+        make_remote_change();
+        on_change_but_no_notify(*r);
+        make_remote_change();
+        on_change_but_no_notify(*r);
+
+        // But we generate a third one anyway because the main thread never even
+        // got a chance to use them, rather than it not wanting them
+        make_remote_change();
+        advance_and_notify(*r);
+
+        REQUIRE(results.size() == 13);
+    }
+
+    SECTION("TV is not delivered when main thread refreshed but previous TV was not used") {
+        // First run generates a TV that's unused
+        make_remote_change();
+        advance_and_notify(*r);
+
+        // When the second run is delivered we discover first run wasn't used
+        make_remote_change();
+        advance_and_notify(*r);
+
+        // And then third one doesn't run at all
+        make_remote_change();
+        advance_and_notify(*r);
+
+        // And we can't use the old TV because it's out of date
+        REQUIRE(results.size() == 0);
+
+        // We don't start implicitly updating again even after it is used
+        make_remote_change();
+        advance_and_notify(*r);
+        REQUIRE(results.size() == 0);
+    }
+
+    SECTION("TV can be delivered in a write transaction") {
+        make_remote_change();
+        advance_and_notify(*r);
+        r->begin_transaction();
+        REQUIRE(results.size() == 11);
+        r->cancel_transaction();
+    }
+}
+
+
+#if REALM_PLATFORM_APPLE && NOTIFIER_BACKGROUND_ERRORS
 TEST_CASE("notifications: async error handling") {
     _impl::RealmCoordinator::assert_no_open_realms();
 
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -991,7 +1109,7 @@ TEST_CASE("notifications: async error handling") {
         }},
     });
 
-    auto coordinator = _impl::RealmCoordinator::get_existing_coordinator(config.path);
+    auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
     Results results(r, *r->read_group().get_table("class_object"));
 
     auto r2 = Realm::get_shared_realm(config);
@@ -1187,7 +1305,6 @@ TEST_CASE("notifications: sync") {
 
     SyncServer server(false);
     SyncTestFile config(server);
-    config.cache = false;
     config.schema = Schema{
         {"object", {
             {"value", PropertyType::Int},
@@ -1198,8 +1315,8 @@ TEST_CASE("notifications: sync") {
         auto r = Realm::get_shared_realm(config);
         auto wait_realm = Realm::get_shared_realm(config);
 
-        Results results(r, *r->read_group().get_table("class_object"));
-        Results wait_results(wait_realm, *wait_realm->read_group().get_table("class_object"));
+        Results results(r, r->read_group().get_table("class_object"));
+        Results wait_results(wait_realm, wait_realm->read_group().get_table("class_object"));
         auto token1 = results.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) { });
         auto token2 = wait_results.add_notification_callback([&](CollectionChangeSet, std::exception_ptr) { });
 
@@ -1207,7 +1324,7 @@ TEST_CASE("notifications: sync") {
         {
             auto write_realm = Realm::get_shared_realm(config);
             write_realm->begin_transaction();
-            sync::create_object(write_realm->read_group(), *write_realm->read_group().get_table("class_object"));
+            write_realm->read_group().get_table("class_object")->create_object();
             write_realm->commit_transaction();
         }
 
@@ -1231,7 +1348,6 @@ TEST_CASE("notifications: results") {
     _impl::RealmCoordinator::assert_no_open_realms();
 
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -1251,22 +1367,25 @@ TEST_CASE("notifications: results") {
         }}
     });
 
-    auto coordinator = _impl::RealmCoordinator::get_existing_coordinator(config.path);
+    auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
     auto table = r->read_group().get_table("class_object");
+    auto col_value = table->get_column_key("value");
+    auto col_link = table->get_column_key("link");
 
     r->begin_transaction();
-    r->read_group().get_table("class_linked to object")->add_empty_row(10);
-    table->add_empty_row(10);
+    std::vector<ObjKey> target_keys;
+    r->read_group().get_table("class_linked to object")->create_objects(10, target_keys);
+
+    ObjKeys object_keys({3, 4, 7, 9, 10, 21, 24, 34, 42, 50});
     for (int i = 0; i < 10; ++i) {
-        table->set_int(0, i, i * 2);
-        table->set_link(1, i, i);
+        table->create_object(object_keys[i]).set_all(i * 2, target_keys[i]);
     }
     r->commit_transaction();
 
     auto r2 = coordinator->get_realm();
     auto r2_table = r2->read_group().get_table("class_object");
 
-    Results results(r, table->where().greater(0, 0).less(0, 10));
+    Results results(r, table->where().greater(col_value, 0).less(col_value, 10));
 
     SECTION("unsorted notifications") {
         int notification_calls = 0;
@@ -1288,87 +1407,43 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifications to unrelated tables do not send notifications") {
             write([&] {
-                r->read_group().get_table("class_other object")->add_empty_row();
+                r->read_group().get_table("class_other object")->create_object();
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("irrelevant modifications to linked tables do not send notifications") {
             write([&] {
-                r->read_group().get_table("class_linked to object")->add_empty_row();
+                r->read_group().get_table("class_linked to object")->create_object();
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("irrelevant modifications to linking tables do not send notifications") {
             write([&] {
-                r->read_group().get_table("class_linking object")->add_empty_row();
+                r->read_group().get_table("class_linking object")->create_object();
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("modifications that leave a non-matching row non-matching do not send notifications") {
             write([&] {
-                table->set_int(0, 6, 13);
+                table->get_object(object_keys[6]).set(col_value, 13);
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("deleting non-matching rows does not send a notification") {
             write([&] {
-                table->move_last_over(0);
-                table->move_last_over(6);
+                table->remove_object(object_keys[0]);
+                table->remove_object(object_keys[6]);
             });
             REQUIRE(notification_calls == 1);
-        }
-
-        SECTION("swapping adjacent matching and non-matching rows does not send notifications") {
-            write([&] {
-                table->swap_rows(0, 1);
-            });
-            REQUIRE(notification_calls == 1);
-        }
-
-        SECTION("swapping non-adjacent matching and non-matching rows send a single insert/delete pair") {
-            write([&] {
-                table->swap_rows(0, 2);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_INDICES(change.deletions, 1);
-            REQUIRE_INDICES(change.insertions, 0);
-        }
-
-        SECTION("swapping matching rows sends insert/delete pairs") {
-            write([&] {
-                table->swap_rows(1, 4);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_INDICES(change.deletions, 0, 3);
-            REQUIRE_INDICES(change.insertions, 0, 3);
-
-            write([&] {
-                table->swap_rows(1, 2);
-                table->swap_rows(2, 3);
-                table->swap_rows(3, 4);
-            });
-            REQUIRE(notification_calls == 3);
-            REQUIRE_INDICES(change.deletions, 1, 2, 3);
-            REQUIRE_INDICES(change.insertions, 0, 1, 2);
-        }
-
-        SECTION("swap does not inhibit move collapsing after removals") {
-            write([&] {
-                table->swap_rows(2, 3);
-                table->set_int(0, 3, 100);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_INDICES(change.deletions, 1);
-            REQUIRE(change.insertions.empty());
         }
 
         SECTION("modifying a matching row and leaving it matching marks that row as modified") {
             write([&] {
-                table->set_int(0, 1, 3);
+                table->get_object(object_keys[1]).set(col_value, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.modifications, 0);
@@ -1377,7 +1452,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifying a matching row to no longer match marks that row as deleted") {
             write([&] {
-                table->set_int(0, 2, 0);
+                table->get_object(object_keys[2]).set(col_value, 0);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 1);
@@ -1385,7 +1460,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifying a non-matching row to match marks that row as inserted, but not modified") {
             write([&] {
-                table->set_int(0, 7, 3);
+                table->get_object(object_keys[7]).set(col_value, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 4);
@@ -1395,39 +1470,21 @@ TEST_CASE("notifications: results") {
 
         SECTION("deleting a matching row marks that row as deleted") {
             write([&] {
-                table->move_last_over(3);
+                table->remove_object(object_keys[3]);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 2);
         }
 
-        SECTION("moving a matching row via deletion marks that row as moved") {
-            write([&] {
-                table->where().greater_equal(0, 10).find_all().clear(RemoveMode::unordered);
-                table->move_last_over(0);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_MOVES(change, {3, 0});
-        }
-
-        SECTION("moving a matching row via subsumption marks that row as modified") {
-            write([&] {
-                table->where().greater_equal(0, 10).find_all().clear(RemoveMode::unordered);
-                table->move_last_over(0);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_MOVES(change, {3, 0});
-        }
-
         SECTION("modifications from multiple transactions are collapsed") {
             r2->begin_transaction();
-            r2_table->set_int(0, 0, 6);
+            r2_table->get_object(object_keys[0]).set(col_value, 6);
             r2->commit_transaction();
 
             coordinator->on_change();
 
             r2->begin_transaction();
-            r2_table->set_int(0, 1, 0);
+            r2_table->get_object(object_keys[1]).set(col_value,03);
             r2->commit_transaction();
 
             REQUIRE(notification_calls == 1);
@@ -1438,14 +1495,13 @@ TEST_CASE("notifications: results") {
 
         SECTION("inserting a row then modifying it in a second transaction does not report it as modified") {
             r2->begin_transaction();
-            size_t ndx = r2_table->add_empty_row();
-            r2_table->set_int(0, ndx, 6);
+            ObjKey k = r2_table->create_object(ObjKey(53)).set(col_value, 6).get_key();
             r2->commit_transaction();
 
             coordinator->on_change();
 
             r2->begin_transaction();
-            r2_table->set_int(0, ndx, 7);
+            r2_table->get_object(k).set(col_value, 7);
             r2->commit_transaction();
 
             advance_and_notify(*r);
@@ -1458,8 +1514,8 @@ TEST_CASE("notifications: results") {
 
         SECTION("modification indices are pre-insert/delete") {
             r->begin_transaction();
-            table->set_int(0, 2, 0);
-            table->set_int(0, 3, 6);
+            table->get_object(object_keys[2]).set(col_value, 0);
+            table->get_object(object_keys[3]).set(col_value, 6);
             r->commit_transaction();
             advance_and_notify(*r);
 
@@ -1471,14 +1527,13 @@ TEST_CASE("notifications: results") {
 
         SECTION("notifications are not delivered when collapsing transactions results in no net change") {
             r2->begin_transaction();
-            size_t ndx = r2_table->add_empty_row();
-            r2_table->set_int(0, ndx, 5);
+            ObjKey k = r2_table->create_object().set(col_value, 5).get_key();
             r2->commit_transaction();
 
             coordinator->on_change();
 
             r2->begin_transaction();
-            r2_table->move_last_over(ndx);
+            r2_table->remove_object(k);
             r2->commit_transaction();
 
             REQUIRE(notification_calls == 1);
@@ -1489,18 +1544,28 @@ TEST_CASE("notifications: results") {
 
         SECTION("inserting a non-matching row at the beginning does not produce a notification") {
             write([&] {
-                table->insert_empty_row(1);
+                table->create_object(ObjKey(1));
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("inserting a matching row at the beginning marks just it as inserted") {
             write([&] {
-                table->insert_empty_row(0);
-                table->set_int(0, 0, 5);
+                table->create_object(ObjKey(0)).set(col_value, 5);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 0);
+        }
+
+        SECTION("modification to related table not included in query") {
+            write([&] {
+                auto table = r->read_group().get_table("class_linked to object");
+                auto col = table->get_column_key("value");
+                auto obj = table->get_object(target_keys[1]);
+                obj.set(col, 42);  // Will affect first entry in results
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE_INDICES(change.modifications, 0);
         }
     }
 
@@ -1545,7 +1610,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("both are called after a write") {
             write([&](auto&& t) {
-                t.set_int(0, t.add_empty_row(), 5);
+                t.create_object(ObjKey(53)).set(col_value, 5);
             });
             REQUIRE(callback.before_calls == 1);
             REQUIRE(callback.after_calls == 2);
@@ -1557,11 +1622,11 @@ TEST_CASE("notifications: results") {
             callback.on_before = [&] {
                 REQUIRE(results.size() == 4);
                 REQUIRE_INDICES(callback.before_change.deletions, 0);
-                REQUIRE(results.get(0).is_attached());
-                REQUIRE(results.get(0).get_int(0) == 2);
+                REQUIRE(results.get(0).is_valid());
+                REQUIRE(results.get(0).get<int64_t>(col_value) == 2);
             };
             write([&](auto&& t) {
-                t.move_last_over(results.get(0).get_index());
+                t.remove_object(results.get(0).get_key());
             });
             REQUIRE(callback.before_calls == 1);
             REQUIRE(callback.after_calls == 2);
@@ -1571,10 +1636,10 @@ TEST_CASE("notifications: results") {
             callback.on_after = [&] {
                 REQUIRE(results.size() == 5);
                 REQUIRE_INDICES(callback.after_change.insertions, 4);
-                REQUIRE(results.last()->get_int(0) == 5);
+                REQUIRE(results.last()->get<int64_t>(col_value) == 5);
             };
             write([&](auto&& t) {
-                t.set_int(0, t.add_empty_row(), 5);
+                t.create_object(ObjKey(53)).set(col_value, 5);
             });
             REQUIRE(callback.before_calls == 1);
             REQUIRE(callback.after_calls == 2);
@@ -1583,7 +1648,7 @@ TEST_CASE("notifications: results") {
 
     SECTION("sorted notifications") {
         // Sort in descending order
-        results = results.sort({*table, {{0}}, {false}});
+        results = results.sort({{{col_value}}, {false}});
 
         int notification_calls = 0;
         CollectionChangeSet change;
@@ -1602,58 +1667,33 @@ TEST_CASE("notifications: results") {
             advance_and_notify(*r);
         };
 
-        SECTION("swapping rows does not send notifications") {
-            write([&] {
-                table->swap_rows(2, 3);
-            });
-            REQUIRE(notification_calls == 1);
-        }
-
         SECTION("modifications that leave a non-matching row non-matching do not send notifications") {
             write([&] {
-                table->set_int(0, 6, 13);
+                table->get_object(object_keys[6]).set(col_value, 13);
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("deleting non-matching rows does not send a notification") {
             write([&] {
-                table->move_last_over(0);
-                table->move_last_over(6);
+                table->remove_object(object_keys[0]);
+                table->remove_object(object_keys[6]);
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("modifying a matching row and leaving it matching marks that row as modified") {
             write([&] {
-                table->set_int(0, 1, 3);
+                table->get_object(object_keys[1]).set(col_value, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.modifications, 3);
             REQUIRE_INDICES(change.modifications_new, 3);
-        }
-
-        SECTION("swapping leaves modified rows marked as modified") {
-            write([&] {
-                table->set_int(0, 1, 3);
-                table->swap_rows(1, 2);
-            });
-            REQUIRE(notification_calls == 2);
-            REQUIRE_INDICES(change.modifications, 3);
-            REQUIRE_INDICES(change.modifications_new, 3);
-
-            write([&] {
-                table->swap_rows(3, 1);
-                table->set_int(0, 1, 7);
-            });
-            REQUIRE(notification_calls == 3);
-            REQUIRE_INDICES(change.modifications, 1);
-            REQUIRE_INDICES(change.modifications_new, 1);
         }
 
         SECTION("modifying a matching row to no longer match marks that row as deleted") {
             write([&] {
-                table->set_int(0, 2, 0);
+                table->get_object(object_keys[2]).set(col_value, 0);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 2);
@@ -1661,7 +1701,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifying a non-matching row to match marks that row as inserted") {
             write([&] {
-                table->set_int(0, 7, 3);
+                table->get_object(object_keys[7]).set(col_value, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 3);
@@ -1669,23 +1709,72 @@ TEST_CASE("notifications: results") {
 
         SECTION("deleting a matching row marks that row as deleted") {
             write([&] {
-                table->move_last_over(3);
+                table->remove_object(object_keys[3]);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 1);
         }
 
-        SECTION("moving a matching row via deletion does not send a notification") {
+        SECTION("clearing the table marks all rows as deleted") {
+            size_t num_expected_deletes = results.size();
             write([&] {
-                table->where().greater_equal(0, 10).find_all().clear(RemoveMode::unordered);
-                table->move_last_over(0);
+                table->clear();
             });
-            REQUIRE(notification_calls == 1);
+            REQUIRE(notification_calls == 2);
+            REQUIRE(change.deletions.count() == num_expected_deletes);
+        }
+
+        SECTION("clear insert clear marks the correct rows as deleted") {
+            size_t num_expected_deletes = results.size();
+            write([&] {
+                table->clear();
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE(change.deletions.count() == num_expected_deletes);
+            write([&] {
+                table->create_object().set(col_value, 3);
+                table->create_object().set(col_value, 4);
+                table->create_object().set(col_value, 5);
+            });
+            REQUIRE(notification_calls == 3);
+            REQUIRE_INDICES(change.insertions, 0, 1, 2);
+            REQUIRE(change.deletions.empty());
+            write([&] {
+                table->clear();
+            });
+            REQUIRE(notification_calls == 4);
+            REQUIRE_INDICES(change.deletions, 0, 1, 2);
+            REQUIRE(change.insertions.empty());
+            REQUIRE(change.modifications.empty());
+        }
+
+        SECTION("delete insert clear marks the correct rows as deleted") {
+            size_t num_expected_deletes = results.size();
+            write([&] {
+                results.clear(); // delete all 4 matches
+            });
+            REQUIRE(notification_calls == 2);
+            REQUIRE(change.deletions.count() == num_expected_deletes);
+            write([&] {
+                table->create_object(ObjKey(57)).set(col_value, 3);
+                table->create_object(ObjKey(58)).set(col_value, 4);
+                table->create_object(ObjKey(59)).set(col_value, 5);
+            });
+            REQUIRE(notification_calls == 3);
+            REQUIRE_INDICES(change.insertions, 0, 1, 2);
+            REQUIRE(change.deletions.empty());
+            write([&] {
+                table->clear();
+            });
+            REQUIRE(notification_calls == 4);
+            REQUIRE_INDICES(change.deletions, 0, 1, 2);
+            REQUIRE(change.insertions.empty());
+            REQUIRE(change.modifications.empty());
         }
 
         SECTION("modifying a matching row to change its position sends insert+delete") {
             write([&] {
-                table->set_int(0, 2, 9);
+                table->get_object(object_keys[2]).set(col_value, 9);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 2);
@@ -1694,11 +1783,11 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifications from multiple transactions are collapsed") {
             r2->begin_transaction();
-            r2_table->set_int(0, 0, 5);
+            r2_table->get_object(object_keys[0]).set(col_value, 5);
             r2->commit_transaction();
 
             r2->begin_transaction();
-            r2_table->set_int(0, 1, 0);
+            r2_table->get_object(object_keys[1]).set(col_value, 0);
             r2->commit_transaction();
 
             REQUIRE(notification_calls == 1);
@@ -1709,16 +1798,14 @@ TEST_CASE("notifications: results") {
         SECTION("moving a matching row by deleting all other rows") {
             r->begin_transaction();
             table->clear();
-            table->add_empty_row(2);
-            table->set_int(0, 0, 15);
-            table->set_int(0, 1, 5);
+            ObjKey k0 = table->create_object().set(col_value, 15).get_key();
+            table->create_object().set(col_value, 5);
             r->commit_transaction();
             advance_and_notify(*r);
 
             write([&] {
-                table->move_last_over(0);
-                table->add_empty_row();
-                table->set_int(0, 1, 3);
+                table->remove_object(k0);
+                table->create_object().set(col_value, 3);
             });
 
             REQUIRE(notification_calls == 3);
@@ -1728,7 +1815,7 @@ TEST_CASE("notifications: results") {
     }
 
     SECTION("distinct notifications") {
-        results = results.distinct(SortDescriptor(*table, {{0}}));
+        results = results.distinct(DistinctDescriptor({{col_value}}));
 
         int notification_calls = 0;
         CollectionChangeSet change;
@@ -1749,22 +1836,22 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifications that leave a non-matching row non-matching do not send notifications") {
             write([&] {
-                table->set_int(0, 6, 13);
+                table->get_object(object_keys[6]).set(col_value, 13);
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("deleting non-matching rows does not send a notification") {
             write([&] {
-                table->move_last_over(0);
-                table->move_last_over(6);
+                table->remove_object(object_keys[0]);
+                table->remove_object(object_keys[6]);
             });
             REQUIRE(notification_calls == 1);
         }
 
         SECTION("modifying a matching row and leaving it matching marks that row as modified") {
             write([&] {
-                table->set_int(0, 1, 3);
+                table->get_object(object_keys[1]).set(col_value, 3);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.modifications, 0);
@@ -1774,7 +1861,7 @@ TEST_CASE("notifications: results") {
         SECTION("modifying a non-matching row which is after the distinct results in the table to be a same value \
                 in the distinct results doesn't send notification.") {
             write([&] {
-                table->set_int(0, 6, 2);
+                table->get_object(object_keys[6]).set(col_value, 2);
             });
             REQUIRE(notification_calls == 1);
         }
@@ -1782,7 +1869,7 @@ TEST_CASE("notifications: results") {
         SECTION("modifying a non-matching row which is before the distinct results in the table to be a same value \
                 in the distinct results send insert + delete.") {
             write([&] {
-                table->set_int(0, 0, 2);
+                table->get_object(object_keys[0]).set(col_value, 2);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 0);
@@ -1791,7 +1878,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifying a matching row to duplicated value in distinct results marks that row as deleted") {
             write([&] {
-                table->set_int(0, 2, 2);
+                table->get_object(object_keys[2]).set(col_value, 2);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.deletions, 1);
@@ -1799,7 +1886,7 @@ TEST_CASE("notifications: results") {
 
         SECTION("modifying a non-matching row to match and different value marks that row as inserted") {
             write([&] {
-                table->set_int(0, 0, 1);
+                table->get_object(object_keys[0]).set(col_value, 1);
             });
             REQUIRE(notification_calls == 2);
             REQUIRE_INDICES(change.insertions, 0);
@@ -1823,39 +1910,38 @@ TEST_CASE("notifications: results") {
 
         SECTION("insert table before observed table") {
             write([&] {
-                size_t row = table->add_empty_row();
-                table->set_int(0, row, 5);
-                r->read_group().insert_table(0, "new table");
-                table->insert_empty_row(0);
-                table->set_int(0, 0, 5);
+                table->create_object(ObjKey(53)).set(col_value, 5);
+                r->read_group().add_table("new table");
+                table->create_object(ObjKey(0)).set(col_value, 5);
             });
             REQUIRE_INDICES(change.insertions, 0, 5);
         }
 
-        auto linked_table = table->get_link_target(1);
+        auto linked_table = table->get_link_target(col_link);
+        auto col = linked_table->get_column_key("value");
         SECTION("insert new column before link column") {
             write([&] {
-                linked_table->set_int(0, 1, 5);
-                table->insert_column(0, type_Int, "new col");
-                linked_table->set_int(0, 2, 5);
+                linked_table->get_object(target_keys[1]).set(col, 5);
+                table->add_column(type_Int, "new col");
+                linked_table->get_object(target_keys[2]).set(col, 5);
             });
             REQUIRE_INDICES(change.modifications, 0, 1);
         }
-
+#ifdef UNITTESTS_NOT_PARSING
         SECTION("insert table before link target") {
             write([&] {
-                linked_table->set_int(0, 1, 5);
-                r->read_group().insert_table(0, "new table");
-                linked_table->set_int(0, 2, 5);
+                linked_table->get_object(target_keys[1]).set(col, 5);
+                r->read_group().add_table("new table");
+                linked_table->get_object(target_keys[2]).set(col, 5);
             });
             REQUIRE_INDICES(change.modifications, 0, 1);
         }
+#endif
     }
 }
 
 TEST_CASE("results: notifications after move") {
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -1866,7 +1952,7 @@ TEST_CASE("results: notifications after move") {
     });
 
     auto table = r->read_group().get_table("class_object");
-    auto results = std::make_unique<Results>(r, *table);
+    auto results = std::make_unique<Results>(r, table);
 
     int notification_calls = 0;
     auto token = results->add_notification_callback([&](CollectionChangeSet, std::exception_ptr err) {
@@ -1888,7 +1974,7 @@ TEST_CASE("results: notifications after move") {
         results.reset();
 
         write([&] {
-            table->set_int(0, table->add_empty_row(), 1);
+            table->create_object().set_all(1);
         });
         REQUIRE(notification_calls == 2);
     }
@@ -1899,7 +1985,7 @@ TEST_CASE("results: notifications after move") {
         results.reset();
 
         write([&] {
-            table->set_int(0, table->add_empty_row(), 1);
+            table->create_object().set_all(1);
         });
         REQUIRE(notification_calls == 2);
     }
@@ -1909,11 +1995,10 @@ TEST_CASE("results: notifier with no callbacks") {
     _impl::RealmCoordinator::assert_no_open_realms();
 
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto coordinator = _impl::RealmCoordinator::get_coordinator(config.path);
-    auto r = coordinator->get_realm(std::move(config));
+    auto r = coordinator->get_realm(std::move(config), none);
     r->update_schema({
         {"object", {
             {"value", PropertyType::Int},
@@ -1930,9 +2015,9 @@ TEST_CASE("results: notifier with no callbacks") {
         // create a notifier
         results.add_notification_callback([](CollectionChangeSet const&, std::exception_ptr) {});
 
-        auto r2 = coordinator->get_realm();
+        auto r2 = coordinator->get_realm(util::Scheduler::get_frozen());
         r2->begin_transaction();
-        r2->read_group().get_table("class_object")->add_empty_row();
+        r2->read_group().get_table("class_object")->create_object();
         r2->commit_transaction();
 
         r->refresh(); // would deadlock if there was a callback
@@ -1943,14 +2028,14 @@ TEST_CASE("results: notifier with no callbacks") {
 
         // Create version 1
         r->begin_transaction();
-        table->add_empty_row();
+        table->create_object();
         r->commit_transaction();
 
         r->begin_transaction();
         // Run async query for version 1
         coordinator->on_change();
         // Create version 2 without ever letting 1 be delivered
-        table->add_empty_row();
+        table->create_object();
         r->commit_transaction();
 
         // Give it a chance to deliver the async query results (and fail, becuse
@@ -1966,19 +2051,19 @@ TEST_CASE("results: notifier with no callbacks") {
         auto& shared_group = TestHelper::get_shared_group(r2);
         // There's always at least 2 live versions because the previous version
         // isn't clean up until the *next* commit
-        REQUIRE(shared_group.get_number_of_versions() == 2);
+        REQUIRE(shared_group->get_number_of_versions() == 2);
 
         auto table = r2->read_group().get_table("class_object");
 
         r2->begin_transaction();
-        table->add_empty_row();
+        table->create_object();
         r2->commit_transaction();
         r2->begin_transaction();
-        table->add_empty_row();
+        table->create_object();
         r2->commit_transaction();
 
         // Would now be 3 if the closed Realm is still pinning the version it was at
-        REQUIRE(shared_group.get_number_of_versions() == 2);
+        REQUIRE(shared_group->get_number_of_versions() == 2);
     }
 }
 
@@ -1992,10 +2077,10 @@ TEST_CASE("results: error messages") {
 
     auto r = Realm::get_shared_realm(config);
     auto table = r->read_group().get_table("class_object");
-    Results results(r, *table);
+    Results results(r, table);
 
     r->begin_transaction();
-    table->add_empty_row();
+    table->create_object();
     r->commit_transaction();
 
     SECTION("out of bounds access") {
@@ -2003,13 +2088,12 @@ TEST_CASE("results: error messages") {
     }
 
     SECTION("unsupported aggregate operation") {
-        REQUIRE_THROWS_WITH(results.sum(0), "Cannot sum property 'value': operation not supported for 'string' properties");
+        REQUIRE_THROWS_WITH(results.sum("value"), "Cannot sum property 'value': operation not supported for 'string' properties");
     }
 }
 
 TEST_CASE("results: snapshots") {
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
     config.schema = Schema{
         {"object", {
@@ -2023,6 +2107,12 @@ TEST_CASE("results: snapshots") {
 
     auto r = Realm::get_shared_realm(config);
 
+    SECTION("snapshot of empty Results") {
+        Results results;
+        auto snapshot = results.snapshot();
+        REQUIRE(snapshot.size() == 0);
+    }
+
     auto write = [&](auto&& f) {
         r->begin_transaction();
         f();
@@ -2030,15 +2120,9 @@ TEST_CASE("results: snapshots") {
         advance_and_notify(*r);
     };
 
-    SECTION("snapshot of empty Results") {
-        Results results;
-        auto snapshot = results.snapshot();
-        REQUIRE(snapshot.size() == 0);
-    }
-
     SECTION("snapshot of Results based on Table") {
         auto table = r->read_group().get_table("class_object");
-        Results results(r, *table);
+        Results results(r, table);
 
         {
             // A newly-added row should not appear in the snapshot.
@@ -2046,7 +2130,7 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 0);
             write([=]{
-                table->add_empty_row();
+                table->create_object();
             });
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 0);
@@ -2059,31 +2143,32 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 1);
             write([=]{
-                table->move_last_over(0);
+                table->begin()->remove();
             });
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
 
             // Adding a row at the same index that was formerly present in the snapshot shouldn't
             // affect the state of the snapshot.
             write([=]{
-                table->add_empty_row();
+                table->create_object();
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
         }
     }
 
     SECTION("snapshot of Results based on LinkView") {
         auto object = r->read_group().get_table("class_object");
+        auto col_link = object->get_column_key("array");
         auto linked_to = r->read_group().get_table("class_linked to object");
 
         write([=]{
-            object->add_empty_row();
+            object->create_object();
         });
 
-        LinkViewRef lv = object->get_linklist(1, 0);
+        std::shared_ptr<LnkLst> lv = object->begin()->get_linklist_ptr(col_link);
         Results results(r, lv);
 
         {
@@ -2091,8 +2176,8 @@ TEST_CASE("results: snapshots") {
             auto snapshot = results.snapshot();
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 0);
-            write([=]{
-                lv->add(linked_to->add_empty_row());
+            write([&]{
+                lv->add(linked_to->create_object().get_key());
             });
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 0);
@@ -2103,33 +2188,34 @@ TEST_CASE("results: snapshots") {
             auto snapshot = results.snapshot();
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 1);
-            write([=]{
+            write([&]{
                 lv->remove(0);
             });
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(snapshot.get(0).is_attached());
+            REQUIRE(snapshot.get(0).is_valid());
 
             // Removing a row present in the snapshot from its table should result in the snapshot
             // returning a detached row accessor.
-            write([=]{
-                linked_to->remove(0);
+            write([&]{
+                linked_to->begin()->remove();
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
 
             // Adding a new row to the link list shouldn't affect the state of the snapshot.
-            write([=]{
-                lv->add(linked_to->add_empty_row());
+            write([&]{
+                lv->add(linked_to->create_object().get_key());
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
         }
     }
 
     SECTION("snapshot of Results based on Query") {
         auto table = r->read_group().get_table("class_object");
-        Query q = table->column<Int>(0) > 0;
+        auto col_value = table->get_column_key("value");
+        Query q = table->column<Int>(col_value) > 0;
         Results results(r, std::move(q));
 
         {
@@ -2138,7 +2224,7 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 0);
             write([=]{
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 0);
@@ -2150,32 +2236,33 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 1);
             write([=]{
-                table->set_int(0, 0, 0);
+                table->begin()->set(col_value, 0);
             });
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(snapshot.get(0).is_attached());
+            REQUIRE(snapshot.get(0).is_valid());
 
             // Removing a row present in the snapshot from its table should result in the snapshot
             // returning a detached row accessor.
             write([=]{
-                table->remove(0);
+                table->begin()->remove();
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
 
             // Adding a new row that matches the query criteria shouldn't affect the state of the snapshot.
             write([=]{
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
         }
     }
 
     SECTION("snapshot of Results based on TableView from query") {
         auto table = r->read_group().get_table("class_object");
-        Query q = table->column<Int>(0) > 0;
+        auto col_value = table->get_column_key("value");
+        Query q = table->column<Int>(col_value) > 0;
         Results results(r, q.find_all());
 
         {
@@ -2184,7 +2271,7 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 0);
             write([=]{
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 0);
@@ -2196,49 +2283,52 @@ TEST_CASE("results: snapshots") {
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 1);
             write([=]{
-                table->set_int(0, 0, 0);
+                table->begin()->set(col_value, 0);
             });
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(snapshot.get(0).is_attached());
+            REQUIRE(snapshot.get(0).is_valid());
 
             // Removing a row present in the snapshot from its table should result in the snapshot
             // returning a detached row accessor.
             write([=]{
-                table->remove(0);
+                table->begin()->remove();
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
 
             // Adding a new row that matches the query criteria shouldn't affect the state of the snapshot.
             write([=]{
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
         }
     }
 
     SECTION("snapshot of Results based on TableView from backlinks") {
         auto object = r->read_group().get_table("class_object");
+        auto col_link = object->get_column_key("array");
         auto linked_to = r->read_group().get_table("class_linked to object");
 
         write([=]{
-            linked_to->add_empty_row();
+            linked_to->create_object();
+            object->create_object();
         });
 
-        TableView backlinks = linked_to->get_backlink_view(0, object.get(), 1);
-        Results results(r, std::move(backlinks));
+        auto linked_to_obj = *linked_to->begin();
+        auto lv = object->begin()->get_linklist_ptr(col_link);
 
-        auto lv = object->get_linklist(1, object->add_empty_row());
+        TableView backlinks = linked_to_obj.get_backlink_view(object, col_link);
+        Results results(r, std::move(backlinks));
 
         {
             // A newly-added row should not appear in the snapshot.
             auto snapshot = results.snapshot();
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 0);
-            write([=]{
-                lv->add(0);
+            write([&]{
+                lv->add(linked_to_obj.get_key());
             });
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 0);
@@ -2249,35 +2339,35 @@ TEST_CASE("results: snapshots") {
             auto snapshot = results.snapshot();
             REQUIRE(results.size() == 1);
             REQUIRE(snapshot.size() == 1);
-            write([=]{
-                lv->remove(0);
+            write([&]{
+                if (lv->size() > 0)
+                    lv->remove(0);
             });
             REQUIRE(results.size() == 0);
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(snapshot.get(0).is_attached());
+            REQUIRE(snapshot.get(0).is_valid());
 
             // Removing a row present in the snapshot from its table should result in the snapshot
             // returning a detached row accessor.
             write([=]{
-                object->remove(0);
+                object->begin()->remove();
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
 
             // Adding a new link shouldn't affect the state of the snapshot.
             write([=]{
-                object->add_empty_row();
-                auto lv = object->get_linklist(1, object->add_empty_row());
-                lv->add(0);
+                object->create_object().get_linklist(col_link).add(linked_to_obj.get_key());
             });
             REQUIRE(snapshot.size() == 1);
-            REQUIRE(!snapshot.get(0).is_attached());
+            REQUIRE(!snapshot.get(0).is_valid());
         }
     }
 
     SECTION("snapshot of Results with notification callback registered") {
         auto table = r->read_group().get_table("class_object");
-        Query q = table->column<Int>(0) > 0;
+        auto col_value = table->get_column_key("value");
+        Query q = table->column<Int>(col_value) > 0;
         Results results(r, q.find_all());
 
         auto token = results.add_notification_callback([&](CollectionChangeSet, std::exception_ptr err) {
@@ -2288,7 +2378,7 @@ TEST_CASE("results: snapshots") {
         SECTION("snapshot of lvalue") {
             auto snapshot = results.snapshot();
             write([=] {
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(snapshot.size() == 0);
         }
@@ -2296,7 +2386,7 @@ TEST_CASE("results: snapshots") {
         SECTION("snapshot of rvalue") {
             auto snapshot = std::move(results).snapshot();
             write([=] {
-                table->set_int(0, table->add_empty_row(), 1);
+                table->create_object().set(col_value, 1);
             });
             REQUIRE(snapshot.size() == 0);
         }
@@ -2304,7 +2394,8 @@ TEST_CASE("results: snapshots") {
 
     SECTION("adding notification callback to snapshot throws") {
         auto table = r->read_group().get_table("class_object");
-        Query q = table->column<Int>(0) > 0;
+        auto col_value = table->get_column_key("value");
+        Query q = table->column<Int>(col_value) > 0;
         Results results(r, q.find_all());
         auto snapshot = results.snapshot();
         CHECK_THROWS(snapshot.add_notification_callback([](CollectionChangeSet, std::exception_ptr) {}));
@@ -2313,24 +2404,23 @@ TEST_CASE("results: snapshots") {
     SECTION("accessors should return none for detached row") {
         auto table = r->read_group().get_table("class_object");
         write([=] {
-            table->add_empty_row();
+            table->create_object();
         });
-        Results results(r, *table);
+        Results results(r, table);
         auto snapshot = results.snapshot();
         write([=] {;
             table->clear();
         });
 
-        REQUIRE_FALSE(snapshot.get(0).is_attached());
-        REQUIRE_FALSE(snapshot.first()->is_attached());
-        REQUIRE_FALSE(snapshot.last()->is_attached());
+        REQUIRE_FALSE(snapshot.get(0).is_valid());
+        REQUIRE_FALSE(snapshot.first()->is_valid());
+        REQUIRE_FALSE(snapshot.last()->is_valid());
     }
 }
 
 TEST_CASE("results: distinct") {
     const int N = 10;
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -2346,12 +2436,8 @@ TEST_CASE("results: distinct") {
     auto table = r->read_group().get_table("class_object");
 
     r->begin_transaction();
-    table->add_empty_row(N);
     for (int i = 0; i < N; ++i) {
-        table->set_int(0, i, i % 3);
-        table->set_string(1, i, util::format("Foo_%1", i % 3).c_str());
-        table->set_int(2, i, N - i);
-        table->set_int(3, i, i % 2);
+        table->create_object().set_all(i % 3, util::format("Foo_%1", i % 3).c_str(), N - i, i % 2);
     }
     // table:
     //   0, Foo_0, 10,  0
@@ -2367,121 +2453,125 @@ TEST_CASE("results: distinct") {
 
     r->commit_transaction();
     Results results(r, table->where());
+    ColKey col_num1 = table->get_column_key("num1");
+    ColKey col_string = table->get_column_key("string");
+    ColKey col_num2 = table->get_column_key("num2");
+    ColKey col_num3 = table->get_column_key("num3");
 
     SECTION("Single integer property") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_num1}}));
         // unique:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         //  2, Foo_2,  8
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.get(0).get_int(2) == 10);
-        REQUIRE(unique.get(1).get_int(2) == 9);
-        REQUIRE(unique.get(2).get_int(2) == 8);
+        REQUIRE(unique.get(0).get<Int>(col_num2) == 10);
+        REQUIRE(unique.get(1).get<Int>(col_num2) == 9);
+        REQUIRE(unique.get(2).get<Int>(col_num2) == 8);
     }
 
     SECTION("Single integer via apply_ordering") {
         DescriptorOrdering ordering;
-        ordering.append_sort(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
-        ordering.append_distinct(DistinctDescriptor(results.get_tableview().get_parent(), {{0}}));
+        ordering.append_sort(SortDescriptor({{col_num1}}));
+        ordering.append_distinct(DistinctDescriptor({{col_num1}}));
         Results unique = results.apply_ordering(std::move(ordering));
         // unique:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         //  2, Foo_2,  8
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.get(0).get_int(2) == 10);
-        REQUIRE(unique.get(1).get_int(2) == 9);
-        REQUIRE(unique.get(2).get_int(2) == 8);
+        REQUIRE(unique.get(0).get<Int>(col_num2) == 10);
+        REQUIRE(unique.get(1).get<Int>(col_num2) == 9);
+        REQUIRE(unique.get(2).get<Int>(col_num2) == 8);
     }
 
     SECTION("Single string property") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{1}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_string}}));
         // unique:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         //  2, Foo_2,  8
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.get(0).get_int(2) == 10);
-        REQUIRE(unique.get(1).get_int(2) == 9);
-        REQUIRE(unique.get(2).get_int(2) == 8);
+        REQUIRE(unique.get(0).get<Int>(col_num2) == 10);
+        REQUIRE(unique.get(1).get<Int>(col_num2) == 9);
+        REQUIRE(unique.get(2).get<Int>(col_num2) == 8);
     }
 
     SECTION("Two integer properties combined") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{0}, {2}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_num1}, {col_num2}}));
         // unique is the same as the table
         REQUIRE(unique.size() == N);
         for (int i = 0; i < N; ++i) {
-            REQUIRE(unique.get(i).get_string(1) == StringData(util::format("Foo_%1", i % 3).c_str()));
+            REQUIRE(unique.get(i).get<String>(col_string) == StringData(util::format("Foo_%1", i % 3).c_str()));
         }
     }
 
     SECTION("String and integer combined") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{2}, {1}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_num2}, {col_string}}));
         // unique is the same as the table
         REQUIRE(unique.size() == N);
         for (int i = 0; i < N; ++i) {
-            REQUIRE(unique.get(i).get_string(1) == StringData(util::format("Foo_%1", i % 3).c_str()));
+            REQUIRE(unique.get(i).get<String>(col_string) == StringData(util::format("Foo_%1", i % 3).c_str()));
         }
     }
 
     // This section and next section demonstrate that sort().distinct() != distinct().sort()
     SECTION("Order after sort and distinct") {
-        Results reverse = results.sort(SortDescriptor(results.get_tableview().get_parent(), {{2}}, {true}));
+        Results reverse = results.sort(SortDescriptor({{col_num2}}, {true}));
         // reverse:
         //   0, Foo_0,  1
         //  ...
         //   0, Foo_0, 10
-        REQUIRE(reverse.first()->get_int(2) == 1);
-        REQUIRE(reverse.last()->get_int(2) == 10);
+        REQUIRE(reverse.first()->get<Int>(col_num2) == 1);
+        REQUIRE(reverse.last()->get<Int>(col_num2) == 10);
 
         // distinct() will be applied to the table, after sorting
-        Results unique = reverse.distinct(SortDescriptor(reverse.get_tableview().get_parent(), {{0}}));
+        Results unique = reverse.distinct(DistinctDescriptor({{col_num1}}));
         // unique:
         //  0, Foo_0,  1
         //  2, Foo_2,  2
         //  1, Foo_1,  3
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.get(0).get_int(2) == 1);
-        REQUIRE(unique.get(1).get_int(2) == 2);
-        REQUIRE(unique.get(2).get_int(2) == 3);
+        REQUIRE(unique.get(0).get<Int>(col_num2) == 1);
+        REQUIRE(unique.get(1).get<Int>(col_num2) == 2);
+        REQUIRE(unique.get(2).get<Int>(col_num2) == 3);
     }
 
     SECTION("Order after distinct and sort") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_num1}}));
         // unique:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         //  2, Foo_2,  8
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.first()->get_int(2) == 10);
-        REQUIRE(unique.last()->get_int(2) == 8);
+        REQUIRE(unique.first()->get<Int>(col_num2) == 10);
+        REQUIRE(unique.last()->get<Int>(col_num2) == 8);
 
         // sort() is only applied to unique
-        Results reverse = unique.sort(SortDescriptor(unique.get_tableview().get_parent(), {{2}}, {true}));
+        Results reverse = unique.sort(SortDescriptor({{col_num2}}, {true}));
         // reversed:
         //  2, Foo_2,  8
         //  1, Foo_1,  9
         //  0, Foo_0, 10
         REQUIRE(reverse.size() == 3);
-        REQUIRE(reverse.get(0).get_int(2) == 8);
-        REQUIRE(reverse.get(1).get_int(2) == 9);
-        REQUIRE(reverse.get(2).get_int(2) == 10);
+        REQUIRE(reverse.get(0).get<Int>(col_num2) == 8);
+        REQUIRE(reverse.get(1).get<Int>(col_num2) == 9);
+        REQUIRE(reverse.get(2).get<Int>(col_num2) == 10);
     }
 
     SECTION("Chaining distinct") {
-        Results first = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
+        Results first = results.distinct(DistinctDescriptor({{col_num1}}));
         REQUIRE(first.size() == 3);
 
         // distinct() will not discard the previous applied distinct() calls
-        Results second = first.distinct(SortDescriptor(first.get_tableview().get_parent(), {{3}}));
+        Results second = first.distinct(DistinctDescriptor({{col_num3}}));
         REQUIRE(second.size() == 2);
     }
 
     SECTION("Chaining sort") {
-        using cols_0_3 = std::pair<size_t, size_t>;
-        Results first = results.sort(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
-        Results second = first.sort(SortDescriptor(first.get_tableview().get_parent(), {{3}}));
+        using cols_0_3 = std::pair<int, int>;
+        Results first = results.sort(SortDescriptor({{col_num1}}));
+        Results second = first.sort(SortDescriptor({{col_num3}}));
 
         REQUIRE(second.size() == 10);
         // results are ordered first by the last sorted column
@@ -2490,30 +2580,30 @@ TEST_CASE("results: distinct") {
         std::vector<cols_0_3> results
             = {{0, 0}, {0, 0}, {1, 0}, {2, 0}, {2, 0}, {0, 1}, {0, 1}, {1, 1}, {1, 1}, {2, 1}};
         for (size_t i = 0; i < results.size(); ++i) {
-            REQUIRE(second.get(i).get_int(0) == results[i].first);
-            REQUIRE(second.get(i).get_int(3) == results[i].second);
+            REQUIRE(second.get(i).get<Int>(col_num1) == results[i].first);
+            REQUIRE(second.get(i).get<Int>(col_num3) == results[i].second);
         }
     }
 
     SECTION("Distinct is carried over to new queries") {
-        Results unique = results.distinct(SortDescriptor(results.get_tableview().get_parent(), {{0}}));
+        Results unique = results.distinct(DistinctDescriptor({{col_num1}}));
         // unique:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         //  2, Foo_2,  8
         REQUIRE(unique.size() == 3);
 
-        Results filtered = unique.filter(Query(table->where().less(0, 2)));
+        Results filtered = unique.filter(Query(table->where().less(col_num1, 2)));
         // filtered:
         //  0, Foo_0, 10
         //  1, Foo_1,  9
         REQUIRE(filtered.size() == 2);
-        REQUIRE(filtered.get(0).get_int(2) == 10);
-        REQUIRE(filtered.get(1).get_int(2) == 9);
+        REQUIRE(filtered.get(0).get<Int>(col_num2) == 10);
+        REQUIRE(filtered.get(1).get<Int>(col_num2) == 9);
     }
 
     SECTION("Distinct will not forget previous query") {
-        Results filtered = results.filter(Query(table->where().greater(2, 5)));
+        Results filtered = results.filter(Query(table->where().greater(col_num2, 5)));
         // filtered:
         //   0, Foo_0, 10
         //   1, Foo_1,  9
@@ -2522,27 +2612,26 @@ TEST_CASE("results: distinct") {
         //   1, Foo_1,  6
         REQUIRE(filtered.size() == 5);
 
-        Results unique = filtered.distinct(SortDescriptor(filtered.get_tableview().get_parent(), {{0}}));
+        Results unique = filtered.distinct(DistinctDescriptor({{col_num1}}));
         // unique:
         //   0, Foo_0, 10
         //   1, Foo_1,  9
         //   2, Foo_2,  8
         REQUIRE(unique.size() == 3);
-        REQUIRE(unique.get(0).get_int(2) == 10);
-        REQUIRE(unique.get(1).get_int(2) == 9);
-        REQUIRE(unique.get(2).get_int(2) == 8);
+        REQUIRE(unique.get(0).get<Int>(col_num2) == 10);
+        REQUIRE(unique.get(1).get<Int>(col_num2) == 9);
+        REQUIRE(unique.get(2).get<Int>(col_num2) == 8);
 
-        Results further_filtered = unique.filter(Query(table->where().equal(2, 9)));
+        Results further_filtered = unique.filter(Query(table->where().equal(col_num2, 9)));
         // further_filtered:
         //   1, Foo_1,  9
         REQUIRE(further_filtered.size() == 1);
-        REQUIRE(further_filtered.get(0).get_int(2) == 9);
+        REQUIRE(further_filtered.get(0).get<Int>(col_num2) == 9);
     }
 }
 
 TEST_CASE("results: sort") {
     InMemoryTestFile config;
-    config.cache = false;
     config.schema = Schema{
         {"object", {
             {"value", PropertyType::Int},
@@ -2560,7 +2649,7 @@ TEST_CASE("results: sort") {
     auto realm = Realm::get_shared_realm(config);
     auto table = realm->read_group().get_table("class_object");
     auto table2 = realm->read_group().get_table("class_object 2");
-    Results r(realm, *table);
+    Results r(realm, table);
 
     SECTION("invalid keypaths") {
         SECTION("empty property name") {
@@ -2599,15 +2688,15 @@ TEST_CASE("results: sort") {
     }
 
     realm->begin_transaction();
-    table->add_empty_row(4);
-    table2->add_empty_row(4);
+    ObjKeys table_keys;
+    ObjKeys table2_keys;
+    table->create_objects(4, table_keys);
+    table2->create_objects(4, table2_keys);
+    ColKey col_link = table->get_column_key("link");
+    ColKey col_link2 = table2->get_column_key("link");
     for (int i = 0; i < 4; ++i) {
-        table->set_int(0, i, (i + 2) % 4);
-        table->set_bool(1, i, i % 2);
-        table->set_link(3, i, 3 - i);
-
-        table2->set_int(0, i, (i + 1) % 4);
-        table2->set_link(1, i, i);
+        table->get_object(table_keys[i]).set_all((i + 2) % 4, bool(i % 2)).set(col_link, table2_keys[3 - i]);
+        table2->get_object(table2_keys[i]).set_all((i + 1) % 4).set(col_link2, table_keys[i]);
     }
     realm->commit_transaction();
     /*
@@ -2620,11 +2709,11 @@ TEST_CASE("results: sort") {
      */
 
     #define REQUIRE_ORDER(sort, ...) do { \
-        std::vector<size_t> expected = {__VA_ARGS__}; \
+        ObjKeys expected({__VA_ARGS__}); \
         auto results = sort; \
         REQUIRE(results.size() == expected.size()); \
         for (size_t i = 0; i < expected.size(); ++i) \
-            REQUIRE(results.get(i).get_index() == expected[i]); \
+            REQUIRE(results.get(i).get_key() == expected[i]); \
     } while (0)
 
     SECTION("sort on single property") {
@@ -2659,36 +2748,82 @@ TEST_CASE("results: sort") {
 }
 
 struct ResultsFromTable {
-    static Results call(std::shared_ptr<Realm> r, Table* table) {
-        return Results(std::move(r), *table);
+    static Results call(std::shared_ptr<Realm> r, ConstTableRef table) {
+        return Results(std::move(r), table);
     }
 };
 struct ResultsFromQuery {
-    static Results call(std::shared_ptr<Realm> r, Table* table) {
+    static Results call(std::shared_ptr<Realm> r, ConstTableRef table) {
         return Results(std::move(r), table->where());
     }
 };
 struct ResultsFromTableView {
-    static Results call(std::shared_ptr<Realm> r, Table* table) {
+    static Results call(std::shared_ptr<Realm> r, ConstTableRef table) {
         return Results(std::move(r), table->where().find_all());
     }
 };
 struct ResultsFromLinkView {
-    static Results call(std::shared_ptr<Realm> r, Table* table) {
+    static Results call(std::shared_ptr<Realm> r, ConstTableRef table) {
         r->begin_transaction();
         auto link_table = r->read_group().get_table("class_linking_object");
-        link_table->add_empty_row(1);
-        auto link_view = link_table->get_linklist(0, 0);
-        for (size_t i = 0; i < table->size(); ++i)
-            link_view->add(i);
+        std::shared_ptr<LnkLst> link_view = link_table->create_object().get_linklist_ptr(link_table->get_column_key("link"));
+        for (auto& o : *table)
+            link_view->add(o.get_key());
         r->commit_transaction();
         return Results(r, link_view);
     }
 };
 
+TEMPLATE_TEST_CASE("results: get()", "", ResultsFromTable, ResultsFromQuery, ResultsFromTableView, ResultsFromLinkView) {
+    InMemoryTestFile config;
+    config.automatic_change_notifications = false;
+
+    auto r = Realm::get_shared_realm(config);
+    r->update_schema({
+        {"object", {
+            {"value", PropertyType::Int},
+        }},
+        {"linking_object", {
+            {"link", PropertyType::Array|PropertyType::Object, "object"}
+        }},
+    });
+
+    auto table = r->read_group().get_table("class_object");
+    ColKey col_value = table->get_column_key("value");
+
+    r->begin_transaction();
+    for (int i = 0; i < 10; ++i)
+        table->create_object().set_all(i);
+    r->commit_transaction();
+
+    Results results = TestType::call(r, table);
+
+    SECTION("sequential in increasing order") {
+        for (int i = 0; i < 10; ++i)
+            CHECK(results.get<Obj>(i).get<int64_t>(col_value) == i);
+        for (int i = 0; i < 10; ++i)
+            CHECK(results.get<Obj>(i).get<int64_t>(col_value) == i);
+        CHECK_THROWS(results.get(11));
+    }
+    SECTION("sequential in decreasing order") {
+        for (int i = 9; i >= 0; --i)
+            CHECK(results.get<Obj>(i).get<int64_t>(col_value) == i);
+        for (int i = 9; i >= 0; --i)
+            CHECK(results.get<Obj>(i).get<int64_t>(col_value) == i);
+    }
+    SECTION("random order") {
+        int indexes[10];
+        std::iota(std::begin(indexes), std::end(indexes), 0);
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(std::begin(indexes), std::end(indexes), std::mt19937(rd()));
+        for (auto index : indexes)
+            CHECK(results.get<Obj>(index).get<int64_t>(col_value) == index);
+    }
+}
+
 TEMPLATE_TEST_CASE("results: aggregate", "[query][aggregate]", ResultsFromTable, ResultsFromQuery, ResultsFromTableView, ResultsFromLinkView) {
     InMemoryTestFile config;
-    config.cache = false;
     config.automatic_change_notifications = false;
 
     auto r = Realm::get_shared_realm(config);
@@ -2705,126 +2840,124 @@ TEMPLATE_TEST_CASE("results: aggregate", "[query][aggregate]", ResultsFromTable,
     });
 
     auto table = r->read_group().get_table("class_object");
+    ColKey col_int = table->get_column_key("int");
+    ColKey col_float = table->get_column_key("float");
+    ColKey col_double = table->get_column_key("double");
+    ColKey col_date = table->get_column_key("date");
 
     SECTION("one row with null values") {
         r->begin_transaction();
-        table->add_empty_row(3);
-
-        table->set_int(0, 1, 0);
-        table->set_float(1, 1, 0.f);
-        table->set_double(2, 1, 0.0);
-        table->set_timestamp(3, 1, Timestamp(0, 0));
-
-        table->set_int(0, 2, 2);
-        table->set_float(1, 2, 2.f);
-        table->set_double(2, 2, 2.0);
-        table->set_timestamp(3, 2, Timestamp(2, 0));
+        table->create_object();
+        table->create_object().set_all(0, 0.f, 0.0, Timestamp(0, 0));
+        table->create_object().set_all(2, 2.f, 2.0, Timestamp(2, 0));
         // table:
         //  null, null, null,  null,
         //  0,    0,    0,    (0, 0)
         //  2,    2,    2,    (2, 0)
         r->commit_transaction();
 
-        Results results = TestType::call(r, table.get());
+        Results results = TestType::call(r, table);
 
         SECTION("max") {
-            REQUIRE(results.max(0)->get_int() == 2);
-            REQUIRE(results.max(1)->get_float() == 2.f);
-            REQUIRE(results.max(2)->get_double() == 2.0);
-            REQUIRE(results.max(3)->get_timestamp() == Timestamp(2, 0));
+            REQUIRE(results.max(col_int)->get_int() == 2);
+            REQUIRE(results.max(col_float)->get_float() == 2.f);
+            REQUIRE(results.max(col_double)->get_double() == 2.0);
+            REQUIRE(results.max(col_date)->get_timestamp() == Timestamp(2, 0));
         }
 
         SECTION("min") {
-            REQUIRE(results.min(0)->get_int() == 0);
-            REQUIRE(results.min(1)->get_float() == 0.f);
-            REQUIRE(results.min(2)->get_double() == 0.0);
-            REQUIRE(results.min(3)->get_timestamp() == Timestamp(0, 0));
+            REQUIRE(results.min(col_int)->get_int() == 0);
+            REQUIRE(results.min(col_float)->get_float() == 0.f);
+            REQUIRE(results.min(col_double)->get_double() == 0.0);
+            REQUIRE(results.min(col_date)->get_timestamp() == Timestamp(0, 0));
         }
 
         SECTION("average") {
-            REQUIRE(results.average(0) == 1.0);
-            REQUIRE(results.average(1) == 1.0);
-            REQUIRE(results.average(2) == 1.0);
-            REQUIRE_THROWS_AS(results.average(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(results.average(col_int) == 1.0);
+            REQUIRE(results.average(col_float) == 1.0);
+            REQUIRE(results.average(col_double) == 1.0);
+            REQUIRE_THROWS_AS(results.average(col_date), Results::UnsupportedColumnTypeException);
         }
 
         SECTION("sum") {
-            REQUIRE(results.sum(0)->get_int() == 2);
-            REQUIRE(results.sum(1)->get_double() == 2.0);
-            REQUIRE(results.sum(2)->get_double() == 2.0);
-            REQUIRE_THROWS_AS(results.sum(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(results.sum(col_int)->get_int() == 2);
+            REQUIRE(results.sum(col_float)->get_double() == 2.0);
+            REQUIRE(results.sum(col_double)->get_double() == 2.0);
+            REQUIRE_THROWS_AS(results.sum(col_date), Results::UnsupportedColumnTypeException);
         }
     }
 
     SECTION("rows with all null values") {
         r->begin_transaction();
-        table->add_empty_row(3);
+        table->create_object();
+        table->create_object();
+        table->create_object();
         // table:
         //  null, null, null,  null,  null
         //  null, null, null,  null,  null
         //  null, null, null,  null,  null
         r->commit_transaction();
 
-        Results results = TestType::call(r, table.get());
+        Results results = TestType::call(r, table);
 
         SECTION("max") {
-            REQUIRE(!results.max(0));
-            REQUIRE(!results.max(1));
-            REQUIRE(!results.max(2));
-            REQUIRE(!results.max(3));
+            REQUIRE(!results.max(col_int));
+            REQUIRE(!results.max(col_float));
+            REQUIRE(!results.max(col_double));
+            REQUIRE(!results.max(col_date));
         }
 
         SECTION("min") {
-            REQUIRE(!results.min(0));
-            REQUIRE(!results.min(1));
-            REQUIRE(!results.min(2));
-            REQUIRE(!results.min(3));
+            REQUIRE(!results.min(col_int));
+            REQUIRE(!results.min(col_float));
+            REQUIRE(!results.min(col_double));
+            REQUIRE(!results.min(col_date));
         }
 
         SECTION("average") {
-            REQUIRE(!results.average(0));
-            REQUIRE(!results.average(1));
-            REQUIRE(!results.average(2));
-            REQUIRE_THROWS_AS(results.average(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(!results.average(col_int));
+            REQUIRE(!results.average(col_float));
+            REQUIRE(!results.average(col_double));
+            REQUIRE_THROWS_AS(results.average(col_date), Results::UnsupportedColumnTypeException);
         }
 
         SECTION("sum") {
-            REQUIRE(results.sum(0)->get_int() == 0);
-            REQUIRE(results.sum(1)->get_double() == 0.0);
-            REQUIRE(results.sum(2)->get_double() == 0.0);
-            REQUIRE_THROWS_AS(results.sum(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(results.sum(col_int)->get_int() == 0);
+            REQUIRE(results.sum(col_float)->get_double() == 0.0);
+            REQUIRE(results.sum(col_double)->get_double() == 0.0);
+            REQUIRE_THROWS_AS(results.sum(col_date), Results::UnsupportedColumnTypeException);
         }
     }
 
     SECTION("empty") {
-        Results results = TestType::call(r, table.get());
+        Results results = TestType::call(r, table);
 
         SECTION("max") {
-            REQUIRE(!results.max(0));
-            REQUIRE(!results.max(1));
-            REQUIRE(!results.max(2));
-            REQUIRE(!results.max(3));
+            REQUIRE(!results.max(col_int));
+            REQUIRE(!results.max(col_float));
+            REQUIRE(!results.max(col_double));
+            REQUIRE(!results.max(col_date));
         }
 
         SECTION("min") {
-            REQUIRE(!results.min(0));
-            REQUIRE(!results.min(1));
-            REQUIRE(!results.min(2));
-            REQUIRE(!results.min(3));
+            REQUIRE(!results.min(col_int));
+            REQUIRE(!results.min(col_float));
+            REQUIRE(!results.min(col_double));
+            REQUIRE(!results.min(col_date));
         }
 
         SECTION("average") {
-            REQUIRE(!results.average(0));
-            REQUIRE(!results.average(1));
-            REQUIRE(!results.average(2));
-            REQUIRE_THROWS_AS(results.average(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(!results.average(col_int));
+            REQUIRE(!results.average(col_float));
+            REQUIRE(!results.average(col_double));
+            REQUIRE_THROWS_AS(results.average(col_date), Results::UnsupportedColumnTypeException);
         }
 
         SECTION("sum") {
-            REQUIRE(results.sum(0)->get_int() == 0);
-            REQUIRE(results.sum(1)->get_double() == 0.0);
-            REQUIRE(results.sum(2)->get_double() == 0.0);
-            REQUIRE_THROWS_AS(results.sum(3), Results::UnsupportedColumnTypeException);
+            REQUIRE(results.sum(col_int)->get_int() == 0);
+            REQUIRE(results.sum(col_float)->get_double() == 0.0);
+            REQUIRE(results.sum(col_double)->get_double() == 0.0);
+            REQUIRE_THROWS_AS(results.sum(col_date), Results::UnsupportedColumnTypeException);
         }
     }
 }
@@ -2833,7 +2966,7 @@ TEST_CASE("results: set property value on all objects", "[batch_updates]") {
 
     InMemoryTestFile config;
     config.automatic_change_notifications = false;
-    config.cache = false;
+    // config.cache = false;
     config.schema = Schema{
         {"AllTypes", {
             {"pk", PropertyType::Int, Property::IsPrimary{true}},
@@ -2863,9 +2996,10 @@ TEST_CASE("results: set property value on all objects", "[batch_updates]") {
     auto realm = Realm::get_shared_realm(config);
     auto table = realm->read_group().get_table("class_AllTypes");
     realm->begin_transaction();
-    table->add_empty_row(2);
+    table->create_object();
+    table->create_object();
     realm->commit_transaction();
-    Results r(realm, *table);
+    Results r(realm, table);
 
     TestContext ctx(realm);
 
@@ -2889,7 +3023,7 @@ TEST_CASE("results: set property value on all objects", "[batch_updates]") {
 
     SECTION("set property values removes object from Results") {
         realm->begin_transaction();
-        Results results(realm, table->where().equal(2,0));
+        Results results(realm, table->where().equal(table->get_column_key("int"),0));
         CHECK(results.size() == 2);
         r.set_property_value(ctx, "int", util::Any(INT64_C(42)));
         CHECK(results.size() == 0);
@@ -2901,98 +3035,100 @@ TEST_CASE("results: set property value on all objects", "[batch_updates]") {
 
         r.set_property_value<util::Any>(ctx, "bool", util::Any(true));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_bool(1) == true);
+            CHECK(r.get(i).get<Bool>("bool") == true);
         }
 
         r.set_property_value(ctx, "int", util::Any(INT64_C(42)));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_int(2) == 42);
+            CHECK(r.get(i).get<Int>("int") == 42);
         }
 
         r.set_property_value(ctx, "float", util::Any(1.23f));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_float(3) == 1.23f);
+            CHECK(r.get(i).get<float>("float") == 1.23f);
         }
 
         r.set_property_value(ctx, "double", util::Any(1.234));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_double(4) == 1.234);
+            CHECK(r.get(i).get<double>("double") == 1.234);
         }
 
         r.set_property_value(ctx, "string", util::Any(std::string("abc")));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_string(5) == "abc");
+            CHECK(r.get(i).get<String>("string") == "abc");
         }
 
         r.set_property_value(ctx, "data", util::Any(std::string("abc")));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_binary(6) == BinaryData("abc", 3));
+            CHECK(r.get(i).get<Binary>("data") == BinaryData("abc", 3));
         }
 
         util::Any timestamp = Timestamp(1, 2);
         r.set_property_value(ctx, "date", timestamp);
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_timestamp(7) == any_cast<Timestamp>(timestamp));
+            CHECK(r.get(i).get<Timestamp>("date") == any_cast<Timestamp>(timestamp));
         }
 
-        size_t object_ndx = table->add_empty_row();
-        Object linked_obj(realm, "AllTypes", object_ndx);
+        ObjKey object_key = table->create_object().get_key();
+        Object linked_obj(realm, "AllTypes", object_key);
         r.set_property_value(ctx, "object", util::Any(linked_obj));
         for (size_t i = 0; i < r.size(); i++) {
-            CHECK(r.get(i).get_link(8) == object_ndx);
+            CHECK(r.get(i).get<ObjKey>("object") == object_key);
         }
 
-        size_t list_object_ndx = table->add_empty_row();
-        Object list_object(realm, "AllTypes", list_object_ndx);
+        ObjKey list_object_key = table->create_object().get_key();
+        Object list_object(realm, "AllTypes", list_object_key);
         r.set_property_value(ctx, "list", util::Any(AnyVector{list_object, list_object}));
         for (size_t i = 0; i < r.size(); i++) {
-            auto list = r.get(i).get_linklist(9);
-            CHECK(list->size() == 2);
-            CHECK(list->get(0).get_index() == list_object_ndx);
-            CHECK(list->get(1).get_index() == list_object_ndx);
+            auto list = r.get(i).get_linklist("list");
+            CHECK(list.size() == 2);
+            CHECK(list.get(0) == list_object_key);
+            CHECK(list.get(1) == list_object_key);
         }
 
-        auto check_array = [&](size_t col, auto... values) {
+        auto check_array = [&](ColKey col, auto val0, auto... values) {
             size_t rows = r.size();
             for (size_t i = 0; i < rows; ++i) {
-                RowExpr row = r.get(i);
-                auto table = row.get_subtable(col);
-                size_t j = 0;
+                Obj row = r.get(i);
+                auto array = row.get_list<decltype(val0)>(col);
+                CAPTURE(0);
+                REQUIRE(val0 == array.get(0));
+                size_t j = 1;
                 for (auto& value : {values...}) {
                     CAPTURE(j);
-                    REQUIRE(j < row.get_subtable_size(col));
-                    REQUIRE(value == table->get<typename std::decay<decltype(value)>::type>(0, j));
+                    REQUIRE(j < array.size());
+                    REQUIRE(value == array.get(j));
                     ++j;
                 }
             }
         };
 
         r.set_property_value(ctx, "bool array", util::Any(AnyVec{true, false}));
-        check_array(10, true, false);
+        check_array(table->get_column_key("bool array"), true, false);
 
         r.set_property_value(ctx, "int array", util::Any(AnyVec{INT64_C(5), INT64_C(6)}));
-        check_array(11, INT64_C(5), INT64_C(6));
+        check_array(table->get_column_key("int array"), INT64_C(5), INT64_C(6));
 
         r.set_property_value(ctx, "float array", util::Any(AnyVec{1.1f, 2.2f}));
-        check_array(12, 1.1f, 2.2f);
+        check_array(table->get_column_key("float array"), 1.1f, 2.2f);
 
         r.set_property_value(ctx, "double array", util::Any(AnyVec{3.3, 4.4}));
-        check_array(13, 3.3, 4.4);
+        check_array(table->get_column_key("double array"), 3.3, 4.4);
 
         r.set_property_value(ctx, "string array", util::Any(AnyVec{"a"s, "b"s, "c"s}));
-        check_array(14, StringData("a"), StringData("b"), StringData("c"));
+        check_array(table->get_column_key("string array"), StringData("a"), StringData("b"), StringData("c"));
  
         r.set_property_value(ctx, "data array", util::Any(AnyVec{"d"s, "e"s, "f"s}));
-        check_array(15, BinaryData("d",1), BinaryData("e",1), BinaryData("f",1));
+        check_array(table->get_column_key("data array"), BinaryData("d",1), BinaryData("e",1), BinaryData("f",1));
 
         r.set_property_value(ctx, "date array", util::Any(AnyVec{Timestamp(10,20), Timestamp(20,30), Timestamp(30,40)}));
-        check_array(16, Timestamp(10,20), Timestamp(20,30), Timestamp(30,40));
+        check_array(table->get_column_key("date array"), Timestamp(10,20), Timestamp(20,30), Timestamp(30,40));
     }
 }
 
 TEST_CASE("results: limit", "[limit]") {
     InMemoryTestFile config;
-    config.cache = false;
+    // config.cache = false;
     config.automatic_change_notifications = false;
     config.schema = Schema{
         {"object", {
@@ -3002,14 +3138,14 @@ TEST_CASE("results: limit", "[limit]") {
 
     auto realm = Realm::get_shared_realm(config);
     auto table = realm->read_group().get_table("class_object");
+    auto col = table->get_column_key("value");
 
     realm->begin_transaction();
-    table->add_empty_row(8);
     for (int i = 0; i < 8; ++i) {
-        table->set_int(0, i, (i + 2) % 4);
+        table->create_object().set(col, (i + 2) % 4);
     }
     realm->commit_transaction();
-    Results r(realm, *table);
+    Results r(realm, table);
 
     SECTION("unsorted") {
         REQUIRE(r.limit(0).size() == 0);
@@ -3058,8 +3194,8 @@ TEST_CASE("results: limit", "[limit]") {
             if (notification_calls == 0) {
                 REQUIRE(c.empty());
                 REQUIRE(r.size() == 2);
-                REQUIRE(r.get(0).get_int(0) == 3);
-                REQUIRE(r.get(1).get_int(0) == 2);
+                REQUIRE(r.get(0).get<Int>(col) == 3);
+                REQUIRE(r.get(1).get<Int>(col) == 2);
             } else if (notification_calls == 1) {
                 REQUIRE(!c.empty());
                 REQUIRE_INDICES(c.insertions, 0);
@@ -3067,16 +3203,15 @@ TEST_CASE("results: limit", "[limit]") {
                 REQUIRE(c.moves.size() == 0);
                 REQUIRE(c.modifications.count() == 0);
                 REQUIRE(r.size() == 2);
-                REQUIRE(r.get(0).get_int(0) == 5);
-                REQUIRE(r.get(1).get_int(0) == 3);
+                REQUIRE(r.get(0).get<Int>(col) == 5);
+                REQUIRE(r.get(1).get<Int>(col) == 3);
             }
             ++notification_calls;
         });
         advance_and_notify(*realm);
         REQUIRE(notification_calls == 1);
         realm->begin_transaction();
-        table->add_empty_row(1);
-        table->set_int(0, 8, 5);
+        table->create_object().set(col, 5);
         realm->commit_transaction();
         advance_and_notify(*realm);
         REQUIRE(notification_calls == 2);
@@ -3103,7 +3238,7 @@ TEST_CASE("results: limit", "[limit]") {
         advance_and_notify(*realm);
         REQUIRE(notification_calls == 1);
         realm->begin_transaction();
-        table->set_int(0, 1, 5);
+        table->get_object(1).set(col, 5);
         realm->commit_transaction();
         advance_and_notify(*realm);
         REQUIRE(notification_calls == 2);

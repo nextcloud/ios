@@ -26,11 +26,11 @@
 #include "schema.hpp"
 
 #include <realm/string_data.hpp>
+#include <realm/table.hpp>
 
 using namespace realm;
 
 TEST_CASE("ObjectStore: table_name_for_object_type()") {
-
     SECTION("should work with strings that aren't null-terminated") {
         auto input = StringData("good_no_bad", 4);
         auto result = ObjectStore::table_name_for_object_type(input);
@@ -63,25 +63,14 @@ TEST_CASE("ObjectStore:: property_for_column_index()") {
         REQUIRE_FALSE(it == realm->schema().end());
         ObjectSchema object_schema = *it;
 
-        size_t count = table->get_column_count();
-        for (size_t col = 0; col < count; col++) {
+        auto all_columns = table->get_column_keys();
+        for (auto col : all_columns) {
             auto property = ObjectStore::property_for_column_index(table, col);
             if (!property) {
-#if REALM_ENABLE_SYNC
-                REQUIRE(table->get_column_name(col) == sync::object_id_column_name);
-#else
                 FAIL();
-#endif
                 continue;
             }
             auto actual_property = *object_schema.property_for_name(property->name);
-
-            // property_for_column_index won't read the pk info, but it will set the is_index to true for pk.
-            // Property could be created with is_indexed = false , is_primary = true.
-            if (actual_property.is_primary) {
-                actual_property.is_primary = false;
-                actual_property.is_indexed = true;
-            }
             REQUIRE(property.value() == actual_property);
         }
    }

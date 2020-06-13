@@ -53,12 +53,12 @@ export EXPANDED_CODE_SIGN_IDENTITY=''
 
 download_zip_if_needed() {
     LANG="$1"
-    DIRECTORY=realm-$LANG-latest
-    if [ ! -d $DIRECTORY ]; then
-        curl -o $DIRECTORY.zip -L https://static.realm.io/downloads/$LANG/latest
-        unzip $DIRECTORY.zip
-        rm $DIRECTORY.zip
-        mv realm-$LANG-* $DIRECTORY
+    local DIRECTORY=realm-$LANG-latest
+    if [ ! -d "$DIRECTORY" ]; then
+        curl -o "$DIRECTORY".zip -L https://static.realm.io/downloads/"$LANG"/latest
+        unzip "$DIRECTORY".zip
+        rm "$DIRECTORY".zip
+        mv realm-"$LANG"-* "$DIRECTORY"
     fi
 }
 
@@ -67,24 +67,31 @@ xcode_version_major() {
 }
 
 xctest() {
-    PLATFORM="$1"
-    LANG="$2"
-    NAME="$3"
-    DIRECTORY="$PLATFORM/$LANG/$NAME"
+    local PLATFORM="$1"
+    local LANG="$2"
+    local NAME="$3"
+    local DIRECTORY="$PLATFORM/$LANG/$NAME"
     if [[ ! -d "$DIRECTORY" ]]; then
         DIRECTORY="${DIRECTORY/swift/swift-$REALM_SWIFT_VERSION}"
     fi
-    PROJECT="$DIRECTORY/$NAME.xcodeproj"
-    WORKSPACE="$DIRECTORY/$NAME.xcworkspace"
-    if [[ $PLATFORM == ios ]]; then
-        sh "$(dirname "$0")/../../scripts/reset-simulators.sh"
+    if [[ $PLATFORM != osx ]]; then
+        if [[ $NAME == Carthage* ]]; then
+            # Building for Carthage requires that a simulator exist but not any
+            # particular one, and having more than one makes xcodebuild
+            # significantly slower and some of Carthage's operations time out.
+            sh "$(dirname "$0")/../../scripts/reset-simulators.sh" -firstOnly
+        else
+            # The other installation methods depend on some specific simulators
+            # existing so just create all of them to be safe.
+            sh "$(dirname "$0")/../../scripts/reset-simulators.sh"
+        fi
     fi
     if [[ $NAME == CocoaPods* ]]; then
         pod install --project-directory="$DIRECTORY"
     elif [[ $NAME == Carthage* ]]; then
         (
             cd "$DIRECTORY"
-            if [ -n "$REALM_BUILD_USING_LATEST_RELEASE" ]; then
+            if [ -n "${REALM_BUILD_USING_LATEST_RELEASE:-}" ]; then
                 echo "github \"realm/realm-cocoa\"" > Cartfile
             else
                 echo "github \"realm/realm-cocoa\" \"${sha:-master}\"" > Cartfile
@@ -97,37 +104,48 @@ xctest() {
                 carthage update --platform watchOS
             fi
         )
+    elif [[ $NAME == SwiftPackageManager* ]]; then
+        if [ -n "$sha" ]; then
+            sed -i '' 's@branch = "master"@branch = "'"$sha"'"@' "$DIRECTORY/$NAME.xcodeproj/project.pbxproj"
+        fi
     elif [[ $LANG == swift* ]]; then
         download_zip_if_needed swift
     else
-        download_zip_if_needed $LANG
+        download_zip_if_needed "$LANG"
     fi
-    DESTINATION=""
+    local destination=()
     if [[ $PLATFORM == ios ]]; then
         simulator_id="$(xcrun simctl list devices | grep -v unavailable | grep -m 1 -o '[0-9A-F\-]\{36\}')"
-        xcrun simctl boot $simulator_id
-        DESTINATION="-destination id=$simulator_id"
+        xcrun simctl boot "$simulator_id"
+        destination=(-destination "id=$simulator_id")
     elif [[ $PLATFORM == watchos ]]; then
-        if xcrun simctl list devicetypes | grep -q 'iPhone 11 Pro Max'; then
-            DESTINATION="-destination id=$(xcrun simctl list devices | grep -v unavailable | grep 'iPhone 11 Pro Max' | grep -m 1 -o '[0-9A-F\-]\{36\}')"
-        elif xcrun simctl list devicetypes | grep -q 'iPhone Xs'; then
-            DESTINATION="-destination id=$(xcrun simctl list devices | grep -v unavailable | grep 'iPhone Xs' | grep -m 1 -o '[0-9A-F\-]\{36\}')"
+        destination=(-sdk watchsimulator)
+    fi
+
+    local project=(-project "$DIRECTORY/$NAME.xcodeproj")
+    local workspace="$DIRECTORY/$NAME.xcworkspace"
+    if [ -d "$workspace" ]; then
+        project=(-workspace "$workspace")
+    fi
+    local code_signing_flags=('CODE_SIGN_IDENTITY=' 'CODE_SIGNING_REQUIRED=NO' 'AD_HOC_CODE_SIGNING_ALLOWED=YES')
+    local scheme=(-scheme "$NAME")
+
+    # Ensure that dynamic framework tests try to use the correct version of the prebuilt libraries.
+    sed -i '' 's@/swift-[0-9.]*@/swift-'"${REALM_XCODE_VERSION}"'@' "$DIRECTORY/$NAME.xcodeproj/project.pbxproj"
+
+    xcodebuild "${project[@]}" "${scheme[@]}" clean build "${destination[@]}" "${code_signing_flags[@]}"
+    if [[ $PLATFORM != watchos ]]; then
+        xcodebuild "${project[@]}" "${scheme[@]}" test "${destination[@]}" "${code_signing_flags[@]}"
+    fi
+
+    if [[ $PLATFORM != osx ]]; then
+        [[ $PLATFORM == 'ios' ]] && SDK=iphoneos || SDK=$PLATFORM
+        if [ -d "$workspace" ]; then
+            [[ $LANG == 'swift' ]] && scheme=(-scheme RealmSwift) || scheme=(-scheme Realm)
+        else
+            scheme=()
         fi
-    fi
-    CMD="-project $PROJECT"
-    if [ -d $WORKSPACE ]; then
-        CMD="-workspace $WORKSPACE"
-    fi
-    ACTION=""
-    if [[ $PLATFORM == watchos ]]; then
-        ACTION="build"
-    else
-        ACTION="build test"
-    fi
-    if [[ $PLATFORM == ios ]]; then
-        xcodebuild $CMD -scheme $NAME clean $ACTION $DESTINATION CODE_SIGN_IDENTITY=
-    else
-        xcodebuild $CMD -scheme $NAME clean $ACTION $DESTINATION CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO
+        xcodebuild "${project[@]}" "${scheme[@]}" -sdk "$SDK" build "${code_signing_flags[@]}"
     fi
 }
 
@@ -137,11 +155,12 @@ swiftpm() {
     xcrun swift build
 }
 
+# shellcheck source=../../scripts/swift-version.sh
 source "$(dirname "$0")/../../scripts/swift-version.sh"
 set_xcode_and_swift_versions # exports REALM_SWIFT_VERSION, REALM_XCODE_VERSION, and DEVELOPER_DIR variables if not already set
 
-PLATFORM=$(echo $COMMAND | cut -d - -f 2)
-LANGUAGE=$(echo $COMMAND | cut -d - -f 3)
+PLATFORM=$(echo "$COMMAND" | cut -d - -f 2)
+LANGUAGE=$(echo "$COMMAND" | cut -d - -f 3)
 
 case "$COMMAND" in
     "test-all")
@@ -155,32 +174,36 @@ case "$COMMAND" in
         fi
         ;;
 
-    test-*-*-static)
-        xctest $PLATFORM $LANGUAGE StaticExample
-        ;;
-
-    test-*-*-dynamic)
-        xctest $PLATFORM $LANGUAGE DynamicExample
-        ;;
-
-    test-*-*-xcframework)
-        xctest $PLATFORM $LANGUAGE XCFrameworkExample
-        ;;
-
     test-*-*-cocoapods)
-        xctest $PLATFORM $LANGUAGE CocoaPodsExample
+        xctest "$PLATFORM" "$LANGUAGE" CocoaPodsExample
         ;;
 
     test-*-*-cocoapods-dynamic)
-        xctest $PLATFORM $LANGUAGE CocoaPodsDynamicExample
+        xctest "$PLATFORM" "$LANGUAGE" CocoaPodsDynamicExample
+        ;;
+
+    test-*-*-static)
+        xctest "$PLATFORM" "$LANGUAGE" StaticExample
+        ;;
+
+    test-*-*-dynamic)
+        xctest "$PLATFORM" "$LANGUAGE" DynamicExample
+        ;;
+
+    test-*-*-xcframework)
+        xctest "$PLATFORM" "$LANGUAGE" XCFrameworkExample
         ;;
 
     test-*-*-carthage)
-        xctest $PLATFORM $LANGUAGE CarthageExample
+        xctest "$PLATFORM" "$LANGUAGE" CarthageExample
+        ;;
+
+    test-ios-spm)
+        xctest "$PLATFORM" swift SwiftPackageManagerExample
         ;;
 
     test-*-spm)
-        swiftpm $PLATFORM
+        swiftpm "$PLATFORM"
         ;;
 
     *)

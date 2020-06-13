@@ -39,7 +39,7 @@ private:
 
     // A shared group used to listen for changes
     std::unique_ptr<Replication> m_history;
-    SharedGroup m_sg;
+    Transaction m_sg;
 
     // The listener thread
     std::future<void> m_thread;
