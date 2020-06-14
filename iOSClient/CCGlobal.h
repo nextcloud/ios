@@ -305,7 +305,7 @@
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
-#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                // userInfo: ocId?, serverUrl?
+#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
 
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
@@ -321,7 +321,7 @@
 
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
-#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // UserInfo: metadata, metadataMov
+#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
 #define k_notificationCenter_menuDetailClose            @"menuDetailClose"
 
 
