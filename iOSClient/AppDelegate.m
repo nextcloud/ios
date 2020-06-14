@@ -165,6 +165,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
     
+    // Passcode
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+    });
+    
     return YES;
 }
 
@@ -189,6 +194,9 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
+    NSLog(@"[LOG] Request Passcode");
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+    
     NSLog(@"[LOG] Request Service Server Nextcloud");
     [[NCService shared] startRequestServicesServer];
     
@@ -210,8 +218,6 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
-
     // Test Maintenance
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
@@ -1524,7 +1530,9 @@
             [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                        [self.passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                        [self.passcodeViewController dismissViewControllerAnimated:YES completion:^{
+                            self.passcodeViewController = nil;
+                        }];
                     });
                 }
             }];
