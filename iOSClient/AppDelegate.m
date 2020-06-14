@@ -165,11 +165,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
     
-    // Passcode
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
-    });
-    
     return YES;
 }
 
@@ -194,9 +189,6 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    NSLog(@"[LOG] Request Passcode");
-    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
-    
     NSLog(@"[LOG] Request Service Server Nextcloud");
     [[NCService shared] startRequestServicesServer];
     
@@ -218,10 +210,12 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+
     // Test Maintenance
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
-    
+        
     // middelware ping
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
@@ -1492,7 +1486,7 @@
     
     if ([[CCUtility getPasscode] length] == 0 || [self.activeAccount length] == 0 || [CCUtility getNotPasscodeAtStart]) return;
     
-    if (!self.passcodeViewController.view.window) {
+    if (self.passcodeViewController == nil) {
            
         self.passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
         if (@available(iOS 13.0, *)) {
@@ -1538,9 +1532,11 @@
     });
 }
 
-- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
-{
-    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+- (void)didInputCorrectPasscodeInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController {
+    
+    [passcodeViewController dismissViewControllerAnimated:YES completion:^{
+        self.passcodeViewController = nil;
+    }];
 }
 
 - (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
@@ -1553,7 +1549,9 @@
     [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
         if (success) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                [passcodeViewController dismissViewControllerAnimated:YES completion:^{
+                    self.passcodeViewController = nil;
+                }];
             });
         }
     }];
