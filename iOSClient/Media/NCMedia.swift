@@ -42,11 +42,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var filterTypeFileImage = false;
     private var filterTypeFileVideo = false;
             
-    private var stepImageWidth: CGFloat = 10
     private let kMaxImageGrid: CGFloat = 5
-    
+    private var cellHeigth: CGFloat = 0
+
     private var oldInProgress = false
     private var newInProgress = false
+    
+    private var lastContentOffsetY: CGFloat = 0
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -281,9 +283,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 } else {
                     self.mediaCommandView?.isHidden = true
                 }
-                self.reloadDataThenPerform {
-                    self.mediaCommandTitle()
-                }
+                self.reloadDataThenPerform { }
                     
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
@@ -455,6 +455,7 @@ extension NCMedia: UICollectionViewDataSource {
         let metadata = metadatas[indexPath.row]
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
+        self.cellHeigth = cell.frame.size.height
 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
             cell.imageItem.backgroundColor = nil
@@ -667,12 +668,21 @@ extension NCMedia {
 
 extension NCMedia: UIScrollViewDelegate {
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        if lastContentOffsetY == 0 || lastContentOffsetY + cellHeigth/2 <= scrollView.contentOffset.y  || lastContentOffsetY - cellHeigth/2 >= scrollView.contentOffset.y {
+
+            mediaCommandTitle()
+            lastContentOffsetY = scrollView.contentOffset.y
+        }
+    }
+    
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        mediaCommandTitle()
         mediaCommandView?.collapseControlButtonView(true)
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        
         if !decelerate {
             self.readFiles()
             
