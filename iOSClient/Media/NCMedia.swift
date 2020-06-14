@@ -138,9 +138,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     func mediaCommandTitle() {
         mediaCommandView?.title.text = ""
-        if let cell = collectionView?.visibleCells.first as? NCGridMediaCell {
-            if cell.date != nil {
-                mediaCommandView?.title.text = CCUtility.getTitleSectionDate(cell.date)
+        
+        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+        
+            if let cell = visibleCells.first as? NCGridMediaCell {
+                if cell.date != nil {
+                    mediaCommandView?.title.text = CCUtility.getTitleSectionDate(cell.date)
+                }
             }
         }
     }
