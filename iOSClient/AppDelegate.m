@@ -1540,8 +1540,8 @@
     });
 }
 
-- (void)didInputCorrectPasscodeInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController {
-    
+- (void)didInputCorrectPasscodeInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
     [passcodeViewController dismissViewControllerAnimated:YES completion:^{
         self.passcodeViewController = nil;
     }];
