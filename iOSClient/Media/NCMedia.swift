@@ -578,7 +578,7 @@ extension NCMedia {
             self.newInProgress = false
             self.collectionView.reloadData()
 
-            if errorCode == 0 && files != nil && files!.count > 0 {
+            if errorCode == 0 && files?.count ?? 0 > 0 {
                 
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                 if tableAccount?.dateLessMedia == nil {
@@ -589,7 +589,7 @@ extension NCMedia {
                 self.reloadDataSource()
             }
             
-            if errorCode == 0 && files != nil && files!.count == 0 && self.metadatas.count == 0 {
+            if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
                 self.searchOldPhotoVideo()
             }
         }
@@ -624,7 +624,7 @@ extension NCMedia {
             self.collectionView.reloadData()
 
             if errorCode == 0 {
-                if files != nil && files!.count > 0 {
+                if files?.count ?? 0 > 0 {
                     
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                     NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
