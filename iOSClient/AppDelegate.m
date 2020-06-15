@@ -228,9 +228,6 @@
         [[NCService shared] middlewarePing];
     }
 
-    // verify delete Asset Local Identifiers in auto upload (Photos album)
-    [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
-   
     // Brand
     #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -706,14 +703,9 @@
 
 - (void)uploadedFile:(NSNotification *)notification
 {
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-   
-    if (errorCode == 0) {
-        // verify delete Asset Local Identifiers in auto upload (Photos album)
-        [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:metadata.account sessionSelector:selectorUploadAutoUpload];
-    }
+//    NSDictionary *userInfo = notification.userInfo;
+//    tableMetadata *metadata = userInfo[@"metadata"];
+//    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1118,7 +1110,6 @@
     
     NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
     
-    // E2EE only 1
     for(tableMetadata *metadata in metadatasUpload) {
         if ([CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:metadata.e2eEncrypted account:metadata.account]) return;
     }
@@ -1297,6 +1288,12 @@
             
             [[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
+    }
+    
+    // verify delete Asset Local Identifiers in auto upload (Photos album)
+    if (counterUpload == 0 && self.passcodeViewController == nil) {
+        
+        [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
     }
     
     // Start Timer
