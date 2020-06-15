@@ -283,7 +283,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 } else {
                     self.mediaCommandView?.isHidden = true
                 }
-                self.reloadDataThenPerform { }
+                
+                self.reloadDataSource()
                     
                 if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
@@ -538,7 +539,7 @@ extension NCMedia {
         }
                 
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
-            DispatchQueue.main.async {
+            DispatchQueue.main.sync {
                 self.metadatas = metadatas
                 
                 if self.metadatas.count  > 0 {
