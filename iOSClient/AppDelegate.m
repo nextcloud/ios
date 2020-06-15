@@ -1502,7 +1502,6 @@
         }
 
         self.passcodeViewController.delegate = self;
-        self.passcodeViewController.allowCancel = false;
         self.passcodeViewController.keypadButtonShowLettering = false;
         
         if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
