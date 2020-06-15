@@ -531,8 +531,8 @@
 
 - (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
 {
-    //CGFloat height = self.tabBarController.tabBar.frame.size.height;
-    return 0;
+    CGFloat height = self.tabBarController.tabBar.frame.size.height;
+    return -height;
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
