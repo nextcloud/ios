@@ -92,7 +92,7 @@ class NCAppConfigView: UIViewController {
                     }
                     
                     self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
                     
                     self.dismiss(animated: true) {}
                 } else {

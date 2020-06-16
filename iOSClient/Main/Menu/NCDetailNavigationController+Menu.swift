@@ -179,7 +179,7 @@ extension NCDetailNavigationController {
                 NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue:k_notificationCenter_menuSearchTextPDF), object: nil)
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSearchTextPDF)
                     }
                 )
             )
@@ -193,7 +193,7 @@ extension NCDetailNavigationController {
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
+                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
                         }
                     )
                 )
@@ -207,7 +207,7 @@ extension NCDetailNavigationController {
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
-                                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil, userInfo: ["metadata": metadata, "metadataMov": metadataLive])
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["metadata": metadata, "metadataMov": metadataLive])
                             }
                         )
                     )
@@ -221,7 +221,7 @@ extension NCDetailNavigationController {
             NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDetailClose)
                 }
             )
         )

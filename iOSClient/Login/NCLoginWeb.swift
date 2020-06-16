@@ -234,7 +234,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             
         if (CCUtility.getIntro()) {
             
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
             self.dismiss(animated: true)
                 
         } else {
@@ -243,7 +243,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if (self.presentingViewController == nil) {
                 let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
                 splitController?.modalPresentationStyle = .fullScreen
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
                 splitController!.view.alpha = 0
                 appDelegate.window.rootViewController = splitController!
                 appDelegate.window.makeKeyAndVisible()
@@ -251,7 +251,7 @@ extension NCLoginWeb: WKNavigationDelegate {
                     splitController!.view.alpha = 1
                 }
             } else {
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
                 self.dismiss(animated: true)
             }
         }

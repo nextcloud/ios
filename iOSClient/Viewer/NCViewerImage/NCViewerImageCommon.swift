@@ -122,9 +122,7 @@ class NCViewerImageCommon: NSObject {
             // AUTOMATIC DOWNLOAD FOR GIF
             
             if (ext == "GIF" || ext == "SVG")  && metadata.session == "" {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
-                }
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
             }
         }
         
