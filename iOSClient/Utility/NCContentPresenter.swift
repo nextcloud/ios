@@ -90,14 +90,10 @@ class NCContentPresenter: NSObject {
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
-                var description = description
-                if description == nil { description = "" }
-                if type == messageType.error {
-                    description = NSLocalizedString("_error_", comment: "") + " " + NSLocalizedString(description!, comment: "")
-                } else {
-                    description = NSLocalizedString(description!, comment: "")
-                }
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description!, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
+                guard var description = description else { return }
+                if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
+                description = NSLocalizedString(description, comment: "")
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
             }
         }
     }
