@@ -99,12 +99,16 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
-                    if oldSchemaVersion < 120 {
+                    if oldSchemaVersion < 128 {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableCapabilities.className())
                         migration.deleteData(forType: tableComments.className())
                         migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
+                    }
+                    
+                    if oldSchemaVersion < 129 {
+                        migration.deleteData(forType: tableShare.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -2571,16 +2575,15 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    #if !EXTENSION
-    @objc func addShare(account: String, activeUrl: String, items: [OCSharedDto]) -> [tableShare] {
+    @objc func addShare(account: String, activeUrl: String, shares: [NCCommunicationShare]) -> [tableShare] {
         
         let realm = try! Realm()
         realm.beginWrite()
 
-        for sharedDto in items {
+        for share in shares {
             
             let addObject = tableShare()
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(sharedDto.path!)"
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "/" + share.path
             let fileName = NSString(string: fullPath).lastPathComponent
             var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
             if serverUrl.hasSuffix("/") {
@@ -2588,37 +2591,37 @@ class NCManageDatabase: NSObject {
             }
             
             addObject.account = account
-            addObject.displayNameFileOwner = sharedDto.displayNameFileOwner
-            addObject.displayNameOwner = sharedDto.displayNameOwner
-            if sharedDto.expirationDate > 0 {
-                addObject.expirationDate =  Date(timeIntervalSince1970: TimeInterval(sharedDto.expirationDate)) as NSDate
-            }
-            addObject.fileParent = sharedDto.fileParent
-            addObject.fileTarget = sharedDto.fileTarget
-            addObject.hideDownload = sharedDto.hideDownload
-            addObject.idRemoteShared = sharedDto.idRemoteShared
-            addObject.isDirectory = sharedDto.isDirectory
-            addObject.itemSource = sharedDto.itemSource
-            addObject.label = sharedDto.label
-            addObject.mailSend = sharedDto.mailSend
-            addObject.mimeType = sharedDto.mimeType
-            addObject.note = sharedDto.note
-            addObject.path = sharedDto.path
-            addObject.permissions = sharedDto.permissions
-            addObject.parent = sharedDto.parent
-            addObject.sharedDate = Date(timeIntervalSince1970: TimeInterval(sharedDto.sharedDate)) as NSDate
-            addObject.shareType = sharedDto.shareType
-            addObject.shareWith = sharedDto.shareWith
-            addObject.shareWithDisplayName = sharedDto.shareWithDisplayName
-            addObject.storage = sharedDto.storage
-            addObject.storageID = sharedDto.storageID
-            addObject.token = sharedDto.token
-            addObject.url = sharedDto.url
-            addObject.uidOwner = sharedDto.uidOwner
-            addObject.uidFileOwner = sharedDto.uidFileOwner
-            
             addObject.fileName = fileName
             addObject.serverUrl = serverUrl
+            
+            addObject.canEdit = share.canEdit
+            addObject.canDelete = share.canDelete
+            addObject.date = share.date
+            addObject.displaynameFileOwner = share.displaynameFileOwner
+            addObject.displaynameOwner = share.displaynameOwner
+            addObject.expirationDate =  share.expirationDate
+            addObject.fileParent = share.fileParent
+            addObject.fileSource = share.fileSource
+            addObject.fileTarget = share.fileTarget
+            addObject.hideDownload = share.hideDownload
+            addObject.idShare = share.idShare
+            addObject.itemSource = share.itemSource
+            addObject.itemType = share.itemType
+            addObject.label = share.label
+            addObject.mailSend = share.mailSend
+            addObject.mimeType = share.mimeType
+            addObject.note = share.note
+            addObject.parent = share.parent
+            addObject.path = share.path
+            addObject.permissions = share.permissions
+            addObject.shareType = share.shareType
+            addObject.shareWith = share.shareWith
+            addObject.shareWithDisplayname = share.shareWithDisplayname
+            addObject.storage = share.storage
+            addObject.storageId = share.storageId
+            addObject.token = share.token
+            addObject.uidOwner = share.uidOwner
+            addObject.uidFileOwner = share.uidFileOwner
             
             realm.add(addObject, update: .all)
         }
@@ -2631,20 +2634,18 @@ class NCManageDatabase: NSObject {
         
         return self.getTableShares(account: account)
     }
-    #endif
     
     @objc func getTableShares(account: String) -> [tableShare] {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
         
         return Array(results.map { tableShare.init(value:$0) })
     }
     
-    #if !EXTENSION
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
         
         let realm = try! Realm()
@@ -2652,23 +2653,22 @@ class NCManageDatabase: NSObject {
         
         let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
         
-        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == %d", metadata.account, metadata.serverUrl, metadata.fileName, Int(shareTypeLink.rawValue)).first
+        let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
         if firstShareLink == nil {
             let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName).sorted(by: sortProperties)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         } else {
-            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idRemoteShared != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.idRemoteShared).sorted(by: sortProperties)
+            let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND idShare != %d", metadata.account, metadata.serverUrl, metadata.fileName, firstShareLink!.idShare).sorted(by: sortProperties)
             return(firstShareLink: firstShareLink, share: Array(results.map { tableShare.init(value:$0) }))
         }
     }
-    #endif
     
-    func getTableShare(account: String, idRemoteShared: Int) -> tableShare? {
+    func getTableShare(account: String, idShare: Int) -> tableShare? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableShare.self).filter("account = %@ AND idRemoteShared = %d", account, idRemoteShared).first else {
+        guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else {
             return nil
         }
         
@@ -2680,7 +2680,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
 
         return Array(results.map { tableShare.init(value:$0) })
@@ -2691,19 +2691,19 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
         
         return Array(results.map { tableShare.init(value:$0) })
     }
     
-    @objc func deleteTableShare(account: String, idRemoteShared: Int) {
+    @objc func deleteTableShare(account: String, idShare: Int) {
         
         let realm = try! Realm()
         
         realm.beginWrite()
         
-        let result = realm.objects(tableShare.self).filter("account == %@ AND idRemoteShared == %d", account, idRemoteShared)
+        let result = realm.objects(tableShare.self).filter("account == %@ AND idShare == %d", account, idShare)
         realm.delete(result)
         
         do {

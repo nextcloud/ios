@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import Foundation
+import NCCommunication
 
 class NCShareNetworking: NSObject {
     
@@ -42,18 +43,17 @@ class NCShareNetworking: NSObject {
     
     func readShare() {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        OCNetworking.sharedManager()?.readShare(withAccount: metadata.account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl), completion: { (account, items, message, errorCode) in
+        NCCommunication.shared.readShares(path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)) { (account, shares, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
-            if errorCode == 0 {
-                let itemsOCSharedDto = items as! [OCSharedDto]
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+             if errorCode == 0 && shares != nil {
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: shares!)
                 self.appDelegate.activeMain?.tableView?.reloadData()
                 self.appDelegate.activeFavorites?.tableView?.reloadData()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
             self.delegate?.readShareCompleted()
-        })
+        }
     }
     
     func share(password: String, permission: Int, hideDownload: Bool) {
@@ -80,20 +80,20 @@ class NCShareNetworking: NSObject {
         })
     }
     
-    func unShare(idRemoteShared: Int) {
+    func unShare(idShare: Int) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        OCNetworking.sharedManager()?.unshareAccount(metadata.account, shareID: idRemoteShared, completion: { (account, message, errorCode) in
+        NCCommunication.shared.deleteShare(idShare: idShare) { (account, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
-                NCManageDatabase.sharedInstance.deleteTableShare(account: account!, idRemoteShared: idRemoteShared)
+                NCManageDatabase.sharedInstance.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
-        })
+        }
     }
     
-    func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
+    func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         OCNetworking.sharedManager()?.shareUpdateAccount(metadata.account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -101,7 +101,7 @@ class NCShareNetworking: NSObject {
                 self.readShare()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                self.delegate?.updateShareWithError(idRemoteShared: idRemoteShared)
+                self.delegate?.updateShareWithError(idShare: idShare)
             }
         })
     }
@@ -151,6 +151,6 @@ protocol NCShareNetworkingDelegate {
     func readShareCompleted()
     func shareCompleted()
     func unShareCompleted()
-    func updateShareWithError(idRemoteShared: Int)
+    func updateShareWithError(idShare: Int)
     func getUserAndGroup(items: [OCShareUser]?)
 }

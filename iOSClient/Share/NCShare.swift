@@ -203,7 +203,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
         }
         
-        networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
+        //networking?.updateShare(idRemoteShared: tableShare.idRemoteShared, password: nil, permission: permission, note: nil, expirationTime: nil, hideDownload: tableShare.hideDownload)
     }
     
     func tapMenu(with tableShare: tableShare?, sender: Any) {
@@ -361,7 +361,7 @@ extension NCShare: UITableViewDataSource {
                 
                 cell.tableShare = tableShare
                 cell.delegate = self
-                cell.labelTitle.text = tableShare.shareWithDisplayName
+                cell.labelTitle.text = tableShare.shareWithDisplayname
                 cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
                 cell.labelCanEdit.textColor = NCBrandColor.sharedInstance.textView
