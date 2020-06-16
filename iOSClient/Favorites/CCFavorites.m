@@ -205,11 +205,16 @@
                         }
                         father = serverUrlSon;
                     }
+                    tableMetadata *metadataFavorite = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                    if (metadataFavorite == nil) {
+                        [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                    } else if (!metadataFavorite.favorite) {
+                        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:true];
+                    }
                 }
                  
                 // Verify remove favorite
                 NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] sorted:nil ascending:NO];
-                 
                 for (tableMetadata *metadata in allRecordFavorite)
                     if (![filesOcId containsObject:metadata.ocId])
                         [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
