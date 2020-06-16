@@ -274,17 +274,18 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func deleteFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                self.metadatas = metadatas
+                if metadata.account == appDelegate.activeAccount {
+                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    self.metadatas = metadatas
+                        
+                    self.updateMediaControlVisibility()
                     
-                self.updateMediaControlVisibility()
-                
-                self.reloadDataSource()
-                    
-                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    self.reloadDataSource()
+                        
+                    if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                        let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    }
                 }
             }
         }
@@ -293,12 +294,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func moveFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                self.reloadDataSource()
+                if metadata.account == appDelegate.activeAccount {
+                    self.reloadDataSource()
 
-                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                        let userInfo: [String : Any] = ["metadata": metadata, "metadataNew": metadataNew, "type": "move"]
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    }
                 }
             }
         }
@@ -307,12 +309,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                
-                self.reloadDataSource()
+                if metadata.account == appDelegate.activeAccount {
+                    self.reloadDataSource()
 
-                if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    let userInfo: [String : Any] = ["metadata": metadata, "type": "rename"]
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                        let userInfo: [String : Any] = ["metadata": metadata, "type": "rename"]
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
+                    }
                 }
             }
         }
@@ -585,7 +588,7 @@ extension NCMedia {
             self.newInProgress = false
             self.collectionView.reloadData()
 
-            if errorCode == 0 && files?.count ?? 0 > 0 {
+            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
                 NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                 if tableAccount?.dateLessMedia == nil {
@@ -630,7 +633,7 @@ extension NCMedia {
             NCUtility.sharedInstance.stopActivityIndicator()
             self.collectionView.reloadData()
 
-            if errorCode == 0 {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if files?.count ?? 0 > 0 {
                     
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
