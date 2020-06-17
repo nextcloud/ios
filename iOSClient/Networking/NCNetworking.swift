@@ -217,7 +217,6 @@ import Alamofire
            
             if errorCode == 0 {
                
-                metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 if setFavorite { metadata.favorite = true }
                 
