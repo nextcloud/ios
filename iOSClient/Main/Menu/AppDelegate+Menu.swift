@@ -102,7 +102,6 @@ extension AppDelegate {
             )
         } 
         
-        #if !targetEnvironment(simulator)
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_scans_document_", comment: ""),
@@ -112,7 +111,6 @@ extension AppDelegate {
                 }
             )
         )
-        #endif
 
         actions.append(
             NCMenuAction(
