@@ -530,11 +530,11 @@ extension NCMedia {
         var predicate: NSPredicate?
         
         if filterTypeFileImage {
-            predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
-            predicate = NSPredicate(format: "account == %@ AND typeFile == %@", appDelegate.activeAccount, k_metadataTypeFile_image)
+            predicate = NSPredicate(format: "account == %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_image)
         } else {
-            predicate = NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@)", appDelegate.activeAccount, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_image, k_metadataTypeFile_video)
         }
                 
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
