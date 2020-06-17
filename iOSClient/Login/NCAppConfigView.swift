@@ -38,7 +38,7 @@ class NCAppConfigView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brandElement
         titleLabel.textColor = NCBrandColor.sharedInstance.brandText
         
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")

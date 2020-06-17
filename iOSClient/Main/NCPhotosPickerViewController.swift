@@ -49,7 +49,7 @@ class NCPhotosPickerViewController: NSObject {
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
         
         configure.maxSelectedAssets = self.maxSelectedAssets
-        configure.selectedColor = NCBrandColor.sharedInstance.brand
+        configure.selectedColor = NCBrandColor.sharedInstance.brandElement
         configure.singleSelectedMode = singleSelectedMode
         
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in

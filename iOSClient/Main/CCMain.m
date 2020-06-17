@@ -330,7 +330,7 @@
 
     [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     // color searchbar
-    self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brand;
+    self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {

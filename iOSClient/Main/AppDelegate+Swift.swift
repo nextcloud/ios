@@ -36,7 +36,7 @@ extension AppDelegate {
             viewController.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
             viewController.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
         }
-        viewController.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brand
+        viewController.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
         viewController.navigationController?.navigationBar.setNeedsLayout()
     }
     

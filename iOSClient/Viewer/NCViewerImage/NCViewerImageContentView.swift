@@ -109,7 +109,7 @@ public class NCViewerImageContentView: UIScrollView {
 
     private lazy var indicatorContainer: UIView = {
         let container = UIView()
-        container.backgroundColor = NCBrandColor.sharedInstance.brand
+        container.backgroundColor = NCBrandColor.sharedInstance.brandElement
         container.layer.cornerRadius = Constants.indicatorViewSize * 0.5
         container.layer.masksToBounds = true
         return container

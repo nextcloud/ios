@@ -863,7 +863,7 @@
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
-    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brand;
+    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brandElement;
     buttonPlus.layer.cornerRadius = buttonSize / 2;
     buttonPlus.layer.masksToBounds = NO;
     buttonPlus.layer.shadowOffset = CGSizeMake(0, 0);

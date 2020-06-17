@@ -196,7 +196,7 @@
     // Title
     [self.navigationController.navigationBar setTitleTextAttributes: @{NSForegroundColorAttributeName:self.navigationController.navigationBar.tintColor}];
     
-    self.navigationItem.title = [NCBrandOptions sharedInstance].brand;
+    self.navigationItem.title = [NCBrandOptions sharedInstance].brandElement;
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, nil];
     self.navigationItem.hidesBackButton = YES;

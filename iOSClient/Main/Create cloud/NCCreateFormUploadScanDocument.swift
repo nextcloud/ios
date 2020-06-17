@@ -139,7 +139,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row.title = NSLocalizedString("_quality_medium_", comment: "")
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
-        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brand
+        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brandElement
         
         row.cellConfig["slider.maximumValue"] = 1
         row.cellConfig["slider.minimumValue"] = 0
@@ -201,7 +201,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         row.value = "PDF"
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
-        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
+        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
         
