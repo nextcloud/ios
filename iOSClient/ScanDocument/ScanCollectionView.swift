@@ -59,7 +59,6 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
@@ -88,10 +87,6 @@ class DragDropViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
-        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
-        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brandElement
-        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brandElement
-        
         loadImage()
     }
     
@@ -100,6 +95,13 @@ class DragDropViewController: UIViewController {
         
         collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        
+        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
+        if #available(iOS 13.0, *) {
+            labelTitlePDFzone.backgroundColor = .systemBackground
+        } else {
+            labelTitlePDFzone.backgroundColor = .systemGray
+        }
     }
     
     //MARK: Button Action
