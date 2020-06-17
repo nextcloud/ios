@@ -2434,52 +2434,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func updateMetadatasMedia(_ metadatasSource: [tableMetadata], lteDate: Date, gteDate: Date, account: String) -> (isDifferent: Bool, newInsert: Int) {
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        var numDelete: Int = 0
-        var numInsert: Int = 0
-        
-        var etagsDelete: [String] = []
-        var etagsInsert: [String] = []
-        
-        var isDifferent: Bool = false
-        var newInsert: Int = 0
-        
-        do {
-            try realm.write {
-                
-                // DELETE
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND date >= %@ AND date <= %@ AND (typeFile == %@ OR typeFile == %@ OR typeFile == %@)", account, gteDate, lteDate, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio)
-                etagsDelete = Array(results.map { $0.etag })
-                numDelete = results.count
-                
-                // INSERT
-                let photos = Array(metadatasSource.map { tableMetadata.init(value:$0) })
-                etagsInsert = Array(photos.map { $0.etag })
-                numInsert = photos.count
-                
-                // CALCULATE DIFFERENT RETURN
-                if etagsDelete.count == etagsInsert.count && etagsDelete.sorted() == etagsInsert.sorted() {
-                    isDifferent = false
-                } else {
-                    isDifferent = true
-                    newInsert = numInsert - numDelete
-                    
-                    realm.delete(results)
-                    realm.add(photos, update: .all)
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
-        }
-        
-        return(isDifferent, newInsert)
-    }
-
     //MARK: -
     //MARK: Table Photo Library
     
