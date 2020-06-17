@@ -118,13 +118,7 @@ class NCDetailViewController: UIViewController {
                         
         appDelegate.progressViewDetail.frame = CGRect(x: 0, y: navigationController.navigationBar.frame.height - 2, width: navigationController.navigationBar.frame.width, height: 2)
         progress(0)
-        
-        if NCBrandColor.sharedInstance.brand.isLight() {
-            appDelegate.progressViewDetail.tintColor = NCBrandColor.sharedInstance.brand.darker(by: 10)
-        } else {
-            appDelegate.progressViewDetail.tintColor = NCBrandColor.sharedInstance.brand.lighter(by: 20)
-        }
-        
+        appDelegate.progressViewDetail.tintColor = NCBrandColor.sharedInstance.brandElement
         appDelegate.progressViewDetail.trackTintColor = .clear
         appDelegate.progressViewDetail.transform = CGAffineTransform(scaleX: 1, y: 1)
         
@@ -172,7 +166,7 @@ class NCDetailViewController: UIViewController {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
         if backgroundView.image != nil {
-            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.4))
         }
         
         if navigationController?.isNavigationBarHidden == false {
@@ -428,7 +422,7 @@ class NCDetailViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = false
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
-        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand.withAlphaComponent(0.4))
+        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.4))
     }
     
     private func closeAllSubView() {

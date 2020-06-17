@@ -137,7 +137,7 @@
     self.searchController.dimsBackgroundDuringPresentation = NO;
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     }
     UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"searchField"];
     if (searchTextField && [searchTextField isKindOfClass:[UITextField class]]) {
@@ -154,7 +154,7 @@
     self.sortButton = self.viewRichWorkspace.sortButton;
     heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
 
-    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     [self.sortButton addTarget:self action:@selector(toggleReMainMenu) forControlEvents:UIControlEventTouchUpInside];
     
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
@@ -328,13 +328,13 @@
     refreshControl.tintColor = UIColor.lightGrayColor;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 
-    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     // color searchbar
     self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brand;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     }
     // color textview searchbbar
     UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
@@ -1218,7 +1218,7 @@
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     // Color text "Cancel"
-    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brand];
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brandElement];
     
     if (searchController.isActive) {
         [self deleteRefreshControl];
@@ -2309,7 +2309,7 @@
     UIVisualEffect *blurEffect;
     blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.2];
+    visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brandElement colorWithAlphaComponent:0.2];
     
     if ([[CCUtility getGroupBySettings] isEqualToString:@"alphabetic"]) {
         
