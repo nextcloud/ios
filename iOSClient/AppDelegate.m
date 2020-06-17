@@ -975,10 +975,8 @@
         
         if (isTooLight) {
             NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:10];
-            NCBrandColor.sharedInstance.brand = [NCBrandColor.sharedInstance.brand darkerBy:10];
         } else if (isTooDark) {
             NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:15];
-            NCBrandColor.sharedInstance.brand = [NCBrandColor.sharedInstance.brand lighterBy:15];
         }
     
     } else {
@@ -996,21 +994,13 @@
         
         NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
-        
-        /*
-         NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-         NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
-         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
-         */
     }
         
     [NCBrandColor.sharedInstance setDarkMode];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[NCMainCommon sharedInstance] createImagesThemingColor];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
     });
-    
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
