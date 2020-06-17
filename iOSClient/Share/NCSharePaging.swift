@@ -100,7 +100,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
-        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brand
+        pagingViewController.indicatorColor = NCBrandColor.sharedInstance.brandElement
         (pagingViewController.view as! NCSharePagingView).setupConstraints()
         pagingViewController.reloadMenu()
     }

@@ -462,7 +462,7 @@ class NCShareUserCell: UITableViewCell {
         super.awakeFromNib()
         
         switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanEdit.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanEdit.onTintColor = NCBrandColor.sharedInstance.brandElement
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
     

@@ -166,7 +166,7 @@ class NCShareCommon: NSObject {
         calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
         calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 12)
         
-        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brand
+        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brandElement
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 12)
         
         viewWindow.addSubview(calendar)

@@ -661,7 +661,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
         scannerVC.navigationBar.isTranslucent = false
-        scannerVC.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        scannerVC.navigationBar.barTintColor = NCBrandColor.sharedInstance.brandElement
         scannerVC.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
         scannerVC.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
