@@ -412,7 +412,7 @@ import Alamofire
                 CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     
-                metadata.date = date ?? NSDate()
+                metadata.uploadDate = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 metadata.ocId = ocId!
                 
