@@ -78,7 +78,7 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
         transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
@@ -89,8 +89,8 @@ class DragDropViewController: UIViewController {
         changeTheming()
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
-        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
-        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
+        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brandElement
         
         loadImage()
     }

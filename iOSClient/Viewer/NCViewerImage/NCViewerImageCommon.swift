@@ -35,9 +35,9 @@ class NCViewerImageCommon: NSObject {
     static var offOutlineImage: UIImage?
 
     override init() {
-        NCViewerImageCommon.offOutlineAudio = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
-        NCViewerImageCommon.offOutlineVideo = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
-        NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
+        NCViewerImageCommon.offOutlineAudio = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
+        NCViewerImageCommon.offOutlineVideo = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
+        NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata], favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
