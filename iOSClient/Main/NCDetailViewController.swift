@@ -789,6 +789,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
     func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
         
+        viewerImageViewController.statusView.isHidden = true
         viewerImageViewControllerLongPressInProgress = true
         
         let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
@@ -827,6 +828,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         viewerImageViewControllerLongPressInProgress = false
         
+        viewerImageViewController.statusView.isHidden = false
         appDelegate.player?.pause()
         videoLayer?.removeFromSuperlayer()
     }
