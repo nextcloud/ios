@@ -71,6 +71,13 @@
     
     CGFloat heightRichWorkspace;
     CGFloat heightSearchBar;
+    
+    //
+    NSMutableArray *arrayDeleteMetadata;
+    NSMutableArray *arrayMoveMetadata;
+    NSMutableArray *arrayMoveServerUrlTo;
+    NSMutableArray *arrayCopyMetadata;
+    NSMutableArray *arrayCopyServerUrlTo;
 }
 @end
 
@@ -113,6 +120,12 @@
     _noFilesSearchDescription = @"";
     _cellFavouriteImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]];
     _cellTrashImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]];
+    
+    arrayDeleteMetadata = [NSMutableArray new];
+    arrayMoveMetadata = [NSMutableArray new];
+    arrayMoveServerUrlTo = [NSMutableArray new];
+    arrayCopyMetadata = [NSMutableArray new];
+    arrayCopyServerUrlTo = [NSMutableArray new];
     
     // delegate
     self.tableView.tableFooterView = [UIView new];
@@ -429,54 +442,76 @@
 
 - (void)deleteFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode == 0 && metadata) {
-        if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
-            if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
-                [self readFileReloadFolder];
-            } else {
-                if (self.searchController.isActive) {
-                    [self readFolder:self.serverUrl];
-                }
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayDeleteMetadata.count > 0) {
+        tableMetadata *metadata = arrayDeleteMetadata.firstObject;
+        [arrayDeleteMetadata removeObjectAtIndex:0];
+        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:metadata.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+
+    if (errorCode == 0 ) {
+        if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
+            [self readFileReloadFolder];
+        } else {
+            if (self.searchController.isActive) {
+                [self readFolder:self.serverUrl];
             }
         }
-    } else {
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
 - (void)moveFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
+    tableMetadata *metadata = userInfo[@"metadata"];
 //    tableMetadata *metadataNew = userInfo[@"metadataNew"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode != 0) {
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayMoveMetadata.count > 0) {
+        tableMetadata *metadata = arrayMoveMetadata.firstObject;
+        NSString *serverUrlTo = arrayMoveServerUrlTo.firstObject;
+        [arrayMoveMetadata removeObjectAtIndex:0];
+        [arrayMoveServerUrlTo removeObjectAtIndex:0];
+        [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
 - (void)copyFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
+    tableMetadata *metadata = userInfo[@"metadata"];
 //    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode != 0) {
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayCopyMetadata.count > 0) {
+        tableMetadata *metadata = arrayCopyMetadata.firstObject;
+        NSString *serverUrlTo = arrayCopyServerUrlTo.firstObject;
+        [arrayCopyMetadata removeObjectAtIndex:0];
+        [arrayCopyServerUrlTo removeObjectAtIndex:0];
+        [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
@@ -1293,13 +1328,13 @@
         return;
      
     if ([_selectedocIdsMetadatas count] > 0) {
-        [appDelegate.arrayDeleteMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
+        [arrayDeleteMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
-        [appDelegate.arrayDeleteMetadata addObject:self.metadata];
+        [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
     [self tableViewSelect:false];
@@ -1317,11 +1352,11 @@
     NSMutableArray *arrayMetadata, *arrayServerUrlTo;
     
     if (move) {
-        arrayMetadata = appDelegate.arrayMoveMetadata;
-        arrayServerUrlTo = appDelegate.arrayMoveServerUrlTo;
+        arrayMetadata = arrayMoveMetadata;
+        arrayServerUrlTo = arrayMoveServerUrlTo;
     } else {
-        arrayMetadata = appDelegate.arrayCopyMetadata;
-        arrayServerUrlTo = appDelegate.arrayCopyServerUrlTo;
+        arrayMetadata = arrayCopyMetadata;
+        arrayServerUrlTo = arrayCopyServerUrlTo;
     }
     
     if ([_selectedocIdsMetadatas count] > 0) {

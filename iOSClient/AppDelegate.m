@@ -85,12 +85,7 @@
 
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listMainVC = [NSMutableDictionary new];
-    self.arrayDeleteMetadata = [NSMutableArray new];
-    self.arrayMoveMetadata = [NSMutableArray new];
-    self.arrayMoveServerUrlTo = [NSMutableArray new];
-    self.arrayCopyMetadata = [NSMutableArray new];
-    self.arrayCopyServerUrlTo = [NSMutableArray new];
-    
+   
     // Push Notification
     [application registerForRemoteNotifications];
     
@@ -158,13 +153,7 @@
 
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-    
-    // Observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
-    
+
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
         [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -643,63 +632,6 @@
     }
     
     return [token copy];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== NotificationCenter ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)deleteFile:(NSNotification *)notification
-{
-    if (self.arrayDeleteMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayDeleteMetadata.firstObject;
-        [self.arrayDeleteMetadata removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self deleteFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)moveFile:(NSNotification *)notification
-{
-    if (self.arrayMoveMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayMoveMetadata.firstObject;
-        NSString *serverUrlTo = self.arrayMoveServerUrlTo.firstObject;
-        [self.arrayMoveMetadata removeObjectAtIndex:0];
-        [self.arrayMoveServerUrlTo removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self moveFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)copyFile:(NSNotification *)notification
-{
-    if (self.arrayCopyMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayCopyMetadata.firstObject;
-        NSString *serverUrlTo = self.arrayCopyServerUrlTo.firstObject;
-        [self.arrayCopyMetadata removeObjectAtIndex:0];
-        [self.arrayCopyServerUrlTo removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self copyFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)uploadedFile:(NSNotification *)notification
-{
-//    NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
-//    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
