@@ -53,7 +53,6 @@ import UIKit
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
-    @objc public var middlewarePingUrl:                 String = ""
     @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
     // Personalized
     @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
@@ -74,7 +73,6 @@ import UIKit
     @objc public var use_themingColor:                  Bool = true
     //@objc public var use_themingBackground:             Bool = true                                               // Deprecated
     @objc public var use_themingLogo:                   Bool = false
-    @objc public var use_middlewarePing:                Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
     @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
     @objc public var use_loginflowv2:                   Bool = false                                                // Don't touch me !!

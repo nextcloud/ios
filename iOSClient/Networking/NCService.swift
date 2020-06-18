@@ -220,14 +220,7 @@ class NCService: NSObject {
             }
         }
     }
-    
-    @objc public func middlewarePing() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-    }
-    
+   
     //MARK: - Thirt Part
     
     private func requestHC() {

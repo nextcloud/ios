@@ -190,9 +190,10 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Test Maintenance
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
+
     
     NSLog(@"[LOG] Request Passcode");
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -210,7 +211,6 @@
     [self pushNotification];
     
     NSLog(@"[LOG] RichDocument");
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
 }
 
 //
@@ -218,16 +218,8 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Test Maintenance
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
         
-    // middelware ping
-    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
-        NSLog(@"[LOG] Middleware Ping");
-        [[NCService shared] middlewarePing];
-    }
-
     // Brand
     #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -246,9 +238,10 @@
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    NSLog(@"[LOG] Enter in Background");
-            
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
+
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
 }
 

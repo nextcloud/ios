@@ -62,7 +62,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
         appDelegate.activeMedia = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
     override func viewDidLoad() {
@@ -118,7 +119,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         super.viewDidAppear(animated)
         
         mediaCommandTitle()
-        readFiles()
         searchNewPhotoVideo()
     }
     
@@ -528,9 +528,7 @@ extension NCMedia {
     
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true || self.view.window == nil) { return }
         
         var predicate: NSPredicate?
         
@@ -550,6 +548,7 @@ extension NCMedia {
                 
                 self.reloadDataThenPerform {
                     self.mediaCommandTitle()
+                    self.readFiles()
                 }
             }
             completion()
@@ -592,7 +591,6 @@ extension NCMedia {
         NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.newInProgress = false
-            self.collectionView.reloadData()
 
             if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                 
@@ -601,13 +599,13 @@ extension NCMedia {
                     NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
                 }
                 NCManageDatabase.sharedInstance.setAccountDateUpdateNewMedia()
-                
-                self.reloadDataSource()
             }
             
             if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
                 self.searchOldPhotoVideo()
             }
+            
+            self.reloadDataSource()
         }
     }
     

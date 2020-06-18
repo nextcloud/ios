@@ -296,6 +296,7 @@
 // Notification Center
 
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
+#define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
 
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
