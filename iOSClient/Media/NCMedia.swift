@@ -750,11 +750,17 @@ class NCMediaCommandView: UIView {
     
     func toggleEmptyView(isEmpty: Bool) {
         if isEmpty {
-            self.gradient.isHidden = true
-            self.controlButtonView.isHidden = true
+            UIView.animate(withDuration: 0.3) {
+                self.moreView.effect = UIBlurEffect(style: .dark)
+                self.gradient.isHidden = true
+                self.controlButtonView.isHidden = true
+            }
         } else {
-            self.gradient.isHidden = false
-            self.controlButtonView.isHidden = false
+            UIView.animate(withDuration: 0.3) {
+                self.moreView.effect = UIBlurEffect(style: .regular)
+                self.gradient.isHidden = false
+                self.controlButtonView.isHidden = false
+            }
         }
     }
     
