@@ -33,7 +33,6 @@
 #import "CCSection.h"
 #import "CCUtility.h"
 #import "CCHud.h"
-#import "CCMenuAccount.h"
 #import "CCPeekPop.h"
 #import <MGSwipeTableCell/MGSwipeTableCell.h>
 

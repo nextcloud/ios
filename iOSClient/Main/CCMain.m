@@ -168,7 +168,7 @@
     heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
 
     [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
-    [self.sortButton addTarget:self action:@selector(toggleReMainMenu) forControlEvents:UIControlEventTouchUpInside];
+    [self.sortButton addTarget:self action:@selector(toggleSortMenu) forControlEvents:UIControlEventTouchUpInside];
     
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
@@ -722,7 +722,7 @@
 
 - (void)setUINavigationBarSelected
 {    
-    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationMore"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
+    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationMore"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleSelectMenu)];
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
     
     self.navigationItem.leftBarButtonItem = leftButton;
@@ -1601,133 +1601,12 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Menu LOGO ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)menuLogo:(UIGestureRecognizer *)theGestureRecognizer
-{
-    
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_multiaccount)
-        return;
-    
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-    
-    NSMutableArray *menuArray = [NSMutableArray new];
-    
-    for (NSString *account in listAccount) {
-    
-        CCMenuItem *item = [[CCMenuItem alloc] init];
-        
-        item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
-        item.argument = account;
-        
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
-        
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
-        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
-        if (avatar) {
-            
-            avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];
-            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-            CGSize imageSize = avatarImageView.bounds.size;
-            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [avatarImageView.layer renderInContext:context];
-            avatar = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
-        } else {
-            
-            avatar = [UIImage imageNamed:@"menuLogoUser"];
-        }
-        
-        item.image = avatar;
-        item.target = self;
-        
-        if ([account isEqualToString:appDelegate.activeAccount]) {
-            
-            item.action = nil;
-            [menuArray insertObject:item atIndex:0];
-            
-        } else {
-        
-            item.action = @selector(changeDefaultAccount:);
-            [menuArray addObject:item];
-        }
-    }
-    
-    // Add + new account
-    CCMenuItem *item = [[CCMenuItem alloc] init];
-    
-    item.title = NSLocalizedString(@"_add_account_", nil);
-    item.argument = @"";
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] width:50 height:50 color:NCBrandColor.sharedInstance.textView];
-    item.target = self;
-    item.action = @selector(addNewAccount:);
-    
-    [menuArray addObject:item];
-    
-    OptionalConfiguration options;
-    Color backgroundColor;
-    
-    const CGFloat *componentsBackgroundColor = CGColorGetComponents(NCBrandColor.sharedInstance.backgroundForm.CGColor);
-    backgroundColor.R = componentsBackgroundColor[0];
-    backgroundColor.G = componentsBackgroundColor[1];
-    backgroundColor.B = componentsBackgroundColor[2];
-    
-    options.arrowSize = 9;
-    options.marginXSpacing = 7;
-    options.marginYSpacing = 10;
-    options.intervalSpacing = 20;
-    options.menuCornerRadius = 6.5;
-    options.maskToBackground = NO;
-    options.shadowOfMenu = YES;
-    options.hasSeperatorLine = YES;
-    options.seperatorLineHasInsets = YES;
-    options.textColor = NCBrandColor.sharedInstance.textView;
-    options.menuBackgroundColor = backgroundColor;
-    options.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    CGRect rect = self.view.frame;
-    CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
-    CGFloat safeAreaTop = 0;
-    CGFloat offsetY = 35;
-    safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
-    rect.origin.y = locationY + safeAreaTop + offsetY;
-    rect.size.height = rect.size.height - locationY - safeAreaTop - offsetY;
-    
-    [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
-}
-
-- (void)changeDefaultAccount:(CCMenuItem *)sender
-{
-    // LOGOUT
-    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-    if (tableAccount) {
-            
-        // LOGIN
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-    
-        // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-    }
-}
-
-- (void)addNewAccount:(CCMenuItem *)sender
-{
-    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-}
-
-- (void)toggleReMainMenu
+- (void)toggleSortMenu
 {
     [self toggleMenuWithViewController:self.navigationController];
 }
 
-- (void)toggleReSelectMenu
+- (void)toggleSelectMenu
 {
     [self toggleSelectMenuWithViewController:self.navigationController];
 }
