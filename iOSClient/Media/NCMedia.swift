@@ -62,7 +62,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
 
         appDelegate.activeMedia = self
         
-        //NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
@@ -528,7 +528,7 @@ extension NCMedia {
     
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true || self.view.window == nil) { return }
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) { return }
         
         var predicate: NSPredicate?
         
