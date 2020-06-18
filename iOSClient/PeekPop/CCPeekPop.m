@@ -73,7 +73,7 @@
  
     if (self.showOpenIn && !self.metadata.directory) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_open_in_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCMainCommon sharedInstance]  downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
+            [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
         }];
         [items addObject:item];
     }

@@ -797,6 +797,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
                 
+                AudioServicesPlaySystemSound(1519) // peek feedback
                 viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
                 
             } else {
@@ -817,6 +818,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     if errorCode == 0 && account == metadata.account {
                         
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        AudioServicesPlaySystemSound(1519) // peek feedback
                         self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
                     }
                 }
