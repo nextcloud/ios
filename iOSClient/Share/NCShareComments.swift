@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
 import NCCommunication
 
 class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
@@ -37,7 +36,6 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
 
     var metadata: tableMetadata?
     public var height: CGFloat = 0
-    private var actionSheet: ActionSheet?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,15 +76,15 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         // Mark comment ad read
         if metadata != nil && metadata!.commentsUnread {
-            OCNetworking.sharedManager()?.readMarkComments(withAccount: self.appDelegate.activeAccount, fileId: metadata!.fileId, completion: { (account, message, errorCode) in
+            NCCommunication.shared.markAsReadComments(fileId: metadata!.fileId) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.readMarkerMetadata(account: account!, fileId: self.metadata!.fileId)
+                    NCManageDatabase.sharedInstance.readMarkerMetadata(account: account, fileId: self.metadata!.fileId)
                 }
-            })
+            }
         }
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -106,15 +104,14 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         guard let metadata = self.metadata else { return }
 
-        OCNetworking.sharedManager()?.getCommentsWithAccount(appDelegate.activeAccount, fileId: metadata.fileId, completion: { (account, items, message, errorCode) in
-            if errorCode == 0 {
-                let itemsNCComments = items as! [NCComments]
-                NCManageDatabase.sharedInstance.addComments(itemsNCComments, account: metadata.account, objectId: metadata.fileId)
+        NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
+            if errorCode == 0 && comments != nil {
+                NCManageDatabase.sharedInstance.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-               NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+               NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
         
         tableView.reloadData()
     }
@@ -127,79 +124,91 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         guard let metadata = self.metadata else { return }
         if message.count == 0 { return }
 
-        OCNetworking.sharedManager()?.putComments(withAccount: appDelegate.activeAccount, fileId: metadata.fileId, message: message, completion: { (account, message, errorCode) in
+        NCCommunication.shared.putComments(fileId: metadata.fileId, message: message) { (account, errorCode, errorDescription) in
             if errorCode == 0 {
                 self.newCommentField.text = ""
                 self.reloadData()
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
     }
     
     func tapMenu(with tableComments: tableComments?, sender: Any) {
-     
-        var items = [MenuItem]()
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
-        items.append(MenuItem(title: NSLocalizedString("_edit_comment_", comment: ""), subtitle: nil, value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), isEnabled: true, tapBehavior: .none))
-        
-        items.append(MenuItem(title: NSLocalizedString("_delete_comment_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
-        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-                
-        actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
-            
-            if item.value as? Int == 0 {
-                
-                guard let metadata = self.metadata else { return }
-                guard let tableComments = tableComments else { return }
-                
-                let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-                
-                alert.addTextField(configurationHandler: { textField in
-                    textField.placeholder = NSLocalizedString("_new_comment_", comment: "")
-                })
-                
-                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                    if let message = alert.textFields?.first?.text {
-                        if message != "" {
-                            OCNetworking.sharedManager()?.updateComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageID, message: message, completion: { (account, message, errorCode) in
-                                if errorCode == 0 {
-                                    self.reloadData()
-                                } else {
-                                    NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+
+        var actions = [NCMenuAction]()
+
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_edit_comment_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    guard let metadata = self.metadata else { return }
+                    guard let tableComments = tableComments else { return }
+                    
+                    let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+                    
+                    alert.addTextField(configurationHandler: { textField in
+                        textField.placeholder = NSLocalizedString("_new_comment_", comment: "")
+                    })
+                    
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                        if let message = alert.textFields?.first?.text {
+                            if message != "" {
+                                NCCommunication.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { (account, errorCode, errorDescription) in
+                                    if errorCode == 0 {
+                                        self.reloadData()
+                                    } else {
+                                        NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    }
                                 }
-                            })
+                            }
+                        }
+                    }))
+                    
+                    self.present(alert, animated: true)
+                }
+            )
+        )
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_comment_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                action: { menuAction in
+                    guard let metadata = self.metadata else { return }
+                    guard let tableComments = tableComments else { return }
+
+                    NCCommunication.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { (account, errorCode, errorDescription) in
+                        if errorCode == 0 {
+                            self.reloadData()
+                        } else {
+                            NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
-                }))
-                
-                self.present(alert, animated: true)
-            }
-            
-            if item.value as? Int == 1 {
-                
-                guard let metadata = self.metadata else { return }
-                guard let tableComments = tableComments else { return }
-
-                OCNetworking.sharedManager()?.deleteComments(withAccount: metadata.account, fileId: metadata.fileId, messageID: tableComments.messageID, completion: { (account, message, errorCode) in
-                    if errorCode == 0 {
-                        self.reloadData()
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    }
-                })
-                
-            }
-            if item is CancelButton { print("Cancel buttons has the value `true`") }
-        })
+                }
+            )
+        )
         
-        actionSheet?.present(in: self, from: sender as! UIButton)
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                }
+            )
+        )
+        
+        mainMenuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+        self.present(menuPanelController, animated: true, completion: nil)
     }
 }
 
@@ -243,7 +252,7 @@ extension NCShareComments: UITableViewDataSource {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.sharedInstance.downloadAvatar(urlString: self.appDelegate.activeUrl, userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userID: tableComments.actorId, fileNameLocalPath: fileNameLocalPath, size: 128) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
                             cell.imageItem.image = UIImage(named: "avatar")
                         }

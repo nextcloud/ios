@@ -24,7 +24,7 @@
 import Foundation
 import UIKit
 
-class NCGridCell: UICollectionViewCell {
+class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     
@@ -36,6 +36,13 @@ class NCGridCell: UICollectionViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
 
+    var filePreviewImageView : UIImageView {
+        get{
+         return imageItem
+        }
+    }
+
+    
     var delegate: NCGridCellDelegate?
     
     var objectId = ""
@@ -45,6 +52,11 @@ class NCGridCell: UICollectionViewCell {
         super.awakeFromNib()
        
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageItem.backgroundColor = nil
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {

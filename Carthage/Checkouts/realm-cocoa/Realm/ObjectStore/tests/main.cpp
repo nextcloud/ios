@@ -16,9 +16,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-// FIXME: the nextafter define below can be removed once we upgrade to an
-// Android ndk version which has support for std::nextafter (absent in ndk r10e)
-#define CATCH_CONFIG_GLOBAL_NEXTAFTER
 #define CATCH_CONFIG_RUNNER
 #include "catch2/catch.hpp"
 
@@ -42,7 +39,10 @@ int main(int argc, char** argv) {
     SetCurrentDirectoryA(path);
 #else
     char executable[PATH_MAX];
-    realpath(argv[0], executable);
+    if (realpath(argv[0], executable) == NULL) {
+        fprintf(stderr, "Failed to resolve path to exectuable.\n");
+        return 1;
+    }
     const char* directory = dirname(executable);
     chdir(directory);
 #endif

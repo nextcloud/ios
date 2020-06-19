@@ -76,20 +76,18 @@ def doAndroidDockerBuild() {
     node('docker') {
       getSourceArchive()
       wrap([$class: 'AnsiColorBuildWrapper']) {
-        def image = buildDockerEnv('ci/realm-object-store:android')
+        def image = docker.build('realm-object-store:ndk21', '-f android.Dockerfile .')
         docker.image('tracer0tong/android-emulator').withRun { emulator ->
           image.inside("--link ${emulator.id}:emulator") {
-            sh '''rm -rf build
-              mkdir build
-              cd build
-              cmake -DREALM_PLATFORM=Android -DANDROID_NDK=/opt/android-ndk -GNinja -DCMAKE_MAKE_PROGRAM=ninja ..
-              ninja
+            sh """
+              cmake -B build -DREALM_PLATFORM=Android -DANDROID_NDK=\${ANDROID_NDK} -GNinja -DCMAKE_MAKE_PROGRAM=ninja
+              cmake --build build
               adb connect emulator
               timeout 10m adb wait-for-device
-              adb push tests/tests /data/local/tmp
+              adb push build/tests/tests /data/local/tmp
               adb shell '/data/local/tmp/tests || echo __ADB_FAIL__' | tee adb.log
               ! grep __ADB_FAIL__ adb.log
-            '''
+            """
           }
         }
       }

@@ -30,9 +30,15 @@ class NCSplitViewController: UISplitViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         self.delegate = self
         self.preferredDisplayMode = .allVisible
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.width
+        } else {
+            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.height
+        }
+        self.preferredPrimaryColumnWidthFraction = 0.4
         
         let navigationController = viewControllers.first as? UINavigationController
         if let tabBarController = navigationController?.topViewController as? UITabBarController {
@@ -57,7 +63,7 @@ class NCSplitViewController: UISplitViewController {
     }
     
     @objc func timerHandlerChangeTheming(_ timer: Timer) {
-        NotificationCenter.default.post(name: Notification.Name.init(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
     }
 }
 
@@ -65,5 +71,9 @@ extension NCSplitViewController: UISplitViewControllerDelegate {
     
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
         return true
+    }
+    
+    func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_splitViewChangeDisplayMode)
     }
 }

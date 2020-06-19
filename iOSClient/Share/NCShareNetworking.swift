@@ -41,7 +41,7 @@ class NCShareNetworking: NSObject {
     }
     
     func readShare() {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         OCNetworking.sharedManager()?.readShare(withAccount: metadata.account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl), completion: { (account, items, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
@@ -57,7 +57,7 @@ class NCShareNetworking: NSObject {
     }
     
     func share(password: String, permission: Int, hideDownload: Bool) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         OCNetworking.sharedManager()?.share(withAccount: metadata.account, fileName: fileName, password: password, permission: permission, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             if errorCode == 0 {
@@ -81,7 +81,7 @@ class NCShareNetworking: NSObject {
     }
     
     func unShare(idRemoteShared: Int) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         OCNetworking.sharedManager()?.unshareAccount(metadata.account, shareID: idRemoteShared, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
@@ -94,7 +94,7 @@ class NCShareNetworking: NSObject {
     }
     
     func updateShare(idRemoteShared: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         OCNetworking.sharedManager()?.shareUpdateAccount(metadata.account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
@@ -107,7 +107,7 @@ class NCShareNetworking: NSObject {
     }
     
     func getUserAndGroup(searchString: String) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         OCNetworking.sharedManager()?.getUserGroup(withAccount: metadata.account, search: searchString, completion: { (account, items, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
@@ -121,7 +121,7 @@ class NCShareNetworking: NSObject {
     }
     
     func shareUserAndGroup(name: String, shareeType: Int, metadata: tableMetadata) {
-        NCUtility.sharedInstance.startActivityIndicator(view: view, bottom: 0)
+        NCUtility.sharedInstance.startActivityIndicator(view: view)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         var permission: Int = 0
         if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }

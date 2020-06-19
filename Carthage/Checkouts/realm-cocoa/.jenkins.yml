@@ -4,12 +4,12 @@
 # This is a generated file produced by scripts/pr-ci-matrix.rb.
 
 xcode_version: 
- - 10.0
- - 10.1
  - 10.3
  - 11.1
  - 11.2.1
  - 11.3
+ - 11.4.1
+ - 11.5
 target: 
  - docs
  - swiftlint
@@ -25,6 +25,7 @@ target:
  - tvos-swift
  - catalyst
  - catalyst-swift
+ - xcframework
  - cocoapods-osx
  - cocoapods-ios
  - cocoapods-ios-dynamic
@@ -32,28 +33,13 @@ target:
  - swiftpm
  - swiftpm-address
  - swiftpm-thread
+ - swiftpm-ios
 configuration: 
  - Debug
  - Release
 
 exclude:
 
-  - xcode_version: 10.0
-    target: docs
-    configuration: Debug
-
-  - xcode_version: 10.0
-    target: docs
-    configuration: Release
-
-  - xcode_version: 10.1
-    target: docs
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: docs
-    configuration: Release
-
   - xcode_version: 10.3
     target: docs
     configuration: Debug
@@ -82,21 +68,21 @@ exclude:
     target: docs
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: swiftlint
-    configuration: Debug
-
-  - xcode_version: 10.0
-    target: swiftlint
+  - xcode_version: 11.3
+    target: docs
     configuration: Release
 
-  - xcode_version: 10.1
-    target: swiftlint
+  - xcode_version: 11.4.1
+    target: docs
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: swiftlint
+  - xcode_version: 11.4.1
+    target: docs
     configuration: Release
+
+  - xcode_version: 11.5
+    target: docs
+    configuration: Debug
 
   - xcode_version: 10.3
     target: swiftlint
@@ -126,25 +112,25 @@ exclude:
     target: swiftlint
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: osx-encryption
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: osx-encryption
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: osx-encryption
+  - xcode_version: 11.3
+    target: swiftlint
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: swiftlint
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: swiftlint
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: swiftlint
+    configuration: Debug
 
   - xcode_version: 10.3
     target: osx-encryption
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: osx-encryption
-    configuration: Release
 
   - xcode_version: 11.1
     target: osx-encryption
@@ -166,25 +152,25 @@ exclude:
     target: osx-encryption
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: osx-object-server
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: osx-object-server
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: osx-object-server
+  - xcode_version: 11.3
+    target: osx-encryption
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: osx-encryption
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: osx-encryption
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: osx-encryption
+    configuration: Debug
 
   - xcode_version: 10.3
     target: osx-object-server
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: osx-object-server
-    configuration: Release
 
   - xcode_version: 11.1
     target: osx-object-server
@@ -206,25 +192,25 @@ exclude:
     target: osx-object-server
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: ios-static
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-static
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-static
+  - xcode_version: 11.3
+    target: osx-object-server
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: osx-object-server
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: osx-object-server
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: osx-object-server
+    configuration: Debug
 
   - xcode_version: 10.3
     target: ios-static
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: ios-static
-    configuration: Release
 
   - xcode_version: 11.1
     target: ios-static
@@ -246,25 +232,25 @@ exclude:
     target: ios-static
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: ios-dynamic
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-dynamic
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-dynamic
+  - xcode_version: 11.3
+    target: ios-static
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: ios-static
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: ios-static
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: ios-static
+    configuration: Debug
 
   - xcode_version: 10.3
     target: ios-dynamic
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: ios-dynamic
-    configuration: Release
 
   - xcode_version: 11.1
     target: ios-dynamic
@@ -286,25 +272,25 @@ exclude:
     target: ios-dynamic
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: watchos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: watchos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: watchos
+  - xcode_version: 11.3
+    target: ios-dynamic
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: ios-dynamic
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: ios-dynamic
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: ios-dynamic
+    configuration: Debug
 
   - xcode_version: 10.3
     target: watchos
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: watchos
-    configuration: Release
 
   - xcode_version: 11.1
     target: watchos
@@ -326,25 +312,25 @@ exclude:
     target: watchos
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: tvos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: tvos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: tvos
+  - xcode_version: 11.3
+    target: watchos
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: watchos
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: watchos
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: watchos
+    configuration: Debug
 
   - xcode_version: 10.3
     target: tvos
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: tvos
-    configuration: Release
 
   - xcode_version: 11.1
     target: tvos
@@ -366,25 +352,25 @@ exclude:
     target: tvos
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: ios-swift
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-swift
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: ios-swift
+  - xcode_version: 11.3
+    target: tvos
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: tvos
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: tvos
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: tvos
+    configuration: Debug
 
   - xcode_version: 10.3
     target: ios-swift
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: ios-swift
-    configuration: Release
 
   - xcode_version: 11.1
     target: ios-swift
@@ -406,25 +392,25 @@ exclude:
     target: ios-swift
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: tvos-swift
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: tvos-swift
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: tvos-swift
+  - xcode_version: 11.3
+    target: ios-swift
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: ios-swift
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: ios-swift
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: ios-swift
+    configuration: Debug
 
   - xcode_version: 10.3
     target: tvos-swift
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: tvos-swift
-    configuration: Release
 
   - xcode_version: 11.1
     target: tvos-swift
@@ -446,21 +432,21 @@ exclude:
     target: tvos-swift
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: catalyst
-    configuration: Debug
-
-  - xcode_version: 10.0
-    target: catalyst
+  - xcode_version: 11.3
+    target: tvos-swift
     configuration: Release
 
-  - xcode_version: 10.1
-    target: catalyst
+  - xcode_version: 11.4.1
+    target: tvos-swift
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: catalyst
+  - xcode_version: 11.4.1
+    target: tvos-swift
     configuration: Release
+
+  - xcode_version: 11.5
+    target: tvos-swift
+    configuration: Debug
 
   - xcode_version: 10.3
     target: catalyst
@@ -478,21 +464,13 @@ exclude:
     target: catalyst
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: catalyst-swift
+  - xcode_version: 11.3
+    target: catalyst
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: catalyst-swift
-    configuration: Release
-
-  - xcode_version: 10.1
-    target: catalyst-swift
+  - xcode_version: 11.4.1
+    target: catalyst
     configuration: Debug
-
-  - xcode_version: 10.1
-    target: catalyst-swift
-    configuration: Release
 
   - xcode_version: 10.3
     target: catalyst-swift
@@ -510,18 +488,62 @@ exclude:
     target: catalyst-swift
     configuration: Debug
 
-  - xcode_version: 10.0
+  - xcode_version: 11.3
+    target: catalyst-swift
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: catalyst-swift
+    configuration: Debug
+
+  - xcode_version: 10.3
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 10.3
+    target: xcframework
+    configuration: Release
+
+  - xcode_version: 11.1
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 11.1
+    target: xcframework
+    configuration: Release
+
+  - xcode_version: 11.2.1
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 11.2.1
+    target: xcframework
+    configuration: Release
+
+  - xcode_version: 11.3
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 11.3
+    target: xcframework
+    configuration: Release
+
+  - xcode_version: 11.4.1
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: xcframework
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: xcframework
+    configuration: Debug
+
+  - xcode_version: 10.3
     target: cocoapods-osx
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: cocoapods-osx
-    configuration: Debug
-
-  - xcode_version: 10.3
-    target: cocoapods-osx
-    configuration: Debug
-
   - xcode_version: 11.1
     target: cocoapods-osx
     configuration: Debug
@@ -534,25 +556,17 @@ exclude:
     target: cocoapods-osx
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: cocoapods-ios
+  - xcode_version: 11.4.1
+    target: cocoapods-osx
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: cocoapods-ios
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: cocoapods-ios
-    configuration: Release
-
-  - xcode_version: 10.3
-    target: cocoapods-ios
+  - xcode_version: 11.5
+    target: cocoapods-osx
     configuration: Debug
 
   - xcode_version: 10.3
     target: cocoapods-ios
-    configuration: Release
+    configuration: Debug
 
   - xcode_version: 11.1
     target: cocoapods-ios
@@ -574,25 +588,25 @@ exclude:
     target: cocoapods-ios
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: cocoapods-ios-dynamic
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: cocoapods-ios-dynamic
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: cocoapods-ios-dynamic
+  - xcode_version: 11.3
+    target: cocoapods-ios
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: cocoapods-ios
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: cocoapods-ios
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: cocoapods-ios
+    configuration: Debug
 
   - xcode_version: 10.3
     target: cocoapods-ios-dynamic
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: cocoapods-ios-dynamic
-    configuration: Release
 
   - xcode_version: 11.1
     target: cocoapods-ios-dynamic
@@ -614,25 +628,25 @@ exclude:
     target: cocoapods-ios-dynamic
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: cocoapods-watchos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: cocoapods-watchos
-    configuration: Debug
-
-  - xcode_version: 10.1
-    target: cocoapods-watchos
+  - xcode_version: 11.3
+    target: cocoapods-ios-dynamic
     configuration: Release
+
+  - xcode_version: 11.4.1
+    target: cocoapods-ios-dynamic
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: cocoapods-ios-dynamic
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: cocoapods-ios-dynamic
+    configuration: Debug
 
   - xcode_version: 10.3
     target: cocoapods-watchos
     configuration: Debug
-
-  - xcode_version: 10.3
-    target: cocoapods-watchos
-    configuration: Release
 
   - xcode_version: 11.1
     target: cocoapods-watchos
@@ -654,21 +668,21 @@ exclude:
     target: cocoapods-watchos
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: swiftpm
-    configuration: Debug
-
-  - xcode_version: 10.0
-    target: swiftpm
+  - xcode_version: 11.3
+    target: cocoapods-watchos
     configuration: Release
 
-  - xcode_version: 10.1
-    target: swiftpm
+  - xcode_version: 11.4.1
+    target: cocoapods-watchos
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: swiftpm
+  - xcode_version: 11.4.1
+    target: cocoapods-watchos
     configuration: Release
+
+  - xcode_version: 11.5
+    target: cocoapods-watchos
+    configuration: Debug
 
   - xcode_version: 10.3
     target: swiftpm
@@ -686,21 +700,13 @@ exclude:
     target: swiftpm
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: swiftpm-address
+  - xcode_version: 11.3
+    target: swiftpm
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: swiftpm-address
-    configuration: Release
-
-  - xcode_version: 10.1
-    target: swiftpm-address
+  - xcode_version: 11.4.1
+    target: swiftpm
     configuration: Debug
-
-  - xcode_version: 10.1
-    target: swiftpm-address
-    configuration: Release
 
   - xcode_version: 10.3
     target: swiftpm-address
@@ -730,21 +736,21 @@ exclude:
     target: swiftpm-address
     configuration: Debug
 
-  - xcode_version: 10.0
-    target: swiftpm-thread
-    configuration: Debug
-
-  - xcode_version: 10.0
-    target: swiftpm-thread
+  - xcode_version: 11.3
+    target: swiftpm-address
     configuration: Release
 
-  - xcode_version: 10.1
-    target: swiftpm-thread
+  - xcode_version: 11.4.1
+    target: swiftpm-address
     configuration: Debug
 
-  - xcode_version: 10.1
-    target: swiftpm-thread
+  - xcode_version: 11.4.1
+    target: swiftpm-address
     configuration: Release
+
+  - xcode_version: 11.5
+    target: swiftpm-address
+    configuration: Debug
 
   - xcode_version: 10.3
     target: swiftpm-thread
@@ -772,4 +778,64 @@ exclude:
 
   - xcode_version: 11.3
     target: swiftpm-thread
+    configuration: Debug
+
+  - xcode_version: 11.3
+    target: swiftpm-thread
+    configuration: Release
+
+  - xcode_version: 11.4.1
+    target: swiftpm-thread
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: swiftpm-thread
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: swiftpm-thread
+    configuration: Debug
+
+  - xcode_version: 10.3
+    target: swiftpm-ios
+    configuration: Debug
+
+  - xcode_version: 10.3
+    target: swiftpm-ios
+    configuration: Release
+
+  - xcode_version: 11.1
+    target: swiftpm-ios
+    configuration: Debug
+
+  - xcode_version: 11.1
+    target: swiftpm-ios
+    configuration: Release
+
+  - xcode_version: 11.2.1
+    target: swiftpm-ios
+    configuration: Debug
+
+  - xcode_version: 11.2.1
+    target: swiftpm-ios
+    configuration: Release
+
+  - xcode_version: 11.3
+    target: swiftpm-ios
+    configuration: Debug
+
+  - xcode_version: 11.3
+    target: swiftpm-ios
+    configuration: Release
+
+  - xcode_version: 11.4.1
+    target: swiftpm-ios
+    configuration: Debug
+
+  - xcode_version: 11.4.1
+    target: swiftpm-ios
+    configuration: Release
+
+  - xcode_version: 11.5
+    target: swiftpm-ios
     configuration: Debug

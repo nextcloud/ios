@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -28,10 +28,11 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MessageUI/MessageUI.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
+#import <Photos/Photos.h>
 
 #import "OCFileDto.h"
 #import "CCGlobal.h"
-#import "CCNetworking.h"
+#import "CCGraphics.h"
 
 @class tableMetadata;
 
@@ -44,20 +45,11 @@
 + (void)deleteAllChainStore;
 + (void)storeAllChainInService;
 
-+ (NSString *)getVersion;
-+ (NSString *)setVersion;
++ (NSString *)getPasscode;
++ (void)setPasscode:(NSString *)passcode;
 
-+ (NSString *)getBuild;
-+ (NSString *)setBuild;
-
-+ (NSString *)getBlockCode;
-+ (void)setBlockCode:(NSString *)blockcode;
-
-+ (BOOL)getSimplyBlockCode;
-+ (void)setSimplyBlockCode:(BOOL)simply;
-
-+ (BOOL)getOnlyLockDir;
-+ (void)setOnlyLockDir:(BOOL)lockDir;
++ (BOOL)getNotPasscodeAtStart;
++ (void)setNotPasscodeAtStart:(BOOL)set;
 
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
@@ -174,6 +166,9 @@
 + (BOOL)getDarkModeDetect;
 + (void)setDarkModeDetect:(BOOL)disable;
 
++ (BOOL)getLivePhoto;
++ (void)setLivePhoto:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -208,16 +203,17 @@
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 
-+ (void)emptyGroupApplicationSupport;
-+ (void)emptyGroupLibraryDirectory;
-+ (void)emptyGroupDirectoryProviderStorage;
-+ (void)emptyDocumentsDirectory;
++ (void)removeGroupApplicationSupport;
++ (void)removeGroupLibraryDirectory;
++ (void)removeGroupDirectoryProviderStorage;
++ (void)removeDocumentsDirectory;
++ (void)removeTemporaryDirectory;
 + (void)emptyTemporaryDirectory;
-+ (void)clearTmpDirectory;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
@@ -234,8 +230,6 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
-+ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
-
 + (NSString *)getDirectoryScan;
 
 + (NSString *)getMimeType:(NSString *)fileNameView;
@@ -246,21 +240,12 @@
 
 + (NSString *)getTimeIntervalSince197;
 
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account;
-
-// ===== CCMetadata =====
-
-+ (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory ocId:(NSString *)ocId serverUrl:(NSString *)serverUrl fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status url:(NSString *)url contentType:(NSString *)contentType;
-
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory account:(NSString *)account isFolderEncrypted:(BOOL)isFolderEncrypted;
-
-+ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
-+ (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
-
-+ (NSString *)createMetadataIDFromAccount:(NSString *)account serverUrl:(NSString *)serverUrl fileNameView:(NSString *)fileNameView directory:(BOOL)directory;
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account;
 
 // ===== Third parts =====
 

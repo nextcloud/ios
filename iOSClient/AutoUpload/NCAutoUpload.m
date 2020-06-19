@@ -365,13 +365,7 @@
     });
     
     // Create the folder for auto upload & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // end loading
-            [_hud hideHud];
-        });
-        return;
-    }
+    [[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector];
     
     for (PHAsset *asset in newAssetToUpload) {
         
@@ -382,10 +376,10 @@
 
         // Select type of session
         
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = k_upload_session;
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = k_upload_session_wwan;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = k_upload_session_wwan;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
         
         NSDateFormatter *formatter = [NSDateFormatter new];
         
@@ -404,22 +398,50 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, serverUrl, fileName]];
         if (!metadata) {
         
-            tableMetadata *metadataForUpload = [tableMetadata new];
+            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl url:@"" contentType:@""];
             
-            metadataForUpload.account = appDelegate.activeAccount;
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-            metadataForUpload.date = [NSDate new];
-            metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrl fileNameView:fileName directory:false];
-            metadataForUpload.fileName = fileName;
-            metadataForUpload.fileNameView = fileName;
-            metadataForUpload.serverUrl = serverUrl;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
-            metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
+            metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
             metadataForUpload.status = k_metadataStatusWaitUpload;
 
-            [metadataFull addObject:metadataForUpload];
+            // Add Medtadata MOV LIVE PHOTO for upload
+            if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
+                
+                NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
+                NSString *ocId = [[NSUUID UUID] UUIDString];
+                NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
+                
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+                
+                [self extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
+                    if (url != nil) {
+                        unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
+                        
+                        tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl url:@"" contentType:@""];
+                        
+                        metadataMOVForUpload.session = session;
+                        metadataMOVForUpload.sessionSelector = selector;
+                        metadataMOVForUpload.size = fileSize;
+                        metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+                        
+                        [metadataFull addObject:metadataMOVForUpload];
+                        
+                        // Update database Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload])
+                            [[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+                    }
+                    
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                
+                while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
+                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+            }
             
+            [metadataFull addObject:metadataForUpload];
+                       
             // Update database Auto Upload
             if ([selector isEqualToString:selectorUploadAutoUpload])
                 [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
@@ -429,18 +451,12 @@
     // Insert all assets (Full) in tableQueueUpload
     if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
-        
-        // Update icon badge number
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
+        [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
     }
     
     // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     });    
 }
 
@@ -448,17 +464,12 @@
 {
     @synchronized(self) {
         
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount];
         }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            // Update icon badge number
-            [appDelegate updateApplicationIconBadgeNumber];
-        });
     }
 }
 
@@ -466,53 +477,21 @@
 #pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos/Videos ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
+- (void)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
-    NSString *ocId;
-    NSError *error;
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+    NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];    
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-    BOOL encrypted = [CCUtility isFolderEncrypted:autoUploadPath account:appDelegate.activeAccount];
   
-    [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:autoUploadPath account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted ocId:&ocId error:&error];
-    
-    if (error == nil) {
-        
-        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
-        if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId permissions:nil serverUrl:autoUploadPath richWorkspace:nil account:appDelegate.activeAccount];
-        
-    } else {
-       
-        if ([selector isEqualToString:selectorUploadAutoUploadAll])
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-
-        return false;
-    }
-    
-    // Create if request the subfolders
-    if (useSubFolder) {
-        
-        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
-            
-            NSString *folderPathName = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder];
-            
-            [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:folderPathName account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted ocId:&ocId error:&error];
-            
-            if ( error == nil) {
-                
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false ocId:ocId permissions:nil serverUrl:folderPathName richWorkspace:nil account:appDelegate.activeAccount];
-                
-            } else {
-                
-                if ([selector isEqualToString:selectorUploadAutoUploadAll])
-                    [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
-
-                return false;
+    [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) {
+        if (errorCode == 0 && useSubFolder) {
+            for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
+                NSString *fileName = dateSubFolder.lastPathComponent;
+                NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder].stringByDeletingLastPathComponent;
+                [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
             }
         }
-    }
-    
-    return true;
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -589,6 +568,34 @@
     return nil;
 }
 
+- (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion {
+    
+    [CCUtility removeFileAtPath:filePath];
+    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+    PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+    options.networkAccessAllowed = YES;
+    
+    [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+        if (livePhoto) {
+            NSArray *assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
+            PHAssetResource *videoResource = nil;
+            for(PHAssetResource *resource in assetResources){
+                if (resource.type == PHAssetResourceTypePairedVideo) {
+                    videoResource = resource;
+                    break;
+                }
+            }
+            if(videoResource){
+                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
+                    if (!error) {
+                        completion(fileUrl);
+                    } else { completion(nil); }
+                }];
+            } else { completion(nil); }
+        } else { completion(nil); }
+    }];
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Align Photo Library ====
 #pragma --------------------------------------------------------------------------------------------

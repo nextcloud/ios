@@ -24,14 +24,31 @@
 //
 
 import FloatingPanel
+import NCCommunication
 
 extension AppDelegate {
 
+    @objc public func showMenuIn(viewController: UIViewController) {
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initMenu()
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
     private func initMenu() -> [NCMenuAction] {
-        var actions = [NCMenuAction]()
+        var actions: [NCMenuAction] = []
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
-
+        let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeMain.serverUrl, e2eEncrypted: false, account: appDelegate.activeAccount)
+        let isRichWorkspacesEnabled = appDelegate.activeMain.metadata.richWorkspace == nil ? false : true
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""),
@@ -52,19 +69,19 @@ extension AppDelegate {
             )
         )
 
-        if NCBrandOptions.sharedInstance.use_imi_viewer {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
-                    icon: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true),
-                    action: { menuAction in
-                        _ = IMCreate.init(serverUrl: appDelegate.activeMain.serverUrl)
-                    }
-                )
+        #if HC
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
+                icon: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true),
+                action: { menuAction in
+                    _ = IMCreate.init(serverUrl: appDelegate.activeMain.serverUrl, imagemeterViewerDelegate: NCNetworkingMain.sharedInstance)
+                }
             )
-        }
-        
-        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_text}) {
+        )
+        #endif
+      
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_text}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_text})!
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
@@ -83,30 +100,17 @@ extension AppDelegate {
                     appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
                 })
             )
-        } else {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_upload_file_text_", comment: ""), icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), action: { menuAction in
-                    let storyboard = UIStoryboard(name: "NCText", bundle: nil)
-                    let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
-                    controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                    appDelegate.activeMain.present(controller, animated: true, completion: nil)
-                })
-            )
-        }
+        } 
         
-        #if !targetEnvironment(simulator)
-            if #available(iOS 11.0, *) {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_scans_document_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
-                        }
-                    )
-                )
-            }
-        #endif
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_scans_document_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+                }
+            )
+        )
 
         actions.append(
             NCMenuAction(
@@ -120,30 +124,26 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brand),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement),
                 action: { menuAction in
                     appDelegate.activeMain.createFolder()
                 }
             )
         )
 
-        if #available(iOS 11.0, *) {
-            if let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: appDelegate.activeAccount) {
-                if (capabilities.versionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0)) {
-                    actions.append(
-                        NCMenuAction(
-                            title: NSLocalizedString("_add_folder_info_", comment: ""),
-                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                            action: { menuAction in
-                                self.activeMain.createRichWorkspace()
-                            }
-                        )
-                    )
-                }
-            }
+        if serverVersionMajor >= k_nextcloud_version_18_0 && isRichWorkspacesEnabled && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0) && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_add_folder_info_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.activeMain.createRichWorkspace()
+                    }
+                )
+            )
         }
-        
-        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_docx}) {
+               
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_docx}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_docx})!
             actions.append(
                 NCMenuAction(
@@ -168,7 +168,7 @@ extension AppDelegate {
             )
         }
         
-        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_xlsx}) {
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_xlsx}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_xlsx})!
             actions.append(
                 NCMenuAction(
@@ -193,7 +193,7 @@ extension AppDelegate {
             )
         }
         
-        if appDelegate.reachability.isReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_pptx}) {
+        if NCCommunication.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_pptx}) && !isEncrypted {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == k_editor_onlyoffice && $0.identifier == k_onlyoffice_pptx})!
             actions.append(
                 NCMenuAction(
@@ -218,8 +218,8 @@ extension AppDelegate {
             )
         }
         
-        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: appDelegate.activeAccount) {
-            if richdocumentsMimetypes.count > 0 && appDelegate.reachability.isReachable() {
+        if let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) {
+            if richdocumentsMimetypes.count > 0 &&  NCCommunication.shared.isNetworkReachable() && !isEncrypted {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_create_new_document_", comment: ""),
@@ -286,18 +286,5 @@ extension AppDelegate {
         }
 
         return actions
-    }
-
-    @objc public func showMenuIn(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
     }
 }

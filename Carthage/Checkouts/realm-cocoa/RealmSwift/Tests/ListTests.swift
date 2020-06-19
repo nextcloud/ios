@@ -75,7 +75,6 @@ class ListTests: TestCase {
         super.tearDown()
     }
 
-#if swift(>=4)
     override class var defaultTestSuite: XCTestSuite {
         // Don't run tests for the base class
         if isEqual(ListTests.self) {
@@ -83,15 +82,6 @@ class ListTests: TestCase {
         }
         return super.defaultTestSuite
     }
-#else
-    override class func defaultTestSuite() -> XCTestSuite {
-        // Don't run tests for the base class
-        if isEqual(ListTests.self) {
-            return XCTestSuite(name: "empty")
-        }
-        return super.defaultTestSuite()
-    }
-#endif
 
     func testPrimitive() {
         let obj = SwiftListObject()
@@ -687,7 +677,7 @@ class ListRetrievedTests: ListTests {
 }
 
 /// Ensure the range replaceable collection methods behave correctly when emulated for Swift 4 and later.
-class ListRRCMethodsTests: XCTestCase {
+class ListRRCMethodsTests: TestCase {
     private func compare(array: [Int], with list: List<SwiftIntObject>) {
         guard array.count == list.count else {
             XCTFail("Array and list have different sizes (\(array.count) and \(list.count), respectively).")
@@ -723,9 +713,10 @@ class ListRRCMethodsTests: XCTestCase {
         array = makeArray(from: list)
     }
 
-#if swift(>=4.0)
     func testSubscript() {
+        list[0] = SwiftIntObject(value: [5])
         list[1..<4] = createListObject([10, 11, 12]).intArray[0..<2]
+        array[0] = 5
         array[1..<4] = [10, 11]
         compare(array: array, with: list)
     }
@@ -741,7 +732,6 @@ class ListRRCMethodsTests: XCTestCase {
         list.removeSubrange(list.indices)
         XCTAssertTrue(list.isEmpty)
     }
-#endif
 
     func testRemoveFirst() {
         list.removeFirst()
@@ -753,6 +743,11 @@ class ListRRCMethodsTests: XCTestCase {
         list.removeFirst(3)
         array.removeFirst(3)
         compare(array: array, with: list)
+    }
+
+    func testRemoveFirstInvalid() {
+        assertThrows(list.removeFirst(-1))
+        assertThrows(list.removeFirst(100))
     }
 
     func testRemoveLastFew() {

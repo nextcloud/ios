@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/06/2019.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -29,11 +29,11 @@ class FileProviderDomain: NSObject {
         return instance
     }()
 
-    @available(iOS 11.0, *) @objc func registerDomain() {
+    @objc func registerDomain() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             
-            var domains = [String]()
+            var domains:[String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
             let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
             
@@ -70,11 +70,11 @@ class FileProviderDomain: NSObject {
         }
     }
     
-    @available(iOS 11.0, *) @objc func removeAllDomain() {
+    @objc func removeAllDomain() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             
-            var domains = [String]()
+            var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
 
             for domain in fileProviderDomain {

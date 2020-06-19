@@ -34,8 +34,7 @@
 #include "impl/realm_coordinator.hpp"
 #include "impl/object_accessor_impl.hpp"
 
-#include <realm/group_shared.hpp>
-#include <realm/link_view.hpp>
+#include <realm/db.hpp>
 #include <realm/query_expression.hpp>
 #include <realm/version.hpp>
 
@@ -43,11 +42,13 @@
 
 using namespace realm;
 
+
 template<PropertyType prop_type, typename T>
 struct Base {
     using Type = T;
     using Wrapped = T;
     using Boxed = T;
+    enum { is_optional = false };
 
     static PropertyType property_type() { return prop_type; }
     static util::Any to_any(T value) { return value; }
@@ -104,21 +105,29 @@ struct String : Base<PropertyType::String, StringData> {
 
 struct Binary : Base<PropertyType::Data, BinaryData> {
     using Boxed = std::string;
-    static std::vector<BinaryData> values() { return {BinaryData("a", 1)}; }
     static util::Any to_any(BinaryData value) { return value ? std::string(value) : util::Any(); }
+    static std::vector<BinaryData> values()
+    {
+        return {BinaryData("c", 1), BinaryData("a", 1), BinaryData("b", 1)};
+    }
 };
 
 struct Date : Base<PropertyType::Date, Timestamp> {
-    static std::vector<Timestamp> values() { return {Timestamp(1, 1)}; }
+    static std::vector<Timestamp> values()
+    {
+        return {Timestamp(3, 3), Timestamp(1, 1), Timestamp(2, 2)};
+    }
     static bool can_minmax() { return true; }
     static Timestamp min() { return Timestamp(1, 1); }
-    static Timestamp max() { return Timestamp(1, 1); }
+    static Timestamp max() { return Timestamp(3, 3); }
 };
 
 template<typename BaseT>
 struct BoxedOptional : BaseT {
     using Type = util::Optional<typename BaseT::Type>;
     using Boxed = Type;
+    enum { is_optional = true };
+
     static PropertyType property_type() { return BaseT::property_type()|PropertyType::Nullable; }
     static std::vector<Type> values()
     {
@@ -137,6 +146,7 @@ struct BoxedOptional : BaseT {
 
 template<typename BaseT>
 struct UnboxedOptional : BaseT {
+    enum { is_optional = true };
     static PropertyType property_type() { return BaseT::property_type()|PropertyType::Nullable; }
     static auto values() -> decltype(BaseT::values())
     {
@@ -190,7 +200,7 @@ struct StringifyingContext {
         return ss.str();
     }
 
-    std::string box(RowExpr row) { return util::to_string(row.get_index()); }
+    std::string box(Obj obj) { return util::to_string(obj.get_key().value); }
 };
 
 namespace Catch {
@@ -275,7 +285,8 @@ auto greater::operator()<Timestamp&, Timestamp&>(Timestamp& a, Timestamp& b) con
 
 TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::Double, ::String, ::Binary, ::Date,
                    BoxedOptional<::Int>, BoxedOptional<::Bool>, BoxedOptional<::Float>, BoxedOptional<::Double>,
-                   UnboxedOptional<::String>, UnboxedOptional<::Binary>, UnboxedOptional<::Date>) {
+                   UnboxedOptional<::String>, UnboxedOptional<::Binary>, UnboxedOptional<::Date>)
+{
     auto values = TestType::values();
     using T = typename TestType::Type;
     using W = typename TestType::Wrapped;
@@ -283,7 +294,6 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
 
     InMemoryTestFile config;
     config.automatic_change_notifications = false;
-    config.cache = false;
     config.schema = Schema{
         {"object", {
             {"value", PropertyType::Array|TestType::property_type()}
@@ -295,9 +305,10 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
     auto table = r->read_group().get_table("class_object");
     auto table2 = r2->read_group().get_table("class_object");
     r->begin_transaction();
-    table->add_empty_row();
+    Obj obj = table->create_object();
+    ColKey col = table->get_column_key("value");
 
-    List list(r, *table, 0, 0);
+    List list(r, obj, col);
     auto results = list.as_results();
     CppContext ctx(r);
 
@@ -305,7 +316,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         REQUIRE(list.get_realm() == r);
         REQUIRE(results.get_realm() == r);
     }
-
+#if 0
     SECTION("get_query()") {
         REQUIRE(list.get_query().count() == 0);
         REQUIRE(results.get_query().count() == 0);
@@ -313,11 +324,11 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         REQUIRE(list.get_query().count() == 1);
         REQUIRE(results.get_query().count() == 1);
     }
-
+#endif
     SECTION("get_origin_row_index()") {
-        REQUIRE(list.get_origin_row_index() == 0);
-        table->insert_empty_row(0);
-        REQUIRE(list.get_origin_row_index() == 1);
+        REQUIRE(list.get_parent_object_key() == obj.get_key());
+        table->create_object();
+        REQUIRE(list.get_parent_object_key() == obj.get_key());
     }
 
     SECTION("get_type()") {
@@ -346,7 +357,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         }
 
         SECTION("delete row") {
-            table->move_last_over(0);
+            obj.remove();
             REQUIRE_FALSE(list.is_valid());
             REQUIRE_FALSE(results.is_valid());
         }
@@ -372,7 +383,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         }
 
         SECTION("delete row") {
-            table->move_last_over(0);
+            obj.remove();
             REQUIRE_THROWS(list.verify_attached());
         }
 
@@ -396,7 +407,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         }
 
         SECTION("delete row") {
-            table->move_last_over(0);
+            obj.remove();
             REQUIRE_THROWS(list.verify_in_transaction());
         }
 
@@ -521,18 +532,18 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
     }
 
     SECTION("find()") {
-        // cast to T needed for vector<bool>'s wonky proxy
         for (size_t i = 0; i < values.size(); ++i) {
             CAPTURE(i);
-            REQUIRE(list.find(static_cast<T>(values[i])) == i);
-            REQUIRE(results.index_of(static_cast<T>(values[i])) == i);
+            REQUIRE(list.find<T>(values[i]) == i);
+            REQUIRE(results.index_of<T>(values[i]) == i);
 
             REQUIRE(list.find(ctx, TestType::to_any(values[i])) == i);
             REQUIRE(results.index_of(ctx, TestType::to_any(values[i])) == i);
-
+#if 0
             auto q = TestType::unwrap(values[i], [&] (auto v) { return table->get_subtable(0, 0)->column<W>(0) == v; });
             REQUIRE(list.find(Query(q)) == i);
             REQUIRE(results.index_of(std::move(q)) == i);
+#endif
         }
 
         list.remove(0);
@@ -542,27 +553,23 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         REQUIRE(list.find(ctx, TestType::to_any(values[0])) == npos);
         REQUIRE(results.index_of(ctx, TestType::to_any(values[0])) == npos);
     }
-
     SECTION("sorted index_of()") {
-        auto subtable = table->get_subtable(0, 0);
-
         auto sorted = list.sort({{"self", true}});
         std::sort(begin(values), end(values), less());
         for (size_t i = 0; i < values.size(); ++i) {
             CAPTURE(i);
-            auto q = TestType::unwrap(values[i], [&] (auto v) { return table->get_subtable(0, 0)->column<W>(0) == v; });
-            REQUIRE(sorted.index_of(std::move(q)) == i);
+            REQUIRE(sorted.index_of<T>(values[i]) == i);
         }
 
         sorted = list.sort({{"self", false}});
         std::sort(begin(values), end(values), greater());
         for (size_t i = 0; i < values.size(); ++i) {
             CAPTURE(i);
-            auto q = TestType::unwrap(values[i], [&] (auto v) { return table->get_subtable(0, 0)->column<W>(0) == v; });
-            REQUIRE(sorted.index_of(std::move(q)) == i);
+            REQUIRE(sorted.index_of<T>(values[i]) == i);
         }
     }
 
+#if 0
     SECTION("filtered index_of()") {
         REQUIRE_THROWS(results.index_of(table->get(0)));
         auto q = TestType::unwrap(values[0], [&] (auto v) { return table->get_subtable(0, 0)->column<W>(0) != v; });
@@ -572,28 +579,27 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
             REQUIRE(filtered.index_of(static_cast<T>(values[i])) == i - 1);
         }
     }
-
+#endif
     SECTION("sort()") {
-        auto subtable = table->get_subtable(0, 0);
-
         auto unsorted = list.sort(std::vector<std::pair<std::string, bool>>{});
         REQUIRE(unsorted == values);
 
-        auto sorted = list.sort(SortDescriptor(*subtable, {{0}}, {true}));
+        auto sorted = list.sort(SortDescriptor({{col}}, {true}));
         auto sorted2 = list.sort({{"self", true}});
         std::sort(begin(values), end(values), less());
         REQUIRE(sorted == values);
         REQUIRE(sorted2 == values);
 
-        sorted = list.sort(SortDescriptor(*subtable, {{0}}, {false}));
+        sorted = list.sort(SortDescriptor({{col}}, {false}));
         sorted2 = list.sort({{"self", false}});
         std::sort(begin(values), end(values), greater());
         REQUIRE(sorted == values);
         REQUIRE(sorted2 == values);
 
-        REQUIRE_THROWS_WITH(list.sort({{"not self", true}}),
-                            util::format("Cannot sort on key path 'not self': arrays of '%1' can only be sorted on 'self'",
-                                         string_for_property_type(TestType::property_type() & ~PropertyType::Flags)));
+        auto execption_string =
+            util::format("Cannot sort on key path 'not self': arrays of '%1' can only be sorted on 'self'",
+                         string_for_property_type(TestType::property_type() & ~PropertyType::Flags));
+        REQUIRE_THROWS_WITH(list.sort({{"not self", true}}), execption_string);
         REQUIRE_THROWS_WITH(list.sort({{"self", true}, {"self", false}}),
                             util::format("Cannot sort array of '%1' on more than one key path",
                                          string_for_property_type(TestType::property_type() & ~PropertyType::Flags)));
@@ -605,12 +611,10 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         auto values2 = values;
         values2.insert(values2.end(), values.begin(), values.end());
 
-        auto subtable = table->get_subtable(0, 0);
-
         auto undistinct = list.as_results().distinct(std::vector<std::string>{});
         REQUIRE(undistinct == values2);
 
-        auto distinct = results.distinct(SortDescriptor(*subtable, {{0}}, {true}));
+        auto distinct = results.distinct(DistinctDescriptor({{col}}));
         auto distinct2 = results.distinct({"self"});
         REQUIRE(distinct == values);
         REQUIRE(distinct2 == values);
@@ -623,6 +627,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
                                          string_for_property_type(TestType::property_type() & ~PropertyType::Flags)));
     }
 
+#if 0
     SECTION("filter()") {
         T v = values.front();
         values.erase(values.begin());
@@ -636,6 +641,7 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
         REQUIRE(filtered.size() == 1);
         REQUIRE(*filtered.first<T>() == v);
     }
+#endif
 
     SECTION("min()") {
         if (!TestType::can_minmax()) {
@@ -692,58 +698,82 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
     }
 
     SECTION("operator==()") {
-        table->add_empty_row();
-        REQUIRE(list == List(r, *table, 0, 0));
-        REQUIRE_FALSE(list == List(r, *table, 0, 1));
+        Obj obj1 = table->create_object();
+        REQUIRE(list == List(r, obj, col));
+        REQUIRE_FALSE(list == List(r, obj1, col));
     }
 
     SECTION("hash") {
-        table->add_empty_row();
+        Obj obj1 = table->create_object();
         std::hash<List> h;
-        REQUIRE(h(list) == h(List(r, *table, 0, 0)));
-        REQUIRE_FALSE(h(list) == h(List(r, *table, 0, 1)));
+        REQUIRE(h(list) == h(List(r, obj, col)));
+        REQUIRE_FALSE(h(list) == h(List(r, obj1, col)));
     }
 
     SECTION("handover") {
         r->commit_transaction();
 
-        auto handover = r->obtain_thread_safe_reference(list);
-        auto list2 = r->resolve_thread_safe_reference(std::move(handover));
+        auto list2 = ThreadSafeReference(list).resolve<List>(r);
         REQUIRE(list == list2);
-
-        auto results_handover = r->obtain_thread_safe_reference(results);
-        auto results2 = r->resolve_thread_safe_reference(std::move(results_handover));
+        auto results2 = ThreadSafeReference(results).resolve<Results>(r);
         REQUIRE(results2 == values);
     }
 
     SECTION("notifications") {
         r->commit_transaction();
 
-        CollectionChangeSet change, rchange;
-        SECTION("add value to list") {
-            auto token = list.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                change = c;
-            });
-            auto rtoken = results.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                rchange = c;
-            });
-            advance_and_notify(*r);
+        auto sorted = results.sort({{"self", true}});
 
+        size_t calls = 0;
+        CollectionChangeSet change, rchange, srchange;
+        auto token = list.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
+            change = c;
+            ++calls;
+        });
+        auto rtoken = results.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
+            rchange = c;
+            ++calls;
+        });
+        auto srtoken = sorted.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
+            srchange = c;
+            ++calls;
+        });
+
+        SECTION("add value to list") {
+            // Remove the existing copy of this value so that the sorted list
+            // doesn't have dupes resulting in an unstable order
+            advance_and_notify(*r);
+            r->begin_transaction();
+            list.remove(0);
+            r->commit_transaction();
+
+            advance_and_notify(*r);
             r->begin_transaction();
             list.insert(0, static_cast<T>(values[0]));
             r->commit_transaction();
+
             advance_and_notify(*r);
             REQUIRE_INDICES(change.insertions, 0);
             REQUIRE_INDICES(rchange.insertions, 0);
+            // values[0] is max(), so it ends up at the end of the sorted list
+            REQUIRE_INDICES(srchange.insertions, values.size() - 1);
+        }
+
+        SECTION("remove value from list") {
+            advance_and_notify(*r);
+            r->begin_transaction();
+            list.remove(1);
+            r->commit_transaction();
+
+            advance_and_notify(*r);
+            REQUIRE_INDICES(change.deletions, 1);
+            REQUIRE_INDICES(rchange.deletions, 1);
+            // values[1] is min(), so it's index 0 for non-optional and 1 for
+            // optional (as nulls sort to the front)
+            REQUIRE_INDICES(srchange.deletions, TestType::is_optional);
         }
 
         SECTION("clear list") {
-            auto token = list.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                change = c;
-            });
-            auto rtoken = results.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                rchange = c;
-            });
             advance_and_notify(*r);
 
             r->begin_transaction();
@@ -752,42 +782,32 @@ TEMPLATE_TEST_CASE("primitive list", "[primitives]", ::Int, ::Bool, ::Float, ::D
             advance_and_notify(*r);
             REQUIRE(change.deletions.count() == values.size());
             REQUIRE(rchange.deletions.count() == values.size());
+            REQUIRE(srchange.deletions.count() == values.size());
         }
 
         SECTION("delete containing row") {
-            size_t calls = 0;
-            auto token = list.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                change = c;
-                ++calls;
-            });
-            auto rtoken = results.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                rchange = c;
-                ++calls;
-            });
             advance_and_notify(*r);
-            REQUIRE(calls == 2);
+            REQUIRE(calls == 3);
 
             r->begin_transaction();
-            table->move_last_over(0);
+            obj.remove();
             r->commit_transaction();
             advance_and_notify(*r);
-            REQUIRE(calls == 4);
+            REQUIRE(calls == 6);
             REQUIRE(change.deletions.count() == values.size());
             REQUIRE(rchange.deletions.count() == values.size());
+            REQUIRE(srchange.deletions.count() == values.size());
 
             r->begin_transaction();
-            table->add_empty_row();
+            table->create_object();
             r->commit_transaction();
             advance_and_notify(*r);
-            REQUIRE(calls == 4);
+            REQUIRE(calls == 6);
         }
 
         SECTION("deleting containing row before first run of notifier") {
-            auto token = list.add_notification_callback([&](CollectionChangeSet c, std::exception_ptr) {
-                change = c;
-            });
             r2->begin_transaction();
-            table2->move_last_over(0);
+            table2->begin()->remove();
             r2->commit_transaction();
             advance_and_notify(*r);
             REQUIRE(change.deletions.count() == values.size());

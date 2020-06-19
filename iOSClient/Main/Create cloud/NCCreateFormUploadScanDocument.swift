@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 14/11/2018.
-//  Copyright © 2017 Marino Faggiana. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,12 +24,13 @@
 
 import Foundation
 import WeScan
+import NCCommunication
 
 #if GOOGLEMOBILEVISION
 import GoogleMobileVision
 #endif
 
-class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
+class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
     enum typeDpiQuality {
         case low
@@ -40,7 +41,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
     var serverUrl = ""
     var titleServerUrl = ""
-    var arrayImages = [UIImage]()
+    var arrayImages: [UIImage] = []
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password: String = ""
     var fileType = "PDF"
@@ -71,6 +72,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         
         super.viewDidLoad()
         
+        self.title = NSLocalizedString("_save_settings_", comment: "")
+        
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
@@ -90,7 +93,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         #endif
         
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -103,7 +106,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_save_settings_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -136,7 +139,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         row.title = NSLocalizedString("_quality_medium_", comment: "")
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
-        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brand
+        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brandElement
         
         row.cellConfig["slider.maximumValue"] = 1
         row.cellConfig["slider.minimumValue"] = 0
@@ -198,7 +201,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
         row.value = "PDF"
         row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
-        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
+        row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brandElement
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
         
@@ -368,7 +371,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
@@ -406,32 +409,42 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.activeAccount, self.serverUrl, fileNameSave))
-        if (metadata != nil) {
+        //Create metadata for upload
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, url: appDelegate.activeUrl, contentType: "")
+        
+        metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+        metadataForUpload.sessionSelector = selectorUploadFile
+        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                
+        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+                        
+            guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+            conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflictViewController.serverUrl = serverUrl
+            conflictViewController.metadatasUploadInConflict = [metadataForUpload]
+            conflictViewController.delegate = self
             
-            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
-            
-            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
-            }
-            
-            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", self.appDelegate.activeAccount, self.serverUrl, fileNameSave))
-                self.dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: self.serverUrl)
-            }
-            
-            alertController.addAction(cancelAction)
-            alertController.addAction(overwriteAction)
-            
-            self.present(alertController, animated: true, completion:nil)
+            self.present(conflictViewController, animated: true, completion: nil)
             
         } else {
-            dismissAndUpload(fileNameSave, ocId: CCUtility.createMetadataID(fromAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileNameView: fileNameSave, directory: false)!, serverUrl: serverUrl)
+                            
+            dismissAndUpload(metadataForUpload)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String, ocId: String, serverUrl: String) {
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         
-        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameSave) else {
+        if metadatas != nil && metadatas!.count > 0 {
+                                
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.dismissAndUpload(metadatas![0])
+            }
+        }
+    }
+    
+    func dismissAndUpload(_ metadata: tableMetadata) {
+        
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return
         }
@@ -549,23 +562,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
             }
         }
         
-        //Create metadata for upload
-        let metadataForUpload = tableMetadata()
-        
-        metadataForUpload.account = self.appDelegate.activeAccount
-        metadataForUpload.date = NSDate()
-        metadataForUpload.ocId = ocId
-        metadataForUpload.fileName = fileNameSave
-        metadataForUpload.fileNameView = fileNameSave
-        metadataForUpload.serverUrl = serverUrl
-        metadataForUpload.session = k_upload_session
-        metadataForUpload.sessionSelector = selectorUploadFile
-        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
-        
-        _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
 
-        self.appDelegate.startLoadAutoDownloadUpload()
+        self.appDelegate.startLoadAutoUpload()
                         
         // Request delete all image scanned
         let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)
@@ -645,8 +644,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     }
 }
 
-@available(iOS 11, *)
-
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     @objc static let sharedInstance: NCCreateScanDocument = {
@@ -663,10 +660,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
-        scannerVC.navigationBar.isTranslucent = false
-        scannerVC.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        scannerVC.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        scannerVC.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.viewController?.present(scannerVC, animated: true, completion: nil)
     }

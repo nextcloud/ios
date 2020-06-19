@@ -23,16 +23,14 @@
 
 import UIKit
 
-@available(iOS 11, *)
-
 class DragDropViewController: UIViewController {
     
     //Data Source for collectionViewSource
-    private var itemsSource = [String]()
+    private var itemsSource: [String] = []
     
     //Data Source for collectionViewDestination
-    private var imagesDestination = [UIImage]()
-    private var itemsDestination = [String]()
+    private var imagesDestination: [UIImage] = []
+    private var itemsDestination: [String] = []
     
     //AppDelegate
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -61,7 +59,6 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
@@ -80,19 +77,15 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
-        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
+        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
         
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
-        
-        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
-        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
-        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
         
         loadImage()
     }
@@ -102,6 +95,13 @@ class DragDropViewController: UIViewController {
         
         collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        
+        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
+        if #available(iOS 13.0, *) {
+            labelTitlePDFzone.backgroundColor = .systemBackground
+        } else {
+            labelTitlePDFzone.backgroundColor = .systemGray
+        }
     }
     
     //MARK: Button Action
@@ -114,7 +114,7 @@ class DragDropViewController: UIViewController {
         
         if imagesDestination.count > 0 {
             
-            var images = [UIImage]()
+            var images: [UIImage] = []
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)
@@ -283,7 +283,7 @@ class DragDropViewController: UIViewController {
     {
         collectionView.performBatchUpdates({
             
-            var indexPaths = [IndexPath]()
+            var indexPaths: [IndexPath] = []
             
             for (index, item) in coordinator.items.enumerated() {
                 
@@ -368,8 +368,6 @@ class DragDropViewController: UIViewController {
 }
 
 // MARK: - UICollectionViewDataSource Methods
-
-@available(iOS 11, *)
 
 extension DragDropViewController : UICollectionViewDataSource {
     
@@ -498,8 +496,6 @@ extension UIImage {
 
 // MARK: - UICollectionViewDragDelegate Methods
 
-@available(iOS 11, *)
-
 extension DragDropViewController : UICollectionViewDragDelegate
 {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
@@ -560,8 +556,6 @@ extension DragDropViewController : UICollectionViewDragDelegate
 }
 
 // MARK: - UICollectionViewDropDelegate Methods
-
-@available(iOS 11, *)
 
 extension DragDropViewController : UICollectionViewDropDelegate {
     

@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 13/10/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -80,9 +80,12 @@
 
 #define k_maxErrorAutoUploadAll                         100
 
+#define k_sizePreview                                   1024
+#define k_sizeIcon                                      512
+
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         87
+#define k_databaseSchemaVersion                         120
 
 // Intro selector
 #define k_intro_login                                   0
@@ -110,32 +113,9 @@
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-// Session
-#define k_domain_session_queue                          @"it.twsweb.Crypto-Cloud"
-
-#define k_download_session                              @"it.twsweb.Crypto-Cloud.download.session"
-#define k_download_session_foreground                   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
-#define k_download_session_wwan                         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
-#define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
-#define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
-
-// Session Download Upload Extension
-#define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
-
-// OperationQueue
-#define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"
-#define k_download_queue                                @"it.twsweb.Crypto-Cloud.download.queue"
-#define k_download_queuewwan                            @"it.twsweb.Crypto-Cloud.download.queuewwan"
-#define k_upload_queue                                  @"it.twsweb.Crypto-Cloud.upload.queue"
-#define k_upload_queuewwan                              @"it.twsweb.Crypto-Cloud.upload.queuewwan"
-
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
-
-// TaskIdentifier
-#define k_taskIdentifierDone                            0
 
 // TaskStatus
 #define k_taskStatusCancel                              -1
@@ -150,7 +130,6 @@
 // 4) done or error
 //
 #define k_metadataStatusNormal                          0
-#define k_metadataStatusHide                            1
 
 #define k_metadataStatusWaitDownload                    2
 #define k_metadataStatusInDownload                      3
@@ -164,7 +143,7 @@
 #define k_metadataStatusUploadForcedStart               10
 
 // Timer
-#define k_timerProcessAutoDownloadUpload                5
+#define k_timerProcessAutoUpload                        5
 #define k_timerUpdateApplicationIconBadgeNumber         3
 #define k_timerErrorNetworking                          3
 
@@ -185,19 +164,20 @@
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorFileAlreadyInDownload                  -9995
 #define k_CCErrorWebdavResponseError                    -9994
+#define k_CCErrorNotPermission                          -9993
 
 // Search
 #define k_minCharsSearch                                2
 
 // Selector
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
-#define selectorDownloadEditPhoto                       @"downloadEditPhoto"
 #define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadFileInternalView                    @"loadFileInternalView"
-#define selectorLoadViewImage                           @"loadViewImage"
+#define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
+#define selectorLoadFileQuickLook                       @"loadFileQuickLook"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
+#define selectorOpenInDetail                            @"openInDetail"
 #define selectorReadFile                                @"readFile"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFolder                              @"readFolder"
@@ -267,11 +247,6 @@
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
 
-// Cell Reload Data Source
-#define k_action_NULL                                   0
-#define k_action_MOD                                    1
-#define k_action_DEL                                    2
-
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
@@ -316,6 +291,40 @@
 #define k_nextcloud_version_16_0                        16
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
+#define k_nextcloud_version_19_0                        19
+
+// Notification Center
+
+#define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
+#define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
+
+#define k_notificationCenter_initializeMain             @"initializeMain"
+#define k_notificationCenter_setTitleMain               @"setTitleMain"
+#define k_notificationCenter_changeTheming              @"changeTheming"
+#define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
+#define k_notificationCenter_synchronizationMedia       @"synchronizationMedia"             // userInfo: metadata, type
+#define k_notificationCenter_changeUserProfile          @"changeUserProfile"
+#define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
+#define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
+#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
+
+#define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
+#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: ocId, serverUrl, account
+#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
+#define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+#define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
+#define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew, errorCode, errorDescription
+#define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo, errorCode, errorDescription
+#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite, errorCode, errorDescription
+
+#define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
+#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
+#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
+#define k_notificationCenter_menuDetailClose            @"menuDetailClose"
+
 
 // -----------------------------------------------------------------------------------------------------------
 // INTERNAL

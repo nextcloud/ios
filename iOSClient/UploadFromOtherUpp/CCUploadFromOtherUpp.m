@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/12/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -42,14 +42,13 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"_cancel_", nil);
     self.title = NSLocalizedString(@"_upload_", nil);
     
     serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [self changeTheming];
     
     [self.tableView reloadData];
@@ -89,13 +88,14 @@
                                 
                 NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] error:nil];
                 NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
+                self.fileNameTextfield.text = appDelegate.fileNameUpload;
+                self.fileSizeLabel.text = fileSize;
             }
             break;
         case 2:
             if (row == 0) {
     
-                nameLabel = (UILabel *)[cell viewWithTag:101]; nameLabel.text = destinationTitle;
+                self.destinationLabel.text = destinationTitle;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
                 img.image = [UIImage imageNamed:@"folder"];
@@ -104,7 +104,8 @@
         case 4:
             
             if (row == 0) {
-                nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
+                nameLabel = (UILabel *)[cell viewWithTag:102];
+                nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
             }
             
             break;
@@ -138,12 +139,12 @@
 #pragma mark == IBAction ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
     if (serverUrl) {
         serverUrlLocal = serverUrl;
         destinationTitle = metadata.fileNameView;
-        //destinationTitle = NSLocalizedString(@"_home_", nil);
+        self.destinationLabel.text = destinationTitle;
     }
 }
 
@@ -167,17 +168,11 @@
 
 -(void)upload
 {
-    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload serverUrl:serverUrlLocal account:appDelegate.activeAccount];
+    NSString *fileName = [[NCUtility sharedInstance] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.activeAccount];
     
-    tableMetadata *metadataForUpload = [tableMetadata new];
+    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal url:@"" contentType:@""];
     
-    metadataForUpload.account = appDelegate.activeAccount;
-    metadataForUpload.date = [NSDate new];
-    metadataForUpload.ocId = [CCUtility createMetadataIDFromAccount:appDelegate.activeAccount serverUrl:serverUrlLocal fileNameView:fileName directory:false];
-    metadataForUpload.fileName = fileName;
-    metadataForUpload.fileNameView = fileName;
-    metadataForUpload.serverUrl = serverUrlLocal;
-    metadataForUpload.session = k_upload_session;
+    metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;
     
@@ -185,16 +180,15 @@
     [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
     
     // Add Medtadata for upload
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal ocId:metadataForUpload.ocId action:k_action_NULL];
+    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
 
-    [appDelegate startLoadAutoDownloadUpload];
+    [appDelegate startLoadAutoUpload];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (IBAction)Annula:(UIBarButtonItem *)sender
-{    
+- (IBAction)cancelUpload:(UIBarButtonItem *)sender
+{
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

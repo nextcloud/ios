@@ -29,8 +29,9 @@
 } while (0)
 
 #define REQUIRE_COLUMN_INDICES(columns, col, ...) do { \
-    REQUIRE((columns).size() > col); \
-    REQUIRE_INDICES((columns)[col], __VA_ARGS__); \
+    auto it = (columns).find(col); \
+    REQUIRE(it != (columns).end()); \
+    REQUIRE_INDICES(it->second, __VA_ARGS__); \
 } while (0)
 
 #define REQUIRE_MOVES(c, ...) do { \

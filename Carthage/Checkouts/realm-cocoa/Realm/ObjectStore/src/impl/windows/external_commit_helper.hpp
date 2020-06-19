@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <realm/group_shared.hpp>
+#include <realm/db.hpp>
 
 #include <future>
 #include <windows.h>

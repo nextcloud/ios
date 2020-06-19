@@ -24,15 +24,12 @@
 #import "CCTransfers.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
-#import "CCDetail.h"
 #import "CCSection.h"
-#import "CCCellMainTransfer.h"
 #import "NCBridgeSwift.h"
 
 #define download 1
-#define downloadwwan 2
-#define upload 3
-#define uploadwwan 4
+#define upload 2
+#define uploadwwan 3
 
 @interface CCTransfers ()
 {
@@ -81,18 +78,17 @@
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
-    // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
+
     [self changeTheming];
-    
-    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
         
-    [self reloadDatasource:nil action:k_action_NULL];
+    [self reloadDatasource];
 }
 
 - (void)changeTheming
@@ -104,9 +100,10 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView
+- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return 0.0f;
+    CGFloat height = self.tabBarController.tabBar.frame.size.height;
+    return -height;
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
@@ -189,9 +186,11 @@
         }
     }
     
+    /*
     if (!([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) &&(metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
+    */
     
     return NO;
 }
@@ -231,10 +230,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
-        [NCUtility.sharedInstance stopActivityIndicator];
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil ocId:nil action:k_action_NULL];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -254,8 +250,8 @@
         [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
     } else {
         metadataForRecognizer.status = k_metadataStatusInUpload;
-        metadataForRecognizer.session = k_upload_session;
-        [[CCNetworking sharedNetworking] uploadFile:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] taskStatus:k_taskStatusResume];
+        metadataForRecognizer.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        [[NCNetworking shared] uploadWithMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer]];
     }
 }
 
@@ -263,7 +259,7 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource:(NSString *)ocId action:(NSInteger)action
+- (void)reloadDatasource
 {
     // test
     if (appDelegate.activeAccount.length == 0 || self.view.window == nil)
@@ -274,12 +270,14 @@
         
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
-        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterocId:appDelegate.filterocId filterTypeFileImage:NO filterTypeFileVideo:NO sorted:@"sessionTaskIdentifier" ascending:NO activeAccount:appDelegate.activeAccount];
+        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:NO sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
             [self.tableView reloadData];
         });
+        
+        [[NCNetworking shared] verifyTransfer];
     });
 }
 
@@ -313,12 +311,12 @@
     
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
-    
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
-    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_download_session_wwan] sorted:nil ascending:NO] count];
+    NSString *sessionDownload = [[NCCommunicationCommon shared] sessionIdentifierDownload];
 
-    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
-    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] sorted:nil ascending:NO] count];
+
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] sorted:nil ascending:NO] count];
+    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] sorted:nil ascending:NO] count];
     
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [sectionDataSource.sections objectAtIndex:section];
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
@@ -335,9 +333,6 @@
     } else if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"]) {
         typeOfSession = download;
         titleSection = NSLocalizedString(@"_title_section_download_",nil);
-    } else if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"]) {
-        typeOfSession = downloadwwan;
-        titleSection = [NSLocalizedString(@"_title_section_download_",nil) stringByAppendingString:@" Wi-Fi"];
     } else if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"]) {
         typeOfSession = upload;
         titleSection = NSLocalizedString(@"_title_section_upload_",nil);
@@ -364,8 +359,7 @@
     elementLabel.textAlignment = NSTextAlignmentRight;
     elementLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    if ((typeOfSession == download && queueDownload > rowsCount) || (typeOfSession == downloadwwan && queueDownloadWWan > rowsCount) ||
-        (typeOfSession == upload   && queueUpload > rowsCount)   || (typeOfSession == uploadwwan && queueUploadWWan > rowsCount)) {
+    if ((typeOfSession == download && queueDownload > rowsCount) || (typeOfSession == upload   && queueUpload > rowsCount) || (typeOfSession == uploadwwan && queueUploadWWan > rowsCount)) {
         numberTitle = [NSString stringWithFormat:@"%lu+", (unsigned long)rowsCount];
     } else {
         numberTitle = [NSString stringWithFormat:@"%lu", (unsigned long)rowsCount];
@@ -398,9 +392,10 @@
     titleFooterLabel.textAlignment = NSTextAlignmentCenter;
     
     // Footer Download
-    if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
+    if ([titleSection containsString:@"download"] && titleSection != nil) {
         
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_download_session, k_download_session_foreground] sorted:nil ascending:NO] count];
+        NSString *session = [[NCCommunicationCommon shared] sessionIdentifierDownload];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", session] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -414,31 +409,10 @@
         return view;
     }
     
-    // Footer Download WWAN
-    if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
-        
-        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_download_session_wwan] sorted:nil ascending:NO] count];
-        
-        // element or elements ?
-        if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
-        else element_s = NSLocalizedString(@"_element_",nil);
-        
-        // Add the symbol WiFi and Num record
-        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-        attachment.image = [UIImage imageNamed:@"WiFiSmall"];
-        NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[@" " stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]]];
-        [stringFooter insertAttributedString:attachmentString atIndex:0];
-        titleFooterLabel.attributedText = stringFooter;
-        
-        [view addSubview:titleFooterLabel];
-        return view;
-    }
-    
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@ OR session == %@", k_upload_session, k_upload_session_foreground] sorted:nil ascending:NO] count];
+        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] sorted:nil ascending:NO] count];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -455,7 +429,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", k_upload_session_wwan] sorted:nil ascending:NO] count];
+        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] sorted:nil ascending:NO] count];
        
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);

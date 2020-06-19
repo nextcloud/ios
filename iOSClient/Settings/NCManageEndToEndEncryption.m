@@ -23,16 +23,15 @@
 
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
-#import "CCNetworking.h"
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "NCBridgeSwift.h"
 
-@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate>
+@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
-
-    NSUInteger _failedAttempts;
-    NSDate *_lockUntilDate;
+    NSString *passcodeType;
+    TOPasscodeViewController *passcodeViewController;
 }
 @end
 
@@ -40,13 +39,12 @@
 
 - (void)initializeForm
 {
-    XLFormDescriptor *form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_", nil)];
+    XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:appDelegate.activeAccount];
-
-    if (capabilities.endToEndEncryption == NO) {
+    BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
+    if (isE2EEEnabled == NO) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
         
@@ -54,7 +52,7 @@
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"closeCircle"] width:50 height:50 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -75,7 +73,7 @@
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectFull"] width:50 height:50 color:[UIColor greenColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -89,7 +87,7 @@
         
         // Read Passphrase
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"e2eReadPassphrase"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -104,7 +102,7 @@
         
         // remove locally Encryption
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removeLocallyEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_remove_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
         [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] width:50 height:50 color:NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -121,7 +119,7 @@
     
         // Start e2e
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"startE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_start_", nil)];
-        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+        row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -129,7 +127,7 @@
         [section addFormRow:row];   
     }
     
-#ifdef DEBUG
+    #ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete server keys ", nil)];
@@ -137,7 +135,7 @@
     
     // Delete publicKey
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePublicKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PublicKey", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -146,13 +144,13 @@
     
     // Delete privateKey
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePrivateKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PrivateKey", nil)];
-    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundView;
+    row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
-#endif
+    #endif
     
     self.tableView.showsVerticalScrollIndicator = NO;
     self.form = form;
@@ -162,6 +160,7 @@
 {
     [super viewDidLoad];
     
+    self.title = NSLocalizedString(@"_e2e_settings_", nil);
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
     // E2EE
@@ -169,7 +168,9 @@
     self.endToEndInitialize.delegate = self;
     
     // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:k_notificationCenter_applicationDidEnterBackground object:nil];
+
     [self changeTheming];
 }
 
@@ -177,6 +178,13 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
     [self initializeForm];
+}
+
+- (void)applicationDidEnterBackground
+{
+    if (passcodeViewController.view.window != nil) {
+        [passcodeViewController dismissViewControllerAnimated:true completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -187,32 +195,9 @@
 {
     [self deselectFormRow:sender];
 
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromStartEncryption;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_start_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self passcodeType:@"startE2E"];
         
     } else {
         
@@ -228,32 +213,9 @@
 {
     [self deselectFormRow:sender];
     
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromCheckPassphrase;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-            
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_read_passphrase_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self passcodeType:@"readPassphrase"];
         
     } else {
         
@@ -269,32 +231,9 @@
 {
     [self deselectFormRow:sender];
     
-    if ([[CCUtility getBlockCode] length]) {
+    if ([[CCUtility getPasscode] length]) {
         
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromRemoveEncryption;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        
-        if ([CCUtility getSimplyBlockCode]) {
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-        } else {
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-        
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_e2e_settings_remove_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self passcodeType:@"removeLocallyEncryption"];
         
     } else {
         
@@ -306,16 +245,124 @@
     }
 }
 
+#pragma mark - Passcode -
+
+- (void)passcodeType:(NSString *)type
+{
+    LAContext *laContext = [LAContext new];
+    NSError *error;
+    
+    if ([[CCUtility getPasscode] length] > 0) {
+        
+        passcodeViewController = [[TOPasscodeViewController alloc] initWithStyle:TOPasscodeViewStyleTranslucentLight passcodeType:TOPasscodeTypeSixDigits];
+        if (@available(iOS 13.0, *)) {
+            if ([[UITraitCollection currentTraitCollection] userInterfaceStyle] == UIUserInterfaceStyleDark) {
+                passcodeViewController.style = TOPasscodeViewStyleTranslucentDark;
+            }
+        }
+    
+        passcodeViewController.delegate = self;
+        passcodeViewController.allowCancel = true;
+        passcodeViewController.keypadButtonShowLettering = false;
+        
+        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+            if (error == NULL) {
+                if (laContext.biometryType == LABiometryTypeFaceID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else if (laContext.biometryType == LABiometryTypeTouchID) {
+                    passcodeViewController.biometryType = TOPasscodeBiometryTypeTouchID;
+                    passcodeViewController.allowBiometricValidation = true;
+                    passcodeViewController.automaticallyPromptForBiometricValidation = true;
+                } else {
+                    NSLog(@"No Biometric support");
+                }
+            }
+        }
+        
+        // Type of passcode
+        passcodeType = type;
+        
+        [self presentViewController:passcodeViewController animated:YES completion:nil];
+    }
+}
+
+
+- (void)didTapCancelInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (BOOL)passcodeViewController:(TOPasscodeViewController *)passcodeViewController isCorrectCode:(NSString *)code
+{
+    if ([code isEqualToString:[CCUtility getPasscode]]) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            [self passcodeCorrectCode];
+        });
+        return YES;
+    }
+         
+    return NO;
+}
+
+- (void)didPerformBiometricValidationRequestInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
+{
+    [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                [passcodeViewController dismissViewControllerAnimated:YES completion:nil];
+                [self passcodeCorrectCode];
+            });
+        }
+    }];
+}
+
+-(void)passcodeCorrectCode {
+    
+    if ([passcodeType isEqualToString:@"startE2E"]) {
+        
+        [self.endToEndInitialize initEndToEndEncryption];
+        
+    } else if ([passcodeType isEqualToString:@"readPassphrase"]) {
+        
+        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
+        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
+        
+        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+        
+    } else if ([passcodeType isEqualToString:@"removeLocallyEncryption"]) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
+            [self initializeForm];
+        }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
+        
+        [alertController addAction:okAction];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+
 - (void)deletePublicKey:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
-    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPublicKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+    [[NCCommunication shared] deleteE2EEPublicKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+       if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:message  delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
     }];
 }
@@ -324,12 +371,11 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCNetworkingEndToEnd sharedManager] deleteEndToEndPrivateKeyWithAccount:appDelegate.activeAccount completion:^(NSString *account, NSString *message, NSInteger errorCode) {
-        
+    [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:k_dismissAfterSecond type:messageTypeSuccess errorCode:0];
         } else {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         }
     }];
 }
@@ -341,80 +387,9 @@
 - (void)endToEndInitializeSuccess
 {
     // Reload All Datasource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSource object:nil];
 
     [self initializeForm];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === BKPasscodeViewController ===
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return _failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return _lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-        _lockUntilDate = nil;
-        _failedAttempts = 0;
-        aResultHandler(YES);
-    } else
-        aResultHandler(NO);
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
-        
-        [self.endToEndInitialize initEndToEndEncryption];        
-    }
-    
-    if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
-    
-        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
-        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
-    
-        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
-    
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        }];
-        [alertController addAction:okAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
-    
-    if (aViewController.fromType == CCBKPasscodeFromRemoveEncryption) {
-     
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
-            [self initializeForm];
-        }];
-        
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-            NSLog(@"[LOG] Cancel action");
-        }];
-        
-        [alertController addAction:okAction];
-        [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
-    }
 }
 
 @end

@@ -68,7 +68,7 @@ import Realm.Private
  See our [Cocoa guide](http://realm.io/docs/cocoa) for more details.
  */
 @objc(RealmSwiftObject)
-open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
+open class Object: RLMObjectBase, RealmCollectionValue {
     /// :nodoc:
     public static func _rlmArray() -> RLMArray<AnyObject> {
         return RLMArray(objectClassName: className())
@@ -126,8 +126,8 @@ open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
     /// Indicates if the object can no longer be accessed because it is now invalid.
     ///
     /// An object can no longer be accessed if the object has been deleted from the Realm that manages it, or if
-    /// `invalidate()` is called on that Realm.
-    public override final var isInvalidated: Bool { return super.isInvalidated }
+    /// `invalidate()` is called on that Realm. This property is key-value observable.
+    @objc dynamic open override var isInvalidated: Bool { return super.isInvalidated }
 
     /// A human-readable description of the object.
     open override var description: String { return super.description }
@@ -219,10 +219,11 @@ open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
      transactions it will be called at some point in the future after the write
      transaction is committed.
 
-     Notifications are delivered via the standard run loop, and so can't be
-     delivered while the run loop is blocked by other activity. When
-     notifications can't be delivered instantly, multiple notifications may be
-     coalesced into a single notification.
+     If no queue is given, notifications are delivered via the standard run
+     loop, and so can't be delivered while the run loop is blocked by other
+     activity. If a queue is given, notifications are delivered to that queue
+     instead. When notifications can't be delivered instantly, multiple
+     notifications may be coalesced into a single notification.
 
      Unlike with `List` and `Results`, there is no "initial" callback made after
      you add a new notification block.
@@ -238,11 +239,15 @@ open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
      - warning: This method cannot be called during a write transaction, or when
                 the containing Realm is read-only.
 
+     - parameter queue: The serial dispatch queue to receive notification on. If
+                        `nil`, notifications are delivered to the current thread.
      - parameter block: The block to call with information about changes to the object.
      - returns: A token which must be held for as long as you want updates to be delivered.
      */
-    public func observe(_ block: @escaping (ObjectChange) -> Void) -> NotificationToken {
-        return RLMObjectAddNotificationBlock(self, { names, oldValues, newValues, error in
+    public func observe<T: Object>(on queue: DispatchQueue? = nil,
+                                   _ block: @escaping (ObjectChange<T>) -> Void) -> NotificationToken {
+        precondition(self as? T != nil)
+        return RLMObjectBaseAddNotificationBlock(self, queue) { object, names, oldValues, newValues, error in
             if let error = error {
                 block(.error(error as NSError))
                 return
@@ -252,10 +257,10 @@ open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
                 return
             }
 
-            block(.change((0..<newValues.count).map { i in
+            block(.change(object as! T, (0..<newValues.count).map { i in
                 PropertyChange(name: names[i], oldValue: oldValues?[i], newValue: newValues[i])
             }))
-        })
+        }
     }
 
     // MARK: Dynamic list
@@ -297,7 +302,36 @@ open class Object: RLMObjectBase, ThreadConfined, RealmCollectionValue {
     public func isSameObject(as object: Object?) -> Bool {
         return RLMObjectBaseAreEqual(self, object)
     }
+
+
 }
+
+extension Object: ThreadConfined {
+    /**
+     Indicates if this object is frozen.
+
+     - see: `Object.freeze()`
+     */
+    public var isFrozen: Bool { return realm?.isFrozen ?? false }
+
+    /**
+     Returns a frozen (immutable) snapshot of this object.
+
+     The frozen copy is an immutable object which contains the same data as this
+     object currently contains, but will not update when writes are made to the
+     containing Realm. Unlike live objects, frozen objects can be accessed from any
+     thread.
+
+     - warning: Holding onto a frozen object for an extended period while performing write
+     transaction on the Realm may result in the Realm file growing to large sizes. See
+     `Realm.Configuration.maximumNumberOfActiveVersions` for more information.
+     - warning: This method can only be called on a managed object.
+     */
+    public func freeze() -> Self {
+        return realm!.freeze(self)
+    }
+}
+
 
 /**
  Information about a specific property which changed in an `Object` change notification.
@@ -332,7 +366,7 @@ public struct PropertyChange {
  Information about the changes made to an object which is passed to `Object`'s
  notification blocks.
  */
-public enum ObjectChange {
+public enum ObjectChange<T: Object> {
     /**
      If an error occurs, notification blocks are called one time with a `.error`
      result and an `NSError` containing details about the error. Currently the
@@ -340,11 +374,11 @@ public enum ObjectChange {
      worker thread to calculate the change set. The callback will never be
      called again after `.error` is delivered.
      */
-    case error(_: NSError)
+    case error(_ error: NSError)
     /**
      One or more of the properties of the object have been changed.
      */
-    case change(_: [PropertyChange])
+    case change(_: T, _: [PropertyChange])
     /// The object has been deleted from the Realm.
     case deleted
 }
@@ -356,7 +390,7 @@ public final class DynamicObject: Object {
         get {
             let value = RLMDynamicGetByName(self, key)
             if let array = value as? RLMArray<AnyObject> {
-                return List<DynamicObject>(rlmArray: array)
+                return List<DynamicObject>(objc: array)
             }
             return value
         }
@@ -650,18 +684,12 @@ internal class ObjectUtil {
         // one named 'x', and another that is optional and is named 'x.storage'. Note
         // that '.' is illegal in either a Swift or Objective-C property name.
         if let storageRange = name.range(of: ".storage", options: [.anchored, .backwards]) {
-            #if swift(>=4.0)
-                return String(name[..<storageRange.lowerBound])
-            #else
-                return name.substring(to: storageRange.lowerBound)
-            #endif
+            return String(name[..<storageRange.lowerBound])
         }
         // Xcode 11 changed the name of the storage property to "$__lazy_storage_$_propName"
-        #if swift(>=4.0)
-            if let storageRange = name.range(of: "$__lazy_storage_$_", options: [.anchored]) {
-                return String(name[storageRange.upperBound...])
-            }
-        #endif
+        if let storageRange = name.range(of: "$__lazy_storage_$_", options: [.anchored]) {
+            return String(name[storageRange.upperBound...])
+        }
         return nil
     }
 
@@ -736,6 +764,9 @@ internal class ObjectUtil {
             if let objcProp = class_getProperty(cls, label) {
                 var count: UInt32 = 0
                 let attrs = property_copyAttributeList(objcProp, &count)!
+                defer {
+                    free(attrs)
+                }
                 var computed = true
                 for i in 0..<Int(count) {
                     let attr = attrs[i]
@@ -780,11 +811,11 @@ private func forceCastToInferred<T, V>(_ x: T) -> V {
 }
 
 extension Object: AssistedObjectiveCBridgeable {
-    static func bridging(from objectiveCValue: Any, with metadata: Any?) -> Self {
+    internal static func bridging(from objectiveCValue: Any, with metadata: Any?) -> Self {
         return forceCastToInferred(objectiveCValue)
     }
 
-    var bridged: (objectiveCValue: Any, metadata: Any?) {
+    internal var bridged: (objectiveCValue: Any, metadata: Any?) {
         return (objectiveCValue: unsafeCastToRLMObject(), metadata: nil)
     }
 }

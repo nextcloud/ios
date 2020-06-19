@@ -84,19 +84,19 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOpacity = 0.2
         
         switchAllowEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchAllowEditing?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchAllowEditing?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchReadOnly?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchReadOnly?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchReadOnly?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchAllowUploadAndEditing?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchAllowUploadAndEditing?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchFileDrop?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchFileDrop?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchFileDrop?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchHideDownload.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchHideDownload.onTintColor = NCBrandColor.sharedInstance.brand
+        switchHideDownload.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchPasswordProtect.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchPasswordProtect.onTintColor = NCBrandColor.sharedInstance.brand
+        switchPasswordProtect.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brand
+        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brandElement
         
         labelAllowEditing?.text = NSLocalizedString("_share_allow_editing_", comment: "")
         labelAllowEditing?.textColor = NCBrandColor.sharedInstance.textView
@@ -381,12 +381,12 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
     }
     
     func updateShareWithError(idRemoteShared: Int) {

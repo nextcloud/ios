@@ -64,10 +64,9 @@
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:@"SharesReloadDatasource" object:nil];
+    // Notification
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     
-    // changeTheming
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     [self changeTheming];
 }
 
@@ -141,7 +140,7 @@
         viewController.metadata = metadata;
         viewController.imageFile = cell.fileImageView.image;
         viewController.showOpenIn = false;
-        viewController.showOpenInternalViewer = false;
+        viewController.showOpenQuickLook = false;
         viewController.showShare = false;
         
         return viewController;
@@ -287,7 +286,7 @@
                 
                 cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
                 
-                [[NCNetworkingMain sharedInstance] downloadThumbnailWith:metadata view:tableView indexPath:indexPath];
+                [[NCOperationQueue shared] downloadThumbnailWithMetadata:metadata activeUrl:appDelegate.activeUrl view:tableView indexPath:indexPath];
             }
         }
         
@@ -295,11 +294,14 @@
         
         cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:NCBrandColor.sharedInstance.brandElement];
         
-        [[OCNetworking sharedManager] readFileWithAccount:appDelegate.activeAccount serverUrl:table.serverUrl fileName:table.fileName completion:^(NSString *account, tableMetadata *metadata, NSString *message, NSInteger errorCode) {
+        NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", table.serverUrl, table.fileName];
+               
+        [[NCNetworking shared] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+            
             if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
-            } 
+            }
         }];
     }
     

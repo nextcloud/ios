@@ -26,27 +26,29 @@ import MarkdownKit
 
 @objc class NCViewRichWorkspace: UIView {
     
+    @IBOutlet weak var topView: UIView!
+    @IBOutlet weak var richView: UIView!
+    @IBOutlet weak var sortButton: UIButton!
     @objc @IBOutlet weak var textView: UITextView!
-    @objc @IBOutlet weak var textViewTopConstraint: NSLayoutConstraint!
-
+    
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private var textViewColor: UIColor?
     private let gradient : CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
         gradient.endPoint = CGPoint(x: 0, y: 1)
-        layer.addSublayer(gradient)
+        richView.layer.addSublayer(gradient)
     }
     
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
-        gradient.frame = self.bounds
+        gradient.frame = self.richView.bounds
     }
 
     @objc func changeTheming() {

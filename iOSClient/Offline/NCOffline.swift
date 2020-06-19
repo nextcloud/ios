@@ -22,9 +22,8 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
 
-class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate  {
+class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -35,7 +34,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
    
     private var metadataPush: tableMetadata?
     private var isEditMode = false
-    private var selectocId = [String]()
+    private var selectocId: [String] = []
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
@@ -50,18 +49,12 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-    
-    private var actionSheet: ActionSheet?
-    
+        
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
 
-    private let refreshControl = UIRefreshControl()
-    
-    //BKPasscodeViewController
-    private var failedAttempts: Double = 0
-    private var lockUntilDate: NSDate?
+    private let refreshControl = UIRefreshControl()    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -88,29 +81,26 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
         
-        // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        // Refresh Control
+        collectionView.addSubview(refreshControl)
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;
+        self.collectionView.emptyDataSetDelegate = self
+        self.collectionView.emptyDataSetSource = self
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: view)
         }
         
-        // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+
         changeTheming()
     }
     
@@ -139,7 +129,22 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.actionSheet?.viewDidLayoutSubviews()
+        }
+    }
+    
+    //MARK: - NotificationCenter
+
+    @objc func deleteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                if errorCode == 0 {
+                    self.loadDatasource()
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
         }
     }
     
@@ -167,50 +172,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         return true
     }
     
-    // MARK: BKPASSCODEVIEWCONTROLLER
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
-        aViewController.dismiss(animated: true, completion: nil)
-        performSegueDirectoryWithControlPasscode(controlPasscode: false)
-    }
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
-        if aPasscode == CCUtility.getBlockCode() {
-            failedAttempts = 0
-            lockUntilDate = nil
-            aResultHandler(true)
-        } else {
-            aResultHandler(false)
-        }
-    }
-    
-    func passcodeViewControllerDidFailAttempt(_ aViewController: BKPasscodeViewController!) {
-        failedAttempts += 1
-        if failedAttempts > 5 {
-            var timeInterval: TimeInterval = 60
-            if failedAttempts > 6 {
-                let multiplier: Double = failedAttempts - 6
-                timeInterval = (5 * 60) * multiplier
-                if timeInterval > 3600 * 24 {
-                    timeInterval = 3600 * 24
-                }
-            }
-            lockUntilDate = NSDate.init(timeIntervalSinceNow: timeInterval)
-        }
-    }
-    
-    func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
-        return UInt(failedAttempts)
-    }
-    
-    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date? {
-        return lockUntilDate as Date?
-    }
-    
-    @objc func passcodeViewCloseButtonPressed(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-
     // MARK: TAP EVENT
     
     func tapSwitchHeader(sender: Any) {
@@ -296,7 +257,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         menuView?.delegate = self
         menuView?.rowHeight = 45
         menuView?.sectionHeaderHeight = 0.3
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
+        menuView?.highlightColor = NCBrandColor.sharedInstance.brandElement
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
         menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
@@ -335,41 +296,68 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         }
         
         if !isEditMode {
-            
-            var items = [MenuItem]()
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            var actions: [NCMenuAction] = []
 
-            ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-            ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-            
-            // 0 == CCMore, 1 = first NCOffline ....
-            if (self == self.navigationController?.viewControllers[1]) {
-                items.append(MenuItem(title: NSLocalizedString("_remove_available_offline_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "offline"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)))
+
+            var iconHeader: UIImage!
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+                iconHeader = icon
+            } else {
+                iconHeader = UIImage(named: metadata.iconName)
             }
-            items.append(MenuItem(title: NSLocalizedString("_details_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)))
-            items.append(MenuItem(title: NSLocalizedString("_delete_", comment: ""), value: 2, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), width: 50, height: 50, color: .red)))
-            items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
-                if item.value as? Int == 0 {
-                    if metadata.directory {
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
-                    } else {
-                        NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+
+            actions.append(
+                NCMenuAction(
+                    title: metadata.fileNameView,
+                    icon: iconHeader,
+                    action: nil
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        if metadata.directory {
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
+                        } else {
+                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                        }
+                        self.loadDatasource()
                     }
-                    self.loadDatasource()
-                }
-                if item.value as? Int == 1 { NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0) }
-                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
-                if item is CancelButton { print("Cancel buttons has the value `true`") }
-            })
-            
-            let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-            actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
-            
-            actionSheet?.present(in: self, from: sender as! UIButton)
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }
+                )
+            )
+
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_delete_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    action: { menuAction in
+                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
+                    }
+                )
+            )
+
+            mainMenuViewController.actions = actions
+            let menuPanelController = NCMenuPanelController()
+            menuPanelController.parentPresenter = self
+            menuPanelController.delegate = mainMenuViewController
+            menuPanelController.set(contentViewController: mainMenuViewController)
+            menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+            self.present(menuPanelController, animated: true, completion: nil)
         } else {
             
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
@@ -460,63 +448,12 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         }
         
         if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
+            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
-                segueViewController.metadataDetail = metadataPush
-                segueViewController.dateFilterQuery = nil
-                segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataPush!.fileNameView
+                segueViewController.metadata = metadataPush
+                segueViewController.offlineFilterImage = true
             }
         }
-    }
-    
-    // MARK: NAVIGATION
-    
-    private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
-        
-        guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else {
-            return
-        }
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
-            return
-        }
-        
-        if directoryPush.lock == true && CCUtility.getBlockCode() != nil && (CCUtility.getBlockCode()?.count)! > 0 && controlPasscode {
-            
-            let viewController = CCBKPasscode.init(nibName: nil, bundle: nil)
-            guard let touchIDManager = BKTouchIDManager.init(keychainServiceName: k_serviceShareKeyChain) else {
-                return
-            }
-            touchIDManager.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
-            
-            viewController.delegate = self
-            viewController.type = BKPasscodeViewControllerCheckPasscodeType
-            viewController.inputViewTitlePassword = true
-            if CCUtility.getSimplyBlockCode() {
-                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 6
-            } else {
-                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 64
-            }
-            viewController.touchIDManager = touchIDManager
-            viewController.title = NSLocalizedString("_folder_blocked_", comment: "")
-            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(_:)))
-            viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
-            
-            let navigationController = UINavigationController.init(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .fullScreen
-            self.present(navigationController, animated: true, completion: nil)
-            
-            return
-        }
-        
-        let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-        
-        ncOffline.serverUrl = serverUrlPush
-        ncOffline.titleCurrentFolder = metadataPush!.fileNameView
-        
-        self.navigationController?.pushViewController(ncOffline, animated: true)
     }
 }
 
@@ -544,9 +481,7 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
         }
         
         viewController.showOpenIn = true
-        if metadata.typeFile == k_metadataTypeFile_document {
-            viewController.showOpenInternalViewer = true
-        }
+        viewController.showOpenQuickLook = NCUtility.sharedInstance.isQuickLookDisplayable(metadata: metadata)
         viewController.showShare = false
         
         return viewController
@@ -583,10 +518,15 @@ extension NCOffline: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            performSegueDirectoryWithControlPasscode(controlPasscode: true)
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
+            let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+            
+            ncOffline.serverUrl = serverUrlPush
+            ncOffline.titleCurrentFolder = metadataPush!.fileNameView
+            
+            self.navigationController?.pushViewController(ncOffline, animated: true)
             
         } else {
-            
             
             performSegue(withIdentifier: "segueDetail", sender: self)
         }
@@ -720,7 +660,7 @@ extension NCOffline {
 
     @objc func loadDatasource() {
         
-        var ocIds = [String]()
+        var ocIds: [String] = []
         sectionDatasource = CCSectionDataSourceMetadata()
         
         if serverUrl == "" {
@@ -739,14 +679,14 @@ extension NCOffline {
             
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), sorted: nil, ascending: false)  {
                 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             }
             
         } else {
             
             if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), sorted: nil, ascending: false)  {
                 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             }
         }
         
@@ -755,35 +695,36 @@ extension NCOffline {
         collectionView.reloadData()
     }
     
+    /*
     func deleteItem(with metadata: tableMetadata, sender: Any) {
-        
-        var items = [MenuItem]()
-        
-        ActionSheetTableView.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetTableView.appearance().separatorColor = NCBrandColor.sharedInstance.separator
-        ActionSheetItemCell.appearance().backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        ActionSheetItemCell.appearance().titleColor = NCBrandColor.sharedInstance.textView
-        
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, metadata.serverUrl)) else {
-            return
-        }
-        
-        items.append(DestructiveButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(CancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        actionSheet = ActionSheet(menu: Menu(items: items), action: { (shhet, item) in
-            if item is DestructiveButton  {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: tableDirectory.serverUrl, folderocId: tableDirectory.ocId) { (errorCode, message) in
-                    self.loadDatasource()
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+
+        var actions = [NCMenuAction]()
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                action: { menuAction in
+                    NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
                 }
-            }
-            if item is CancelButton { print("Cancel buttons has the value `true`") }
-        })
-        
-        let headerView = NCActionSheetHeader.sharedInstance.actionSheetHeader(isDirectory: metadata.directory, iconName: metadata.iconName, ocId: metadata.ocId, fileNameView: metadata.fileNameView, text: metadata.fileNameView)
-        actionSheet?.headerView = headerView
-        actionSheet?.headerView?.frame.size.height = 50
-     
-        actionSheet?.present(in: self, from: sender as! UIButton)
+            )
+        )
+
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_cancel_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in }
+            )
+        )
+
+        mainMenuViewController.actions = actions
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = self
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
     }
+    */
 }

@@ -23,7 +23,7 @@ rm -rf ci.build
 mkdir -p ci.build
 cd ci.build
 
-cmake_flags=""
+cmake_flags="-DCMAKE_CXX_FLAGS=-Werror"
 if [ "${flavor}" = "android" ]; then
   [ -z $ANDROID_NDK_PATH ] && (echo "ANDROID_NDK_PATH is not set!"; exit 1)
   cmake_flags="-DREALM_PLATFORM=Android -DANDROID_NDK=${ANDROID_NDK_PATH}"

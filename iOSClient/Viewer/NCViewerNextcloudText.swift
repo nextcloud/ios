@@ -22,13 +22,15 @@
 //
 
 import Foundation
+import WebKit
 
 class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHandler {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var detail: CCDetail!
     var editor: String!
     var metadata: tableMetadata!
+    var view: UIView!
+    var viewController: UIViewController!
     var documentInteractionController: UIDocumentInteractionController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
@@ -45,12 +47,18 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         super.init(coder: coder)
     }
     
-    @objc func viewerAt(_ link: String, detail: CCDetail, metadata: tableMetadata, editor: String) {
-        
-        self.detail = detail
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+    }
+    
+    @objc func viewerAt(_ link: String, metadata: tableMetadata, editor: String, view: UIView, viewController: UIViewController) {
+                
         self.metadata = metadata
         self.editor = editor
-        
+        self.view = view
+        self.viewController = viewController
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
@@ -66,18 +74,19 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         }
         
         load(request)
+        
+        self.view.addSubview(self)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
-        //print("keyboardFrame: \(keyboardFrame)")
-        frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
+        frame.size.height = view.frame.height - keyboardFrame.size.height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        frame = detail.view.bounds
+        frame = view.frame
     }
     
     //MARK: -
@@ -87,23 +96,13 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         if (message.name == "DirectEditingMobileInterface") {
             
             if message.body as? String == "close" {
-                
-                removeFromSuperview()
-                
-                detail.navigationController?.popViewController(animated: true)
-                detail.navigationController?.navigationBar.topItem?.title = ""
-                
-                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
-                if splitViewController.isCollapsed {
-                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
-                    masterNavigationController.popViewController(animated: true)
-                }
                                 
+                appDelegate.activeDetail.viewUnload()
                 appDelegate.activeMain.readFileReloadFolder()
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
+                NCMainCommon.sharedInstance.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if message.body as? String == "loading" {

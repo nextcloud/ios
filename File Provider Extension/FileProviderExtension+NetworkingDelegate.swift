@@ -3,7 +3,7 @@
 //  File Provider Extension
 //
 //  Created by Marino Faggiana on 02/11/2019.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -26,7 +26,7 @@ import NCCommunication
 
 extension FileProviderExtension: NCNetworkingDelegate {
 
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, error: Error?, statusCode: Int) {
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
                 
         guard let ocIdTemp = description else { return }
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
@@ -37,7 +37,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
         }
         outstandingOcIdTemp[ocIdTemp] = ocId
         
-        if error == nil && statusCode >= 200 && statusCode < 300 {
+        if errorCode == 0 {
             
             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                 return

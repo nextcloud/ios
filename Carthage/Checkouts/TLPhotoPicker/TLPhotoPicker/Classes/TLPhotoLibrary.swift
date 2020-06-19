@@ -239,6 +239,9 @@ extension TLPhotoLibrary {
         }else {
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 var assetCollections = [TLAssetsCollection]()
+                //Screenshots
+                getSmartAlbum(subType: .smartAlbumScreenshots, result: &assetCollections)
+                
                 //Camera Roll
                 let camerarollCollection = getSmartAlbum(subType: .smartAlbumUserLibrary,
                                                          useCameraButton: useCameraButton,

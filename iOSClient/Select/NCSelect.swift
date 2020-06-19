@@ -22,20 +22,25 @@
 //
 
 import Foundation
-import Sheeeeeeeeet
+import NCCommunication
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, BKPasscodeViewControllerDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    @IBOutlet fileprivate weak var toolbar: UIToolbar!
+    @IBOutlet fileprivate weak var toolbar: UIView!
+    @IBOutlet fileprivate weak var overwriteView: UIView!
 
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
-    @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
-    @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
+    @IBOutlet fileprivate weak var buttonCreateFolder: UIButton!
+    @IBOutlet fileprivate weak var buttonDone: UIButton!
+    @IBOutlet fileprivate weak var buttonDone1: UIButton!
+    
+    @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
+    @IBOutlet fileprivate weak var overwriteLabel: UILabel!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
@@ -46,6 +51,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var includeImages = false
     @objc var type = ""
     @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
+    @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
+    @objc var isButtonDone1Hide = true
+    @objc var isOverwriteHide = true
     @objc var layoutViewSelect = k_layout_view_move
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -56,12 +64,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private var serverUrlPush = ""
     private var metadataPush: tableMetadata?
-    private var metadataFolder: tableMetadata?
+    private var metadataFolder = tableMetadata()
     
     private var isEditMode = false
     private var networkInProgress = false
-    private var selectocId = [String]()
-    
+    private var selectocId: [String] = []
+    private var overwrite = false
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
     private var typeLayout = ""
@@ -75,9 +83,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
-    
-    private var actionSheet: ActionSheet?
-    
+        
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
@@ -85,11 +91,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var shares: [tableShare]?
     
     private let refreshControl = UIRefreshControl()
-    
-    //BKPasscodeViewController
-    private var failedAttempts: Double = 0
-    private var lockUntilDate: NSDate?
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -111,15 +113,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         gridLayout = NCGridLayout()
         
         // Add Refresh Control
-        if #available(iOS 10.0, *) {
-            collectionView.refreshControl = refreshControl
-        } else {
-            collectionView.addSubview(refreshControl)
-        }
+        collectionView.addSubview(refreshControl)
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
@@ -128,10 +126,27 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
-        buttonCreateFolder.title = NSLocalizedString("_create_folder_", comment: "")
+        buttonCreateFolder.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
+        overwriteLabel.text = NSLocalizedString("_overwrite_", comment: "")
         
+        // button
+        buttonCreateFolder.layer.cornerRadius = 15
+        buttonCreateFolder.layer.masksToBounds = true
+        buttonCreateFolder.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonCreateFolder.setTitleColor(.black, for: .normal)
+
+        buttonDone.layer.cornerRadius = 15
+        buttonDone.layer.masksToBounds = true
+        buttonDone.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone.setTitleColor(.black, for: .normal)
+        
+        buttonDone1.layer.cornerRadius = 15
+        buttonDone1.layer.masksToBounds = true
+        buttonDone1.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonDone1.setTitleColor(.black, for: .normal)
+                
         // changeTheming
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -140,7 +155,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         self.navigationItem.title = titleCurrentFolder
         
-        buttonDone.title = titleButtonDone
+        buttonDone.setTitle(titleButtonDone, for: .normal)
+        buttonDone1.setTitle(titleButtonDone1, for: .normal)
+        buttonDone1.isHidden = isButtonDone1Hide
+        overwriteSwitch.isOn = overwrite
+        overwriteView.isHidden = isOverwriteHide
         
         if selectFile {
             buttonDone.isEnabled = false
@@ -174,14 +193,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
-        toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
-        toolbar.tintColor = .gray
+        toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
+        //toolbar.tintColor = .gray
     }
     
     // MARK: DZNEmpty
@@ -214,59 +232,20 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         return true
     }
     
-    // MARK: BKPASSCODEVIEWCONTROLLER
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, didFinishWithPasscode aPasscode: String!) {
-        aViewController.dismiss(animated: true, completion: nil)
-        performSegueDirectoryWithControlPasscode(controlPasscode: false)
-    }
-    
-    func passcodeViewController(_ aViewController: BKPasscodeViewController!, authenticatePasscode aPasscode: String!, resultHandler aResultHandler: ((Bool) -> Void)!) {
-        if aPasscode == CCUtility.getBlockCode() {
-            failedAttempts = 0
-            lockUntilDate = nil
-            aResultHandler(true)
-        } else {
-            aResultHandler(false)
-        }
-    }
-    
-    func passcodeViewControllerDidFailAttempt(_ aViewController: BKPasscodeViewController!) {
-        failedAttempts += 1
-        if failedAttempts > 5 {
-            var timeInterval: TimeInterval = 60
-            if failedAttempts > 6 {
-                let multiplier: Double = failedAttempts - 6
-                timeInterval = (5 * 60) * multiplier
-                if timeInterval > 3600 * 24 {
-                    timeInterval = 3600 * 24
-                }
-            }
-            lockUntilDate = NSDate.init(timeIntervalSinceNow: timeInterval)
-        }
-    }
-    
-    func passcodeViewControllerNumber(ofFailedAttempts aViewController: BKPasscodeViewController!) -> UInt {
-        return UInt(failedAttempts)
-    }
-    
-    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date? {
-        return lockUntilDate as Date?
-    }
-    
-    @objc func passcodeViewCloseButtonPressed(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, buttonType: "cancel", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: nil, type: type)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done", overwrite: overwrite)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func actionDone1(_ sender: Any) {
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done1", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -292,6 +271,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         alertController.addAction(actionCancel)
         
         self.present(alertController, animated: true, completion:nil)
+    }
+    
+    @IBAction func valueChangedSwitchOverwrite(_ sender: Any) {
+        if let viewControllers = self.navigationController?.viewControllers {
+            for viewController in viewControllers {
+                if viewController is NCSelect {
+                    (viewController as! NCSelect).overwrite = overwriteSwitch.isOn
+                }
+            }
+        }
     }
     
     // MARK: TAP EVENT
@@ -379,7 +368,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         menuView?.delegate = self
         menuView?.rowHeight = 45
         menuView?.sectionHeaderHeight = 8
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
+        menuView?.highlightColor = NCBrandColor.sharedInstance.brandElement
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
         menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
@@ -471,64 +460,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
         }
     }
-    
-    // MARK: NAVIGATION
-    
-    private func performSegueDirectoryWithControlPasscode(controlPasscode: Bool) {
-        
-        guard let directoryPush = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrlPush))  else {
-            return
-        }
-        
-        if directoryPush.lock == true && CCUtility.getBlockCode() != nil && (CCUtility.getBlockCode()?.count)! > 0 && controlPasscode {
-            
-            let viewController = CCBKPasscode.init(nibName: nil, bundle: nil)
-            guard let touchIDManager = BKTouchIDManager.init(keychainServiceName: k_serviceShareKeyChain) else {
-                return
-            }
-            touchIDManager.promptText = NSLocalizedString("_scan_fingerprint_", comment: "")
-
-            viewController.delegate = self
-            viewController.type = BKPasscodeViewControllerCheckPasscodeType
-            viewController.inputViewTitlePassword = true
-            if CCUtility.getSimplyBlockCode() {
-                viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 6
-            } else {
-                viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle
-                viewController.passcodeInputView.maximumLength = 64
-            }
-            viewController.touchIDManager = touchIDManager
-            viewController.title = NSLocalizedString("_folder_blocked_", comment: "")
-            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(_:)))
-            viewController.navigationItem.leftBarButtonItem?.tintColor = UIColor.black
-            
-            let navigationController = UINavigationController.init(rootViewController: viewController)
-            navigationController.modalPresentationStyle = .fullScreen
-            self.present(navigationController, animated: true, completion: nil)
-            
-            return
-        }
-        
-        guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else {
-            return
-        }
-        
-        visualController.delegate = delegate
-        
-        visualController.hideButtonCreateFolder = hideButtonCreateFolder
-        visualController.selectFile = selectFile
-        visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-        visualController.includeImages = includeImages
-        visualController.type = type
-        visualController.titleButtonDone = titleButtonDone
-        visualController.layoutViewSelect = layoutViewSelect
-        
-        visualController.titleCurrentFolder = metadataPush!.fileNameView
-        visualController.serverUrl = serverUrlPush
-        
-        self.navigationController?.pushViewController(visualController, animated: true)
-    }
 }
 
 // MARK: - Collection View
@@ -553,18 +484,33 @@ extension NCSelect: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else {
-                return
-            }
-            
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName) else { return }
+            guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+
             self.serverUrlPush = serverUrlPush
             self.metadataPush = metadata
             
-            performSegueDirectoryWithControlPasscode(controlPasscode: true)
+            visualController.delegate = delegate
+            visualController.hideButtonCreateFolder = hideButtonCreateFolder
+            visualController.selectFile = selectFile
+            visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            visualController.includeImages = includeImages
+            visualController.type = type
+            visualController.titleButtonDone = titleButtonDone
+            visualController.titleButtonDone1 = titleButtonDone1
+            visualController.layoutViewSelect = layoutViewSelect
+            visualController.isButtonDone1Hide = isButtonDone1Hide
+            visualController.isOverwriteHide = isOverwriteHide
+            visualController.overwrite = overwrite
+                
+            visualController.titleCurrentFolder = metadataPush!.fileNameView
+            visualController.serverUrl = serverUrlPush
+                   
+            self.navigationController?.pushViewController(visualController, animated: true)
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, buttonType: "select", overwrite: overwrite)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -731,7 +677,7 @@ extension NCSelect {
         
         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, sorted: nil, ascending: false) {
             
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterocId: nil, filterTypeFileImage: false, filterTypeFileVideo: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
         }
         
         if withLoadFolder {
@@ -745,15 +691,14 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        OCNetworking.sharedManager().createFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileName, completion: { (account, ocId, date, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+            
+            if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
-        })
+        }
     }
     
     func loadFolder() {
@@ -761,32 +706,10 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        OCNetworking.sharedManager().readFolder(withAccount: appDelegate.activeAccount, serverUrl: serverUrl, depth: "1", completion: { (account, metadatas, metadataFolder, message, errorCode) in
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                self.metadataFolder = metadataFolder
-                
-                // Update directory etag
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, ocId: metadataFolder?.ocId, encrypted: metadataFolder!.e2eEncrypted, richWorkspace: nil, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusNormal, k_metadataStatusHide))
-                NCManageDatabase.sharedInstance.setDateReadDirectory(serverUrl: self.serverUrl, account: self.appDelegate.activeAccount)
-                
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata])
-                
-                if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", self.appDelegate.activeAccount ,self.serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
-                    
-                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload)
-                }
-                
-            } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            } else {
-                print("[LOG] It has been changed user during networking process, error.")
-            }
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, errorCode, errorDescription) in
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
-        })
+        }
     }
 }

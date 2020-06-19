@@ -34,9 +34,9 @@ class NCShareCommon: NSObject {
         
         let size: CGFloat = 200
         
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brand)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brandElement)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: size, height: size, color: UIColor.white)
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0.0)
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
         topImage?.draw(in: CGRect(origin:  CGPoint(x: size/4, y: size/4), size: CGSize(width: size/2, height: size/2)))
         let image = UIGraphicsGetImageFromCurrentImageContext()
@@ -53,9 +53,7 @@ class NCShareCommon: NSObject {
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
 //        var constantBottomAnchor: CGFloat = 10
-//        if #available(iOS 11.0, *) {
-//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-//        }
+//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -99,9 +97,7 @@ class NCShareCommon: NSObject {
 //        let globalPoint = shareViewController.view.superview?.convert(shareViewController.view.frame.origin, to: nil)
 //        let constantTrailingAnchor = window.bounds.width - shareViewController.view.bounds.width - globalPoint!.x + 40
 //        var constantBottomAnchor: CGFloat = 10
-//        if #available(iOS 11.0, *) {
-//            constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-//        }
+//        constantBottomAnchor = constantBottomAnchor + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         
         window.addSubview(viewWindow)
         viewWindow.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -170,7 +166,7 @@ class NCShareCommon: NSObject {
         calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
         calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 12)
         
-        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brand
+        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brandElement
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 12)
         
         viewWindow.addSubview(calendar)

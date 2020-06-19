@@ -3,7 +3,22 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 23/12/2019.
-//  Copyright © 2019 TWS. All rights reserved.
+//  Copyright (c) 2019 Marino Faggiana. All rights reserved.
+//
+//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 import SwiftEntryKit
@@ -45,10 +60,28 @@ class NCContentPresenter: NSObject {
         case info
     }
     
+    @objc private var lastErrorCode: Int = 0
+
     //MARK: - Message
     
     @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
                        
+        // No notification message
+        if errorCode == -999 { return }         // Cancelled transfer
+        else if errorCode == 200 { return }     // Transfer stopped
+        else if errorCode == 207 { return }     // WebDAV multistatus
+        else if errorCode == 423 { return }     // WebDAV locked
+        else if errorCode == -1001 { return }   // Time out
+        else if errorCode == -1005 { return }   // Connection lost
+        else if errorCode == 0 && type == messageType.error { return }
+        
+        // No repeat message 
+        if errorCode == lastErrorCode {
+            if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
+        } else {
+            lastErrorCode = errorCode
+        }
+        
         DispatchQueue.main.async {
             switch errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
@@ -57,9 +90,10 @@ class NCContentPresenter: NSObject {
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
-                var description = description
-                if description == nil { description = "" }
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description!, comment: ""), delay: delay, imageName: nil, type: type, name: "\(errorCode)")
+                guard var description = description else { return }
+                if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
+                description = NSLocalizedString(description, comment: "")
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
             }
         }
     }
@@ -98,7 +132,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
     }
    
-    @objc func flatBottom(title: String, description: String, delay: TimeInterval, image: UIImage, type: messageType, name: String?) {
+    @objc func flatBottom(title: String, description: String, delay: TimeInterval, image: UIImage, type: messageType, name: String?, verticalOffset: CGFloat) {
         
         if name != nil && SwiftEntryKit.isCurrentlyDisplaying(entryNamed: name) { return }
            
@@ -111,7 +145,7 @@ class NCContentPresenter: NSObject {
         attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
         attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
         attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
-        attributes.positionConstraints.verticalOffset = 60
+        attributes.positionConstraints.verticalOffset = verticalOffset
         
         let title = EKProperty.LabelContent(text: title, style: .init(font:  MainFont.bold.with(size: 16), color: .white))
         let description = EKProperty.LabelContent(text: description, style: .init(font:  MainFont.medium.with(size: 13), color: .white))
@@ -166,7 +200,7 @@ class NCContentPresenter: NSObject {
     private func getBackgroundColorFromType(_ type: messageType) -> UIColor {
         switch type {
         case .info:
-            return NCBrandColor.sharedInstance.brand
+            return NCBrandColor.sharedInstance.brandElement
         case .error:
             return UIColor(red: 1, green: 0, blue: 0, alpha: 0.9)
         case .success:

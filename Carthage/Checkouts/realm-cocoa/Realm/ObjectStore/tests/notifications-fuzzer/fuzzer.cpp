@@ -243,7 +243,6 @@ int main(int argc, char** argv) {
 
     Realm::Config config;
     config.path = "fuzzer.realm";
-    config.cache = false;
     config.in_memory = true;
     config.automatic_change_notifications = false;
 

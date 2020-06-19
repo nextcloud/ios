@@ -43,13 +43,13 @@ class fileProviderData: NSObject {
     var currentAnchor: UInt64 = 0
 
     // Rank favorite
-    var listFavoriteIdentifierRank = [String:NSNumber]()
+    var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     
     // Item for signalEnumerator
-    var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-    var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-    var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
+    var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
+    var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
+    var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
    
     // UserDefaults
     var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
@@ -74,7 +74,8 @@ class fileProviderData: NSObject {
         if domain == nil {
             
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
-            guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: tableAccount.account) else { return false }
+            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
             
             account = tableAccount.account
             accountUser = tableAccount.user
@@ -82,9 +83,9 @@ class fileProviderData: NSObject {
             accountPassword = CCUtility.getPassword(tableAccount.account)
             accountUrl = tableAccount.url
             homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
-            
-            NCCommunicationCommon.sharedInstance.setup(username: accountUser, userID: accountUserID,  password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-            NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+                        
+            NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+            NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
             
             return true
         }
@@ -97,7 +98,10 @@ class fileProviderData: NSObject {
             guard let host = url.host else { continue }
             let accountDomain = tableAccount.userID + " (" + host + ")"
             if accountDomain == domain {
-                guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: tableAccount.account) else { return false }
+                
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
+                
                 account = tableAccount.account
                 accountUser = tableAccount.user
                 accountUserID = tableAccount.userID
@@ -106,8 +110,8 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunicationCommon.sharedInstance.setup(username: accountUser, userID: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 foundAccount = true
             }
@@ -127,7 +131,10 @@ class fileProviderData: NSObject {
         
         for tableAccount in tableAccounts {
             if accountFromItemIdentifier == tableAccount.account {
-                guard let capabilities = NCManageDatabase.sharedInstance.getCapabilites(account: tableAccount.account) else { return false }
+                
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot)
+                
                 account = tableAccount.account
                 accountUser = tableAccount.user
                 accountUserID = tableAccount.userID
@@ -135,8 +142,8 @@ class fileProviderData: NSObject {
                 accountUrl = tableAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
                 
-                NCCommunicationCommon.sharedInstance.setup(username: accountUser, userID: accountUserID, password: accountPassword, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, nextcloudVersion: capabilities.versionMajor, delegate: NCNetworking.sharedInstance)
-                NCNetworking.sharedInstance.setup(account: tableAccount.account, delegate: providerExtension as? NCNetworkingDelegate)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, url: accountUrl, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
                 
                 foundAccount = true
             }

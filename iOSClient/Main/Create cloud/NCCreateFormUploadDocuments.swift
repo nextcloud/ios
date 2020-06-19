@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 14/11/18.
-//  Copyright © 2017 Marino Faggiana. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -26,18 +26,19 @@ import NCCommunication
 
 // MARK: -
 
-class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+@objc class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, NCCreateFormUploadConflictDelegate {
     
     var editorId = ""
     var creatorId = ""
     var typeTemplate = ""
+    var templateIdentifier = ""
     var serverUrl = ""
     var fileNameFolder = ""
     var fileName = ""
     var fileNameExtension = ""
     var titleForm = ""
-    var listOfTemplate = [NCEditorTemplates]()
-    var selectTemplate: NCEditorTemplates?
+    var listOfTemplate: [NCCommunicationEditorTemplates] = []
+    var selectTemplate: NCCommunicationEditorTemplates?
     
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -74,7 +75,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         self.title = titleForm
       
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
         
         // load the templates available
@@ -90,7 +91,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
 
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -210,7 +211,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         guard let serverUrl = serverUrl else {
             return
@@ -255,18 +256,59 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         guard let selectTemplate = self.selectTemplate else {
             return
         }
+        templateIdentifier = selectTemplate.identifier
+
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-        guard let fileNameForm = rowFileName.value else {
+        guard var fileNameForm = rowFileName.value else {
             return
         }
+        
         if fileNameForm as! String == "" {
             return
         } else {
             
-            fileName = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
-            fileName = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        }
+            fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             
+            if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+                
+                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, url: "", contentType: "")
+                
+                guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+                conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+                conflictViewController.alwaysNewFileNameNumber = true
+                conflictViewController.serverUrl = serverUrl
+                conflictViewController.metadatasUploadInConflict = [metadataForUpload]
+                conflictViewController.delegate = self
+                
+                self.present(conflictViewController, animated: true, completion: nil)
+                
+            } else {
+                                
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+                createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
+            }
+        }
+    }
+    
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        
+        if metadatas == nil || metadatas?.count == 0 {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.cancel()
+            }
+            
+        } else {
+            
+            let fileName = metadatas![0].fileName
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+            
+            createDocument(fileNamePath: fileNamePath, fileName: fileName)
+        }
+    }
+    
+    func createDocument(fileNamePath: String, fileName: String) {
+        
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
              
             var customUserAgent: String?
@@ -275,7 +317,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                 customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
             }
             
-            NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileName, editorId: editorId, creatorId: creatorId, templateId: selectTemplate.identifier, customUserAgent: customUserAgent, account: self.appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+            NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
@@ -291,8 +333,8 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                         }
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: contentType)
-                            
+                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url ?? "", contentType: contentType)
+                            self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
                     }
@@ -308,25 +350,24 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.editorId == k_editor_collabora {
             
-            OCNetworking.sharedManager().createNewRichdocuments(withAccount: appDelegate.activeAccount, fileName: fileName, serverUrl: serverUrl, templateID: selectTemplate.identifier, completion: { (account, url, message, errorCode) in
-                       
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+            NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
+                
+                if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
                    
-                   if url != nil && url!.count > 0 {
-                       
-                       self.dismiss(animated: true, completion: {
-                           let metadata = CCUtility.createMetadata(withAccount: self.appDelegate.activeAccount, date: Date(), directory: false, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, fileName: (fileNameForm as! NSString).deletingPathExtension + "." + self.fileNameExtension, etag: "", size: 0, status: Double(k_metadataStatusNormal), url:url, contentType: "")
-                           
-                           self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
-                       })
-                   }
+                    self.dismiss(animated: true, completion: {
+                    
+                    let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url!, contentType: "")
+                    
+                       self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                   })
+                   
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                    print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
@@ -339,7 +380,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
     
     func getTemplate() {
      
-        indicator.color = NCBrandColor.sharedInstance.brand
+        indicator.color = NCBrandColor.sharedInstance.brandElement
         indicator.startAnimating()
         
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
@@ -351,7 +392,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                 customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
             }
             
-            NCCommunication.sharedInstance.NCTextGetListOfTemplates(urlString: appDelegate.activeUrl, customUserAgent: customUserAgent, account: appDelegate.activeAccount) { (account, templates, errorCode, errorMessage) in
+            NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
                 
@@ -359,7 +400,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     
                     for template in templates {
                         
-                        let temp = NCEditorTemplates()
+                        let temp = NCCommunicationEditorTemplates()
                                                
                         temp.identifier = template.identifier
                         temp.ext = template.ext
@@ -378,7 +419,7 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     
                     // NOT ALIGNED getTemplatesRichdocuments
                     if templates.count == 0 {
-                        let temp = NCEditorTemplates()
+                        let temp = NCCommunicationEditorTemplates()
                         
                         temp.identifier = ""
                         if self.editorId == k_editor_text {
@@ -413,18 +454,18 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         if self.editorId == k_editor_collabora  {
                         
-            OCNetworking.sharedManager().getTemplatesRichdocuments(withAccount: appDelegate.activeAccount, typeTemplate: typeTemplate, completion: { (account, templates, message, errorCode) in
+            NCCommunication.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate) { (account, templates, errorCode, errorDescription) in
                 
                 self.indicator.stopAnimating()
 
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
-                    for template in templates as! [NCRichDocumentTemplate] {
+                    for template in templates! {
                         
-                        let temp = NCEditorTemplates()
-                        temp.identifier = "\(template.templateID)"
+                        let temp = NCCommunicationEditorTemplates()
+                        temp.identifier = "\(template.templateId)"
                         temp.delete = template.delete
-                        temp.ext = template.extension
+                        temp.ext = template.ext
                         temp.name = template.name
                         temp.preview = template.preview
                         temp.type = template.type
@@ -442,11 +483,11 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
                     self.collectionView.reloadData()
                     
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
@@ -454,7 +495,11 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
         
         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + name + ".png"
 
-        OCNetworking.sharedManager().download(withAccount: appDelegate.activeAccount, url: preview, fileNameLocalPath: fileNameLocalPath, encode:true, completion: { (account, message, errorCode) in
+        NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+            
+        }, progressHandler: { (_) in
+            
+        }) { (account, etag, date, lenght, error, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 self.collectionView.reloadItems(at: [indexPath])
@@ -463,6 +508,6 @@ class NCCreateFormUploadDocuments: XLFormViewController, NCSelectDelegate, UICol
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
 }

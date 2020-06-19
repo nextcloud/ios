@@ -24,8 +24,38 @@
 //
 
 import FloatingPanel
+import NCCommunication
 
 extension CCMain {
+
+    // MARK: - Sort Menu
+    
+    @objc func toggleMenu(viewController: UIViewController) {
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initSortMenu()
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    @objc func SetSortButtonText() {
+        
+        switch CCUtility.getOrderSettings() {
+        case "fileName":
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_sorted_by_name_a_z_", comment: "") : NSLocalizedString("_sorted_by_name_z_a_", comment: "")), for: .normal)
+        case "date":
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_sorted_by_date_less_recent_", comment: "") : NSLocalizedString("_sorted_by_date_more_recent_", comment: "")), for: .normal)
+        case "size":
+            self.sortButton.setTitle((CCUtility.getAscendingSettings() ? NSLocalizedString("_sorted_by_size_largest_", comment: "") : NSLocalizedString("_sorted_by_size_smallest_", comment: "")), for: .normal)
+        default:
+            break
+        }
+    }
 
     private func initSortMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
@@ -44,8 +74,8 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("fileName")
                     }
-
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    self.SetSortButtonText()
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
                 }
             )
         )
@@ -64,8 +94,8 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("date")
                     }
-
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    self.SetSortButtonText()
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
                 }
             )
         )
@@ -84,8 +114,8 @@ extension CCMain {
                     } else {
                         CCUtility.setOrderSettings("size")
                     }
-
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    self.SetSortButtonText()
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
                 }
             )
         )
@@ -98,7 +128,7 @@ extension CCMain {
                 on: CCUtility.getDirectoryOnTop(),
                 action: { menuAction in
                     CCUtility.setDirectoryOnTop(!CCUtility.getDirectoryOnTop())
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: "clearDateReadDataSource"), object: nil)
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
                 }
             )
         )
@@ -106,20 +136,10 @@ extension CCMain {
         return actions
     }
 
-    @objc func toggleMenu(viewController: UIViewController) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initSortMenu()
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-
+    // MARK: - Select Menu
+    
     @objc func toggleSelectMenu(viewController: UIViewController) {
+           
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSelectMenu()
 
@@ -131,8 +151,7 @@ extension CCMain {
 
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
-
-
+    
     private func initSelectMenu() -> [NCMenuAction] {
         var actions = [NCMenuAction]()
 
@@ -148,7 +167,7 @@ extension CCMain {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_move_selected_files_", comment: ""),
+                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     self.moveOpenWindow(self.tableView.indexPathsForSelectedRows)
@@ -179,9 +198,9 @@ extension CCMain {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
-                    self.deleteFile()
+                    self.deleteMetadatas()
                 }
             )
         )
@@ -189,30 +208,36 @@ extension CCMain {
         return actions
     }
 
+    // MARK: - More Menu ...
+
+    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
+           
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            
+            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+            mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
+
+            let menuPanelController = NCMenuPanelController()
+            menuPanelController.parentPresenter = viewController
+            menuPanelController.delegate = mainMenuViewController
+            menuPanelController.set(contentViewController: mainMenuViewController)
+            menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+            viewController.present(menuPanelController, animated: true, completion: nil)
+        }
+    }
+    
     private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) -> [NCMenuAction] {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        let autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
 
         var actions = [NCMenuAction]()
 
         if (metadata.directory) {
-            var lockDirectory = false
+            
             var isOffline = false
-            let isFolderEncrypted = CCUtility.isFolderEncrypted("\(self.serverUrl ?? "")/\(metadata.fileName)", account: appDelegate.activeAccount)
-            var passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
 
-
-            let dirServerUrl = CCUtility.stringAppendServerUrl(self.metadata.serverUrl, addFileName: metadata.fileName)!
-
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl)) {
-                if (CCUtility.getBlockCode() != nil && appDelegate.sessionePasscodeLock == nil) {
-                    lockDirectory = true
-                }
-                if (directory.lock) {
-                    passcodeTitle = NSLocalizedString("_protect_passcode_", comment: "")
-                }
-
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
                 isOffline = directory.offline
             }
 
@@ -229,12 +254,12 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        self.settingFavorite(metadata, favorite: !metadata.favorite)
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
 
-            if (!lockDirectory && !isFolderEncrypted) {
+            if (!isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
@@ -246,7 +271,7 @@ extension CCMain {
                 )
             }
 
-            if(!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !metadata.e2eEncrypted) {
+            if (!metadata.e2eEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_rename_", comment: ""),
@@ -264,10 +289,9 @@ extension CCMain {
                             let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
 
                             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                                    let fileName = alertController.textFields![0].text
-                                    self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
-
-                                })
+                                let fileNameNew = alertController.textFields![0].text
+                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                            })
                             okAction.isEnabled = false
                             alertController.addAction(cancelAction)
                             alertController.addAction(okAction)
@@ -278,10 +302,10 @@ extension CCMain {
                 )
             }
 
-            if (!(metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory) && !lockDirectory && !isFolderEncrypted) {
+            if (!isFolderEncrypted) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_move_", comment: ""),
+                        title: NSLocalizedString("_move_or_copy_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             self.moveOpenWindow([indexPath])
@@ -296,78 +320,72 @@ extension CCMain {
                         title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: dirServerUrl, offline: !isOffline, account: appDelegate.activeAccount)
+                            let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: !isOffline, account: appDelegate.activeAccount)
                             if(isOffline) {
-                                CCSynchronize.shared()?.readFolder(dirServerUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
+                                CCSynchronize.shared()?.readFolder(serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
                             }
-                            DispatchQueue.main.async {
-                                self.tableView.reloadRows(at: [indexPath], with: .none)
-                            }
+                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                         }
                     )
                 )
             }
 
-            actions.append(
-                NCMenuAction(
-                    title: passcodeTitle,
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "settingsPasscodeYES"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        self.perform(#selector(self.comandoLockPassword))
-                    }
-                )
-            )
-
             if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                        title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            DispatchQueue.global(qos: .userInitiated).async {
-                                let error = NCNetworkingEndToEnd.sharedManager()?.markFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
-                                DispatchQueue.main.async {
-                                    if(error != nil) {
-                                        NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
-                                    } else {
-                                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
-                                        self.readFolder(self.serverUrl)
-                                    }
+                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
+                                if errorCode == 0 {
+                                    let serverUrl = self.serverUrl + "/" + metadata.fileName
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl))
+                                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
+                                    NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
+                                    
+                                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                                } else {
+                                    NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
                                 }
                             }
                         }
                     )
                 )
             }
-
+        
             if (metadata.e2eEncrypted && !metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            DispatchQueue.global(qos: .userInitiated).async {
-                                let error = NCNetworkingEndToEnd.sharedManager()?.deletemarkEndToEndFolderEncrypted(onServerUrl: "\(self.serverUrl ?? "")/\(metadata.fileName)", ocId: metadata.ocId, user: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: appDelegate.activeUrl)
-                                DispatchQueue.main.async {
-                                    if(error != nil) {
-                                        NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: error?.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: (error! as NSError).code)
-                                    } else {
-                                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
-                                        self.readFolder(self.serverUrl)
-                                    }
+                            NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
+                                if errorCode == 0 {
+                                    let serverUrl = self.serverUrl + "/" + metadata.fileName
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
+                                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
+                                    NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+                                    
+                                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                                } else {
+                                    NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
                                 }
                             }
                         }
                     )
                 )
             }
+            
         } else {
+            
             var iconHeader: UIImage!
             if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
                 iconHeader = icon
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
             }
+            let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
 
             actions.append(
                 NCMenuAction(
@@ -382,12 +400,12 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        self.settingFavorite(metadata, favorite: !metadata.favorite)
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
                     }
                 )
             )
 
-            if (!metadataFolder.e2eEncrypted) {
+            if (!isEncrypted) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_details_", comment: ""),
@@ -428,10 +446,9 @@ extension CCMain {
                         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
 
                         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                                let fileName = alertController.textFields![0].text
-                                self.perform(#selector(self.renameFile(_:)), on: .main, with: [metadata, fileName!], waitUntilDone: false)
-
-                            })
+                            let fileNameNew = alertController.textFields![0].text
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                        })
                         okAction.isEnabled = false
                         alertController.addAction(cancelAction)
                         alertController.addAction(okAction)
@@ -440,11 +457,11 @@ extension CCMain {
                     }
                 )
             )
-
-            if (!metadataFolder.e2eEncrypted) {
+            
+            if (!isEncrypted) {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_move_", comment: ""),
+                        title: NSLocalizedString("_move_or_copy_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             self.moveOpenWindow([indexPath])
@@ -453,24 +470,7 @@ extension CCMain {
                 )
             }
 
-            if(NCUtility.sharedInstance.isEditImage(metadata.fileNameView as NSString) != nil && !metadataFolder.e2eEncrypted && metadata.status == k_metadataStatusNormal) {
-                actions.append(
-                    NCMenuAction(title: NSLocalizedString("_modify_photo_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "modifyPhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            metadata.session = k_download_session
-                            metadata.sessionError = ""
-                            metadata.sessionSelector = selectorDownloadEditPhoto
-                            metadata.status = Int(k_metadataStatusWaitDownload)
-
-                            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            appDelegate.startLoadAutoDownloadUpload()
-                        }
-                    )
-                )
-            }
-
-            if (!metadataFolder.e2eEncrypted) {
+            if (!isEncrypted) {
                 let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 var title: String!
                 if (localFile == nil || localFile!.offline == false) {
@@ -485,19 +485,16 @@ extension CCMain {
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
-                                metadata.session = k_download_session
-                                metadata.sessionError = ""
-                                metadata.sessionSelector = selectorLoadOffline
-                                metadata.status = Int(k_metadataStatusWaitDownload)
-
-                                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: metadata.ocId, action: k_action_MOD)
-                                appDelegate.startLoadAutoDownloadUpload()
+                                
+                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
+                                
+                                if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
+                                }
+                                
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadRows(at: [indexPath], with: .none)
-                                }
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                             }
                         }
                     )
@@ -517,18 +514,4 @@ extension CCMain {
 
         return actions
     }
-
-    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = viewController
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-
 }

@@ -30,16 +30,17 @@ import NCCommunication
 
     @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
         
-        if !appDelegate.reachability.isReachable() {
-            
+        if !NCCommunication.shared.isNetworkReachable() {
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return;
         }
         
-        NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
+        guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.activeAccount))?.first else { return }
+        
+        NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
-        NCCommunication.sharedInstance.NCTextCreateFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editorId: "text", creatorId: "" ,templateId: "", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+        NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
             
             NCUtility.sharedInstance.stopActivityIndicator()
             
@@ -61,7 +62,7 @@ import NCCommunication
     
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
         
-        if !appDelegate.reachability.isReachable() {
+        if !NCCommunication.shared.isNetworkReachable() {
             
             NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
             return;
@@ -71,10 +72,10 @@ import NCCommunication
             
             if metadata.url == "" {
                 
-                NCUtility.sharedInstance.startActivityIndicator(view: viewController.view, bottom: 0)
+                NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-                NCCommunication.sharedInstance.NCTextOpenFile(urlString: appDelegate.activeUrl, fileNamePath: fileNamePath, editor: "text", customUserAgent: nil, account: appDelegate.activeAccount) { (account, url, errorCode, errorMessage) in
+                NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
                     
                     NCUtility.sharedInstance.stopActivityIndicator()
                     

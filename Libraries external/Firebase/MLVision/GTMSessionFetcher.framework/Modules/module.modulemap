@@ -1,6 +1,0 @@
-framework module GTMSessionFetcher {
-umbrella header "GTMSessionFetcher.h"
-export *
-module * { export * }
-  link framework "Security"
-}

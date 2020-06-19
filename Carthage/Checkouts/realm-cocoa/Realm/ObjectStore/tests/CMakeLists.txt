@@ -9,6 +9,7 @@ set(HEADERS
 
 set(SOURCES
     collection_change_indices.cpp
+    frozen_objects.cpp
     index_set.cpp
     list.cpp
     main.cpp
@@ -46,6 +47,12 @@ if(REALM_ENABLE_SYNC)
         sync/sync_manager.cpp
         sync/sync_test_utils.cpp
         sync/user.cpp
+    )
+endif()
+
+if(REALM_ENABLE_SERVER)
+    list(APPEND SOURCES
+        sync/global_notifier.cpp
     )
 endif()
 

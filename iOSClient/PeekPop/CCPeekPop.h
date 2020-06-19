@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 26/08/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -32,7 +32,7 @@
 @property (nonatomic, strong) UIImage *imageFile;
 @property BOOL showShare;
 @property BOOL showOpenIn;
-@property BOOL showOpenInternalViewer;
+@property BOOL showOpenQuickLook;
 
 @property (nonatomic, weak) IBOutlet UILabel *fileName;
 @property (nonatomic, weak) IBOutlet UIImageView *imagePreview;

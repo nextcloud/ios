@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -53,7 +53,7 @@
         
         activeAccount = tableAccount.account;
         activeUrl = tableAccount.url;
-        
+                
     } else {
         
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:nil message:NSLocalizedString(@"_no_active_account_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -102,7 +102,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brandElement;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
@@ -161,104 +161,16 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// MARK: - BKPasscodeViewController
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
-    
-    [self performSegueDirectoryWithControlPasscode:false];
-}
-
-- (void)passcodeViewController:(BKPasscodeViewController *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-        
-        self.lockUntilDate = nil;
-        self.failedAttempts = 0;
-        aResultHandler(YES);
-        
-    } else {
-        
-        aResultHandler(NO);
-    }
-}
-
-- (void)passcodeViewControllerDidFailAttempt:(BKPasscodeViewController *)aViewController
-{
-    self.failedAttempts++;
-    
-    if (self.failedAttempts > 5) {
-        
-        NSTimeInterval timeInterval = 60;
-        
-        if (self.failedAttempts > 6) {
-            
-            NSUInteger multiplier = self.failedAttempts - 6;
-            
-            timeInterval = (5 * 60) * multiplier;
-            
-            if (timeInterval > 3600 * 24) {
-                timeInterval = 3600 * 24;
-            }
-        }
-        
-        self.lockUntilDate = [NSDate dateWithTimeIntervalSinceNow:timeInterval];
-    }
-}
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(BKPasscodeViewController *)aViewController
-{
-    return self.failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(BKPasscodeViewController *)aViewController
-{
-    return self.lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 // MARK: - Read Folder
 
 - (void)readFolder
 {
-    [[NCCommunication sharedInstance] readFileOrFolderWithServerUrlFileName:_serverUrl depth:@"1" account:activeAccount completionHandler:^(NSString *account, NSArray<NCFile *> *files, NSInteger errorCode, NSString *errorDecription) {
+    [[NCNetworking shared] readFolderWithServerUrl:_serverUrl account:activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
         
-        if (errorCode == 0 && files.count >= 1) {
-
-            NCFile *fileDirectory = files[0];
-        
-            // Update directory etag
-            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:fileDirectory.etag ocId:fileDirectory.ocId encrypted:fileDirectory.e2eEncrypted richWorkspace:nil account:account];
-            
-            // Delete metadata
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)", account, _serverUrl, k_metadataStatusNormal, k_metadataStatusHide]];
-            
-            // In download
-            NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, _serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
-            
-            // Insert in Database
-            [[NCManageDatabase sharedInstance] addMetadatasWithFiles:files account:account serverUrl:_serverUrl removeFirst:true];
-            
-            // reinsert metadatas in Download
-            if (metadatasInDownload) {
-                (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload];
-            }
-                               
+        if (errorCode == 0) {
+            self.move.enabled = true;
         } else {
-            
-            self.move.enabled = NO;
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:errorDecription preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            }]];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
+            self.move.enabled = false;
         }
         
         _loadingFolder = NO;
@@ -269,13 +181,14 @@
     [self.tableView reloadData];
 }
 
+    
 // MARK: - Create Folder
 
 - (void)createFolder:(NSString *)fileNameFolder
 {
     NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", _serverUrl, fileNameFolder];
      
-    [[NCCommunication sharedInstance] createFolder:serverUrlFileName account:activeAccount completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSInteger errorCode, NSString *errorDecription) {
+    [[NCCommunication shared] createFolder:serverUrlFileName customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *ocID, NSDate *date, NSInteger errorCode, NSString *errorDecription) {
         if (errorCode == 0) {
            [self readFolder];
         } else {
@@ -375,7 +288,21 @@
     
     if (metadata.directory) {
         
-        [self performSegueDirectoryWithControlPasscode:YES];
+        UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCSelectDestination" bundle:nil] instantiateInitialViewController];
+        NCSelectDestination *viewController = (NCSelectDestination *)navigationController.topViewController;
+        
+        viewController.delegate = self.delegate;
+        viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
+        viewController.includeImages = self.includeImages;
+        viewController.move.title = self.move.title;
+        viewController.hideCreateFolder = self.hideCreateFolder;
+        viewController.hideMoveutton = self.hideMoveutton;
+        viewController.selectFile = self.selectFile;
+        viewController.type = self.type;
+        viewController.passMetadata = metadata;
+        viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadata.fileName];
+        
+        [self.navigationController pushViewController:viewController animated:YES];
         
     } else {
         
@@ -390,78 +317,6 @@
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
-}
-
-// MARK: - Navigation
-
-- (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
-{
-    NSString *nomeDir;
-
-    NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:index.row];
-    
-    // lockServerUrl
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadata.fileName];
-        
-    // Se siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
-        
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, lockServerUrl]];
-        
-    if (directory.lock && [[CCUtility getBlockCode] length] && controlPasscode) {
-            
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        //viewController.fromType = CCBKPasscodeFromLockDirectory;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        viewController.inputViewTitlePassword = YES;
-            
-        if ([CCUtility getSimplyBlockCode]) {
-                
-            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 6;
-                
-        } else {
-                
-            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-            viewController.passcodeInputView.maximumLength = 64;
-        }
-            
-        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-        viewController.touchIDManager = touchIDManager;
-        
-        viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        [self presentViewController:navigationController animated:YES completion:nil];
-            
-        return;
-    }
-        
-    nomeDir = metadata.fileName;
-    
-    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCSelectDestination" bundle:nil] instantiateInitialViewController];
-    
-    NCSelectDestination *viewController = (NCSelectDestination *)navigationController.topViewController;
-    
-    viewController.delegate = self.delegate;
-    viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
-    viewController.includeImages = self.includeImages;
-    viewController.move.title = self.move.title;
-    viewController.hideCreateFolder = self.hideCreateFolder;
-    viewController.hideMoveutton = self.hideMoveutton;
-    viewController.selectFile = self.selectFile;
-    viewController.type = self.type;
-
-    viewController.passMetadata = metadata;
-    viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:nomeDir];
-    
-    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 @end

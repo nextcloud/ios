@@ -25,17 +25,30 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" tag="100" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="nomefile" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YUf-D3-gNl">
-                                                    <rect key="frame" x="16" y="14" width="351" height="16"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
-                                                    <nil key="textColor"/>
+                                                <textField opaque="NO" tag="100" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="file name" textAlignment="natural" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="xkS-C6-OZA">
+                                                    <rect key="frame" x="16" y="5" width="310" height="34"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="34" id="XZ6-Ip-feu"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                                <label opaque="NO" userInteractionEnabled="NO" tag="99" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3 kb" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Glj-Ta-UnA">
+                                                    <rect key="frame" x="334" y="11.5" width="25" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="HDa-pw-0XU"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                    <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="YUf-D3-gNl" firstAttribute="centerY" secondItem="JCP-km-emo" secondAttribute="centerY" id="NeI-HV-QRi"/>
-                                                <constraint firstAttribute="trailing" secondItem="YUf-D3-gNl" secondAttribute="trailing" constant="8" id="PEb-is-K0b"/>
-                                                <constraint firstItem="YUf-D3-gNl" firstAttribute="leading" secondItem="JCP-km-emo" secondAttribute="leading" constant="16" id="ZrS-0B-kUT"/>
+                                                <constraint firstItem="xkS-C6-OZA" firstAttribute="centerY" secondItem="JCP-km-emo" secondAttribute="centerY" id="1F5-xP-sRz"/>
+                                                <constraint firstItem="xkS-C6-OZA" firstAttribute="leading" secondItem="JCP-km-emo" secondAttribute="leading" constant="16" id="DEe-Hv-fLe"/>
+                                                <constraint firstItem="Glj-Ta-UnA" firstAttribute="centerY" secondItem="JCP-km-emo" secondAttribute="centerY" id="LAd-0a-zxK"/>
+                                                <constraint firstItem="Glj-Ta-UnA" firstAttribute="leading" secondItem="xkS-C6-OZA" secondAttribute="trailing" constant="8" id="Oeb-Nt-ne2"/>
+                                                <constraint firstAttribute="trailing" secondItem="Glj-Ta-UnA" secondAttribute="trailing" constant="16" id="kV8-1b-8KK"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -142,12 +155,17 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Us9-dK-DeY">
-                        <barButtonItem key="rightBarButtonItem" title="annulla" id="wsd-xi-VOz">
+                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="100-GT-U35">
                             <connections>
-                                <action selector="Annula:" destination="GWz-Q7-0mE" id="eq6-CQ-G8j"/>
+                                <action selector="cancelUpload:" destination="GWz-Q7-0mE" id="Vzd-NO-9xQ"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="destinationLabel" destination="Dk7-2l-tvL" id="bvt-2R-EOe"/>
+                        <outlet property="fileNameTextfield" destination="xkS-C6-OZA" id="8Qb-gc-i6C"/>
+                        <outlet property="fileSizeLabel" destination="Glj-Ta-UnA" id="plu-w1-L9x"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="A9E-rL-ZUe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

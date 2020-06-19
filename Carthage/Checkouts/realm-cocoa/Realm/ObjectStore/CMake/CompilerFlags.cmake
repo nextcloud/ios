@@ -32,6 +32,7 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL
         -Wall
         -Wextra
         -Wno-missing-field-initializers
+        -Wno-unevaluated-expression
         -Wempty-body
         -Wparentheses
         -Wunknown-pragmas
@@ -72,11 +73,13 @@ if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
         -Wconditional-uninitialized
         -Wconstant-conversion
         -Wenum-conversion
+        -Wimplicit-fallthrough
         -Wint-conversion
         -Wmissing-prototypes
         -Wnewline-eof
         -Wshorten-64-to-32
-        -Wimplicit-fallthrough
+        -Wthread-safety
+        -Wthread-safety-negative
     )
 endif()
 

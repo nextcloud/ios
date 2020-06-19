@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,12 +24,11 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 #import <PushKit/PushKit.h>
+#import <AVKit/AVKit.h>
+#import <LocalAuthentication/LocalAuthentication.h>
+#import <TOPasscodeViewController/TOPasscodeViewController.h>
 
-#import "BKPasscodeLockScreenManager.h"
-#import "Reachability.h"
-#import "CCBKPasscode.h"
 #import "CCUtility.h"
-#import "CCDetail.h"
 #import "CCMain.h"
 #import "CCSettings.h"
 #import "CCFavorites.h"
@@ -40,11 +39,12 @@
 @class NCOffline;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
+@class NCDetailViewController;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
+@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
@@ -63,9 +63,6 @@
 @property double currentLatitude;
 @property double currentLongitude;
 
-// Notification
-@property (nonatomic, strong) NSMutableArray<OCCommunication *> *listOfNotifications;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
@@ -78,19 +75,21 @@
 // Audio Video
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerViewController *playerController;
+@property BOOL isMediaObserver;
 
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
 
-// Reachability
-@property (nonatomic, strong) Reachability *reachability;
-@property BOOL lastReachability;
+// ProgressView Detail
+@property (nonatomic, strong) UIProgressView *progressViewDetail;
+
+@property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
 @property (nonatomic, strong) NCMedia *activeMedia;
-@property (nonatomic, retain) CCDetail *activeDetail;
+@property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
@@ -101,10 +100,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
-
-@property (nonatomic, strong) NSMutableArray *filterocId;
-
-@property (nonatomic, strong) NSMutableArray *sessionPendingStatusInUpload;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));
 
@@ -121,16 +116,14 @@
 - (void)startTimerErrorNetworking;
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb;
 
-// Setting Account
+// Setting Account & Communication
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
+- (void)settingSetupCommunicationCapabilities:(NSString *)account;
 
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
-
-// ApplicationIconBadgeNumber
-- (void)updateApplicationIconBadgeNumber;
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
@@ -138,15 +131,15 @@
 
 // Push Notification
 - (void)pushNotification;
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url withSubscribing:(BOOL)subscribing;
+//- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url withSubscribing:(BOOL)subscribing;
 
 // Theming Color
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 // Task Networking
-- (void)loadAutoDownloadUpload;
-- (void)startLoadAutoDownloadUpload;
+- (void)loadAutoUpload;
+- (void)startLoadAutoUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

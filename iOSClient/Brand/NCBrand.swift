@@ -26,7 +26,6 @@ import UIKit
 //MARK: - Configuration
 
 @objc class NCBrandConfiguration: NSObject {
-    
     @objc static let sharedInstance: NCBrandConfiguration = {
         let instance = NCBrandConfiguration()
         return instance
@@ -41,7 +40,6 @@ import UIKit
 //MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
-    
     @objc static let sharedInstance: NCBrandOptions = {
         let instance = NCBrandOptions()
         return instance
@@ -55,7 +53,6 @@ import UIKit
     @objc public var pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public var linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public var linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
-    @objc public var middlewarePingUrl:                 String = ""
     @objc public var webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
     // Personalized
     @objc public var webCloseViewProtocolPersonalized:  String = ""                                                 // example "abc://change/plan"      Don't touch me !!
@@ -76,11 +73,10 @@ import UIKit
     @objc public var use_themingColor:                  Bool = true
     //@objc public var use_themingBackground:             Bool = true                                               // Deprecated
     @objc public var use_themingLogo:                   Bool = false
-    @objc public var use_middlewarePing:                Bool = false
     @objc public var use_storeLocalAutoUploadAll:       Bool = false
-    @objc public var use_imi_viewer:                    Bool = false                                                // Don't touch me !!
     @objc public var use_configuration:                 Bool = false                                                // Don't touch me !!
-    
+    @objc public var use_loginflowv2:                   Bool = false                                                // Don't touch me !!
+
     @objc public var disable_intro:                     Bool = false
     @objc public var disable_request_login_url:         Bool = false
     @objc public var disable_multiaccount:              Bool = false
@@ -100,7 +96,6 @@ import UIKit
 //MARK: - Color
 
 class NCBrandColor: NSObject {
-
     @objc static let sharedInstance: NCBrandColor = {
         let instance = NCBrandColor()
         instance.setDarkMode()
@@ -118,6 +113,7 @@ class NCBrandColor: NSObject {
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
     @objc public var backgroundView:        UIColor = .white
+    @objc public var backgroundCell:        UIColor = .white
     @objc public var backgroundForm:        UIColor = UIColor(red: 244.0/255.0, green: 244.0/255.0, blue: 244.0/255.0, alpha: 1.0)
     @objc public var textView:              UIColor = .black
     @objc public var separator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
@@ -142,31 +138,19 @@ class NCBrandColor: NSObject {
         if darkMode {
             tabBar = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
             backgroundView = .black
-            backgroundForm = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
+            backgroundCell = UIColor(red: 25.0/255.0, green: 25.0/255.0, blue: 25.0/255.0, alpha: 1.0)
+            backgroundForm = .black
             textView = .white
             separator = UIColor(red: 60.0/255.0, green: 60.0/255.0, blue: 60.0/255.0, alpha: 1.0)
             select = UIColor.white.withAlphaComponent(0.2)
         } else {
-            tabBar = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+            tabBar = .white
             backgroundView = .white
+            backgroundCell = .white
             backgroundForm = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
             textView = .black
             separator = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-            select = self.brand.withAlphaComponent(0.1)
+            select = self.brandElement.withAlphaComponent(0.1)
         }
     }
 }
-
-//MARK: - Beta
-
-@objc class NCBrandBeta: NSObject {
-    
-    @objc static let shared: NCBrandBeta = {
-        let instance = NCBrandBeta()
-        return instance
-    }()
-
-    @objc public let directEditing: Bool = true
-    @objc public let iOSHelper: Bool = false
-}
-

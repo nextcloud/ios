@@ -31,7 +31,7 @@
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
-#define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
+#define IV_DELIMITER_ENCODED        @"|" //@"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 //#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
@@ -197,10 +197,10 @@
     if(keyBytes)
         free(keyBytes);
     
-#ifdef DEBUG
+    #ifdef DEBUG
     // Save to disk [DEBUG MODE]
     [self saveToDiskPEMWithCert:x509 key:pkey directory:directory];
-#endif
+    #endif
     
     return YES;
 }
@@ -464,6 +464,16 @@
 #pragma mark - Encrypt / Decrypt file
 #
 
+- (void)encryptkey:(NSString **)key initializationVector:(NSString **)initializationVector
+{
+    NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
+    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
+    
+    *key = [keyData base64EncodedStringWithOptions:0];
+    *initializationVector = [ivData base64EncodedStringWithOptions:0];
+}
+
+
 - (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipherData;
@@ -486,7 +496,11 @@
         *initializationVector = [ivData base64EncodedStringWithOptions:0];
         *authenticationTag = [tagData base64EncodedStringWithOptions:0];
 
-        return true;
+        if (key == nil || initializationVector == nil || authenticationTag == nil) {
+            return false;
+        } else {
+            return true;
+        }
     }
     
     return false;

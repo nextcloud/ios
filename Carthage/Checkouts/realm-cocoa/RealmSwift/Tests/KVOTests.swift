@@ -123,20 +123,36 @@ class KVOTests: TestCase {
         changeDictionary = nil
     }
 
-    func observeChange<T: Equatable>(_ obj: SwiftKVOObject, _ keyPath: KeyPath<SwiftKVOObject, T>, _ old: Any?, _ new: Any?,
+    func observeChange<T: Equatable>(_ obj: SwiftKVOObject, _ keyPath: KeyPath<SwiftKVOObject, T>, _ old: T, _ new: T,
                                      fileName: StaticString = #file, lineNumber: UInt = #line, _ block: () -> Void) {
         let kvoOptions: NSKeyValueObservingOptions = [.old, .new]
         var gotNotification = false
         let observation = obj.observe(keyPath, options: kvoOptions) { _, change in
-            if let old = old {
-                XCTAssertEqual(change.oldValue, (old as! T), file: fileName, line: lineNumber)
+            XCTAssertEqual(change.oldValue, old, file: fileName, line: lineNumber)
+            XCTAssertEqual(change.newValue, new, file: fileName, line: lineNumber)
+            gotNotification = true
+        }
+
+        block()
+        observation.invalidate()
+
+        XCTAssertTrue(gotNotification, file: fileName, line: lineNumber)
+    }
+
+    func observeChange<T: Equatable>(_ obj: SwiftKVOObject, _ keyPath: KeyPath<SwiftKVOObject, T?>, _ old: T?, _ new: T?,
+                                     fileName: StaticString = #file, lineNumber: UInt = #line, _ block: () -> Void) {
+        let kvoOptions: NSKeyValueObservingOptions = [.old, .new]
+        var gotNotification = false
+        let observation = obj.observe(keyPath, options: kvoOptions) { _, change in
+            if let oldValue = change.oldValue {
+                XCTAssertEqual(oldValue, old, file: fileName, line: lineNumber)
             } else {
-                XCTAssertNil(change.oldValue, file: fileName, line: lineNumber)
+                XCTAssertNil(old, file: fileName, line: lineNumber)
             }
-            if let new = new {
-                XCTAssertEqual(change.newValue, (new as! T), file: fileName, line: lineNumber)
+            if let newValue = change.newValue {
+                XCTAssertEqual(newValue, new, file: fileName, line: lineNumber)
             } else {
-                XCTAssertNil(change.newValue, file: fileName, line: lineNumber)
+                XCTAssertNil(new, file: fileName, line: lineNumber)
             }
             gotNotification = true
         }
@@ -256,6 +272,29 @@ class KVOTests: TestCase {
 
     func testTypedObservation() {
         let (obj, obs) = getObject(SwiftKVOObject())
+
+        // Swift 5.2+ warns when a literal keypath to a non-@objc property is
+        // passed to observe(). This only works when it's passed directly and
+        // not via a helper, so make sure we aren't triggering this warning on
+        // any property types.
+        _ = obs.observe(\.boolCol) { _, _ in }
+        _ = obs.observe(\.int8Col) { _, _ in }
+        _ = obs.observe(\.int16Col) { _, _ in }
+        _ = obs.observe(\.int32Col) { _, _ in }
+        _ = obs.observe(\.int64Col) { _, _ in }
+        _ = obs.observe(\.floatCol) { _, _ in }
+        _ = obs.observe(\.doubleCol) { _, _ in }
+        _ = obs.observe(\.stringCol) { _, _ in }
+        _ = obs.observe(\.binaryCol) { _, _ in }
+        _ = obs.observe(\.dateCol) { _, _ in }
+        _ = obs.observe(\.objectCol) { _, _ in }
+        _ = obs.observe(\.optStringCol) { _, _ in }
+        _ = obs.observe(\.optBinaryCol) { _, _ in }
+        _ = obs.observe(\.optDateCol) { _, _ in }
+        _ = obs.observe(\.optStringCol) { _, _ in }
+        _ = obs.observe(\.optBinaryCol) { _, _ in }
+        _ = obs.observe(\.optDateCol) { _, _ in }
+        _ = obs.observe(\.isInvalidated) { _, _ in }
 
         observeChange(obs, \.boolCol, false, true) { obj.boolCol = true }
 

@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -29,6 +29,9 @@
 {
     switch (errorCode) {
             
+        case 0:                                         // 0
+            return @"";
+            break;
         case kCFURLErrorCancelled:                      // -999
             return NSLocalizedString(@"_cancelled_by_user", nil);
             break;

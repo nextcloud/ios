@@ -24,10 +24,8 @@
 import Foundation
 import SVGKit
 import KTVHTTPCache
-import ZIPFoundation
-import Sheeeeeeeeet
 import NCCommunication
-import CommonCrypto
+import PDFKit
 
 class NCUtility: NSObject {
     @objc static let sharedInstance: NCUtility = {
@@ -36,12 +34,6 @@ class NCUtility: NSObject {
     }()
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
-    let cache = NSCache<NSString, UIImage>()
-    struct bundleDirectoryType {
-        var error: Bool = false
-        var bundleDirectory: String = ""
-        var immPath: String = ""
-    }
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
@@ -100,36 +92,6 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func getFileSize(asset: PHAsset) -> Int64 {
-        
-        let resources = PHAssetResource.assetResources(for: asset)
-        
-        if let resource = resources.first {
-            if resource.responds(to: #selector(NSDictionary.fileSize)) {
-                let unsignedInt64 = resource.value(forKey: "fileSize") as! CLong
-                return Int64(bitPattern: UInt64(unsignedInt64))
-            }
-        }
-        
-        return 0
-    }
-    
-    @objc func getScreenWidthForPreview() -> CGFloat {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width * 0.75
-        
-        return screenWidth
-    }
-    
-    @objc func getScreenHeightForPreview() -> CGFloat {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.height * 0.75
-        
-        return screenWidth
-    }
-    
     @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
         
         let scale = newWidth / image.size.width
@@ -149,7 +111,7 @@ class NCUtility: NSObject {
         
         blurEffectView.frame = frame
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
+        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.2)
         
         return blurEffectView
     }
@@ -200,7 +162,7 @@ class NCUtility: NSObject {
         
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             
-            NCCommunication.sharedInstance.downloadContent(urlString: iconURL.absoluteString, account: account) { (account, data, errorCode, errorMessage) in
+            NCCommunication.shared.downloadContent(serverUrl: iconURL.absoluteString) { (account, data, errorCode, errorMessage) in
                
                 if errorCode == 0 && data != nil {
                 
@@ -262,11 +224,11 @@ class NCUtility: NSObject {
         }
     }
     
-    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat) {
+    @objc func startActivityIndicator(view: UIView?, bottom: CGFloat = 0) {
     
         guard let view = view else { return }
         
-        activityIndicator.color = NCBrandColor.sharedInstance.brand
+        activityIndicator.color = NCBrandColor.sharedInstance.brandElement
         activityIndicator.hidesWhenStopped = true
             
         view.addSubview(activityIndicator)
@@ -298,20 +260,7 @@ class NCUtility: NSObject {
         }
         return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
     }
-    
-    @objc func isEditImage(_ fileName: NSString) -> String? {
-        switch fileName.pathExtension.uppercased() {
-        case "PNG":
-            return "PNG";
-        case "JPG":
-            return "JPG";
-        case "JPEG":
-            return "JPG"
-        default:
-            return nil
-        }
-    }
-    
+
     @objc func formatSecondsToString(_ seconds: TimeInterval) -> String {
         if seconds.isNaN {
             return "00:00:00"
@@ -325,12 +274,12 @@ class NCUtility: NSObject {
     @objc func blink(cell: AnyObject?) {
         DispatchQueue.main.async {
             if let cell = cell as? UITableViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
                 UIView.animate(withDuration: 2) {
                     cell.backgroundColor = .clear
                 }
             } else if let cell = cell as? UICollectionViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
                 UIView.animate(withDuration: 2) {
                     cell.backgroundColor = .clear
                 }
@@ -342,7 +291,7 @@ class NCUtility: NSObject {
         
         let constrainingDimension = min(bounds.width, bounds.height)
         let properBounds = CGRect(origin: .zero, size: bounds.size)
-        var attributes = [NSAttributedString.Key: Any]()
+        var attributes: [NSAttributedString.Key: Any] = [:]
         
         let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
         var bestFontSize: CGFloat = constrainingDimension
@@ -367,7 +316,8 @@ class NCUtility: NSObject {
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
             return false
         }
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getRichdocumentsMimetypes(account: metadata.account) else {
+        
+        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
             return false
         }
         
@@ -387,10 +337,6 @@ class NCUtility: NSObject {
     }
     
     @objc func isDirectEditing(_ metadata: tableMetadata) -> String? {
-        
-        if NCBrandBeta.shared.directEditing == false {
-            return nil
-        }
         
         guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: metadata.account) else {
             return nil
@@ -420,30 +366,30 @@ class NCUtility: NSObject {
         
         NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
         
-        CCUtility.emptyGroupDirectoryProviderStorage()
-        CCUtility.emptyGroupLibraryDirectory()
+        CCUtility.removeGroupDirectoryProviderStorage()
+        CCUtility.removeGroupLibraryDirectory()
         
-        CCUtility.emptyDocumentsDirectory()
-        CCUtility.emptyTemporaryDirectory()
+        CCUtility.removeDocumentsDirectory()
+        CCUtility.removeTemporaryDirectory()
         
         CCUtility.createDirectoryStandard()
         
         CCUtility.deleteAllChainStore()
     }
     
+    #if !EXTENSION
     @objc func createAvatar(fileNameSource: String, fileNameSourceAvatar: String) -> UIImage? {
         
         guard let imageSource = UIImage(contentsOfFile: fileNameSource) else { return nil }
         let size = Int(k_avatar_size)
         
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         imageSource.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, 0)
-        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: 0.5)
-        //avatarImageView?.alpha = alpha
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
+        let avatarImageView = CCAvatar.init(image: image, borderColor: .lightGray, borderWidth: Float(1 * UIScreen.main.scale))
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         avatarImageView?.layer.render(in: context)
         guard let imageAvatar = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
@@ -458,27 +404,7 @@ class NCUtility: NSObject {
         
         return imageAvatar
     }
-    
-    func loadImage(ocId: String, fileNameView: String, completion: @escaping (UIImage?) -> Void) {
-        
-        if let image = cache.object(forKey: ocId as NSString) {
-            completion(image)
-            return
-        }
-        
-        DispatchQueue.global(qos: .background).async { [weak self] in
-            
-            let loadedImage = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(ocId, fileNameView: fileNameView))
-            
-            DispatchQueue.main.async {
-                
-                if let loadedImage = loadedImage {
-                    self?.cache.setObject(loadedImage, forKey: ocId as NSString)
-                }
-                completion(loadedImage)
-            }
-        }
-    }
+    #endif
     
     @objc func UIColorFromRGB(rgbValue: UInt32) -> UIColor {
         return UIColor(
@@ -507,80 +433,6 @@ class NCUtility: NSObject {
         return 0
     }
     
-    @objc func IMUnzip(metadata: tableMetadata) -> Bool {
-        
-        // bak
-        let atPathBak = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView
-        let toPathBak = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
-        CCUtility.copyFile(atPath: atPathBak, toPath: toPathBak)
-        
-        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let destination = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-        let removeAtPath = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension
-        
-        try? FileManager.default.removeItem(atPath: removeAtPath)
-        try? FileManager().unzipItem(at: source, to: destination)
-        
-        let bundleDirectory = NCUtility.sharedInstance.IMGetBundleDirectory(metadata: metadata)
-        if bundleDirectory.error {
-            return false
-        }
-        
-        if let fileHandle = FileHandle(forReadingAtPath: bundleDirectory.immPath) {
-            //                        let dataFormat = fileHandle.readData(ofLength: 1)
-            //                        if dataFormat.starts(with: [0x01]) {
-            //                            appDelegate.messageNotification("_error_", description: "File format binary error, library imagemeter not present. 🤷‍♂️", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            //                            return;
-            //                        }
-            let dataZip = fileHandle.readData(ofLength: 4)
-            if dataZip.starts(with: [0x50, 0x4b, 0x03, 0x04]) {
-                try? FileManager().unzipItem(at: NSURL(fileURLWithPath: bundleDirectory.immPath) as URL, to: NSURL(fileURLWithPath: bundleDirectory.bundleDirectory) as URL)
-            }
-            fileHandle.closeFile()
-        }
-        
-        return true
-    }
-    
-    func IMGetBundleDirectory(metadata: tableMetadata) -> bundleDirectoryType {
-        
-        var error = true
-        var bundleDirectory = ""
-        var immPath = ""
-        
-        let source = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        
-        if let archive = Archive(url: source, accessMode: .read) {
-            archive.forEach({ (entry) in
-                let pathComponents = (entry.path as NSString).pathComponents
-                if pathComponents.count == 2 && (pathComponents.last! as NSString).pathExtension.lowercased() == "imm" {
-                    error = false
-                    bundleDirectory = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + pathComponents.first!
-                    immPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + entry.path
-                }
-            })
-        }
-        
-        return bundleDirectoryType(error: error, bundleDirectory: bundleDirectory, immPath: immPath)
-    }
-    
-    func IMIsChange(metadata: tableMetadata, fileNameZipUrl: URL) -> Bool {
-        
-        let backFile = (CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileNameView as NSString).deletingPathExtension + ".bak"
-        
-        if let md5imiFile = self.md5File(url: fileNameZipUrl) {
-            if let md5backfile = self.md5File(url: URL(fileURLWithPath: backFile)) {
-                if md5imiFile == md5backfile {
-                    return false
-                } else {
-                    return true
-                }
-            }
-        }
-        
-        return true
-    }
-    
     @objc func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         
         for char in permissions {
@@ -601,44 +453,70 @@ class NCUtility: NSObject {
         }
     }
     
-    func md5File(url: URL) -> Data? {
-
-        let bufferSize = 1024 * 1024
-
-        do {
-            // Open file for reading:
-            let file = try FileHandle(forReadingFrom: url)
-            defer {
-                file.closeFile()
-            }
-
-            // Create and initialize MD5 context:
-            var context = CC_MD5_CTX()
-            CC_MD5_Init(&context)
-
-            // Read up to `bufferSize` bytes, until EOF is reached, and update MD5 context:
-            while autoreleasepool(invoking: {
-                let data = file.readData(ofLength: bufferSize)
-                if data.count > 0 {
-                    data.withUnsafeBytes {
-                        _ = CC_MD5_Update(&context, $0.baseAddress, numericCast(data.count))
-                    }
-                    return true // Continue
-                } else {
-                    return false // End of file
-                }
-            }) { }
-
-            // Compute the MD5 digest:
-            var digest: [UInt8] = Array(repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
-            _ = CC_MD5_Final(&digest, &context)
-
-            return Data(digest)
-
-        } catch {
-            print("Cannot open file:", error.localizedDescription)
+    @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
+       
+        guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
+
+        let pageSize = page.bounds(for: .mediaBox)
+        let pdfScale = width / pageSize.width
+
+        // Apply if you're displaying the thumbnail on screen
+        let scale = UIScreen.main.scale * pdfScale
+        let screenSize = CGSize(width: pageSize.width * scale, height: pageSize.height * scale)
+
+        return page.thumbnail(of: screenSize, for: .mediaBox)
+    }
+    
+    @objc func getMetadataConflict(account: String, serverUrl: String, fileName: String) -> tableMetadata? {
+        
+        // verify exists conflict
+        let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
+        let fileNameWithoutExtension = (fileName as NSString).deletingPathExtension
+        var fileNameConflict = fileName
+        
+        if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
+            fileNameConflict = fileNameWithoutExtension + ".jpg"
+        }
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
+    }
+    
+    @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
+        return true
+    }
+    
+    @objc func fromColor(color: UIColor) -> UIImage {
+        
+        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        
+        UIGraphicsBeginImageContext(rect.size)
+        let context: CGContext? = UIGraphicsGetCurrentContext()
+        context?.setFillColor(color.cgColor)
+        context?.fill(rect)
+        let image: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image ?? UIImage()
+    }
+    
+    // Delete Asset on Photos album
+    @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String) {
+        
+        if UIApplication.shared.applicationState != .active { return }
+        let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"), sorted: nil, ascending: true)
+        if metadatasSessionUpload?.count ?? 0 > 0 { return }
+        let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
+        if localIdentifiers.count == 0 { return }
+        let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
+        
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
+        }, completionHandler: { success, error in
+            DispatchQueue.main.async {
+                NCManageDatabase.sharedInstance.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+            }
+        })
     }
 }
 

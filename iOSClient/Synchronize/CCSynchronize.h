@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,36 +24,18 @@
 #import <Foundation/Foundation.h>
 
 #import "CCHud.h"
-#import "CCCellMain.h"
 
 @class tableMetadata;
 
 @interface CCSynchronize : NSObject
 
-@property (nonatomic, strong) CCHud *hud;
-
 + (CCSynchronize *)sharedSynchronize;
-
-@property (nonatomic, strong) NSMutableOrderedSet *foldersInSynchronized;
-@property (nonatomic, strong) NSOperationQueue *operationSynchronizeQueue;
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 - (void)readFile:(NSString *)ocId fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
 
+- (void)readFolderWithAccount:(NSString *)account serverUrl:(NSString *)serverUrl metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas selector:(NSString *)selector;
+
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
-
-@end
-
-@interface CCOperationSynchronize : NSOperation
-
-- (id)initWithDelegate:(id)delegate serverUrl:(NSString *)serverUrl selector:(NSString *)selector account:(NSString *)account;
-
-@property (nonatomic, assign) BOOL isExecuting;
-@property (nonatomic, assign) BOOL isFinished;
-
-@property (nonatomic, weak) id delegate;
-@property (nonatomic, strong) NSString* account;
-@property (nonatomic, strong) NSString* serverUrl;
-@property (nonatomic, strong) NSString* selector;
 
 @end

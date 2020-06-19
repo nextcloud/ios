@@ -48,24 +48,22 @@ import MarkdownKit
         let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NCCommunication.sharedInstance.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", account: appDelegate.activeAccount) { (account, files, errorCode, errorMessage) in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.activeAccount) { (account, metadata, errorCode, errorDescription) in
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                
-                var metadataFolder = tableMetadata()
-                _ = NCNetworking.sharedInstance.convertFiles(files!, urlString: self.appDelegate.activeUrl, serverUrl: self.serverUrl, user: self.appDelegate.activeUser, metadataFolder: &metadataFolder)
-                NCManageDatabase.sharedInstance.setDirectory(ocId: metadataFolder.ocId, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
-                if self.richWorkspaceText != metadataFolder.richWorkspace {
+                guard let metadata = metadata else { return }
+                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
                     self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadataFolder.richWorkspace
-                    self.textView.attributedText = self.markdownParser.parse(metadataFolder.richWorkspace)
+                    self.richWorkspaceText = metadata.richWorkspace!
+                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
                 }
             }
         }

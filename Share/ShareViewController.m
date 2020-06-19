@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 26/01/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -61,10 +61,11 @@
         
     } else {
         
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:tableAccount.account];
-
+        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+        NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
+        
         // Networking
-        [[NCCommunicationCommon sharedInstance] setupWithUsername:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups nextcloudVersion:capabilities.versionMajor delegate:[NCNetworking sharedInstance]];
+        [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        
         _activeAccount = tableAccount.account;
         
@@ -105,9 +106,6 @@
 {
     [super viewWillAppear:animated];
         
-    if ([[CCUtility getBlockCode] length] > 0 && [CCUtility getOnlyLockDir] == NO)
-        [self openBKPasscode];
-    
     self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
     self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 }
@@ -178,8 +176,10 @@
 {
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
-        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilitesWithAccount:self.activeAccount];
-        [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
+        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
@@ -205,7 +205,7 @@
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     // DENIED e2e
-    if ([CCUtility isFolderEncrypted:serverUrlTo account:self.activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrlTo e2eEncrypted:false account:self.activeAccount]) {
         return;
     }
     
@@ -249,11 +249,29 @@
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.sharedInstance.brandElement];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
+        NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
+
+        // CONVERSION -->
+        
+        if ([fileName.pathExtension.uppercaseString isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
+            UIImage *image = [UIImage imageWithContentsOfFile:fileNameLocal];
+            if (image != nil) {
+                fileName = fileName.stringByDeletingPathExtension;
+                fileName = [NSString stringWithFormat:@"%@.jpg", fileName];
+                [self.filesName replaceObjectAtIndex:0 withObject:fileName];
+                fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
+                [UIImageJPEGRepresentation(image, 1.0) writeToFile:fileNameLocal atomically:YES];
+                
+                [self.shareTable reloadData];
+            }
+        }
+        
+        // <--
+        
         NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
-        NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
         
-        (void)[[NCCommunication sharedInstance] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil account:self.activeAccount progressHandler:^(NSProgress * progress) {
+        [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil progressHandler:^(NSProgress * progress) {
             [self.hud progress:progress.fractionCompleted];
         } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, int64_t size, NSInteger errorCode, NSString *errorDescription) {
             [self.hud hideHud];
@@ -263,18 +281,13 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [tableMetadata new];
-               
-                metadata.account = self.activeAccount;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
+                               
                 metadata.date = date;
                 metadata.etag = etag;
-                metadata.ocId = ocId;
-                metadata.fileName = fileNameForUpload;
-                metadata.fileNameView = fileNameForUpload;
                 metadata.serverUrl = self.serverUrl;
                 metadata.size = size;
-                (void)[CCUtility insertTypeFileIconName:fileNameForUpload metadata:metadata];
-               
+                
                 metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                
@@ -309,71 +322,6 @@
     }
     
     [self closeShareViewController];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Lock Password =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openBKPasscode
-{
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.delegate = self;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    viewController.inputViewTitlePassword = YES;
-    
-    if ([CCUtility getSimplyBlockCode]) {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 6;
-        
-    } else {
-        
-        viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 64;
-    }
-    
-    BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
-    touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
-    viewController.touchIDManager = touchIDManager;
-    viewController.title = [NCBrandOptions sharedInstance].brand;
-    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
-{
-    return self.failedAttempts;
-}
-
-- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
-{
-    return self.lockUntilDate;
-}
-
-- (void)passcodeViewCloseButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:^{
-        [self performSelector:@selector(closeShareViewController) withObject:nil];
-    }];
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
-{
-    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
-        self.lockUntilDate = nil;
-        self.failedAttempts = 0;
-        aResultHandler(YES);
-    } else aResultHandler(NO);
-}
-
-- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
-{
-    [aViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

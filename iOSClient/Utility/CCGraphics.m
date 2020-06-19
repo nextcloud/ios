@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 04/02/16.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2016 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -107,7 +107,7 @@
     sz.width /= scale;
     sz.height /= scale;
     
-    UIGraphicsBeginImageContextWithOptions(sz, NO, scale);
+    UIGraphicsBeginImageContextWithOptions(sz, NO, UIScreen.mainScreen.scale);
     [image drawInRect:CGRectMake(0, 0, sz.width, sz.height)];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -115,20 +115,24 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId typeFile:(NSString *)typeFile
 {
     UIImage *originalImage;
-    UIImage *scaleImage;
+    UIImage *scaleImagePreview;
+    UIImage *scaleImageIcon;
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName];
-    
-    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return nil;
+    NSString *fileNamePathPreview = [CCUtility getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileName];
+    NSString *fileNamePathIcon = [CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName];
+
+    if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return;
     
     // only viedo / image
-    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
+    if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return;
     
     if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
         originalImage = [UIImage imageWithContentsOfFile:fileNamePath];
+        if (originalImage == nil) { return; }
     }
     
     if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
@@ -139,29 +143,21 @@
         
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
-    
-    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
-    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
-    
-    scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(width, height) isAspectRation:YES];
-    scaleImage = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImage, 0.5f)];
+
+    scaleImagePreview = [self scaleImage:originalImage toSize:CGSizeMake(k_sizePreview, k_sizePreview) isAspectRation:YES];
+    scaleImageIcon = [self scaleImage:originalImage toSize:CGSizeMake(k_sizeIcon, k_sizeIcon) isAspectRation:YES];
+
+    scaleImagePreview = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImagePreview, 0.5f)];
+    scaleImageIcon = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImageIcon, 0.5f)];
     
     // it is request write photo  ?
-    if (writeImage && scaleImage) {
-        
-        if (filterGrayScale) {
-            
-            // if it is preview for Upload then trasform it in gray scale
-            scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
-            
-        } else {
-            
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName] atomically: YES];
-        }
+    if (scaleImagePreview && scaleImageIcon) {
+                    
+        [UIImageJPEGRepresentation(scaleImagePreview, 0.5) writeToFile:fileNamePathPreview atomically:true];
+        [UIImageJPEGRepresentation(scaleImageIcon, 0.5) writeToFile:fileNamePathIcon atomically:true];
     }
     
-    return scaleImage;
+    return;
 }
 
 + (UIColor *)colorFromHexString:(NSString *)hexString
@@ -175,7 +171,7 @@
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier, image.size.height*multiplier);
+    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier / (2 / UIScreen.mainScreen.scale), image.size.height*multiplier / (2 / UIScreen.mainScreen.scale));
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -184,12 +180,12 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, width, height);
+    CGRect rect = CGRectMake(0, 0, width / (2 / UIScreen.mainScreen.scale), height / (2 / UIScreen.mainScreen.scale));
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -199,7 +195,7 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:2 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:UIScreen.mainScreen.scale orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont

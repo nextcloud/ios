@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/11/2019.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -21,10 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
 import Foundation
-import GLKit
 
-class IMImagemeterViewer: GLKViewController, UITabBarDelegate {
+protocol IMImagemeterViewerDelegate {
+}
+
+class IMImagemeterViewer: NSObject {
     var metadata: tableMetadata?
 }

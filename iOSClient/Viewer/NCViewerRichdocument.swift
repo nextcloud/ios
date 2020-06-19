@@ -22,13 +22,16 @@
 //
 
 import Foundation
+import WebKit
+import NCCommunication
 
 class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var detail: CCDetail!
     @objc var metadata: tableMetadata!
     var documentInteractionController: UIDocumentInteractionController!
+    var view: UIView!
+    var viewController: UIViewController!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
@@ -38,16 +41,24 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         autoresizingMask = [.flexibleWidth, .flexibleHeight]
         navigationDelegate = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: k_notificationCenter_richdocumentGrabFocus), object: nil)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    @objc func viewRichDocumentAt(_ link: String, detail: CCDetail, metadata: tableMetadata) {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
+    }
+    
+    @objc func viewRichDocumentAt(_ link: String, metadata: tableMetadata, view: UIView, viewController: UIViewController) {
         
-        self.detail = detail
         self.metadata = metadata
+        self.view = view
+        self.viewController = viewController
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -59,7 +70,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         let userAgent : String = CCUtility.getUserAgent()
         customUserAgent = userAgent
-        load(request)        
+        
+        load(request)
+        
+        self.view.addSubview(self)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
@@ -67,11 +81,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
         //print("keyboardFrame: \(keyboardFrame)")
-        frame.size.height = detail.view.bounds.height - keyboardFrame.size.height
+        frame.size.height = view.frame.height - keyboardFrame.size.height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        frame = detail.view.bounds
+        frame = view.frame
     }
     
     //MARK: -
@@ -82,17 +96,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             
             if message.body as? String == "close" {
                 
-                removeFromSuperview()
-                
-                detail.navigationController?.popViewController(animated: true)
-                detail.navigationController?.navigationBar.topItem?.title = ""
-                
-                let splitViewController = appDelegate.window.rootViewController as! UISplitViewController
-                if splitViewController.isCollapsed {
-                    let masterNavigationController = splitViewController.viewControllers.first as! UINavigationController
-                    masterNavigationController.popViewController(animated: true)
-                }
-                                
+                appDelegate.activeDetail.viewUnload()                                
                 appDelegate.activeMain.readFileReloadFolder()
             }
             
@@ -111,11 +115,11 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 viewController.layoutViewSelect = k_layout_view_richdocument
                 
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                self.detail.present(navigationController, animated: true, completion: nil)
+                self.viewController.present(navigationController, animated: true, completion: nil)
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.sharedInstance.openShare(ViewController: detail, metadata: metadata, indexPage: 2)
+                NCMainCommon.sharedInstance.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
@@ -138,11 +142,15 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename
                     
                         if type == "print" {
-                            NCUtility.sharedInstance.startActivityIndicator(view: self, bottom: 0)
+                            NCUtility.sharedInstance.startActivityIndicator(view: self)
                         }
                         
-                        _ = OCNetworking.sharedManager()?.download(withAccount: metadata.account, url: urlString, fileNameLocalPath: fileNameLocalPath, encode:false, completion: { (account, message, errorCode) in
-
+                        NCCommunication.shared.download(serverUrlFileName: urlString, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                            
+                        }, progressHandler: { (_) in
+                            
+                        }, completionHandler: { (account, etag, date, lenght, error, errorCode, errorDescription) in
+                            
                             if errorCode == 0 && account == self.metadata.account {
                                 if type == "print" {
                                     NCUtility.sharedInstance.stopActivityIndicator()
@@ -162,7 +170,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                                     self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
                                 }
                             } else {
-                                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         })
                     }
@@ -197,37 +205,40 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     //MARK: -
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil && metadata != nil {
             
-            OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+            
+            NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
                 } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                 } else {
                     print("[LOG] It has been changed user during networking process, error.")
                 }
-            })
+            }
         }
     }
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        OCNetworking.sharedManager().createAssetRichdocuments(withAccount: metadata?.account, fileName: metadata?.fileName, serverUrl: serverUrl, completion: { (account, url, message, errorCode) in
+        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+        
+        NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
             } else if errorCode != 0 {
-                NCContentPresenter.shared.messageNotification("_error_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-        })
+        }
     }
-    
     
     //MARK: -
 

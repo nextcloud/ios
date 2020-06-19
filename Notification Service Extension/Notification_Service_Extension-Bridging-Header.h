@@ -21,12 +21,3 @@
 
 #import "CCUtility.h"
 #import "NCPushNotificationEncryption.h"
-
-#import "OCActivity.h"
-#import "OCUserProfile.h"
-#import "OCCapabilities.h"
-#import "OCExternalSites.h"
-#import "OCSharedDto.h"
-
-#import "HCFeatures.h"
-#import "NCComments.h"

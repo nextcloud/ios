@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 01/12/14.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,7 +24,8 @@
 #import <UIKit/UIKit.h>
 
 @interface CCUploadFromOtherUpp : UITableViewController <UITableViewDelegate, UITableViewDataSource>
-
-- (IBAction)Annula:(UIBarButtonItem *)sender;
+@property (weak, nonatomic) IBOutlet UILabel *fileSizeLabel;
+@property (weak, nonatomic) IBOutlet UITextField *fileNameTextfield;
+@property (weak, nonatomic) IBOutlet UILabel *destinationLabel;
 
 @end

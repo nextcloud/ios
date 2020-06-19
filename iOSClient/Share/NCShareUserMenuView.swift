@@ -73,15 +73,15 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         layer.shadowOpacity = 0.2
         
         switchCanReshare.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanReshare.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanReshare.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchCanCreate?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanCreate?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanCreate?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchCanChange?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanChange?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanChange?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchCanDelete?.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanDelete?.onTintColor = NCBrandColor.sharedInstance.brand
+        switchCanDelete?.onTintColor = NCBrandColor.sharedInstance.brandElement
         switchSetExpirationDate.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brand
+        switchSetExpirationDate.onTintColor = NCBrandColor.sharedInstance.brandElement
         
         labelCanReshare?.text = NSLocalizedString("_share_can_reshare_", comment: "")
         labelCanReshare?.textColor = NCBrandColor.sharedInstance.textView
@@ -313,12 +313,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     
     func shareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
     }
     
     func unShareCompleted() {
         unLoad()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "reloadDataNCShare"), object: nil, userInfo: nil)
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataNCShare)
     }
     
     func updateShareWithError(idRemoteShared: Int) {

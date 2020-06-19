@@ -28,11 +28,12 @@ import Foundation
     func dismissFormUploadAssets()
 }
 
-class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEditorDelegate {
+class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     var serverUrl: String = ""
     var titleServerUrl: String?
     var assets = NSMutableArray()
+    var urls = NSMutableArray()
     var cryptated: Bool = false
     var session: String = ""
     weak var delegate: createFormUploadAssetsDelegate?
@@ -41,18 +42,23 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
     let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
+    @objc convenience init(serverUrl : String, assets : NSMutableArray, urls: NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
         
         self.init()
         
         if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
             titleServerUrl = "/"
         } else {
-            titleServerUrl = (serverUrl as NSString).lastPathComponent
+            if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl)) {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tableDirectory.ocId)) {
+                    titleServerUrl = metadata.fileNameView
+                } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
+            } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
         }
         
         self.serverUrl = serverUrl
         self.assets = assets
+        self.urls = urls
         self.cryptated = cryptated
         self.session = session
         self.delegate = delegate
@@ -68,6 +74,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         super.viewDidLoad()
         
+        self.title = NSLocalizedString("_upload_photos_videos_", comment: "")
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
@@ -80,7 +88,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         }
         
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -101,30 +109,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_upload_photos_videos_", comment: "")) as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
-        
-        // Section Photo Editor only for one photo
-        
-        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image && self.imagePreview != nil {
-            
-            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_modify_photo_", comment: ""))
-            form.addFormSection(section)
-            
-            row = XLFormRowDescriptor(tag: "ButtonPhotoEditor", rowType: XLFormRowDescriptorTypeButton, title: NSLocalizedString("_modify_photo_", comment: ""))
-            row.action.formSelector = #selector(photoEditor(_:))
-            row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
-            
-            row.cellConfig["imageView.image"] = self.imagePreview
-            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
-            row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            
-            section.addFormRow(row)
-        }
         
         // Section: Destination Folder
         
@@ -313,7 +302,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
@@ -322,7 +311,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
             if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
                 self.titleServerUrl = "/"
             } else {
-                self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
+                if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl)) {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tableDirectory.ocId)) {
+                        titleServerUrl = metadata.fileNameView
+                    } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }
+                } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }                
             }
             
             // Update
@@ -346,7 +339,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, urls: self.urls, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }
     
@@ -412,55 +405,5 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate, PhotoEdi
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         self.present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func photoEditor(_ sender: XLFormRowDescriptor) {
-        
-        self.deselectFormRow(sender)
-        
-        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.default, options: requestOptions, resultHandler: { (image, info) in
-            
-            let photoEditor = PhotoEditorViewController(nibName:"PhotoEditorViewController",bundle: Bundle(for: PhotoEditorViewController.self))
-
-            photoEditor.image = image
-            photoEditor.photoEditorDelegate = self
-            photoEditor.hiddenControls = [.save, .share, .sticker]
-            
-            photoEditor.cancelButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCancel")!, multiplier:2, color: .white)
-            photoEditor.cropButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorCrop")!, multiplier:2, color: .white)
-            photoEditor.drawButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDraw")!, multiplier:2, color: .white)
-            photoEditor.textButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorText")!, multiplier:2, color: .white)
-            photoEditor.clearButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorClear")!, multiplier:2, color: .white)
-            photoEditor.continueButtonImage = CCGraphics.changeThemingColorImage(UIImage(named: "photoEditorDone")!, multiplier:2, color: .white)
-            
-            self.present(photoEditor, animated: true, completion: nil)
-        })
-    }
-    
-    // MARK: - Photo Editor Delegate
-
-    func doneEditing(image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(image, self, #selector(imageSaved(_:didFinishSavingWithError:contextInfo:)), nil)
-    }
-    
-    @objc func imageSaved(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
-        
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
-        if let asset = fetchResult.firstObject {
-            self.assets = NSMutableArray(array: [asset])
-        }
-        
-        // Preview
-        PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
-            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonPhotoEditor")!
-            row.cellConfig["imageView.image"] = image
-            self.updateFormRow(row)
-        })
-    }
-    
-    func canceledEditing() {
-        print("Canceled")
     }
 }

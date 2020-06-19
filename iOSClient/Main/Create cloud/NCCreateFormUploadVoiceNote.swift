@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 9/03/2019.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2019 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -22,8 +22,9 @@
 //
 
 import Foundation
+import NCCommunication
 
-class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAudioPlayerDelegate {
+class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAudioPlayerDelegate, NCCreateFormUploadConflictDelegate {
     
     @IBOutlet weak var buttonPlayStop: UIButton!
     @IBOutlet weak var labelTimer: UILabel!
@@ -87,7 +88,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         progressView.trackTintColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
         
         // Theming view
-        NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
     }
     
@@ -194,7 +195,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
@@ -215,42 +216,60 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     @objc func save() {
         
-        self.dismiss(animated: true, completion: {
+        let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        guard let name = rowFileName.value else {
+            return
+        }
+        let ext = (name as! NSString).pathExtension.uppercased()
+        var fileNameSave = ""
+                   
+        if (ext == "") {
+            fileNameSave = name as! String + ".m4a"
+        } else {
+            fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
+        }
         
-            let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-            guard let name = rowFileName.value else {
-                return
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, url: "", contentType: "")
+        
+        metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
+        metadataForUpload.sessionSelector = selectorUploadFile
+        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+        
+        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+                        
+            guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
+            conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
+            conflictViewController.serverUrl = serverUrl
+            conflictViewController.metadatasUploadInConflict = [metadataForUpload]
+            conflictViewController.delegate = self
+            
+            self.present(conflictViewController, animated: true, completion: nil)
+            
+        } else {
+                            
+            dismissAndUpload(metadataForUpload)
+        }
+    }
+    
+    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
+        
+        if metadatas != nil && metadatas!.count > 0 {
+                                
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.dismissAndUpload(metadatas![0])
             }
-            let ext = (name as! NSString).pathExtension.uppercased()
-            var fileNameSave = ""
-            
-            if (ext == "") {
-                fileNameSave = name as! String + ".m4a"
-            } else if (CCUtility.isDocumentModifiableExtension(ext)) {
-                fileNameSave = name as! String
-            } else {
-                fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
-            }
-            
-            let metadataForUpload = tableMetadata()
-            
-            metadataForUpload.account = self.appDelegate.activeAccount
-            metadataForUpload.date = NSDate()
-            metadataForUpload.ocId = CCUtility.createMetadataID(fromAccount: self.appDelegate.activeAccount, serverUrl: self.serverUrl, fileNameView: fileNameSave, directory: false)
-            metadataForUpload.fileName = fileNameSave
-            metadataForUpload.fileNameView = fileNameSave
-            metadataForUpload.serverUrl = self.serverUrl
-            metadataForUpload.session = k_upload_session
-            metadataForUpload.sessionSelector = selectorUploadFile
-            metadataForUpload.status = Int(k_metadataStatusWaitUpload)
-            
-            CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: fileNameSave))
-            
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, ocId: nil, action: Int32(k_action_NULL))
-
-            self.appDelegate.startLoadAutoDownloadUpload()
-        })
+        }
+    }
+    
+    func dismissAndUpload(_ metadata: tableMetadata) {
+        
+        CCUtility.copyFile(atPath: self.fileNamePath, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                   
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        
+        self.appDelegate.startLoadAutoUpload()
+        
+        self.dismiss(animated: true, completion: nil)
     }
     
     @objc func cancel() {
