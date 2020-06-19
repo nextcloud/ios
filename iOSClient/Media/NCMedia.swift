@@ -569,46 +569,6 @@ extension NCMedia {
         }
     }
     
-    @objc func searchNewPhotoVideo() {
-        
-        if newInProgress { return }
-        else { newInProgress = true }
-        collectionView.reloadData()
-        
-        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
-        
-        //let elementDate = "nc:upload_time/"
-        //let lteDate: Int = Int(Date().timeIntervalSince1970)
-        //let gteDate: Int = Int(fromDate!.timeIntervalSince1970)
-        
-        guard let lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
-        
-        if let date = tableAccount?.dateUpdateNewMedia {
-            greaterDate = date as Date
-        }
-                
-        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
-            
-            self.newInProgress = false
-
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
-                
-                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                if tableAccount?.dateLessMedia == nil {
-                    NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
-                }
-                NCManageDatabase.sharedInstance.setAccountDateUpdateNewMedia()
-            }
-            
-            if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
-                self.searchOldPhotoVideo()
-            }
-            
-            self.reloadDataSource()
-        }
-    }
-    
     private func searchOldPhotoVideo(value: Int = -30) {
         
         if oldInProgress { return }
@@ -616,11 +576,11 @@ extension NCMedia {
         collectionView.reloadData()
 
         var lessDate = Date()
-        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
-        if let date = tableAccount?.dateLessMedia {
-            lessDate = date as Date
-        }
         var greaterDate: Date
+        
+        if metadatas.count > 0 {
+            lessDate = metadatas.last!.date as Date
+        }
         
         if value == -999 {
             greaterDate = Date.distantPast
@@ -641,7 +601,6 @@ extension NCMedia {
                 if files?.count ?? 0 > 0 {
                     
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    NCManageDatabase.sharedInstance.setAccountDateLessMedia(date: files?.last?.date)
                     self.reloadDataSource()
                     
                 } else {
@@ -654,6 +613,56 @@ extension NCMedia {
                         self.searchOldPhotoVideo(value: -999)
                     }
                 }
+            }
+        }
+    }
+    
+    @objc func searchNewPhotoVideo() {
+        
+        guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
+        guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
+        
+        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+            if let cell = visibleCells.first as? NCGridMediaCell {
+                if cell.date != nil {
+                    if cell.date != metadatas.first?.date as Date? {
+                        lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
+                    }
+                }
+            }
+            if let cell = visibleCells.last as? NCGridMediaCell {
+                if cell.date != nil {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cell.date!)!
+                }
+            }
+        }
+        
+        newInProgress = true
+        collectionView.reloadData()
+        
+        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            
+            self.newInProgress = false
+            
+            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
+               DispatchQueue.global().async {
+                    if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND date > %@ AND date < %@ AND (typeFile == %@ OR typeFile == %@)", account, greaterDate as NSDate, lessDate as NSDate, k_metadataTypeFile_image, k_metadataTypeFile_video), sorted: nil, ascending: false) {
+                        let etagsMetadatas = Array(metadatas.map { $0.etag })
+                        let etagsFiles = Array(files!.map { $0.etag })
+                        for etag in etagsFiles {
+                            if !etagsMetadatas.contains(etag) {
+                                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                                self.reloadDataSource()
+                                break;
+                            }
+                        }
+                    } else {
+                        NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                        self.reloadDataSource()
+                    }
+                }
+            } else if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
+                self.searchOldPhotoVideo()
             }
         }
     }
@@ -699,6 +708,7 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         
         if !decelerate {
+            self.searchNewPhotoVideo()
             self.readFiles()
             
             if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
@@ -708,6 +718,7 @@ extension NCMedia: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.searchNewPhotoVideo()
         self.readFiles()
         
         if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {

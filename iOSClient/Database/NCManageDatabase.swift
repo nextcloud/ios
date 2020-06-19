@@ -667,40 +667,6 @@ class NCManageDatabase: NSObject {
     }
     #endif
     
-    @objc func setAccountDateUpdateNewMedia(clear: Bool = false) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if clear {
-                        result.dateUpdateNewMedia = nil
-                    } else {
-                        result.dateUpdateNewMedia = Date() as NSDate
-                    }
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
-    @objc func setAccountDateLessMedia(date: NSDate?) {
-        
-        let realm = try! Realm()
-
-        do {
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.dateLessMedia = date
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
-    
     //MARK: -
     //MARK: Table Activity
 
