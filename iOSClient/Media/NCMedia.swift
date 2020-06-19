@@ -438,16 +438,27 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row < metadatas.count {
-            let metadata = metadatas[indexPath.row]
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+        DispatchQueue.global().async {
+            if indexPath.row < self.metadatas.count {
+                let metadata = self.metadatas[indexPath.row]
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+            }
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row < metadatas.count {
-            let metadata = metadatas[indexPath.row]
-            NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+        let indexPathsForVisibleItems = collectionView.indexPathsForVisibleItems
+        DispatchQueue.global().async {
+            if indexPath.row < self.metadatas.count {
+                let metadata = self.metadatas[indexPath.row]
+                for indexPath in indexPathsForVisibleItems {
+                    if metadata.ocId == self.metadatas[indexPath.row].ocId {
+                        return
+                    }
+                }
+                NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+                print("[LOG] cancel download " + "\(indexPath.row)")
+            }
         }
     }
 
