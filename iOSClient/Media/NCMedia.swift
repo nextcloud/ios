@@ -35,6 +35,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     public var metadatas: [tableMetadata] = []
     private var metadataPush: tableMetadata?
+    private var predicate: NSPredicate?
     
     private var isEditMode = false
     private var selectocId: [String] = []
@@ -452,7 +453,7 @@ extension NCMedia: UICollectionViewDataSource {
             if indexPath.row < self.metadatas.count {
                 let metadata = self.metadatas[indexPath.row]
                 for indexPath in indexPathsForVisibleItems {
-                    if metadata.ocId == self.metadatas[indexPath.row].ocId {
+                    if indexPath.row < self.metadatas.count && metadata.ocId == self.metadatas[indexPath.row].ocId {
                         return
                     }
                 }
@@ -539,9 +540,7 @@ extension NCMedia {
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) { return }
-        
-        var predicate: NSPredicate?
-        
+                
         if filterTypeFileImage {
             predicate = NSPredicate(format: "account == %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
@@ -656,7 +655,11 @@ extension NCMedia {
             
             if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
                DispatchQueue.global().async {
-                    if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND date > %@ AND date < %@ AND (typeFile == %@ OR typeFile == %@)", account, greaterDate as NSDate, lessDate as NSDate, k_metadataTypeFile_image, k_metadataTypeFile_video), sorted: nil, ascending: false) {
+                
+                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                    let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
+                
+                    if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate, sorted: nil, ascending: false){
                         let etagsMetadatas = Array(metadatas.map { $0.etag })
                         let etagsFiles = Array(files!.map { $0.etag })
                         for etag in etagsFiles {
