@@ -439,24 +439,18 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        DispatchQueue.global().async {
-            if indexPath.row < self.metadatas.count {
-                let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
-            }
+        if indexPath.row < self.metadatas.count {
+            let metadata = self.metadatas[indexPath.row]
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let indexPathsForVisibleItems = collectionView.indexPathsForVisibleItems
-        DispatchQueue.global().async {
-            if indexPath.row < self.metadatas.count {
-                let metadata = self.metadatas[indexPath.row]
-                for indexPath in indexPathsForVisibleItems {
-                    if indexPath.row < self.metadatas.count && metadata.ocId == self.metadatas[indexPath.row].ocId {
-                        return
-                    }
-                }
+        if collectionView.indexPathsForVisibleItems.contains(indexPath) {
+            return
+        } else {
+            if indexPath.row < metadatas.count {
+                let metadata = metadatas[indexPath.row]
                 NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
             }
         }
