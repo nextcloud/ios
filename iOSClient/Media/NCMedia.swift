@@ -457,7 +457,6 @@ extension NCMedia: UICollectionViewDataSource {
                     }
                 }
                 NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
-                print("[LOG] cancel download " + "\(indexPath.row)")
             }
         }
     }
