@@ -448,11 +448,9 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if collectionView.indexPathsForVisibleItems.contains(indexPath) {
             return
-        } else {
-            if indexPath.row < metadatas.count {
-                let metadata = metadatas[indexPath.row]
-                NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
-            }
+        } else if indexPath.row < metadatas.count {
+            let metadata = metadatas[indexPath.row]
+            NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
         }
     }
 
