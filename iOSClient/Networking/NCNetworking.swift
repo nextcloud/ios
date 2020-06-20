@@ -327,8 +327,8 @@ import Alamofire
                 #if !EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                 #endif
-            } else {
-                uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
+            } else if background {
+                uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
             }
            
         } else {
@@ -356,14 +356,14 @@ import Alamofire
                     #if !EXTENSION
                     NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                     #endif
-                } else {
-                    self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
+                } else if background {
+                    self.uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
                 }
             }
         }
     }
     
-    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
