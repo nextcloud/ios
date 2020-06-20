@@ -1084,7 +1084,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                     
                 break;
                                         
@@ -1093,7 +1093,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                     
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
@@ -1129,7 +1129,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                                           
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                                 
                 break;
                 
@@ -1138,7 +1138,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                            
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                            
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
@@ -1184,7 +1184,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
+                    [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                     
                     break;
                     
@@ -1193,7 +1193,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
+                    [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode) { }];
                     
                     counterUpload++;
                     sizeUpload = sizeUpload + metadata.size;

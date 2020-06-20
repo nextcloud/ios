@@ -285,7 +285,7 @@ import Alamofire
         }
     }
     
-    @objc func upload(metadata: tableMetadata) {
+    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int)->())  {
            
         var metadataForUpload: tableMetadata?
         var e2eEncrypted = false
@@ -294,6 +294,7 @@ import Alamofire
            
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"Internal error"])
+            completion(Int(k_CCErrorInternalError))
             return
         }
            
@@ -316,6 +317,7 @@ import Alamofire
                
             if metadata.size > Double(k_max_filesize_E2EE) {
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
+                completion(Int(k_CCErrorInternalError))
                 return
             }
                
@@ -335,6 +337,7 @@ import Alamofire
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    completion(Int(k_CCErrorInternalError))
                     return
                 }
                        
@@ -343,6 +346,7 @@ import Alamofire
 
                 if e2eEncrypted && (extractMetadata.size > Double(k_max_filesize_E2EE)) {
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
+                    completion(Int(k_CCErrorInternalError))
                     return
                 }
                        
@@ -448,7 +452,7 @@ import Alamofire
                     metadata.status = Int(k_metadataStatusInUpload)
                     
                     if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-                    NCNetworking.shared.upload(metadata: metadata)
+                    NCNetworking.shared.upload(metadata: metadata) { (_) in }
                         
                 } else {
                     
