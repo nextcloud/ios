@@ -328,7 +328,7 @@ import Alamofire
                 NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
                 #endif
             } else {
-                uploadFile(metadata: metadataForUpload!, account: account)
+                uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
             }
            
         } else {
@@ -357,13 +357,13 @@ import Alamofire
                     NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
                     #endif
                 } else {
-                    self.uploadFile(metadata: metadataForUpload!, account: account)
+                    self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
                 }
             }
         }
     }
     
-    private func uploadFile(metadata: tableMetadata, account: tableAccount) {
+    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int)->()) {
         
         var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -388,6 +388,10 @@ import Alamofire
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+            
+            completion(0)
+        } else {
+            completion(Int(k_CCErrorInternalError))
         }
     }
     
