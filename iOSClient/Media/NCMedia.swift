@@ -64,7 +64,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         appDelegate.activeMedia = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(searchNewPhotoVideo), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
     override func viewDidLoad() {
@@ -134,6 +134,14 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    //MARK: - Notification
+    
+    @objc func applicationWillEnterForeground() {
+        if self.view.window == nil {
+            self.viewDidAppear(false)
+        }
     }
     
     //MARK: - Command
