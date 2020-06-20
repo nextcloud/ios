@@ -285,15 +285,21 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.account == appDelegate.activeAccount {
+                    
+                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
                     let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
                     self.metadatas = metadatas
+                    
+                    if let row = indexes.first {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.deleteItems(at: [indexPath])
+                    }
+                    
                     self.updateMediaControlVisibility()
-                    self.reloadDataSourceWithCompletion() {
                         
-                        if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                            let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
-                        }
+                    if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                        let userInfo: [String : Any] = ["metadata": metadata, "type": "delete"]
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_synchronizationMedia, userInfo: userInfo)
                     }
                 }
             }
