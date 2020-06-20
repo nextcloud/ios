@@ -393,7 +393,6 @@ extension NCMedia: UIViewControllerPreviewingDelegate {
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
         
         guard let indexPath = collectionView?.indexPathForItem(at: previewingContext.sourceRect.origin) else { return }
-        
         collectionView(collectionView, didSelectItemAt: indexPath)
     }
 }
