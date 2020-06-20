@@ -329,6 +329,8 @@ import Alamofire
                 #endif
             } else if background {
                 uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
+            } else {
+                uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
             }
            
         } else {
@@ -358,9 +360,17 @@ import Alamofire
                     #endif
                 } else if background {
                     self.uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
+                } else {
+                    self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
                 }
             }
         }
+    }
+    
+    //
+    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+        
+        completion(0, "")
     }
     
     private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
