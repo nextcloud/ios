@@ -119,8 +119,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        reloadDataSource()
-        searchNewPhotoVideo()
+        reloadDataSourceWithCompletion {
+            self.searchNewPhotoVideo()
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -547,9 +548,9 @@ extension NCMedia {
                 self.reloadDataThenPerform {
                     self.mediaCommandTitle()
                     self.readFiles()
+                    completion()
                 }
             }
-            completion()
         }
     }
     
