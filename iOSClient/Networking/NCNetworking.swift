@@ -325,7 +325,7 @@ import Alamofire
            
             if e2eEncrypted {
                 #if !EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
+                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                 #endif
             } else {
                 uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
@@ -354,7 +354,7 @@ import Alamofire
                
                 if e2eEncrypted {
                     #if !EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account)
+                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                     #endif
                 } else {
                     self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)

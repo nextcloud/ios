@@ -183,7 +183,7 @@ import Alamofire
     
     //MARK: - Upload
     
-    func upload(metadata: tableMetadata, account: tableAccount) {
+    func upload(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var metadata = metadata
         let objectE2eEncryption = tableE2eEncryption()
@@ -200,6 +200,8 @@ import Alamofire
         if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            
+            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
             return
         }
         
@@ -227,6 +229,7 @@ import Alamofire
         
         if NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption) == false {
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
             return
         }
         
@@ -311,11 +314,15 @@ import Alamofire
                     NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in }
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                    
+                    completion(errorCode, errorDescription ?? "")                    
                 }
                 
             } else {
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                
+                completion(errorCode, errorDescription ?? "")
             }
         }
     }
