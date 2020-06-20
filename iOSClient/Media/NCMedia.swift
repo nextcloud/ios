@@ -64,7 +64,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         appDelegate.activeMedia = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(searchNewPhotoVideo), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
     override func viewDidLoad() {
@@ -119,7 +119,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        mediaCommandTitle()
+        reloadDataSource()
         searchNewPhotoVideo()
     }
     
@@ -446,9 +446,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            return
-        } else if indexPath.row < metadatas.count {
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
             NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
         }
