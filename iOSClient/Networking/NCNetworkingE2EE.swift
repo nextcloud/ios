@@ -315,7 +315,7 @@ import Alamofire
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                     
-                    completion(errorCode, errorDescription ?? "")                    
+                    completion(errorCode, errorDescription)                    
                 }
                 
             } else {
