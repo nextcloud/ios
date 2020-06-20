@@ -252,7 +252,7 @@
         metadataForRecognizer.status = k_metadataStatusInUpload;
         metadataForRecognizer.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
        
-        [[NCNetworking shared] uploadWithMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer]   background: true completion:^(NSInteger errorCode) { }];
+        [[NCNetworking shared] uploadWithMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer]   background: true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 

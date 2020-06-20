@@ -285,7 +285,7 @@ import Alamofire
         }
     }
     
-    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int)->())  {
+    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
         var metadataForUpload: tableMetadata?
         var e2eEncrypted = false
@@ -294,7 +294,7 @@ import Alamofire
            
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"Internal error"])
-            completion(Int(k_CCErrorInternalError))
+            completion(Int(k_CCErrorInternalError), "Internal error")
             return
         }
            
@@ -317,7 +317,7 @@ import Alamofire
                
             if metadata.size > Double(k_max_filesize_E2EE) {
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
-                completion(Int(k_CCErrorInternalError))
+                completion(Int(k_CCErrorInternalError), "E2E Error file too big")
                 return
             }
                
@@ -337,7 +337,7 @@ import Alamofire
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    completion(Int(k_CCErrorInternalError))
+                    completion(Int(k_CCErrorInternalError), "Internal error")
                     return
                 }
                        
@@ -346,7 +346,7 @@ import Alamofire
 
                 if e2eEncrypted && (extractMetadata.size > Double(k_max_filesize_E2EE)) {
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
-                    completion(Int(k_CCErrorInternalError))
+                    completion(Int(k_CCErrorInternalError), "E2E Error file too big")
                     return
                 }
                        
@@ -363,7 +363,7 @@ import Alamofire
         }
     }
     
-    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int)->()) {
+    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -389,9 +389,9 @@ import Alamofire
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
-            completion(0)
+            completion(0, "")
         } else {
-            completion(Int(k_CCErrorInternalError))
+            completion(Int(k_CCErrorInternalError), "task null")
         }
     }
     
@@ -456,8 +456,8 @@ import Alamofire
                     metadata.status = Int(k_metadataStatusInUpload)
                     
                     if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-                    NCNetworking.shared.upload(metadata: metadata) { (_) in }
-                        
+                    NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                                            
                 } else {
                     
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
