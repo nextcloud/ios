@@ -90,7 +90,7 @@ import NCCommunication
     
     @objc func readFileForMedia(metadata: tableMetadata) {
         
-        for operation in  readFileForMediaQueue.operations {
+        for operation in readFileForMediaQueue.operations {
             if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId { return }
         }
         readFileForMediaQueue.addOperation(NCOperationReadFileForMediaQueue.init(metadata: metadata))
