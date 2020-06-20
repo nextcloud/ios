@@ -194,7 +194,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         var actions: [NCMenuAction] = []
 
         if !isEditMode {
-            if metadatas.count > 0{
+            if metadatas.count > 0 {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_select_", comment: ""),
