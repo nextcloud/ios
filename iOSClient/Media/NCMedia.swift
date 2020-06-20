@@ -139,7 +139,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     //MARK: - Notification
     
     @objc func applicationWillEnterForeground() {
-        if self.view.window == nil {
+        if self.view.window != nil {
             self.viewDidAppear(false)
         }
     }
