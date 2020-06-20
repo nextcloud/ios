@@ -87,6 +87,7 @@ import NCCommunication
     }
     
     // Verify exists yet file
+    
     @objc func readFileForMedia(metadata: tableMetadata) {
         
         for operation in  readFileForMediaQueue.operations {
@@ -94,6 +95,15 @@ import NCCommunication
         }
         readFileForMediaQueue.addOperation(NCOperationReadFileForMediaQueue.init(metadata: metadata))
     }
+    
+    func cancelReadFileForMedia(metadata: tableMetadata) {
+        for operation in  readFileForMediaQueue.operations {
+            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId {
+                (operation as! NCOperationReadFileForMediaQueue).cancel()
+            }
+        }
+    }
+    
     @objc func readFileForMediaCancelAll() {
         readFileForMediaQueue.cancelAll()
     }

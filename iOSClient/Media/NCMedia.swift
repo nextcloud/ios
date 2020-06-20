@@ -450,6 +450,7 @@ extension NCMedia: UICollectionViewDataSource {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+            NCOperationQueue.shared.readFileForMedia(metadata: metadata)
         }
     }
     
@@ -457,6 +458,7 @@ extension NCMedia: UICollectionViewDataSource {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
             NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+            NCOperationQueue.shared.cancelReadFileForMedia(metadata: metadata)
         }
     }
 
@@ -555,7 +557,6 @@ extension NCMedia {
                 
                 self.reloadDataThenPerform {
                     self.mediaCommandTitle()
-                    self.readFiles()
                     completion()
                 }
             }
@@ -687,16 +688,6 @@ extension NCMedia {
             }
         }
     }
-    
-    private func readFiles() {
-        guard let collectionView = self.collectionView else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            for indexPath in collectionView.indexPathsForVisibleItems {
-                let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.readFileForMedia(metadata: metadata)
-            }
-        }
-    }
 }
 
 // MARK: - ScrollView
@@ -720,7 +711,6 @@ extension NCMedia: UIScrollViewDelegate {
         
         if !decelerate {
             self.searchNewPhotoVideo()
-            self.readFiles()
             
             if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
                 searchOldPhotoVideo()
@@ -730,7 +720,6 @@ extension NCMedia: UIScrollViewDelegate {
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         self.searchNewPhotoVideo()
-        self.readFiles()
         
         if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
             searchOldPhotoVideo()
