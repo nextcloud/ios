@@ -301,7 +301,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let sharee = sharees[index]
-            self!.networking?.shareUserAndGroup(name: sharee.label, shareeType: sharee.shareType, metadata: self!.metadata!)
+            self!.networking?.shareUserAndGroup(name: sharee.label, shareType: sharee.shareType, metadata: self!.metadata!)
         }
         
         dropDown.show()

@@ -127,7 +127,7 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func shareUserAndGroup(name: String, shareeType: Int, metadata: tableMetadata) {
+    func shareUserAndGroup(name: String, shareType: Int, metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         var permission: Int = 0
