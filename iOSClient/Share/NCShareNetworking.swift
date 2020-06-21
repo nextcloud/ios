@@ -59,13 +59,18 @@ class NCShareNetworking: NSObject {
     func share(password: String, permission: Int, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        NCCommunication.shared.createShare(path: fileName, shareType: 0, shareWith: "", password: password, permissions: permission) { (account, sharee, errorCode, errorDescription) in
+            
+        }
+        
+        /*
         OCNetworking.sharedManager()?.share(withAccount: metadata.account, fileName: fileName, password: password, permission: permission, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             if errorCode == 0 {
                 OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: self.metadata.fileName, serverUrl: self.metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-//                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                         self.appDelegate.activeMain?.tableView?.reloadData()
                         self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
@@ -78,6 +83,7 @@ class NCShareNetworking: NSObject {
                 NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
         })
+        */
     }
     
     func unShare(idShare: Int) {
@@ -95,6 +101,7 @@ class NCShareNetworking: NSObject {
     
     func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
+        /*
         OCNetworking.sharedManager()?.shareUpdateAccount(metadata.account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
@@ -104,6 +111,7 @@ class NCShareNetworking: NSObject {
                 self.delegate?.updateShareWithError(idShare: idShare)
             }
         })
+        */
     }
     
     func getUserAndGroup(searchString: String) {
@@ -124,6 +132,8 @@ class NCShareNetworking: NSObject {
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         var permission: Int = 0
         if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }
+        
+        /*
         OCNetworking.sharedManager()?.shareUserGroup(withAccount: metadata.account, userOrGroup: name, fileName: fileName, permission: permission, shareeType: shareeType, completion: { (account, message, errorCode) in
             if errorCode == 0 {
                 OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
@@ -143,6 +153,7 @@ class NCShareNetworking: NSObject {
                 NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
         })
+        */
     }
 }
 

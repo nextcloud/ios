@@ -161,16 +161,16 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)removeShares:(tableMetadata *)metadata tableShare:(tableShare *)tableShare
-{    
-    [[OCNetworking sharedManager] unshareAccount:appDelegate.activeAccount shareID:tableShare.idRemoteShared completion:^(NSString *account, NSString *message, NSInteger errorCode) {
+{
+    [[NCCommunication shared] deleteShareWithIdShare:tableShare.idShare customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
             
-            [[NCManageDatabase sharedInstance] deleteTableShareWithAccount:account idRemoteShared:tableShare.idRemoteShared];
+            [[NCManageDatabase sharedInstance] deleteTableShareWithAccount:account idShare:tableShare.idShare];
             [self reloadDatasource];
             
         } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_share_" description:message delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_share_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
         } else {
             NSLog(@"[LOG] It has been changed user during networking process, error.");
         }
