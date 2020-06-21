@@ -117,7 +117,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
@@ -368,7 +368,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         menuView?.delegate = self
         menuView?.rowHeight = 45
         menuView?.sectionHeaderHeight = 8
-        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
+        menuView?.highlightColor = NCBrandColor.sharedInstance.brandElement
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewSeperatorColor = NCBrandColor.sharedInstance.separator
         menuView?.tableViewBackgroundColor = NCBrandColor.sharedInstance.backgroundForm

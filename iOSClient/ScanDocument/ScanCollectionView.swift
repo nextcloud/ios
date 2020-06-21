@@ -59,7 +59,6 @@ class DragDropViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
@@ -78,8 +77,8 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
-        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
+        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
@@ -87,10 +86,6 @@ class DragDropViewController: UIViewController {
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
-        
-        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
-        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
-        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
         
         loadImage()
     }
@@ -100,6 +95,13 @@ class DragDropViewController: UIViewController {
         
         collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        
+        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
+        if #available(iOS 13.0, *) {
+            labelTitlePDFzone.backgroundColor = .systemBackground
+        } else {
+            labelTitlePDFzone.backgroundColor = .systemGray
+        }
     }
     
     //MARK: Button Action

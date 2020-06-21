@@ -85,7 +85,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         120
+#define k_databaseSchemaVersion                         121
 
 // Intro selector
 #define k_intro_login                                   0
@@ -296,6 +296,7 @@
 // Notification Center
 
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
+#define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
 
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"

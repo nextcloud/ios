@@ -380,7 +380,7 @@ import NCCommunication
     
     func getTemplate() {
      
-        indicator.color = NCBrandColor.sharedInstance.brand
+        indicator.color = NCBrandColor.sharedInstance.brandElement
         indicator.startAnimating()
         
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {

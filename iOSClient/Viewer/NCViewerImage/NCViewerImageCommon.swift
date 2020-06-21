@@ -35,9 +35,9 @@ class NCViewerImageCommon: NSObject {
     static var offOutlineImage: UIImage?
 
     override init() {
-        NCViewerImageCommon.offOutlineAudio = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
-        NCViewerImageCommon.offOutlineVideo = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
-        NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brand)
+        NCViewerImageCommon.offOutlineAudio = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineAudio"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
+        NCViewerImageCommon.offOutlineVideo = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineVideo"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
+        NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata], favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
@@ -122,9 +122,7 @@ class NCViewerImageCommon: NSObject {
             // AUTOMATIC DOWNLOAD FOR GIF
             
             if (ext == "GIF" || ext == "SVG")  && metadata.session == "" {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_menuDownloadImage), object: nil, userInfo: ["metadata": metadata])
-                }
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
             }
         }
         

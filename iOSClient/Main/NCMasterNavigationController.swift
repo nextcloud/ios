@@ -55,7 +55,7 @@ class NCMasterNavigationController: UINavigationController {
 
     @objc func changeTheming() {
         navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
-        navigationBar.tintColor = NCBrandColor.sharedInstance.brand
+        navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
 }
 

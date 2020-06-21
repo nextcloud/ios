@@ -34,7 +34,7 @@ class NCShareCommon: NSObject {
         
         let size: CGFloat = 200
         
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brand)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brandElement)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: size, height: size, color: UIColor.white)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
@@ -166,7 +166,7 @@ class NCShareCommon: NSObject {
         calendar.appearance.weekdayTextColor = UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1)
         calendar.appearance.weekdayFont = UIFont.systemFont(ofSize: 12)
         
-        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brand
+        calendar.appearance.todayColor = NCBrandColor.sharedInstance.brandElement
         calendar.appearance.titleFont = UIFont.systemFont(ofSize: 12)
         
         viewWindow.addSubview(calendar)

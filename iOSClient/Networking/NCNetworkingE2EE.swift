@@ -175,7 +175,7 @@ import Alamofire
                     } catch { }
                 }
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                 self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
@@ -183,7 +183,7 @@ import Alamofire
     
     //MARK: - Upload
     
-    func upload(metadata: tableMetadata, account: tableAccount) {
+    func upload(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var metadata = metadata
         let objectE2eEncryption = tableE2eEncryption()
@@ -199,7 +199,9 @@ import Alamofire
         
         if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
             
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            
+            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
             return
         }
         
@@ -226,7 +228,8 @@ import Alamofire
         objectE2eEncryption.version = Int(e2eeApiVersion) ?? 1
         
         if NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption) == false {
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
             return
         }
         
@@ -239,7 +242,7 @@ import Alamofire
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
                 if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                 
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], requestHandler: { (request) in
                     
@@ -247,11 +250,11 @@ import Alamofire
                     metadata.status = Int(k_metadataStatusUploading)
                     if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                     
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadFileStart), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
                     
                 }, progressHandler: { (progress) in
                     
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_progressTask), object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
                 }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
                 
@@ -275,7 +278,7 @@ import Alamofire
                         
                         //CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                                                         
                     } else if error?.isExplicitlyCancelledError ?? false { 
                         
@@ -305,17 +308,21 @@ import Alamofire
                        
                         if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                         
-                        NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                     }
                         
                     NCNetworkingE2EE.shared.unlock(account: metadata.account, serverUrl: serverUrl) { (_, _, _, _) in }
                     
-                    NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_reloadDataSource), object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                    
+                    completion(errorCode, errorDescription)                    
                 }
                 
             } else {
                 
-                NotificationCenter.default.post(name: Notification.Name.init(rawValue: k_notificationCenter_uploadedFile), object: nil, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                
+                completion(errorCode, errorDescription ?? "")
             }
         }
     }
@@ -428,7 +435,7 @@ import Alamofire
             if errorDescription == nil { userInfo["errorDescription"] = "" }
             else { userInfo["errorDescription"] = NSLocalizedString(errorDescription as! String, comment: "") }
                
-            NotificationCenter.default.post(name: Notification.Name.init(rawValue: name), object: nil, userInfo: userInfo)
+            NotificationCenter.default.postOnMainThread(name: name, userInfo: userInfo)
                
             completion(userInfo["errorCode"] as! Int, userInfo["errorDescription"] as! String)
         }

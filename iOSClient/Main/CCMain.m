@@ -71,6 +71,13 @@
     
     CGFloat heightRichWorkspace;
     CGFloat heightSearchBar;
+    
+    //
+    NSMutableArray *arrayDeleteMetadata;
+    NSMutableArray *arrayMoveMetadata;
+    NSMutableArray *arrayMoveServerUrlTo;
+    NSMutableArray *arrayCopyMetadata;
+    NSMutableArray *arrayCopyServerUrlTo;
 }
 @end
 
@@ -114,6 +121,12 @@
     _cellFavouriteImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:[UIColor whiteColor]];
     _cellTrashImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"trash"] width:50 height:50 color:[UIColor whiteColor]];
     
+    arrayDeleteMetadata = [NSMutableArray new];
+    arrayMoveMetadata = [NSMutableArray new];
+    arrayMoveServerUrlTo = [NSMutableArray new];
+    arrayCopyMetadata = [NSMutableArray new];
+    arrayCopyServerUrlTo = [NSMutableArray new];
+    
     // delegate
     self.tableView.tableFooterView = [UIView new];
     self.tableView.emptyDataSetDelegate = self;
@@ -137,7 +150,7 @@
     self.searchController.dimsBackgroundDuringPresentation = NO;
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     }
     UITextField *searchTextField = [self.searchController.searchBar valueForKey:@"searchField"];
     if (searchTextField && [searchTextField isKindOfClass:[UITextField class]]) {
@@ -154,8 +167,8 @@
     self.sortButton = self.viewRichWorkspace.sortButton;
     heightSearchBar = self.viewRichWorkspace.topView.frame.size.height;
 
-    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
-    [self.sortButton addTarget:self action:@selector(toggleReMainMenu) forControlEvents:UIControlEventTouchUpInside];
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
+    [self.sortButton addTarget:self action:@selector(toggleSortMenu) forControlEvents:UIControlEventTouchUpInside];
     
     heightRichWorkspace = UIScreen.mainScreen.bounds.size.height / 4 + heightSearchBar;
     [self.viewRichWorkspace setFrame:CGRectMake(0, 0, self.tableView.frame.size.width, heightRichWorkspace)];
@@ -328,13 +341,13 @@
     refreshControl.tintColor = UIColor.lightGrayColor;
     refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
 
-    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+    [self.sortButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     // color searchbar
-    self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brand;
+    self.searchController.searchBar.tintColor = NCBrandColor.sharedInstance.brandElement;
     // color searchbbar button text (cancel)
     UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
     if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
-        [searchButton setTitleColor:NCBrandColor.sharedInstance.brand forState:UIControlStateNormal];
+        [searchButton setTitleColor:NCBrandColor.sharedInstance.brandElement forState:UIControlStateNormal];
     }
     // color textview searchbbar
     UITextField *searchTextView = [self.searchController.searchBar valueForKey:@"searchField"];
@@ -429,54 +442,76 @@
 
 - (void)deleteFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode == 0 && metadata) {
-        if ([metadata.serverUrl isEqualToString:self.serverUrl]) {
-            if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
-                [self readFileReloadFolder];
-            } else {
-                if (self.searchController.isActive) {
-                    [self readFolder:self.serverUrl];
-                }
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayDeleteMetadata.count > 0) {
+        tableMetadata *metadata = arrayDeleteMetadata.firstObject;
+        [arrayDeleteMetadata removeObjectAtIndex:0];
+        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:metadata.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+
+    if (errorCode == 0 ) {
+        if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
+            [self readFileReloadFolder];
+        } else {
+            if (self.searchController.isActive) {
+                [self readFolder:self.serverUrl];
             }
         }
-    } else {
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
 - (void)moveFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
+    tableMetadata *metadata = userInfo[@"metadata"];
 //    tableMetadata *metadataNew = userInfo[@"metadataNew"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode != 0) {
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayMoveMetadata.count > 0) {
+        tableMetadata *metadata = arrayMoveMetadata.firstObject;
+        NSString *serverUrlTo = arrayMoveServerUrlTo.firstObject;
+        [arrayMoveMetadata removeObjectAtIndex:0];
+        [arrayMoveServerUrlTo removeObjectAtIndex:0];
+        [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
 
 - (void)copyFile:(NSNotification *)notification
 {
-    if (self.view.window == nil) { return; }
-    
     NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
+    tableMetadata *metadata = userInfo[@"metadata"];
 //    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
     NSString *errorDescription = userInfo[@"errorDescription"];
     
-    if (errorCode != 0) {
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    if (arrayCopyMetadata.count > 0) {
+        tableMetadata *metadata = arrayCopyMetadata.firstObject;
+        NSString *serverUrlTo = arrayCopyServerUrlTo.firstObject;
+        [arrayCopyMetadata removeObjectAtIndex:0];
+        [arrayCopyServerUrlTo removeObjectAtIndex:0];
+        [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    }
+    
+    if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
 }
@@ -687,7 +722,7 @@
 
 - (void)setUINavigationBarSelected
 {    
-    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationMore"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
+    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationMore"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleSelectMenu)];
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelSelect)];
     
     self.navigationItem.leftBarButtonItem = leftButton;
@@ -1218,7 +1253,7 @@
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     // Color text "Cancel"
-    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brand];
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:NCBrandColor.sharedInstance.brandElement];
     
     if (searchController.isActive) {
         [self deleteRefreshControl];
@@ -1293,13 +1328,13 @@
         return;
      
     if ([_selectedocIdsMetadatas count] > 0) {
-        [appDelegate.arrayDeleteMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
+        [arrayDeleteMetadata addObjectsFromArray:[_selectedocIdsMetadatas allValues]];
     } else {
-        [appDelegate.arrayDeleteMetadata addObject:self.metadata];
+        [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:appDelegate.arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    [appDelegate.arrayDeleteMetadata removeObjectAtIndex:0];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
     [self tableViewSelect:false];
@@ -1317,11 +1352,11 @@
     NSMutableArray *arrayMetadata, *arrayServerUrlTo;
     
     if (move) {
-        arrayMetadata = appDelegate.arrayMoveMetadata;
-        arrayServerUrlTo = appDelegate.arrayMoveServerUrlTo;
+        arrayMetadata = arrayMoveMetadata;
+        arrayServerUrlTo = arrayMoveServerUrlTo;
     } else {
-        arrayMetadata = appDelegate.arrayCopyMetadata;
-        arrayServerUrlTo = appDelegate.arrayCopyServerUrlTo;
+        arrayMetadata = arrayCopyMetadata;
+        arrayServerUrlTo = arrayCopyServerUrlTo;
     }
     
     if ([_selectedocIdsMetadatas count] > 0) {
@@ -1566,133 +1601,12 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Menu LOGO ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)menuLogo:(UIGestureRecognizer *)theGestureRecognizer
-{
-    
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_multiaccount)
-        return;
-    
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-    
-    NSMutableArray *menuArray = [NSMutableArray new];
-    
-    for (NSString *account in listAccount) {
-    
-        CCMenuItem *item = [[CCMenuItem alloc] init];
-        
-        item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
-        item.argument = account;
-        
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
-        
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url], tableAccount.user];
-        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
-        if (avatar) {
-            
-            avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];
-            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
-            CGSize imageSize = avatarImageView.bounds.size;
-            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            [avatarImageView.layer renderInContext:context];
-            avatar = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
-        } else {
-            
-            avatar = [UIImage imageNamed:@"menuLogoUser"];
-        }
-        
-        item.image = avatar;
-        item.target = self;
-        
-        if ([account isEqualToString:appDelegate.activeAccount]) {
-            
-            item.action = nil;
-            [menuArray insertObject:item atIndex:0];
-            
-        } else {
-        
-            item.action = @selector(changeDefaultAccount:);
-            [menuArray addObject:item];
-        }
-    }
-    
-    // Add + new account
-    CCMenuItem *item = [[CCMenuItem alloc] init];
-    
-    item.title = NSLocalizedString(@"_add_account_", nil);
-    item.argument = @"";
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] width:50 height:50 color:NCBrandColor.sharedInstance.textView];
-    item.target = self;
-    item.action = @selector(addNewAccount:);
-    
-    [menuArray addObject:item];
-    
-    OptionalConfiguration options;
-    Color backgroundColor;
-    
-    const CGFloat *componentsBackgroundColor = CGColorGetComponents(NCBrandColor.sharedInstance.backgroundForm.CGColor);
-    backgroundColor.R = componentsBackgroundColor[0];
-    backgroundColor.G = componentsBackgroundColor[1];
-    backgroundColor.B = componentsBackgroundColor[2];
-    
-    options.arrowSize = 9;
-    options.marginXSpacing = 7;
-    options.marginYSpacing = 10;
-    options.intervalSpacing = 20;
-    options.menuCornerRadius = 6.5;
-    options.maskToBackground = NO;
-    options.shadowOfMenu = YES;
-    options.hasSeperatorLine = YES;
-    options.seperatorLineHasInsets = YES;
-    options.textColor = NCBrandColor.sharedInstance.textView;
-    options.menuBackgroundColor = backgroundColor;
-    options.separatorColor = NCBrandColor.sharedInstance.separator;
-    
-    CGRect rect = self.view.frame;
-    CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
-    CGFloat safeAreaTop = 0;
-    CGFloat offsetY = 35;
-    safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
-    rect.origin.y = locationY + safeAreaTop + offsetY;
-    rect.size.height = rect.size.height - locationY - safeAreaTop - offsetY;
-    
-    [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
-    [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
-}
-
-- (void)changeDefaultAccount:(CCMenuItem *)sender
-{
-    // LOGOUT
-    
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-    if (tableAccount) {
-            
-        // LOGIN
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
-    
-        // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-    }
-}
-
-- (void)addNewAccount:(CCMenuItem *)sender
-{
-    [appDelegate openLoginView:self selector:k_intro_login openLoginWeb:false];
-}
-
-- (void)toggleReMainMenu
+- (void)toggleSortMenu
 {
     [self toggleMenuWithViewController:self.navigationController];
 }
 
-- (void)toggleReSelectMenu
+- (void)toggleSelectMenu
 {
     [self toggleSelectMenuWithViewController:self.navigationController];
 }
@@ -2309,7 +2223,7 @@
     UIVisualEffect *blurEffect;
     blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     visualEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brand colorWithAlphaComponent:0.2];
+    visualEffectView.backgroundColor = [NCBrandColor.sharedInstance.brandElement colorWithAlphaComponent:0.2];
     
     if ([[CCUtility getGroupBySettings] isEqualToString:@"alphabetic"]) {
         

@@ -111,7 +111,7 @@ class NCUtility: NSObject {
         
         blurEffectView.frame = frame
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
+        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.2)
         
         return blurEffectView
     }
@@ -228,7 +228,7 @@ class NCUtility: NSObject {
     
         guard let view = view else { return }
         
-        activityIndicator.color = NCBrandColor.sharedInstance.brand
+        activityIndicator.color = NCBrandColor.sharedInstance.brandElement
         activityIndicator.hidesWhenStopped = true
             
         view.addSubview(activityIndicator)
@@ -274,12 +274,12 @@ class NCUtility: NSObject {
     @objc func blink(cell: AnyObject?) {
         DispatchQueue.main.async {
             if let cell = cell as? UITableViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
                 UIView.animate(withDuration: 2) {
                     cell.backgroundColor = .clear
                 }
             } else if let cell = cell as? UICollectionViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.3)
+                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
                 UIView.animate(withDuration: 2) {
                     cell.backgroundColor = .clear
                 }

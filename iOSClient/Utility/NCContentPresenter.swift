@@ -90,14 +90,10 @@ class NCContentPresenter: NSObject {
             //case Int(kOCErrorServerUnauthorized), Int(kOCErrorServerForbidden):
             //    break
             default:
-                var description = description
-                if description == nil { description = "" }
-                if type == messageType.error {
-                    description = NSLocalizedString("_error_", comment: "") + " " + NSLocalizedString(description!, comment: "")
-                } else {
-                    description = NSLocalizedString(description!, comment: "")
-                }
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description!, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
+                guard var description = description else { return }
+                if description.trimmingCharacters(in: .whitespacesAndNewlines) == "" { return }
+                description = NSLocalizedString(description, comment: "")
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description, delay: delay, imageName: nil, type: type, name: "\(errorCode)")
             }
         }
     }
@@ -204,7 +200,7 @@ class NCContentPresenter: NSObject {
     private func getBackgroundColorFromType(_ type: messageType) -> UIColor {
         switch type {
         case .info:
-            return NCBrandColor.sharedInstance.brand
+            return NCBrandColor.sharedInstance.brandElement
         case .error:
             return UIColor(red: 1, green: 0, blue: 0, alpha: 0.9)
         case .success:

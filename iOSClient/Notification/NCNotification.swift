@@ -178,7 +178,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         cell.primary.setTitleColor(.white, for: .normal)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
-        cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brand.cgColor
+        cell.primary.layer.backgroundColor = NCBrandColor.sharedInstance.brandElement.cgColor
         
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true

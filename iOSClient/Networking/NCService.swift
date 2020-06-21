@@ -107,7 +107,7 @@ class NCService: NSObject {
                     }
                 }
                       
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_changeUserProfile), object: nil)
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeUserProfile)
                     
                 
                 // Get Capabilities
@@ -219,14 +219,7 @@ class NCService: NSObject {
             }
         }
     }
-    
-    @objc public func middlewarePing() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-    }
-    
+   
     //MARK: - Thirt Part
     
     private func requestHC() {

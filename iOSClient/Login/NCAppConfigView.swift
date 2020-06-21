@@ -38,7 +38,7 @@ class NCAppConfigView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brandElement
         titleLabel.textColor = NCBrandColor.sharedInstance.brandText
         
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
@@ -92,7 +92,7 @@ class NCAppConfigView: UIViewController {
                     }
                     
                     self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil, userInfo: nil)
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
                     
                     self.dismiss(animated: true) {}
                 } else {

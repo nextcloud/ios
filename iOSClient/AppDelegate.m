@@ -85,12 +85,7 @@
 
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listMainVC = [NSMutableDictionary new];
-    self.arrayDeleteMetadata = [NSMutableArray new];
-    self.arrayMoveMetadata = [NSMutableArray new];
-    self.arrayMoveServerUrlTo = [NSMutableArray new];
-    self.arrayCopyMetadata = [NSMutableArray new];
-    self.arrayCopyServerUrlTo = [NSMutableArray new];
-    
+   
     // Push Notification
     [application registerForRemoteNotifications];
     
@@ -158,13 +153,7 @@
 
     // init home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-    
-    // Observer
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(uploadedFile:) name:k_notificationCenter_uploadedFile object:nil];
-    
+
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
         [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -190,9 +179,10 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Test Maintenance
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
+
     
     NSLog(@"[LOG] Request Passcode");
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
@@ -218,16 +208,8 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Test Maintenance
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
         
-    // middelware ping
-    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
-        NSLog(@"[LOG] Middleware Ping");
-        [[NCService shared] middlewarePing];
-    }
-
     // Brand
     #if defined(HC)
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -246,9 +228,10 @@
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    NSLog(@"[LOG] Enter in Background");
-            
+    if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
+
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
+    
     [self passcodeWithAutomaticallyPromptForBiometricValidation:false];
 }
 
@@ -652,63 +635,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== NotificationCenter ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)deleteFile:(NSNotification *)notification
-{
-    if (self.arrayDeleteMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayDeleteMetadata.firstObject;
-        [self.arrayDeleteMetadata removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:account.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self deleteFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)moveFile:(NSNotification *)notification
-{
-    if (self.arrayMoveMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayMoveMetadata.firstObject;
-        NSString *serverUrlTo = self.arrayMoveServerUrlTo.firstObject;
-        [self.arrayMoveMetadata removeObjectAtIndex:0];
-        [self.arrayMoveServerUrlTo removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self moveFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)copyFile:(NSNotification *)notification
-{
-    if (self.arrayCopyMetadata.count > 0) {
-        tableMetadata *metadata = self.arrayCopyMetadata.firstObject;
-        NSString *serverUrlTo = self.arrayCopyServerUrlTo.firstObject;
-        [self.arrayCopyMetadata removeObjectAtIndex:0];
-        [self.arrayCopyServerUrlTo removeObjectAtIndex:0];
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-        if (account) {
-            [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-        } else {
-            [self copyFile:[NSNotification new]];
-        }
-    }
-}
-
-- (void)uploadedFile:(NSNotification *)notification
-{
-//    NSDictionary *userInfo = notification.userInfo;
-//    tableMetadata *metadata = userInfo[@"metadata"];
-//    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -863,7 +789,7 @@
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
-    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brand;
+    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brandElement;
     buttonPlus.layer.cornerRadius = buttonSize / 2;
     buttonPlus.layer.masksToBounds = NO;
     buttonPlus.layer.shadowOffset = CGSizeMake(0, 0);
@@ -970,32 +896,37 @@
 
         [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
         
-        UIColor *color = NCBrandColor.sharedInstance.brand;
-        BOOL isTooLight = NCBrandColor.sharedInstance.brand.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.brand.isTooDark;
+        BOOL isTooLight = NCBrandColor.sharedInstance.brandElement.isTooLight;
+        BOOL isTooDark = NCBrandColor.sharedInstance.brandElement.isTooDark;
         
         if (isTooLight) {
-            color = [NCBrandColor.sharedInstance.brand darkerBy:10];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:10];
         } else if (isTooDark) {
-            color = [NCBrandColor.sharedInstance.brand lighterBy:10];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:15];
         }
-        
-        NCBrandColor.sharedInstance.brand = color;
-            
+    
     } else {
     
+        BOOL isTooLight = NCBrandColor.sharedInstance.customer.isTooLight;
+        BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
+        
+        if (isTooLight) {
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:10];
+        } else if (isTooDark) {
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:15];
+        } else {
+            NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
+        }
+        
         NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-        NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
         NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
     }
         
     [NCBrandColor.sharedInstance setDarkMode];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[NCMainCommon sharedInstance] createImagesThemingColor];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
     });
-    
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
@@ -1153,7 +1084,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                     
                 break;
                                         
@@ -1162,7 +1093,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                     
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
@@ -1198,7 +1129,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                                           
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                                 
                 break;
                 
@@ -1207,7 +1138,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                            
-                [[NCNetworking shared] uploadWithMetadata:metadata];
+                [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                            
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
@@ -1253,7 +1184,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
+                    [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                     
                     break;
                     
@@ -1262,7 +1193,7 @@
                     metadataForUpload.status = k_metadataStatusInUpload;
                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     
-                    [[NCNetworking shared] uploadWithMetadata:metadata];
+                    [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
                     
                     counterUpload++;
                     sizeUpload = sizeUpload + metadata.size;

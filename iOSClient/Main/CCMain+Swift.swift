@@ -27,7 +27,7 @@ extension CCMain {
                 self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
-                self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brand
+                self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
                 self.navigationController?.navigationBar.shadowImage = nil
                 self.navigationController?.navigationBar.setValue(false, forKey: "hidesShadow")
             }
@@ -50,7 +50,7 @@ extension CCMain {
                 self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 self.navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
                 self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
-                self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brand
+                self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
                 self.navigationController?.navigationBar.shadowImage = UIImage()
                 self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
             }
