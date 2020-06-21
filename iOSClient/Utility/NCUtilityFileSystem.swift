@@ -72,42 +72,5 @@ class NCUtilityFileSystem: NSObject {
         } catch { }
         return nil
     }
-    
-    func fileChunk(filename: String, path: String, size: Int = 5) -> [String]? {
-        
-        let chunkSize = 1024 * 1000 * size
-        var storeSize: Int64 = 0
-        let ReadData = NSMutableData()
-        var filenames: [String]?
-        let filePath = path + "/" + filename
-        
-        if FileManager.default.fileExists(atPath: filePath) {
-            do {
-                let outputFileHandle = try FileHandle(forReadingFrom: URL(fileURLWithPath: filePath))
-                var datas = outputFileHandle.readData(ofLength: chunkSize)
-                
-                while !(datas.isEmpty) {
-                    ReadData.append(datas)
-                    datas = outputFileHandle.readData(ofLength: chunkSize)
-                    print("Running: \(ReadData.length)")
-                    
-                    let startFilename = String(format: "%0\(15)d", storeSize)
-                    storeSize = storeSize + Int64(ReadData.length)
-                    let endFilename = String(format: "%0\(15)d", storeSize)
-                    let filename = startFilename + "-" + endFilename
-                    
-                    try datas.write(to: URL(fileURLWithPath: path + "/" + filename))
-                    filenames?.append(startFilename + "-" + endFilename)
-                }
-                
-                outputFileHandle.closeFile()
-                
-            }catch let error as NSError {
-                print("Error : \(error.localizedDescription)")
-            }
-        }
-        
-        return filenames
-    }
 }
 
