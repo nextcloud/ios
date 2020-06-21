@@ -65,7 +65,7 @@ class NCShareNetworking: NSObject {
                     NCUtility.sharedInstance.stopActivityIndicator()
                     if errorCode == 0 {
                         let itemsOCSharedDto = items as! [OCSharedDto]
-                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
+//                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
                         self.appDelegate.activeMain?.tableView?.reloadData()
                         self.appDelegate.activeFavorites?.tableView?.reloadData()
                     } else {
@@ -108,16 +108,15 @@ class NCShareNetworking: NSObject {
     
     func getUserAndGroup(searchString: String) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        OCNetworking.sharedManager()?.getUserGroup(withAccount: metadata.account, search: searchString, completion: { (account, items, message, errorCode) in
+        NCCommunication.shared.searchSharees(search: searchString) { (account, sharees, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
-                let itemsOCShareUser = items as! [OCShareUser]
-                self.delegate?.getUserAndGroup(items: itemsOCShareUser)
+                self.delegate?.getUserAndGroup(sharees: sharees)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                self.delegate?.getUserAndGroup(items: nil)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                self.delegate?.getUserAndGroup(sharees: nil)
             }
-        })
+        }
     }
     
     func shareUserAndGroup(name: String, shareeType: Int, metadata: tableMetadata) {
@@ -152,5 +151,5 @@ protocol NCShareNetworkingDelegate {
     func shareCompleted()
     func unShareCompleted()
     func updateShareWithError(idShare: Int)
-    func getUserAndGroup(items: [OCShareUser]?)
+    func getUserAndGroup(sharees: [NCCommunicationSharee]?)
 }

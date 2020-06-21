@@ -22,6 +22,7 @@
 
 import Foundation
 import FSCalendar
+import NCCommunication
 
 class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkingDelegate, FSCalendarDelegate, FSCalendarDelegateAppearance {
     
@@ -393,7 +394,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         reloadData(idShare: idShare)
     }
     
-    func getUserAndGroup(items: [OCShareUser]?) { }
+    func getUserAndGroup(sharees: [NCCommunicationSharee]?) { }
     
     // MARK: - Delegate calendar
     

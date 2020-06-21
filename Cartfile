@@ -1,4 +1,4 @@
-github "nextcloud/ios-communication-library" "v0.70"
+github "nextcloud/ios-communication-library" "develop"
 github "tilltue/TLPhotoPicker" "2.0.11"
 github "kishikawakatsumi/UICKeyChainStore" "v2.1.2"
 github "MortimerGoro/MGSwipeTableCell" "1.6.8"
