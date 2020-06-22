@@ -154,14 +154,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
                 let password = alertController.textFields?.first?.text
-                self.networking?.share(password: password ?? "", permission: 1, hideDownload: false)
+                self.networking?.shareLink(password: password ?? "")
             }
             okAction.isEnabled = false
             alertController.addAction(okAction)
             
             self.present(alertController, animated: true, completion:nil)
         } else if shares.firstShareLink == nil {
-            networking?.share(password: "", permission: 1, hideDownload: false)
+            networking?.shareLink(password: "")
         } else {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         }

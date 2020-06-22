@@ -377,9 +377,11 @@ class tableShare: Object {
     @objc dynamic var mailSend: Bool = false
     @objc dynamic var mimeType = ""
     @objc dynamic var note = ""
-    @objc dynamic var parent: Int = 0
+    @objc dynamic var parent: String = ""
+    @objc dynamic var password: String = ""
     @objc dynamic var path = ""
     @objc dynamic var permissions: Int = 0
+    @objc dynamic var sendPasswordByTalk: Bool = false
     @objc dynamic var serverUrl = ""
     @objc dynamic var shareType: Int = 0
     @objc dynamic var shareWith = ""
@@ -389,6 +391,11 @@ class tableShare: Object {
     @objc dynamic var token = ""
     @objc dynamic var uidFileOwner = ""
     @objc dynamic var uidOwner = ""
+    @objc dynamic var url = ""
+
+    override static func primaryKey() -> String {
+        return "idShare"
+    }
 }
 
 class tableTag: Object {

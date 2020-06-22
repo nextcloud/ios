@@ -56,10 +56,10 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func share(password: String, permission: Int, hideDownload: Bool) {
+    func shareLink(password: String?) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-        NCCommunication.shared.createShare(path: fileName, shareType: 0, shareWith: "", password: password, permissions: permission) { (account, sharee, errorCode, errorDescription) in
+        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, sharee, errorCode, errorDescription) in
             
         }
         

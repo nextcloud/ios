@@ -99,7 +99,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableTrash.className())
                     }
                     
-                    if oldSchemaVersion < 128 {
+                    if oldSchemaVersion < 120 {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableCapabilities.className())
                         migration.deleteData(forType: tableComments.className())
@@ -107,7 +107,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableDirectory.className())
                     }
                     
-                    if oldSchemaVersion < 129 {
+                    if oldSchemaVersion < 132 {
                         migration.deleteData(forType: tableShare.className())
                     }
                     
@@ -2532,8 +2532,10 @@ class NCManageDatabase: NSObject {
             addObject.mimeType = share.mimeType
             addObject.note = share.note
             addObject.parent = share.parent
+            addObject.password = share.password
             addObject.path = share.path
             addObject.permissions = share.permissions
+            addObject.sendPasswordByTalk = share.sendPasswordByTalk
             addObject.shareType = share.shareType
             addObject.shareWith = share.shareWith
             addObject.shareWithDisplayname = share.shareWithDisplayname
@@ -2542,7 +2544,8 @@ class NCManageDatabase: NSObject {
             addObject.token = share.token
             addObject.uidOwner = share.uidOwner
             addObject.uidFileOwner = share.uidFileOwner
-            
+            addObject.url = share.url
+
             realm.add(addObject, update: .all)
         }
         
@@ -2571,7 +2574,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idRemoteShared", ascending: false)]
+        let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         
         let firstShareLink = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@ AND shareType == 3", metadata.account, metadata.serverUrl, metadata.fileName).first
         if firstShareLink == nil {
