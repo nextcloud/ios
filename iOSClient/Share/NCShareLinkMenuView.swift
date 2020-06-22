@@ -413,10 +413,10 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             
             guard let tableShare = self.tableShare else { return }
 
-            dateFormatter.dateFormat = "YYYY-MM-dd"
-            let expirationTime = dateFormatter.string(from: date)
+            dateFormatter.dateFormat = "YYYY-MM-dd HH:mm:ss"
+            let expirationDate = dateFormatter.string(from: date)
             
-            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: tableShare.permissions, note: nil, expirationDate: expirationTime, hideDownload: tableShare.hideDownload)
+            networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: tableShare.permissions, note: nil, expirationDate: expirationDate, hideDownload: tableShare.hideDownload)
         }
     }
     
