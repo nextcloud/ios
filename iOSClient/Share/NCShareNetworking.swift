@@ -114,33 +114,20 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func shareUserAndGroup(name: String, shareType: Int, metadata: tableMetadata) {
+    func share(name: String, shareType: Int, metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-        var permission: Int = 0
+        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        var permission: Int = 1
         if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }
-        
-        /*
-        OCNetworking.sharedManager()?.shareUserGroup(withAccount: metadata.account, userOrGroup: name, fileName: fileName, permission: permission, shareeType: shareeType, completion: { (account, message, errorCode) in
-            if errorCode == 0 {
-                OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
-                    NCUtility.sharedInstance.stopActivityIndicator()
-                    if errorCode == 0 {
-                        let itemsOCSharedDto = items as! [OCSharedDto]
-                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-                        self.appDelegate.activeMain?.tableView?.reloadData()
-                        self.appDelegate.activeFavorites?.tableView?.reloadData()
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                    }
-                    self.delegate?.shareCompleted()
-                })
+        NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: name, permissions: permission) { (account, share, errorCode, errorDescription) in
+            NCUtility.sharedInstance.stopActivityIndicator()
+            if errorCode == 0 && share != nil {
+                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
             } else {
-                NCUtility.sharedInstance.stopActivityIndicator()
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
-        })
-        */
+        }
     }
 }
 
