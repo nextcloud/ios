@@ -154,14 +154,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in })
             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { (action:UIAlertAction) in
                 let password = alertController.textFields?.first?.text
-                self.networking?.shareLink(password: password ?? "")
+                self.networking?.createShareLink(password: password ?? "")
             }
             okAction.isEnabled = false
             alertController.addAction(okAction)
             
             self.present(alertController, animated: true, completion:nil)
         } else if shares.firstShareLink == nil {
-            networking?.shareLink(password: "")
+            networking?.createShareLink(password: "")
         } else {
             tapMenu(with: shares.firstShareLink!, sender: sender)
         }
@@ -301,7 +301,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let sharee = sharees[index]
-            self!.networking?.share(name: sharee.label, shareType: sharee.shareType, metadata: self!.metadata!)
+            self!.networking?.createShare(name: sharee.label, shareType: sharee.shareType, metadata: self!.metadata!)
         }
         
         dropDown.show()

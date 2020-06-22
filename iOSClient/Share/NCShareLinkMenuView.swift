@@ -371,7 +371,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
     // Add another link
     @IBAction func buttonAddAnotherLink(sender: UIButton) {
         
-        networking?.shareLink(password: "")
+        networking?.createShareLink(password: "")
     }
     
     // MARK: - Delegate networking
