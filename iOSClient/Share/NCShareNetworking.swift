@@ -62,7 +62,7 @@ class NCShareNetworking: NSObject {
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, share, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
-            if errorCode == 0 && share != nil{
+            if errorCode == 0 && share != nil {
                 NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.metadata.serverUrl])
@@ -86,19 +86,19 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationTime: String?, hideDownload: Bool) {
+    func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationDate: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        /*
-        OCNetworking.sharedManager()?.shareUpdateAccount(metadata.account, shareID: idRemoteShared, password: password, note:note, permission: permission, expirationTime: expirationTime, hideDownload: hideDownload, completion: { (account, message, errorCode) in
+        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, hidedownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
-            if errorCode == 0 {
-                self.readShare()
+            if errorCode == 0 && share != nil {
+                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
             } else {
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                self.delegate?.updateShareWithError(idShare: idShare)
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                //self.delegate?.updateShareWithError(idShare: idShare)
             }
-        })
-        */
+            self.delegate?.shareCompleted()
+        }
     }
     
     func getUserAndGroup(searchString: String) {
