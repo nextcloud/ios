@@ -394,7 +394,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         reloadData(idShare: idShare)
     }
     
-    func getUserAndGroup(sharees: [NCCommunicationSharee]?) { }
+    func getSharees(sharees: [NCCommunicationSharee]?) { }
     
     // MARK: - Delegate calendar
     

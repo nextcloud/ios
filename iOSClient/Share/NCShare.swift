@@ -128,7 +128,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let searchString = textField.text else { return }
 
-        networking?.getUserAndGroup(searchString: searchString)
+        networking?.getSharees(searchString: searchString)
     }
     
     @IBAction func touchUpInsideButtonCopy(_ sender: Any) {
@@ -243,7 +243,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     func updateShareWithError(idShare: Int) { }
     
-    func getUserAndGroup(sharees: [NCCommunicationSharee]?) {
+    func getSharees(sharees: [NCCommunicationSharee]?) {
         
         guard let sharees = sharees else { return }
 

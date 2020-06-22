@@ -118,15 +118,15 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func getUserAndGroup(searchString: String) {
+    func getSharees(searchString: String) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         NCCommunication.shared.searchSharees(search: searchString) { (account, sharees, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 {
-                self.delegate?.getUserAndGroup(sharees: sharees)
+                self.delegate?.getSharees(sharees: sharees)
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                self.delegate?.getUserAndGroup(sharees: nil)
+                self.delegate?.getSharees(sharees: nil)
             }
         }
     }
@@ -137,5 +137,5 @@ protocol NCShareNetworkingDelegate {
     func shareCompleted()
     func unShareCompleted()
     func updateShareWithError(idShare: Int)
-    func getUserAndGroup(sharees: [NCCommunicationSharee]?)
+    func getSharees(sharees: [NCCommunicationSharee]?)
 }
