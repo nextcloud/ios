@@ -22,7 +22,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "OCNetworking.h"
 
 @class tableMetadata;
 

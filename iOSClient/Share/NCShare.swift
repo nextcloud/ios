@@ -194,13 +194,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         guard let tableShare = tableShare else { return }
         guard let metadata = self.metadata else { return }
 
-        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         var permission: Int = 0
         
         if sender.isOn {
-            permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: canShare, andIsFolder: metadata.directory)
+            permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: canShare, andIsFolder: metadata.directory)
         } else {
-            permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
+            permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: canShare, andIsFolder: metadata.directory)
         }
         
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
@@ -210,7 +210,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let tableShare = tableShare else { return }
 
-        if tableShare.shareType == Int(shareTypeLink.rawValue) {
+        if tableShare.shareType == 3 {
             let views = NCShareCommon.sharedInstance.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareLinkMenuView = views.shareLinkMenuView
             shareMenuViewWindow = views.viewWindow
@@ -343,7 +343,7 @@ extension NCShare: UITableViewDataSource {
         let tableShare = shares.share![indexPath.row]
         
         // LINK
-        if tableShare.shareType == Int(shareTypeLink.rawValue) {
+        if tableShare.shareType == 3 {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.tableShare = tableShare
                 cell.delegate = self
@@ -383,7 +383,7 @@ extension NCShare: UITableViewDataSource {
                     }
                 }
                 
-                if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
+                if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                     cell.switchCanEdit.setOn(true, animated: false)
                 } else {
                     cell.switchCanEdit.setOn(false, animated: false)

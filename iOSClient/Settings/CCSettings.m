@@ -24,7 +24,6 @@
 #import "CCSettings.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
-#import "OCCapabilities.h"
 #import "CCSynchronize.h"
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"

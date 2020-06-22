@@ -30,7 +30,6 @@
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <Photos/Photos.h>
 
-#import "OCFileDto.h"
 #import "CCGlobal.h"
 #import "CCGraphics.h"
 
@@ -247,6 +246,17 @@
 + (NSString *)generateRandomIdentifier;
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account;
 
+// ===== Share Permissions =====
+
++ (NSInteger)getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder;
++ (BOOL)isPermissionToCanCreate:(NSInteger) permissionValue;
++ (BOOL)isPermissionToCanChange:(NSInteger) permissionValue;
++ (BOOL)isPermissionToCanDelete:(NSInteger) permissionValue;
++ (BOOL)isPermissionToCanShare:(NSInteger) permissionValue;
++ (BOOL)isAnyPermissionToEdit:(NSInteger) permissionValue;
++ (BOOL)isPermissionToRead:(NSInteger) permissionValue;
++ (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
+
 // ===== Third parts =====
 
 + (NSString *)stringValueForKey:(id)key conDictionary:(NSDictionary *)dictionary;
@@ -256,7 +266,6 @@
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)URLEncodeStringFromString:(NSString *)string;
 + (NSString *)hexRepresentation:(NSData *)data spaces:(BOOL)spaces;
 + (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems;
 

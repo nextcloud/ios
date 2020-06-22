@@ -1579,6 +1579,84 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Share Permissions =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder {
+    
+    NSInteger permissionsValue = k_read_share_permission;
+    
+    if (canEdit && !isFolder) {
+        permissionsValue = permissionsValue + k_update_share_permission;
+    }
+    if (canCreate & isFolder) {
+        permissionsValue = permissionsValue + k_create_share_permission;
+    }
+    if (canChange && isFolder) {
+        permissionsValue = permissionsValue + k_update_share_permission;
+    }
+    if (canDelete & isFolder) {
+        permissionsValue = permissionsValue + k_delete_share_permission;
+    }
+    if (canShare) {
+        permissionsValue = permissionsValue + k_share_share_permission;
+    }
+    
+    return permissionsValue;
+}
+
++ (BOOL) isPermissionToCanCreate:(NSInteger) permissionValue {
+    BOOL canCreate = ((permissionValue & k_create_share_permission) > 0);
+    return canCreate;
+}
+
++ (BOOL) isPermissionToCanChange:(NSInteger) permissionValue {
+    BOOL canChange = ((permissionValue & k_update_share_permission) > 0);
+    return canChange;
+}
+
++ (BOOL) isPermissionToCanDelete:(NSInteger) permissionValue {
+    BOOL canDelete = ((permissionValue & k_delete_share_permission) > 0);
+    return canDelete;
+}
+
++ (BOOL) isPermissionToCanShare:(NSInteger) permissionValue {
+    BOOL canShare = ((permissionValue & k_share_share_permission) > 0);
+    return canShare;
+}
+
++ (BOOL) isAnyPermissionToEdit:(NSInteger) permissionValue {
+    
+    BOOL canCreate = [self isPermissionToCanCreate:permissionValue];
+    BOOL canChange = [self isPermissionToCanChange:permissionValue];
+    BOOL canDelete = [self isPermissionToCanDelete:permissionValue];
+    
+    
+    BOOL canEdit = (canCreate || canChange || canDelete);
+    
+    return canEdit;
+    
+}
+
++ (BOOL) isPermissionToRead:(NSInteger) permissionValue {
+    BOOL canRead = ((permissionValue & k_read_share_permission) > 0);
+    return canRead;
+}
+
++ (BOOL) isPermissionToReadCreateUpdate:(NSInteger) permissionValue {
+    
+    BOOL canRead   = [self isPermissionToRead:permissionValue];
+    BOOL canCreate = [self isPermissionToCanCreate:permissionValue];
+    BOOL canChange = [self isPermissionToCanChange:permissionValue];
+    
+    
+    BOOL canEdit = (canCreate && canChange && canRead);
+    
+    return canEdit;
+    
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Third parts =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1679,14 +1757,6 @@
     NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
     
     return [emailTest evaluateWithObject:checkString];
-}
-
-+ (NSString *)URLEncodeStringFromString:(NSString *)string
-{
-    static CFStringRef charset = CFSTR("!@#$%&*()+'\";:=,/?[] ");
-    CFStringRef str = (__bridge CFStringRef)string;
-    CFStringEncoding encoding = kCFStringEncodingUTF8;
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, str, NULL, charset, encoding));
 }
 
 + (NSString*)hexRepresentation:(NSData *)data spaces:(BOOL)spaces

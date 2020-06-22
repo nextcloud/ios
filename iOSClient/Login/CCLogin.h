@@ -24,7 +24,6 @@
 #import <UIKit/UIKit.h>
 
 #import "UIImage+animatedGIF.h"
-#import "OCNetworking.h"
 
 @class NCLoginWeb;
 @class NCLoginQRCode;

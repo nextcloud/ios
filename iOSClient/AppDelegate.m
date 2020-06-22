@@ -437,7 +437,6 @@
 {
     NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
-        [[OCNetworking sharedManager].sharedOCCommunication setupNextcloudVersion: serverVersionMajor];
         [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
      }
     

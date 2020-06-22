@@ -132,20 +132,20 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
 
         // Can reshare (file)
-        let canReshare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        let canReshare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         switchCanReshare.setOn(canReshare, animated: false)
         
         if metadata.directory {
             // Can create (folder)
-            let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
+            let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
             switchCanCreate.setOn(canCreate, animated: false)
             
             // Can change (folder)
-            let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
+            let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
             switchCanChange.setOn(canChange, animated: false)
             
             // Can delete (folder)
-            let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+            let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
             switchCanDelete.setOn(canDelete, animated: false)
         }
         
@@ -191,27 +191,27 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
 
-        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
-        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
-        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
-        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
+        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
+        let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
+        let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
         
         var permission: Int = 0
         
         if metadata.directory {
-            permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: canDelete, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+            permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: canDelete, andCanShare: sender.isOn, andIsFolder: metadata.directory)
         } else {
             if sender.isOn {
                 if canEdit {
-                    permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 } else {
-                    permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 }
             } else {
                 if canEdit {
-                    permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 } else {
-                    permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
+                    permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: sender.isOn, andIsFolder: metadata.directory)
                 }
             }
         }
@@ -224,12 +224,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
 
-        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
-        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
-        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
-        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
+        let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
+        let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
+        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
 
-        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: sender.isOn, andCanChange: canChange, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
 
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
@@ -239,12 +239,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
         
-        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
-        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
-        let canDelete = UtilsFramework.isPermission(toCanDelete: tableShare.permissions)
-        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
+        let canDelete = CCUtility.isPermission(toCanDelete: tableShare.permissions)
+        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         
-        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: sender.isOn, andCanDelete: canDelete, andCanShare: canShare, andIsFolder: metadata.directory)
 
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }
@@ -254,12 +254,12 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
         
-        let canEdit = UtilsFramework.isAnyPermission(toEdit: tableShare.permissions)
-        let canCreate = UtilsFramework.isPermission(toCanCreate: tableShare.permissions)
-        let canChange = UtilsFramework.isPermission(toCanChange: tableShare.permissions)
-        let canShare = UtilsFramework.isPermission(toCanShare: tableShare.permissions)
+        let canEdit = CCUtility.isAnyPermission(toEdit: tableShare.permissions)
+        let canCreate = CCUtility.isPermission(toCanCreate: tableShare.permissions)
+        let canChange = CCUtility.isPermission(toCanChange: tableShare.permissions)
+        let canShare = CCUtility.isPermission(toCanShare: tableShare.permissions)
         
-        let permission = UtilsFramework.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: canEdit, andCanCreate: canCreate, andCanChange: canChange, andCanDelete: sender.isOn, andCanShare: canShare, andIsFolder: metadata.directory)
 
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
     }

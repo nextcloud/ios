@@ -125,11 +125,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         cell.avatar.isHidden = true
         cell.avatarLeadingMargin.constant = 10
 
-        if let subjectRichParameters = notification.subjectRichParameters {
-            if let jsonParameter = JSON(subjectRichParameters).dictionary {
-                print("")
-            }
-        }
+//        if let subjectRichParameters = notification.subjectRichParameters {
+//            if let jsonParameter = JSON(subjectRichParameters).dictionary {
+//                print("")
+//            }
+//        }
         /*
         if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
             if let user = parameter["user"] as? Dictionary<String, Any> {

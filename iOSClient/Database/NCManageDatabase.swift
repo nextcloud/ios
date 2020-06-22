@@ -617,6 +617,7 @@ class NCManageDatabase: NSObject {
         return tableAccount.init(value: returnAccount)
     }
     
+    /*
     #if !EXTENSION
     @objc func setAccountHCFeatures(_ features: HCFeatures) -> tableAccount? {
         
@@ -670,6 +671,7 @@ class NCManageDatabase: NSObject {
         return tableAccount.init(value: returnAccount)
     }
     #endif
+    */
     
     //MARK: -
     //MARK: Table Activity

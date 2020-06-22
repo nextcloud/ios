@@ -263,9 +263,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                     cell.imageItem.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
                     cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType != 3) {
                     cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType == 3) {
                     cell.imageItem.image = NCMainCommonImages.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCMainCommonImages.cellFolderGroupImage
@@ -321,9 +321,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             // Share image
             if (isShare) {
                 cell.shared.image = NCMainCommonImages.cellSharedImage
-            } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+            } else if (tableShare != nil && tableShare!.shareType == 3) {
                 cell.shared.image = NCMainCommonImages.cellShareByLinkImage
-            } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+            } else if (tableShare != nil && tableShare!.shareType != 3) {
                 cell.shared.image = NCMainCommonImages.cellSharedImage
             } else {
                 cell.shared.image = NCMainCommonImages.cellCanShareImage
@@ -389,9 +389,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                     cell.imageItem.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
                     cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType != 3) {
                     cell.imageItem.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType == 3) {
                     cell.imageItem.image = NCMainCommonImages.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCMainCommonImages.cellFolderGroupImage
@@ -494,9 +494,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                     cell.file.image = NCMainCommonImages.cellFolderEncryptedImage
                 } else if isShare {
                     cell.file.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType != 3) {
                     cell.file.image = NCMainCommonImages.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType == 3) {
                     cell.file.image = NCMainCommonImages.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
                     cell.file.image = NCMainCommonImages.cellFolderGroupImage
@@ -566,9 +566,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             if !(metadataFolder?.e2eEncrypted ?? false) && !metadata.e2eEncrypted {
                 if (isShare) {
                     cell.shared.image = NCMainCommonImages.cellSharedImage
-                } else if (tableShare != nil && tableShare!.shareType == Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType == 3) {
                     cell.shared.image = NCMainCommonImages.cellShareByLinkImage
-                } else if (tableShare != nil && tableShare!.shareType != Int(shareTypeLink.rawValue)) {
+                } else if (tableShare != nil && tableShare!.shareType != 3) {
                     cell.shared.image = NCMainCommonImages.cellSharedImage
                 } else {
                     cell.shared.image = NCMainCommonImages.cellCanShareImage

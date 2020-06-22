@@ -161,7 +161,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
                 switchFileDrop.setOn(true, animated: false)
             } else {
                 // Read Only
-                if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
+                if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                     switchReadOnly.setOn(false, animated: false)
                     switchAllowUploadAndEditing.setOn(true, animated: false)
                 } else {
@@ -172,7 +172,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             }
         } else {
             // Allow editing
-            if UtilsFramework.isAnyPermission(toEdit: tableShare.permissions) {
+            if CCUtility.isAnyPermission(toEdit: tableShare.permissions) {
                 switchAllowEditing.setOn(true, animated: false)
             } else {
                 switchAllowEditing.setOn(false, animated: false)
@@ -242,9 +242,9 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         var permission: Int = 0
         
         if sender.isOn {
-            permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
+            permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
         } else {
-            permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
+            permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
         }
         
         networking?.updateShare(idShare: tableShare.idShare, password: nil, permission: permission, note: nil, expirationDate: nil, hideDownload: tableShare.hideDownload)
@@ -255,7 +255,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
-        let permission = UtilsFramework.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: false, andCanCreate: false, andCanChange: false, andCanDelete: false, andCanShare: false, andIsFolder: metadata.directory)
 
         if sender.isOn && permission != tableShare.permissions {
             switchAllowUploadAndEditing.setOn(false, animated: false)
@@ -271,7 +271,7 @@ class NCShareLinkMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
         
         guard let tableShare = self.tableShare else { return }
         guard let metadata = self.metadata else { return }
-        let permission = UtilsFramework.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
+        let permission = CCUtility.getPermissionsValue(byCanEdit: true, andCanCreate: true, andCanChange: true, andCanDelete: true, andCanShare: false, andIsFolder: metadata.directory)
 
         if sender.isOn && permission != tableShare.permissions {
             switchReadOnly.setOn(false, animated: false)
