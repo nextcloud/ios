@@ -86,6 +86,7 @@ class NCShareNetworking: NSObject {
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
+            self.delegate?.shareCompleted()
         }
     }
     
