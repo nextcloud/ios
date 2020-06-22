@@ -45,7 +45,8 @@ class NCShareNetworking: NSObject {
     
     func readShare() {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        NCCommunication.shared.readShares(path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)) { (account, shares, errorCode, errorDescription) in
+        let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+        NCCommunication.shared.readShares(path: filenamePath) { (account, shares, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
              if errorCode == 0 && shares != nil {
                 NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: shares!)
@@ -103,16 +104,16 @@ class NCShareNetworking: NSObject {
     
     func updateShare(idShare: Int, password: String?, permission: Int, note: String?, expirationDate: String?, hideDownload: Bool) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
-        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, hidedownload: hideDownload) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.updateShare(idShare: idShare, password: password, expireDate: expirationDate, permissions: permission, note: note, hideDownload: hideDownload) { (account, share, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
                 self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                //self.delegate?.updateShareWithError(idShare: idShare)
+                self.delegate?.updateShareWithError(idShare: idShare)
             }
-            self.delegate?.shareCompleted()
         }
     }
     
