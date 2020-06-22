@@ -46,7 +46,8 @@ class NCShareNetworking: NSObject {
         NCCommunication.shared.readShares(path: CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)) { (account, shares, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
              if errorCode == 0 && shares != nil {
-                self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: shares!)
+                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: shares!)
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
                 self.appDelegate.activeMain?.tableView?.reloadData()
                 self.appDelegate.activeFavorites?.tableView?.reloadData()
             } else {
@@ -59,31 +60,17 @@ class NCShareNetworking: NSObject {
     func shareLink(password: String?) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-        NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, sharee, errorCode, errorDescription) in
-            
-        }
-        
-        /*
-        OCNetworking.sharedManager()?.share(withAccount: metadata.account, fileName: fileName, password: password, permission: permission, hideDownload: hideDownload, completion: { (account, message, errorCode) in
-            if errorCode == 0 {
-                OCNetworking.sharedManager()?.readShare(withAccount: account, path: CCUtility.returnFileNamePath(fromFileName: self.metadata.fileName, serverUrl: self.metadata.serverUrl, activeUrl: self.activeUrl), completion: { (account, items, message, errorCode) in
-                    NCUtility.sharedInstance.stopActivityIndicator()
-                    if errorCode == 0 {
-                        let itemsOCSharedDto = items as! [OCSharedDto]
-                        self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, items: itemsOCSharedDto)
-                        self.appDelegate.activeMain?.tableView?.reloadData()
-                        self.appDelegate.activeFavorites?.tableView?.reloadData()
-                    } else {
-                        NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
-                    }
-                    self.delegate?.shareCompleted()
-                })
-            } else {
-                NCUtility.sharedInstance.stopActivityIndicator()
-                NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+        NCCommunication.shared.createShareLink(path: filenamePath, password: password) { (account, share, errorCode, errorDescription) in
+            NCUtility.sharedInstance.stopActivityIndicator()
+            if errorCode == 0 && share != nil{
+                NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: self.metadata.account)
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.metadata.serverUrl])
+            } else if errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
             }
-        })
-        */
+            self.delegate?.shareCompleted()
+        }
     }
     
     func unShare(idShare: Int) {

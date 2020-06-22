@@ -2495,7 +2495,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, activeUrl: String, shares: [NCCommunicationShare]) -> [tableShare] {
+    @objc func addShare(account: String, activeUrl: String, shares: [NCCommunicationShare]) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -2503,13 +2503,10 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "/" + share.path
+            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + share.path
+            let serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: fullPath)!
             let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
-            if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
-            }
-            
+                        
             addObject.account = account
             addObject.fileName = fileName
             addObject.serverUrl = serverUrl
@@ -2554,8 +2551,6 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
-        
-        return self.getTableShares(account: account)
     }
     
     @objc func getTableShares(account: String) -> [tableShare] {
