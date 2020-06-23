@@ -116,8 +116,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         collectionView.addSubview(refreshControl)
         
         // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandElement
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
@@ -198,6 +198,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
         //toolbar.tintColor = .gray
     }
