@@ -50,6 +50,18 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
     
+    private let SHARE_TYPE_USER = 0
+    private let SHARE_TYPE_GROUP = 1
+    private let SHARE_TYPE_LINK = 3
+    private let SHARE_TYPE_EMAIL = 4
+    private let SHARE_TYPE_CONTACT = 5
+    private let SHARE_TYPE_REMOTE = 6
+    private let SHARE_TYPE_CIRCLE = 7
+    private let SHARE_TYPE_GUEST = 8
+    private let SHARE_TYPE_REMOTE_GROUP = 9
+    private let SHARE_TYPE_ROOM = 10
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -279,24 +291,46 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
-                    NCCommunication.shared.downloadAvatar(userID: sharee.label, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
+                    NCCommunication.shared.downloadAvatar(userID: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                                cell.imageItem.image = image
+                                DispatchQueue.main.async {
+                                    cell.imageItem.image = image
+                                }
                             }
                         } else {
-                            cell.imageItem.image = UIImage(named: "avatar")
+                            DispatchQueue.main.async {
+                                cell.imageItem.image = UIImage(named: "avatar")
+                            }
                         }
                     }
                 }
             }
 
-            if sharee.shareType == 0 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeUser
-            if sharee.shareType == 1 { cell.imageShareeType.image = UIImage(named: "shareTypeGroup")}    // shareTypeGroup
-            if sharee.shareType == 3 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}     // shareTypeLink
-            if sharee.shareType == 4 { cell.imageShareeType.image = UIImage(named: "shareTypeEmail")}    // shareTypeEmail
-            if sharee.shareType == 5 { cell.imageShareeType.image = UIImage(named: "shareTypeUser")}     // shareTypeContact
-            if sharee.shareType == 6 { cell.imageShareeType.image = UIImage(named: "shareTypeLink")}     // shareTypeRemote
+            switch sharee.shareType {
+            case self.SHARE_TYPE_USER:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            case self.SHARE_TYPE_GROUP:
+                cell.imageShareeType.image = UIImage(named: "shareTypeGroup")
+            case self.SHARE_TYPE_LINK:
+                cell.imageShareeType.image = UIImage(named: "shareTypeLink")
+            case self.SHARE_TYPE_EMAIL:
+                cell.imageShareeType.image = UIImage(named: "shareTypeEmail")
+            case self.SHARE_TYPE_CONTACT:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            case self.SHARE_TYPE_REMOTE:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            case self.SHARE_TYPE_CIRCLE:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            case self.SHARE_TYPE_GUEST:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            case self.SHARE_TYPE_REMOTE_GROUP:
+                cell.imageShareeType.image = UIImage(named: "shareTypeGroup")
+            case self.SHARE_TYPE_ROOM:
+                cell.imageShareeType.image = UIImage(named: "shareTypeRoom")
+            default:
+                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+            }
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
