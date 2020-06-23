@@ -24,11 +24,6 @@
 #import "CCMain.h"
 #import "AppDelegate.h"
 #import "CCSynchronize.h"
-#import "OCActivity.h"
-#import "OCNotifications.h"
-#import "OCNotificationsAction.h"
-#import "OCFrameworkConstants.h"
-#import "OCCapabilities.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 #import "PKDownloadButton.h"
@@ -274,10 +269,6 @@
     }
 
     if (appDelegate.activeAccount.length > 0 && self.serverUrl != nil) {
-        
-        // Get Shares
-        appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount serverUrl:self.serverUrl];
-        
         // Get RichWorkspace
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
         self.richWorkspaceText = directory.richWorkspace;
@@ -1985,6 +1976,9 @@
     // Se non siamo nella dir appropriata esci
     if ([serverUrl isEqualToString:self.serverUrl] == NO || self.serverUrl == nil)
         return;
+    
+    // load share
+    appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount];
     
     // Search Mode
     if (self.searchController.isActive) {

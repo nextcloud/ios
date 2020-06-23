@@ -61,67 +61,13 @@
 		F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */; };
 		F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
-		F711CCB0246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */; };
-		F711CCB1246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */; };
-		F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC79246AC99E0009B204 /* OCFileDto.m */; };
-		F711CCB3246AC99E0009B204 /* OCFileDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC79246AC99E0009B204 /* OCFileDto.m */; };
-		F711CCB4246AC99E0009B204 /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7C246AC99E0009B204 /* HCFeatures.m */; };
-		F711CCB5246AC99E0009B204 /* HCFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7C246AC99E0009B204 /* HCFeatures.m */; };
-		F711CCB6246AC99E0009B204 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */; };
-		F711CCB7246AC99E0009B204 /* OCNotificationsAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */; };
-		F711CCB8246AC99E0009B204 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7F246AC99E0009B204 /* OCUserProfile.m */; };
-		F711CCB9246AC99E0009B204 /* OCUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC7F246AC99E0009B204 /* OCUserProfile.m */; };
-		F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC80246AC99E0009B204 /* OCShareUser.m */; };
-		F711CCBB246AC99E0009B204 /* OCShareUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC80246AC99E0009B204 /* OCShareUser.m */; };
-		F711CCBC246AC99E0009B204 /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC86246AC99E0009B204 /* UtilsFramework.m */; };
-		F711CCBD246AC99E0009B204 /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC86246AC99E0009B204 /* UtilsFramework.m */; };
-		F711CCBE246AC99E0009B204 /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC87246AC99E0009B204 /* NSString+Encode.m */; };
-		F711CCBF246AC99E0009B204 /* NSString+Encode.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC87246AC99E0009B204 /* NSString+Encode.m */; };
-		F711CCC0246AC99E0009B204 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */; };
-		F711CCC1246AC99E0009B204 /* OCRichObjectStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */; };
-		F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC89246AC99E0009B204 /* OCExternalSites.m */; };
-		F711CCC3246AC99E0009B204 /* OCExternalSites.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC89246AC99E0009B204 /* OCExternalSites.m */; };
-		F711CCC4246AC99E0009B204 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC8D246AC99E0009B204 /* OCCapabilities.m */; };
-		F711CCC5246AC99E0009B204 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC8D246AC99E0009B204 /* OCCapabilities.m */; };
-		F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC90246AC99E0009B204 /* NCXMLListParser.m */; };
-		F711CCC7246AC99E0009B204 /* NCXMLListParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC90246AC99E0009B204 /* NCXMLListParser.m */; };
-		F711CCC8246AC99E0009B204 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */; };
-		F711CCC9246AC99E0009B204 /* OCXMLSharedParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */; };
-		F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */; };
-		F711CCCB246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */; };
-		F711CCCC246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */; };
-		F711CCCD246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */; };
-		F711CCCE246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */; };
-		F711CCCF246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */; };
-		F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */; };
-		F711CCD1246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */; };
-		F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */; };
-		F711CCD3246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */; };
-		F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */; };
-		F711CCD5246AC99E0009B204 /* OCWebDAVClient.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */; };
-		F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */; };
-		F711CCD7246AC99E0009B204 /* NSDate+ISO8601.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */; };
-		F711CCD8246AC99E0009B204 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */; };
-		F711CCD9246AC99E0009B204 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */; };
-		F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA4246AC99E0009B204 /* OCActivity.m */; };
-		F711CCDB246AC99E0009B204 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA4246AC99E0009B204 /* OCActivity.m */; };
-		F711CCDC246AC99E0009B204 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA7246AC99E0009B204 /* OCSharedDto.m */; };
-		F711CCDD246AC99E0009B204 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA7246AC99E0009B204 /* OCSharedDto.m */; };
-		F711CCDE246AC99E0009B204 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA8246AC99E0009B204 /* NCComments.m */; };
-		F711CCDF246AC99E0009B204 /* NCComments.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA8246AC99E0009B204 /* NCComments.m */; };
-		F711CCE0246AC99E0009B204 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA9246AC99E0009B204 /* OCCommunication.m */; };
-		F711CCE1246AC99E0009B204 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCA9246AC99E0009B204 /* OCCommunication.m */; };
-		F711CCE2246AC99E0009B204 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCAD246AC99E0009B204 /* OCNotifications.m */; };
-		F711CCE3246AC99E0009B204 /* OCNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = F711CCAD246AC99E0009B204 /* OCNotifications.m */; };
 		F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CCFF246AC9B10009B204 /* DropdownItem.swift */; };
 		F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD00246AC9B10009B204 /* DropUpMenu.swift */; };
 		F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD02246AC9B10009B204 /* DropdownMenu.swift */; };
 		F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD03246AC9B10009B204 /* SectionHeader.swift */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
-		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
-		F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
 		F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
@@ -232,8 +178,6 @@
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
 		F77B0DF51D118A16002130FE /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
-		F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */; };
-		F77B0E141D118A16002130FE /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
@@ -458,61 +402,6 @@
 		F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCDetailNavigationController+Menu.swift"; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
-		F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCRichDocumentTemplate.m; sourceTree = "<group>"; };
-		F711CC77246AC99E0009B204 /* OCActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCActivity.h; sourceTree = "<group>"; };
-		F711CC78246AC99E0009B204 /* OCCapabilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCapabilities.h; sourceTree = "<group>"; };
-		F711CC79246AC99E0009B204 /* OCFileDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCFileDto.m; sourceTree = "<group>"; };
-		F711CC7A246AC99E0009B204 /* NCComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCComments.h; sourceTree = "<group>"; };
-		F711CC7B246AC99E0009B204 /* OCSharedDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCSharedDto.h; sourceTree = "<group>"; };
-		F711CC7C246AC99E0009B204 /* HCFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HCFeatures.m; sourceTree = "<group>"; };
-		F711CC7D246AC99E0009B204 /* OCCommunication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCCommunication.h; sourceTree = "<group>"; };
-		F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotificationsAction.m; sourceTree = "<group>"; };
-		F711CC7F246AC99E0009B204 /* OCUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCUserProfile.m; sourceTree = "<group>"; };
-		F711CC80246AC99E0009B204 /* OCShareUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCShareUser.m; sourceTree = "<group>"; };
-		F711CC81246AC99E0009B204 /* OCNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotifications.h; sourceTree = "<group>"; };
-		F711CC83246AC99E0009B204 /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
-		F711CC84246AC99E0009B204 /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
-		F711CC85246AC99E0009B204 /* NSString+Encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Encode.h"; sourceTree = "<group>"; };
-		F711CC86246AC99E0009B204 /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
-		F711CC87246AC99E0009B204 /* NSString+Encode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Encode.m"; sourceTree = "<group>"; };
-		F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCRichObjectStrings.m; sourceTree = "<group>"; };
-		F711CC89246AC99E0009B204 /* OCExternalSites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCExternalSites.m; sourceTree = "<group>"; };
-		F711CC8A246AC99E0009B204 /* OCFileDto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFileDto.h; sourceTree = "<group>"; };
-		F711CC8B246AC99E0009B204 /* OCFrameworkConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCFrameworkConstants.h; sourceTree = "<group>"; };
-		F711CC8C246AC99E0009B204 /* OCErrorMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCErrorMsg.h; sourceTree = "<group>"; };
-		F711CC8D246AC99E0009B204 /* OCCapabilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCapabilities.m; sourceTree = "<group>"; };
-		F711CC90246AC99E0009B204 /* NCXMLListParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLListParser.m; sourceTree = "<group>"; };
-		F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLSharedParser.m; sourceTree = "<group>"; };
-		F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLGetAppPasswordParser.m; sourceTree = "<group>"; };
-		F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCXMLCommentsParser.m; sourceTree = "<group>"; };
-		F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLShareByLinkParser.m; sourceTree = "<group>"; };
-		F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCXMLServerErrorsParser.m; sourceTree = "<group>"; };
-		F711CC96246AC99E0009B204 /* OCXMLSharedParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLSharedParser.h; sourceTree = "<group>"; };
-		F711CC97246AC99E0009B204 /* NCXMLListParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLListParser.h; sourceTree = "<group>"; };
-		F711CC98246AC99E0009B204 /* NCXMLCommentsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLCommentsParser.h; sourceTree = "<group>"; };
-		F711CC99246AC99E0009B204 /* NCXMLGetAppPasswordParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCXMLGetAppPasswordParser.h; sourceTree = "<group>"; };
-		F711CC9A246AC99E0009B204 /* OCXMLServerErrorsParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLServerErrorsParser.h; sourceTree = "<group>"; };
-		F711CC9B246AC99E0009B204 /* OCXMLShareByLinkParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCXMLShareByLinkParser.h; sourceTree = "<group>"; };
-		F711CC9C246AC99E0009B204 /* NSDate+ISO8601.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+ISO8601.h"; sourceTree = "<group>"; };
-		F711CC9D246AC99E0009B204 /* NSDate+RFC1123.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+RFC1123.h"; sourceTree = "<group>"; };
-		F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCHTTPRequestOperation.m; sourceTree = "<group>"; };
-		F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCWebDAVClient.m; sourceTree = "<group>"; };
-		F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+ISO8601.m"; sourceTree = "<group>"; };
-		F711CCA1246AC99E0009B204 /* OCWebDAVClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCWebDAVClient.h; sourceTree = "<group>"; };
-		F711CCA2246AC99E0009B204 /* OCHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCHTTPRequestOperation.h; sourceTree = "<group>"; };
-		F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+RFC1123.m"; sourceTree = "<group>"; };
-		F711CCA4246AC99E0009B204 /* OCActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCActivity.m; sourceTree = "<group>"; };
-		F711CCA5246AC99E0009B204 /* NCRichDocumentTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRichDocumentTemplate.h; sourceTree = "<group>"; };
-		F711CCA6246AC99E0009B204 /* HCFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HCFeatures.h; sourceTree = "<group>"; };
-		F711CCA7246AC99E0009B204 /* OCSharedDto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCSharedDto.m; sourceTree = "<group>"; };
-		F711CCA8246AC99E0009B204 /* NCComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCComments.m; sourceTree = "<group>"; };
-		F711CCA9246AC99E0009B204 /* OCCommunication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCCommunication.m; sourceTree = "<group>"; };
-		F711CCAA246AC99E0009B204 /* OCNotificationsAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNotificationsAction.h; sourceTree = "<group>"; };
-		F711CCAB246AC99E0009B204 /* OCExternalSites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCExternalSites.h; sourceTree = "<group>"; };
-		F711CCAC246AC99E0009B204 /* OCRichObjectStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRichObjectStrings.h; sourceTree = "<group>"; };
-		F711CCAD246AC99E0009B204 /* OCNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNotifications.m; sourceTree = "<group>"; };
-		F711CCAE246AC99E0009B204 /* OCShareUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCShareUser.h; sourceTree = "<group>"; };
-		F711CCAF246AC99E0009B204 /* OCUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCUserProfile.h; sourceTree = "<group>"; };
 		F711CCFF246AC9B10009B204 /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
 		F711CD00246AC9B10009B204 /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
 		F711CD01246AC9B10009B204 /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
@@ -577,8 +466,6 @@
 		F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtilityFileSystem.swift; sourceTree = "<group>"; };
 		F74AFCE822E8B024003DE61F /* FSCalendar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FSCalendar.framework; path = Carthage/Build/iOS/FSCalendar.framework; sourceTree = "<group>"; };
 		F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenSSL.framework; path = Carthage/Build/iOS/OpenSSL.framework; sourceTree = "<group>"; };
-		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
-		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F7501C302212E57400FB1415 /* NCMedia.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMedia.storyboard; sourceTree = "<group>"; };
 		F7501C312212E57400FB1415 /* NCMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
@@ -622,8 +509,6 @@
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
-		F76C3B871C638A4C00DC4301 /* CCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCError.h; sourceTree = "<group>"; };
-		F76C3B881C638A4C00DC4301 /* CCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCError.m; sourceTree = "<group>"; };
 		F76D3CF02428B40E005DFA87 /* NCViewerPDFSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerPDFSearch.swift; sourceTree = "<group>"; };
 		F76D3CF22428B94E005DFA87 /* NCViewerPDFSearchCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCViewerPDFSearchCell.xib; sourceTree = "<group>"; };
 		F76D3CF42428D0C0005DFA87 /* NCViewerPDF.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerPDF.storyboard; sourceTree = "<group>"; };
@@ -973,7 +858,6 @@
 		F70F02A81C889183008DAB36 /* Libraries external */ = {
 			isa = PBXGroup;
 			children = (
-				F711CC75246AC99E0009B204 /* OCCommunicationLib */,
 				F711CCFE246AC9B10009B204 /* DropdownMenu */,
 				F704FA5A232A341800BBA952 /* Imagemeter */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
@@ -1002,92 +886,6 @@
 				F749C10823C4A5330027D966 /* NCIntroViewController.swift */,
 			);
 			path = Intro;
-			sourceTree = "<group>";
-		};
-		F711CC75246AC99E0009B204 /* OCCommunicationLib */ = {
-			isa = PBXGroup;
-			children = (
-				F711CC76246AC99E0009B204 /* NCRichDocumentTemplate.m */,
-				F711CC77246AC99E0009B204 /* OCActivity.h */,
-				F711CC78246AC99E0009B204 /* OCCapabilities.h */,
-				F711CC79246AC99E0009B204 /* OCFileDto.m */,
-				F711CC7A246AC99E0009B204 /* NCComments.h */,
-				F711CC7B246AC99E0009B204 /* OCSharedDto.h */,
-				F711CC7C246AC99E0009B204 /* HCFeatures.m */,
-				F711CC7D246AC99E0009B204 /* OCCommunication.h */,
-				F711CC7E246AC99E0009B204 /* OCNotificationsAction.m */,
-				F711CC7F246AC99E0009B204 /* OCUserProfile.m */,
-				F711CC80246AC99E0009B204 /* OCShareUser.m */,
-				F711CC81246AC99E0009B204 /* OCNotifications.h */,
-				F711CC82246AC99E0009B204 /* Utils */,
-				F711CC88246AC99E0009B204 /* OCRichObjectStrings.m */,
-				F711CC89246AC99E0009B204 /* OCExternalSites.m */,
-				F711CC8A246AC99E0009B204 /* OCFileDto.h */,
-				F711CC8B246AC99E0009B204 /* OCFrameworkConstants.h */,
-				F711CC8C246AC99E0009B204 /* OCErrorMsg.h */,
-				F711CC8D246AC99E0009B204 /* OCCapabilities.m */,
-				F711CC8E246AC99E0009B204 /* OCWebDavClient */,
-				F711CCA4246AC99E0009B204 /* OCActivity.m */,
-				F711CCA5246AC99E0009B204 /* NCRichDocumentTemplate.h */,
-				F711CCA6246AC99E0009B204 /* HCFeatures.h */,
-				F711CCA7246AC99E0009B204 /* OCSharedDto.m */,
-				F711CCA8246AC99E0009B204 /* NCComments.m */,
-				F711CCA9246AC99E0009B204 /* OCCommunication.m */,
-				F711CCAA246AC99E0009B204 /* OCNotificationsAction.h */,
-				F711CCAB246AC99E0009B204 /* OCExternalSites.h */,
-				F711CCAC246AC99E0009B204 /* OCRichObjectStrings.h */,
-				F711CCAD246AC99E0009B204 /* OCNotifications.m */,
-				F711CCAE246AC99E0009B204 /* OCShareUser.h */,
-				F711CCAF246AC99E0009B204 /* OCUserProfile.h */,
-			);
-			path = OCCommunicationLib;
-			sourceTree = "<group>";
-		};
-		F711CC82246AC99E0009B204 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				F711CC83246AC99E0009B204 /* OCConstants.h */,
-				F711CC84246AC99E0009B204 /* UtilsFramework.h */,
-				F711CC85246AC99E0009B204 /* NSString+Encode.h */,
-				F711CC86246AC99E0009B204 /* UtilsFramework.m */,
-				F711CC87246AC99E0009B204 /* NSString+Encode.m */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		F711CC8E246AC99E0009B204 /* OCWebDavClient */ = {
-			isa = PBXGroup;
-			children = (
-				F711CC8F246AC99E0009B204 /* Parsers */,
-				F711CC9C246AC99E0009B204 /* NSDate+ISO8601.h */,
-				F711CC9D246AC99E0009B204 /* NSDate+RFC1123.h */,
-				F711CC9E246AC99E0009B204 /* OCHTTPRequestOperation.m */,
-				F711CC9F246AC99E0009B204 /* OCWebDAVClient.m */,
-				F711CCA0246AC99E0009B204 /* NSDate+ISO8601.m */,
-				F711CCA1246AC99E0009B204 /* OCWebDAVClient.h */,
-				F711CCA2246AC99E0009B204 /* OCHTTPRequestOperation.h */,
-				F711CCA3246AC99E0009B204 /* NSDate+RFC1123.m */,
-			);
-			path = OCWebDavClient;
-			sourceTree = "<group>";
-		};
-		F711CC8F246AC99E0009B204 /* Parsers */ = {
-			isa = PBXGroup;
-			children = (
-				F711CC90246AC99E0009B204 /* NCXMLListParser.m */,
-				F711CC91246AC99E0009B204 /* OCXMLSharedParser.m */,
-				F711CC92246AC99E0009B204 /* NCXMLGetAppPasswordParser.m */,
-				F711CC93246AC99E0009B204 /* NCXMLCommentsParser.m */,
-				F711CC94246AC99E0009B204 /* OCXMLShareByLinkParser.m */,
-				F711CC95246AC99E0009B204 /* OCXMLServerErrorsParser.m */,
-				F711CC96246AC99E0009B204 /* OCXMLSharedParser.h */,
-				F711CC97246AC99E0009B204 /* NCXMLListParser.h */,
-				F711CC98246AC99E0009B204 /* NCXMLCommentsParser.h */,
-				F711CC99246AC99E0009B204 /* NCXMLGetAppPasswordParser.h */,
-				F711CC9A246AC99E0009B204 /* OCXMLServerErrorsParser.h */,
-				F711CC9B246AC99E0009B204 /* OCXMLShareByLinkParser.h */,
-			);
-			path = Parsers;
 			sourceTree = "<group>";
 		};
 		F711CCFE246AC9B10009B204 /* DropdownMenu */ = {
@@ -1164,8 +962,6 @@
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */,
-				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
-				F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1433,8 +1229,6 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F76C3B871C638A4C00DC4301 /* CCError.h */,
-				F76C3B881C638A4C00DC4301 /* CCError.m */,
 				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
 				F7A54C351C6267B500E2C8BF /* CCExifGeo.m */,
 				F76C3B831C6388BC00DC4301 /* CCGraphics.h */,
@@ -2128,55 +1922,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F71459B81D12E3B700CAFEEC /* CCError.m in Sources */,
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F73D5E48246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
-				F711CCBD246AC99E0009B204 /* UtilsFramework.m in Sources */,
-				F711CCE3246AC99E0009B204 /* OCNotifications.m in Sources */,
 				F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
-				F711CCDB246AC99E0009B204 /* OCActivity.m in Sources */,
-				F711CCB7246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
-				F711CCD1246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
-				F711CCB5246AC99E0009B204 /* HCFeatures.m in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
-				F711CCE1246AC99E0009B204 /* OCCommunication.m in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F74AF3A5247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
-				F711CCBF246AC99E0009B204 /* NSString+Encode.m in Sources */,
-				F711CCD7246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
 				F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
-				F71459C91D12E3B700CAFEEC /* OCNetworking.m in Sources */,
-				F711CCC5246AC99E0009B204 /* OCCapabilities.m in Sources */,
-				F711CCDD246AC99E0009B204 /* OCSharedDto.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
-				F711CCC7246AC99E0009B204 /* NCXMLListParser.m in Sources */,
-				F711CCD9246AC99E0009B204 /* NSDate+RFC1123.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
 				F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */,
-				F711CCC1246AC99E0009B204 /* OCRichObjectStrings.m in Sources */,
-				F711CCB9246AC99E0009B204 /* OCUserProfile.m in Sources */,
-				F711CCB3246AC99E0009B204 /* OCFileDto.m in Sources */,
 				F765609023BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
-				F711CCDF246AC99E0009B204 /* NCComments.m in Sources */,
-				F711CCCF246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */,
-				F711CCD3246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
 				F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */,
-				F711CCC9246AC99E0009B204 /* OCXMLSharedParser.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
-				F711CCC3246AC99E0009B204 /* OCExternalSites.m in Sources */,
-				F711CCCB246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
-				F711CCB1246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */,
-				F711CCBB246AC99E0009B204 /* OCShareUser.m in Sources */,
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
-				F711CCD5246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
-				F711CCCD246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2210,7 +1976,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
-				F711CCB6246AC99E0009B204 /* OCNotificationsAction.m in Sources */,
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
@@ -2219,11 +1984,8 @@
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
-				F711CCBA246AC99E0009B204 /* OCShareUser.m in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
-				F711CCE2246AC99E0009B204 /* OCNotifications.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
-				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				370D26AD248A3BB800121797 /* CCCellMainTransfer.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
@@ -2231,20 +1993,16 @@
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
 				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
-				F711CCDC246AC99E0009B204 /* OCSharedDto.m in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
 				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
-				F711CCD6246AC99E0009B204 /* NSDate+ISO8601.m in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
-				F711CCDE246AC99E0009B204 /* NCComments.m in Sources */,
-				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,
@@ -2259,25 +2017,19 @@
 				F749C10C23C4A5340027D966 /* NCIntroViewController.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */,
-				F711CCBC246AC99E0009B204 /* UtilsFramework.m in Sources */,
 				3757A35523D9D76300EC369E /* NCMenuPanelController.swift in Sources */,
 				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
-				F711CCBE246AC99E0009B204 /* NSString+Encode.m in Sources */,
-				F711CCB8246AC99E0009B204 /* OCUserProfile.m in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
-				F711CCCE246AC99E0009B204 /* OCXMLShareByLinkParser.m in Sources */,
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */,
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
-				F711CCE0246AC99E0009B204 /* OCCommunication.m in Sources */,
-				F711CCC0246AC99E0009B204 /* OCRichObjectStrings.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
 				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
@@ -2287,21 +2039,17 @@
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
 				F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */,
-				F711CCB2246AC99E0009B204 /* OCFileDto.m in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
-				F711CCD4246AC99E0009B204 /* OCWebDAVClient.m in Sources */,
 				3781B9B223DB2B9F006B4B1D /* CCMain+Menu.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
-				F711CCC6246AC99E0009B204 /* NCXMLListParser.m in Sources */,
 				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
-				F711CCC4246AC99E0009B204 /* OCCapabilities.m in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F73D5E47246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
@@ -2311,11 +2059,9 @@
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
 				F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */,
-				F711CCB4246AC99E0009B204 /* HCFeatures.m in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */,
-				F711CCC2246AC99E0009B204 /* OCExternalSites.m in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
@@ -2323,13 +2069,11 @@
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
-				F711CCD2246AC99E0009B204 /* OCHTTPRequestOperation.m in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
-				F711CCC8246AC99E0009B204 /* OCXMLSharedParser.m in Sources */,
 				F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
 				F7E09CE723E308AD00FB3E9E /* NCMasterNavigationController.swift in Sources */,
@@ -2341,7 +2085,6 @@
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				3781B9B423DB2BC9006B4B1D /* CCFavorites+Menu.swift in Sources */,
-				F711CCD8246AC99E0009B204 /* NSDate+RFC1123.m in Sources */,
 				F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
@@ -2350,16 +2093,13 @@
 				F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */,
-				F711CCCA246AC99E0009B204 /* NCXMLGetAppPasswordParser.m in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				370D26B1248A3E1A00121797 /* CCCellMain.swift in Sources */,
-				F711CCDA246AC99E0009B204 /* OCActivity.m in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
-				F711CCD0246AC99E0009B204 /* OCXMLServerErrorsParser.m in Sources */,
 				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
@@ -2367,7 +2107,6 @@
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
-				F711CCCC246AC99E0009B204 /* NCXMLCommentsParser.m in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
 				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
@@ -2377,7 +2116,6 @@
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
-				F711CCB0246AC99E0009B204 /* NCRichDocumentTemplate.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

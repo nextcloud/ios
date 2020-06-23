@@ -75,7 +75,7 @@ class NCShareCommon: NSObject {
         shareLinkMenuView.metadata = metadata
         shareLinkMenuView.viewWindow = viewWindow
         shareLinkMenuView.shareViewController = shareViewController
-        shareLinkMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
+        shareLinkMenuView.reloadData(idShare: tableShare?.idShare ?? 0)
         shareLinkMenuView.translatesAutoresizingMaskIntoConstraints = false
         viewWindow.addSubview(shareLinkMenuView)
         
@@ -119,7 +119,7 @@ class NCShareCommon: NSObject {
         shareUserMenuView.metadata = metadata
         shareUserMenuView.viewWindow = viewWindow
         shareUserMenuView.shareViewController = shareViewController
-        shareUserMenuView.reloadData(idRemoteShared: tableShare?.idRemoteShared ?? 0)
+        shareUserMenuView.reloadData(idShare: tableShare?.idShare ?? 0)
         shareUserMenuView.translatesAutoresizingMaskIntoConstraints = false
         viewWindow.addSubview(shareUserMenuView)
 
@@ -183,8 +183,8 @@ class NCShareCommon: NSObject {
         
         if tableShare.token.hasPrefix("http://") || tableShare.token.hasPrefix("https://") {
             url = tableShare.token
-        } else if tableShare.url != "" {
-            url = tableShare.url
+        } else if tableShare.path != "" {
+            url = tableShare.path
         } else {
             url = appDelegate.activeUrl + "/" + k_share_link_middle_part_url_after_version_8 + tableShare.token
         }

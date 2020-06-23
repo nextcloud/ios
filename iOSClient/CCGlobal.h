@@ -68,7 +68,7 @@
 #define k_flowEndpoint                                  @"/index.php/login/flow"
 
 // Avatar
-#define k_avatar_size                                   128
+#define k_avatar_size                                   129
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
@@ -85,7 +85,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         121
+#define k_databaseSchemaVersion                         132
 
 // Intro selector
 #define k_intro_login                                   0
@@ -251,8 +251,20 @@
 #define k_detail_Toolbar_Height                         49
 
 
-// Template Nextcloud Text
+//Share permission
+//permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
+#define k_read_share_permission                         1
+#define k_update_share_permission                       2
+#define k_create_share_permission                       4
+#define k_delete_share_permission                       8
+#define k_share_share_permission                        16
 
+#define k_min_file_share_permission                     1
+#define k_max_file_share_permission                     19
+#define k_min_folder_share_permission                   1
+#define k_max_folder_share_permission                   31
+#define k_default_file_remote_share_permission_no_support_share_option      3
+#define k_default_folder_remote_share_permission_no_support_share_option    15
 
 // Layout
 #define k_layout_list                                   @"typeLayoutList"

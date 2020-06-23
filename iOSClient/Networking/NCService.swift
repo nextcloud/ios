@@ -160,19 +160,17 @@ class NCService: NSObject {
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
                 if (isFilesSharingEnabled && self.appDelegate.activeMain != nil) {
-                    
-                    OCNetworking.sharedManager()?.readShare(withAccount: account, completion: { (account, items, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            
-                            let itemsOCSharedDto = items as! [OCSharedDto]
-                            NCManageDatabase.sharedInstance.deleteTableShare(account: account!)
-                            self.appDelegate.shares = NCManageDatabase.sharedInstance.addShare(account: account!, activeUrl: self.appDelegate.activeUrl, items: itemsOCSharedDto)
-                            
+                    NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
+                        if errorCode == 0 {
+                            NCManageDatabase.sharedInstance.deleteTableShare(account: account)
+                            if shares != nil {
+                                NCManageDatabase.sharedInstance.addShare(account: account, activeUrl: self.appDelegate.activeUrl, shares: shares!)
+                            }
+                            self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
                         } else {
-                            
-                            NCContentPresenter.shared.messageNotification("_share_", description: message, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
-                    })
+                    }
                 }
             
                 // NCTextObtainEditorDetails
@@ -224,32 +222,6 @@ class NCService: NSObject {
     //MARK: - Thirt Part
     
     private func requestHC() {
-        
-        let professions = CCUtility.getHCBusinessType()
-        if professions != nil && professions!.count > 0 {
-            OCNetworking.sharedManager()?.putHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, address: nil, businesssize: nil, businesstype: professions, city: nil, company: nil, country: nil, displayname: nil, email: nil, phone: nil, role_: nil, twitter: nil, website: nil, zip: nil, completion: { (account, message, errorCode) in
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    CCUtility.setHCBusinessType(nil)
-                    OCNetworking.sharedManager()?.getHCUserProfile(withAccount: self.appDelegate.activeAccount, serverUrl: self.appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
-                            _ = NCManageDatabase.sharedInstance.setAccountUserProfileHC(businessSize: userProfile!.businessSize, businessType: userProfile!.businessType, city: userProfile!.city, company: userProfile!.company, country: userProfile!.country, role: userProfile!.role, zip: userProfile!.zip)
-                        }
-                    })
-                }
-            })
-        } else {
-            OCNetworking.sharedManager()?.getHCUserProfile(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, userProfile, message, errorCode) in
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
-                    _ = NCManageDatabase.sharedInstance.setAccountUserProfileHC(businessSize: userProfile!.businessSize, businessType: userProfile!.businessType, city: userProfile!.city, company: userProfile!.company, country: userProfile!.country, role: userProfile!.role, zip: userProfile!.zip)
-                }
-            })
-        }
-        
-        OCNetworking.sharedManager()?.getHCFeatures(withAccount: appDelegate.activeAccount, serverUrl: appDelegate.activeUrl, completion: { (account, features, message, errorCode) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                _ = NCManageDatabase.sharedInstance.setAccountHCFeatures(features!)
-            }
-        })
-        
+
     }
 }
