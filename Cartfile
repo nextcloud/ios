@@ -20,7 +20,6 @@ github "ivanbruel/MarkdownKit"
 github "getsentry/sentry-cocoa"
 github "FabrizioBrancati/Queuer"
 
-github "https://github.com/marinofaggiana/AFNetworking" "master"
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
 github "https://github.com/marinofaggiana/XLForm" "master"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.7"
