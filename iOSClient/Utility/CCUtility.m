@@ -128,7 +128,9 @@
         return @"none";
     }
     
-    return groupby;
+    return @"none";
+    
+    //return groupby;
 }
 
 + (void)setGroupBySettings:(NSString *)groupby
