@@ -236,7 +236,7 @@
 "_favorite_offline_footer_"     = "Making all favorites available offline may take a while and use a lot of memory while doing it.";
 "_advanced_"                    = "Advanced";
 "_disable_files_app_"           = "Disable Files App integration";
-"_disable_files_app_footer_"    = "Do not permit the access of files across the Apple Files application";
+"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application";
 "_trial_"                       = "Trial";
 "_trial_expired_day_"           = "Days remaining";
 "_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
@@ -250,7 +250,7 @@
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
-"_autoupload_description_"          = "The new photos/videos will be uploaded in your Cloud";
+"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your Nextcloud";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
 "_autoupload_background_msg_"       = "Due to iOS restrictions, it is not yet possible to perform background processes, unless GPS services are activated. Once the cell in the cellular network is changed, the system wakes up for a short time and checks for new photos to upload to the cloud.";
@@ -336,7 +336,7 @@
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "In case of a successful automatic upload, a message confirmation is required to delete the photos or videos from the camera roll. Remember that the deleted photos or videos are available in the Trash for 30 days.";
+"_remove_photo_CameraRoll_desc_"            = "After successful automatic uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
 
 // Utility
 
@@ -365,14 +365,14 @@
 "_sorted_by_name_a_z_"          = "Sorted by name (from A to Z)";
 "_order_by_name_z_a_"           = "Sort by name (from Z to A)";
 "_sorted_by_name_z_a_"          = "Sorted by name (from Z to A)";
-"_order_by_date_more_recent_"   = "Sort from the most recent";
-"_sorted_by_date_more_recent_"  = "Sorted from the most recent";
-"_order_by_date_less_recent_"   = "Sort from the less recent";
-"_sorted_by_date_less_recent_"  = "Sorted from the less recent";
-"_order_by_size_smallest_"      = "Sort from the smallest";
-"_sorted_by_size_smallest_"     = "Sorted from the smallest";
-"_order_by_size_largest_"       = "Sort from the largest";
-"_sorted_by_size_largest_"      = "Sorted from the largest";
+"_order_by_date_more_recent_"   = "Sort by newest";
+"_sorted_by_date_more_recent_"  = "Sorted by newest";
+"_order_by_date_less_recent_"   = "Sort by oldest";
+"_sorted_by_date_less_recent_"  = "Sorted by oldest";
+"_order_by_size_smallest_"      = "Sort by smallest";
+"_sorted_by_size_smallest_"     = "Sorted by smallest";
+"_order_by_size_largest_"       = "Sort by largest";
+"_sorted_by_size_largest_"      = "Sorted by largest";
 "_delete_selected_files_"       = "Delete files";
 "_move_selected_files_"         = "Move files";
 "_move_or_copy_selected_files_" = "Move or copy files";
@@ -616,7 +616,7 @@
 // Notification
 
 "_notification_"                    = "Notification";
-"_no_notification_"                 = "No notification yet";
+"_no_notification_"                 = "No notifications yet";
 
 // Photo Browser
 
