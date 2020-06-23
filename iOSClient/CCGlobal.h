@@ -68,7 +68,7 @@
 #define k_flowEndpoint                                  @"/index.php/login/flow"
 
 // Avatar
-#define k_avatar_size                                   129
+#define k_avatar_size                                   128
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
