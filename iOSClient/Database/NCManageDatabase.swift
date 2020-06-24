@@ -2276,7 +2276,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int) -> tableMetadata? {
+    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int, freeze: Bool) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2285,7 +2285,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableMetadata.init(value: result)
+        if freeze {
+            return result.freeze()
+        } else {
+            return tableMetadata.init(value: result)
+        }
     }
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {

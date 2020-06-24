@@ -305,7 +305,7 @@ import Alamofire
                 NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                 #endif
             } else if background {
-                uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
+                uploadFileInBackground(ocId: metadataForUpload!.ocId, account: account, completion: completion)
             } else {
                 uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
             }
@@ -336,7 +336,7 @@ import Alamofire
                     NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
                     #endif
                 } else if background {
-                    self.uploadFileInBackground(metadata: metadataForUpload!, account: account, completion: completion)
+                    self.uploadFileInBackground(ocId: metadataForUpload!.ocId, account: account, completion: completion)
                 } else {
                     self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
                 }
@@ -350,8 +350,12 @@ import Alamofire
         completion(0, "")
     }
     
-    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFileInBackground(ocId: String, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
+            completion(0, "")
+            return
+        }
         var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -363,11 +367,8 @@ import Alamofire
         }
         
         if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: "", session: session!) {
-         
-            metadata.status = Int(k_metadataStatusUploading)
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = task.taskIdentifier
-            NCManageDatabase.sharedInstance.addMetadata(metadata)
+                     
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
             
             #if !EXTENSION
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
@@ -385,7 +386,7 @@ import Alamofire
     func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
         delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, freeze: true) {
                         
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
         }
@@ -396,7 +397,7 @@ import Alamofire
             delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         } else {
             
-            guard var metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) else {
+            guard var metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, freeze: false) else {
                 return
             }
             
@@ -437,12 +438,8 @@ import Alamofire
                 
                 if metadata.status == k_metadataStatusUploadForcedStart {
                     
-                    metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground
-                    metadata.sessionError = ""
-                    metadata.sessionTaskIdentifier = 0
-                    metadata.status = Int(k_metadataStatusInUpload)
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
                     
-                    if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
                     NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                                             
                 } else {
@@ -469,10 +466,7 @@ import Alamofire
                                         
             } else {
                 
-                metadata.session = ""
-                metadata.sessionError = errorDescription
-                metadata.sessionTaskIdentifier = 0
-                metadata.status = Int(k_metadataStatusUploadError)
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: "", sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                 
