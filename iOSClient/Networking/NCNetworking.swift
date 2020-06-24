@@ -184,32 +184,32 @@ import Alamofire
         }
     }
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
+    @objc func download(ocId: String, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
         
-        var metadata = metadata
-        let serverUrl = metadata.serverUrl
-        let serverUrlFileName = serverUrl + "/" + metadata.fileName
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
+            completion(Int(k_CCErrorInternalError))
+            return
+        }
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
-        
-        metadata.status = Int(k_metadataStatusInDownload)
-        metadata.session = NCCommunicationCommon.shared.sessionIdentifierDownload
-        if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-        
+                
+        NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusInDownload))
+            
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
-            metadata.status = Int(k_metadataStatusDownloading)
-            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, status: Int(k_metadataStatusDownloading))
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account":metadata.account])
             
         }, progressHandler: { (progress) in
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
                         
@@ -217,18 +217,11 @@ import Alamofire
            
             if errorCode == 0 {
                
-                metadata.etag = etag ?? ""
-                if setFavorite { metadata.favorite = true }
-                
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.status = Int(k_metadataStatusNormal)
-                
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-
+                
                 #if !EXTENSION
-                if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, serverUrl)) {
+                if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
@@ -238,20 +231,12 @@ import Alamofire
                 
             } else if error?.isExplicitlyCancelledError ?? false {
                                 
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.status = Int(k_metadataStatusNormal)
-                
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-            
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal))
+                                
             } else {
+                                
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: errorDescription, sessionSelector: selector, status: Int(k_metadataStatusDownloadError))
                 
-                metadata.session = ""
-                metadata.sessionError = errorDescription
-                metadata.status = Int(k_metadataStatusDownloadError)
-                
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
-
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)

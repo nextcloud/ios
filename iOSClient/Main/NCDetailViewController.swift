@@ -361,7 +361,7 @@ class NCDetailViewController: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
 
-                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                NCNetworking.shared.download(ocId: metadata.ocId, selector: "") { (_) in }
 
                 if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
                     metadatas[index] = self.metadata!
@@ -671,7 +671,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             
             if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND session != ''", metadata.ocId)) == nil {
                 
-                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+                NCNetworking.shared.download(ocId: metadata.ocId, selector: "") { (_) in }
             }
             
             completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
