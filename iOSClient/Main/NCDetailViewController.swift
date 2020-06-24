@@ -441,7 +441,7 @@ class NCDetailViewController: UIViewController {
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
                 
-        self.metadata = metadata
+        self.metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId), freeze: true)
         self.selector = selector
         self.backgroundView.image = nil
         

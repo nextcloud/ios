@@ -36,7 +36,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         return instance
     }()
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadataEditPhoto: tableMetadata?
     var docController: UIDocumentInteractionController?
 
@@ -83,7 +82,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     //MARK: -
     
     @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceocIdIndexPath: NSDictionary, tableView: UITableView, viewController: UIViewController, serverUrlViewController: String?) {
-        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
         if viewController.viewIfLoaded?.window == nil {
             return
         }
@@ -100,7 +100,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         let totalBytes = dic["totalBytes"] as? Double ?? 0
         let totalBytesExpected = dic["totalBytesExpected"] as? Double ?? 0
         
-        if (account != self.appDelegate.activeAccount! as NSString) && !(viewController is CCTransfers) {
+        if (account != appDelegate.activeAccount! as NSString) && !(viewController is CCTransfers) {
             return
         }
         
@@ -184,6 +184,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     }
     
     @objc func cancelAllTransfer() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
@@ -217,6 +218,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
     func collectionViewCellForItemAt(_ indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController) {
         
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         var tableShare: tableShare?
         
         // Share
@@ -338,7 +340,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                     cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                        if errorCode == 0 && account == appDelegate.activeAccount {
                             cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
                     }
@@ -454,7 +456,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     }
     
     @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, tableShare: tableShare?) -> UITableViewCell {
-        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
         // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageOcId(metadata.ocId)
@@ -587,7 +590,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                         }
                     } else {
                         NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            if errorCode == 0 && account == appDelegate.activeAccount {
                                 cell.shared.image = NCUtility.sharedInstance.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                             }
                         }
@@ -795,6 +798,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
     func openIn(metadata: tableMetadata, selector: String) {
         
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
         docController?.delegate = self
         
@@ -805,7 +809,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
             
         } else {
-            guard let splitViewController = self.appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
+            guard let splitViewController = appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
                 return }
     
             docController?.presentOptionsMenu(from: frame, in: view, animated: true)
@@ -829,6 +833,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
     func startAudioRecorder() {
     
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
         let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
     
@@ -837,17 +842,18 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         viewController.modalTransitionStyle = .crossDissolve
         viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
     
-        self.appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
+        appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
     }
     
     func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
         
         guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
         viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        self.appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
     func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
