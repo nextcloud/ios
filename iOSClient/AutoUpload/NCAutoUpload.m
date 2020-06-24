@@ -442,19 +442,20 @@
             [metadataFull addObject:metadataForUpload];
                        
             // Update database Auto Upload
-            if ([selector isEqualToString:selectorUploadAutoUpload])
-                [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+                });
+            }
         }
     }
     
-    // Insert all assets (Full) in tableQueueUpload
-    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
-    
-        [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
-    }
-    
-    // end loadingcand reload
     dispatch_async(dispatch_get_main_queue(), ^{
+        // Insert all assets (Full) in tableQueueUpload
+        if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
+            [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
+        }
+        // end loadingcand reload
         [_hud hideHud];
     });    
 }
