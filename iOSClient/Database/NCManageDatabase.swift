@@ -1806,6 +1806,7 @@ class NCManageDatabase: NSObject {
         metadata.typeFile = results.typeFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
+        
         return metadata
     }
     
@@ -2119,6 +2120,22 @@ class NCManageDatabase: NSObject {
         }
         
         return tableMetadata.init(value: result)
+    }
+    
+    @objc func getMetadata(predicate: NSPredicate, freeze: Bool) -> tableMetadata? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+            return nil
+        }
+        
+        if freeze {
+            return result.freeze()
+        } else {
+            return result
+        }
     }
     
     @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
