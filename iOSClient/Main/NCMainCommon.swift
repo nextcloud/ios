@@ -139,7 +139,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
             NCNetworking.shared.cancelDownload(metadata: metadata)
         } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-            NCNetworking.shared.cancelUpload(metadata: metadata)
+            NCNetworking.shared.cancelUpload(ocId: metadata.ocId)
         } else {
         
             var session: URLSession?

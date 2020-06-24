@@ -84,7 +84,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
         } else {
            
             // Error
-            NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError), predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocIdTemp, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
         }
     }
 }

@@ -271,7 +271,8 @@ import Alamofire
     
     //MARK: - Upload
 
-    @objc func cancelUpload(metadata: tableMetadata) {
+    @objc func cancelUpload(ocId: String) {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else { return }
         
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName) else { return }
         

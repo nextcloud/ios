@@ -2015,13 +2015,12 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
+    @objc func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int = 0, status: Int = 0) {
         
         let realm = try! Realm()
-
         realm.beginWrite()
 
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
             realm.cancelWrite()
             return
         }
