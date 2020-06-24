@@ -2140,7 +2140,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results : Results<tableMetadata>
+        let results: Results<tableMetadata>
         
         if let sorted = sorted {
             
@@ -2159,6 +2159,18 @@ class NCManageDatabase: NSObject {
             return Array(results.map { tableMetadata.init(value:$0) })
         } else {
             return nil
+        }
+    }
+    
+    @objc func getMetadatas(predicate: NSPredicate, freeze: Bool) -> [tableMetadata] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if freeze {
+            return Array(realm.objects(tableMetadata.self).filter(predicate).freeze())
+        } else {
+            return Array(realm.objects(tableMetadata.self).filter(predicate))
         }
     }
     

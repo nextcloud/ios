@@ -708,38 +708,30 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    if (self.activeAccount.length == 0 || self.maintenanceMode)
-        return;
+    if (self.activeAccount.length == 0 || self.maintenanceMode) return;
+            
+    NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
+    NSInteger counterUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] freeze:true].count;
+    NSInteger total = counterDownload + counterUpload;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-        NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
-
-        NSInteger total = counterDownload + counterUpload;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [UIApplication sharedApplication].applicationIconBadgeNumber = total;
-            
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-                if ([navigationController isKindOfClass:[UINavigationController class]]) {
-                    UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-                            
-                        if (total > 0) {
-                            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-                        } else {
-                            [tabBarItem setBadgeValue:nil];
-                        }
-                    }
+    [UIApplication sharedApplication].applicationIconBadgeNumber = total;
+    
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
+        UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
+        if ([navigationController isKindOfClass:[UINavigationController class]]) {
+            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
+                    
+                if (total > 0) {
+                    [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
+                } else {
+                    [tabBarItem setBadgeValue:nil];
                 }
             }
-        });
-    });
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -144,7 +144,7 @@
 
 // Timer
 #define k_timerProcessAutoUpload                        5
-#define k_timerUpdateApplicationIconBadgeNumber         3
+#define k_timerUpdateApplicationIconBadgeNumber         5
 #define k_timerErrorNetworking                          3
 
 // ConcurrentOperation
