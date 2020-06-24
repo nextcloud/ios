@@ -86,7 +86,6 @@ class NCService: NSObject {
                         CCSynchronize.shared()?.readFile(metadata.ocId, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: tableAccount.account)
                     }
                 }
-                // ---
                         
                 let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                 let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
@@ -105,9 +104,7 @@ class NCService: NSObject {
                 }
                       
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeUserProfile)
-                    
-                
-                // Get Capabilities
+                                    
                 self.requestServerCapabilities()
                 
             } else {
@@ -115,8 +112,6 @@ class NCService: NSObject {
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
-                
-                print("[LOG] It has been changed user during networking process, error.")
             }
         }
     }
@@ -209,8 +204,6 @@ class NCService: NSObject {
                 }
                 
             } else {
-                print("[LOG] It has been changed user during networking process, error.")
-                // Change Theming color
                 self.appDelegate.settingThemingColorBrand()
             }
         }
