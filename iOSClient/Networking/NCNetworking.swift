@@ -187,7 +187,7 @@ import Alamofire
         
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
                 
-        NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusInDownload))
+        NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusInDownload))
             
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
@@ -206,11 +206,11 @@ import Alamofire
                        
             if error?.isExplicitlyCancelledError ?? false {
                             
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
             
             } else if errorCode == 0 {
                
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 
                 #if !EXTENSION
@@ -224,7 +224,7 @@ import Alamofire
 
             } else {
                                 
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: errorDescription, sessionSelector: selector, status: Int(k_metadataStatusDownloadError))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusDownloadError))
                 
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {

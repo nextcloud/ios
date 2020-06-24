@@ -260,7 +260,12 @@ import Alamofire
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
                     
-                    if errorCode == 0 && ocId != nil {
+                    if error?.isExplicitlyCancelledError ?? false {
+                    
+                        CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        
+                    } else if errorCode == 0 && ocId != nil {
                             
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -279,12 +284,7 @@ import Alamofire
                         //CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
                         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
-                                                        
-                    } else if error?.isExplicitlyCancelledError ?? false { 
-                        
-                        CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                                                
+                                                                                                        
                     } else if errorCode == 401 || errorCode == 403 {
                         
                         NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
