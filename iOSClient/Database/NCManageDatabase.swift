@@ -2393,7 +2393,7 @@ class NCManageDatabase: NSObject {
                 var metadatas = [tableMetadata]()
                 
                 let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties) //.distinct(by: ["fileName"])
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
                 if (results.count > 0) {
                     
                     // For Live Photo
@@ -2408,7 +2408,7 @@ class NCManageDatabase: NSObject {
                         let ext = (result.fileNameView as NSString).pathExtension.uppercased()
                         let fileName = (result.fileNameView as NSString).deletingPathExtension
                         if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                            metadatas.append(tableMetadata.init(value: result))
+                            metadatas.append(result.freeze())
                         }
                     }
                 }

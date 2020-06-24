@@ -667,7 +667,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             }
                 
         // Automatic download for: Encripted
-        } else if metadata.status == Int(k_metadataStatusNormal) && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && isFolderEncrypted{
+        } else if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && isFolderEncrypted{
             
             if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND session != ''", metadata.ocId)) == nil {
                 
@@ -677,17 +677,13 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
             
         // Automatic download for: HEIC - GIF - SVG
-        } else if metadata.status == Int(k_metadataStatusNormal) && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") {
+        } else if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 && ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") {
             
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
-            
-            metadata.status = Int(k_metadataStatusInDownload)
-            
+                        
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                
-                metadata.status = Int(k_metadataStatusDownloading)
-                
+                                
             },  progressHandler: { (progress) in
                                 
                 self.progress(Float(progress.fractionCompleted))
@@ -707,7 +703,6 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                     completion(index, NCViewerImageCommon.shared.getImageOffOutline(frame: self.view.frame, type: metadata.typeFile), metadata, ZoomScale.default, nil)
                 }
                 
-                metadata.status = Int(k_metadataStatusNormal)
                 self.progress(0)
             }
         
