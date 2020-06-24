@@ -191,13 +191,12 @@ import Alamofire
             
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
-        
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
+            
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, status: Int(k_metadataStatusDownloading))
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
-            
             
         }, progressHandler: { (progress) in
             
@@ -205,8 +204,6 @@ import Alamofire
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
                         
-            self.downloadRequest[fileNameLocalPath] = nil
-           
             if errorCode == 0 {
                
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
@@ -239,6 +236,8 @@ import Alamofire
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             }
+            
+            self.downloadRequest[fileNameLocalPath] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
