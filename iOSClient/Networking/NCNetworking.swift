@@ -203,8 +203,12 @@ import Alamofire
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
-                        
-            if errorCode == 0 {
+                       
+            if error?.isExplicitlyCancelledError ?? false {
+                            
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal))
+            
+            } else if errorCode == 0 {
                
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
@@ -217,11 +221,7 @@ import Alamofire
                 #endif
                                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
-                
-            } else if error?.isExplicitlyCancelledError ?? false {
-                                
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, status: Int(k_metadataStatusNormal))
-                                
+
             } else {
                                 
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: errorDescription, sessionSelector: selector, status: Int(k_metadataStatusDownloadError))
