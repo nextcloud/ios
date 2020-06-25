@@ -536,7 +536,7 @@
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
                    
-            [[NCNetworking shared] downloadWithOcId:metadata.ocId selector:selectorDownloadSynchronize setFavorite:true completion:^(NSInteger errorCode) { }];
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true completion:^(NSInteger errorCode) { }];
         }
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
@@ -1755,7 +1755,7 @@
         
     } else {
         
-        [[NCNetworking shared] downloadWithOcId:self.metadata.ocId selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
+        [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
     }
 }
 
@@ -1775,7 +1775,7 @@
             
         } else {
 
-            [[NCNetworking shared] downloadWithOcId:metadata.ocId selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
+            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorLoadCopy setFavorite:false completion:^(NSInteger errorCode) { }];
         }
     }
     
@@ -2505,7 +2505,7 @@
                         [self shouldPerformSegue:self.metadata selector:selectorLoadFileView];
                     }
                    
-                    [[NCNetworking shared] downloadWithOcId:self.metadata.ocId selector:selectorLoadFileView setFavorite:false completion:^(NSInteger errorCode) { }];
+                    [[NCNetworking shared] downloadWithMetadata:self.metadata selector:selectorLoadFileView setFavorite:false completion:^(NSInteger errorCode) { }];
                 }
             }
         }

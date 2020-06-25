@@ -790,7 +790,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                                     
         } else {
             
-            NCNetworking.shared.download(ocId: metadata.ocId, selector: selector) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
         }
     }
 

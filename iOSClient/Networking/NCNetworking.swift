@@ -176,18 +176,14 @@ import Alamofire
         }
     }
     
-    @objc func download(ocId: String, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool = false, completion: @escaping (_ errorCode: Int)->()) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
-            completion(Int(k_CCErrorInternalError))
-            return
-        }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
                 
-        NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusInDownload))
+        NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusInDownload))
             
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
@@ -195,7 +191,7 @@ import Alamofire
             
             self.downloadRequest[fileNameLocalPath] = request
             
-            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, status: Int(k_metadataStatusDownloading))
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "account":metadata.account])
             
         }, progressHandler: { (progress) in
@@ -206,11 +202,11 @@ import Alamofire
                        
             if error?.isExplicitlyCancelledError ?? false {
                             
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
             
             } else if errorCode == 0 {
                
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 
                 #if !EXTENSION
@@ -224,7 +220,7 @@ import Alamofire
 
             } else {
                                 
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusDownloadError))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: errorDescription, sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusDownloadError))
                 
                 #if !EXTENSION
                 if errorCode == 401 || errorCode == 403 {
@@ -262,14 +258,10 @@ import Alamofire
         }
     }
     
-    @objc func upload(ocId: String, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
+    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
-            completion(Int(k_CCErrorInternalError), "Internal error")
-            return
-        }
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             completion(Int(k_CCErrorInternalError), "Internal error")
             return
         }
@@ -309,9 +301,9 @@ import Alamofire
                 NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
                 #endif
             } else if background {
-                uploadFileInBackground(ocId: metadataForUpload.ocId, account: account, completion: completion)
+                uploadFileInBackground(metadata: metadataForUpload, account: account, completion: completion)
             } else {
-                uploadFile(ocId: metadataForUpload.ocId, account: account, completion: completion)
+                uploadFile(metadata: metadataForUpload, account: account, completion: completion)
             }
            
         } else {
@@ -340,26 +332,22 @@ import Alamofire
                     NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
                     #endif
                 } else if background {
-                    self.uploadFileInBackground(ocId: metadataForUpload.ocId, account: account, completion: completion)
+                    self.uploadFileInBackground(metadata: metadataForUpload, account: account, completion: completion)
                 } else {
-                    self.uploadFile(ocId: metadataForUpload.ocId, account: account, completion: completion)
+                    self.uploadFile(metadata: metadataForUpload, account: account, completion: completion)
                 }
             }
         }
     }
     
     //
-    private func uploadFile(ocId: String, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         completion(0, "")
     }
     
-    private func uploadFileInBackground(ocId: String, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
-            completion(0, "")
-            return
-        }
         var session: URLSession?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -372,7 +360,7 @@ import Alamofire
         
         if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: "", session: session!) {
                      
-            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
             
             #if !EXTENSION
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
@@ -444,7 +432,7 @@ import Alamofire
                     
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
                     
-                    NCNetworking.shared.upload(ocId: metadata.ocId) { (_, _) in }
+                    NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                                             
                 } else {
                     

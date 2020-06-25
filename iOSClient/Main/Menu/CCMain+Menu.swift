@@ -486,10 +486,10 @@ extension CCMain {
                         action: { menuAction in
                             if (localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) {
                                 
-                                NCNetworking.shared.download(ocId: metadata.ocId, selector: selectorLoadOffline) { (_) in }
+                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
                                 
                                 if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(ocId: metadataLivePhoto.ocId, selector: selectorLoadOffline) { (_) in }
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
                                 }
                                 
                             } else {

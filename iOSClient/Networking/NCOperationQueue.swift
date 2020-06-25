@@ -127,7 +127,7 @@ class NCOperationDownload: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.download(ocId: self.metadata.ocId, selector: self.selector, setFavorite: self.setFavorite) { (_) in
+            NCNetworking.shared.download(metadata: metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
                 self.finish()
             }
         }
