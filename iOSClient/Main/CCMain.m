@@ -781,6 +781,7 @@
                     } else {
                         
                         [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                        [[appDelegate networkingAutoUpload] startProcess];
                     }
 
                 } else {
@@ -1087,6 +1088,8 @@
         
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
         [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
+        
+        [[appDelegate networkingAutoUpload] startProcess];
     }
 }
 
@@ -1852,7 +1855,9 @@
                 [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             }
         }
-    }        
+    }
+    
+    [[appDelegate networkingAutoUpload] startProcess];
 }
 
 #pragma mark -

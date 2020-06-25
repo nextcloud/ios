@@ -181,6 +181,8 @@
     
     // Add Medtadata for upload
     [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+
+    [[appDelegate networkingAutoUpload] startProcess];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
