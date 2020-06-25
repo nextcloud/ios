@@ -51,6 +51,7 @@
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
+		F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */; };
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
 		F710C5F02471A6D1009AD8B7 /* Sentry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F710C5EF2471A6D1009AD8B7 /* Sentry.framework */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
@@ -391,6 +392,7 @@
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+adjust.swift"; sourceTree = "<group>"; };
+		F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingAutoUpload.swift; sourceTree = "<group>"; };
 		F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZIPFoundation.framework; path = Carthage/Build/iOS/ZIPFoundation.framework; sourceTree = "<group>"; };
 		F710C5EF2471A6D1009AD8B7 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = Carthage/Build/iOS/Sentry.framework; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
@@ -954,12 +956,13 @@
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				F755BD9A20594AC7008C5FBB /* NCService.swift */,
-				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
+				F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
 				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */,
+				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
+				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -2109,6 +2112,7 @@
 				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */,
+				F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */,

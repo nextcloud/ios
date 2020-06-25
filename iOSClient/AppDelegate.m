@@ -33,6 +33,7 @@
 @import Sentry;
 
 @class NCViewerRichdocument;
+@class NCNetworkingAutoUpload;
 
 @interface AppDelegate() <TOPasscodeViewControllerDelegate>
 @end
@@ -160,7 +161,8 @@
     
     // Auto upload
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [NCNetworking.shared loadAutoUpload];
+        [NCNetworkingAutoUpload new];
+       // [NCNetworking.shared loadAutoUpload];
     });
     
     return YES;

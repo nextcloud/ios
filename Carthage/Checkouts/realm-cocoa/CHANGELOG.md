@@ -1,3 +1,31 @@
+5.1.0 Release notes (2020-06-22)
+=============================================================
+
+### Enhancements
+
+* Allow opening full-sync Realms in read-only mode. This disables local schema
+  initialization, which makes it possible to open a Realm which the user does
+  not have write access to without using asyncOpen. In addition, it will report
+  errors immediately when an operation would require writing to the Realm
+  rather than reporting it via the sync error handler only after the server
+  rejects the write.
+
+### Fixed
+
+* Opening a Realm using a configuration object read from an existing Realm
+  would incorrectly bind the new Realm to the original Realm's thread/queue,
+  resulting in "Realm accessed from incorrect thread." exceptions.
+  ([#6574](https://github.com/realm/realm-cocoa/issues/6574),
+  [#6559](https://github.com/realm/realm-cocoa/issues/6559), since 5.0.0).
+
+### Compatibility
+
+* File format: Generates Realms with format v10 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.21.0 or later.
+* Realm Studio: 3.11 or later.
+* APIs are backwards compatible with all previous releases in the 5.x.y series.
+* Carthage release for Swift is built with Xcode 11.5.
+
 5.0.3 Release notes (2020-06-10)
 =============================================================
 
