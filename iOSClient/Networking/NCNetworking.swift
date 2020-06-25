@@ -262,25 +262,29 @@ import Alamofire
         }
     }
     
-    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
+    @objc func upload(ocId: String, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
-        var metadataForUpload: tableMetadata?
-        var e2eEncrypted = false
-        let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
-        var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-           
-        guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"Internal error"])
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: true) else {
             completion(Int(k_CCErrorInternalError), "Internal error")
             return
         }
-           
+        guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+            completion(Int(k_CCErrorInternalError), "Internal error")
+            return
+        }
+        
+        var e2eEncrypted = false
+        let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
+        var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                   
         if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
             e2eEncrypted = true
         }
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-
+            let metadata = tableMetadata.init(value: metadata)
+            
             metadata.contentType = internalContenType.contentType
             metadata.iconName = internalContenType.iconName
             metadata.typeFile = internalContenType.typeFile
@@ -298,16 +302,16 @@ import Alamofire
                 return
             }
                
-            metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
            
             if e2eEncrypted {
                 #if !EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
+                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
                 #endif
             } else if background {
-                uploadFileInBackground(ocId: metadataForUpload!.ocId, account: account, completion: completion)
+                uploadFileInBackground(ocId: metadataForUpload.ocId, account: account, completion: completion)
             } else {
-                uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
+                uploadFile(ocId: metadataForUpload.ocId, account: account, completion: completion)
             }
            
         } else {
@@ -329,23 +333,23 @@ import Alamofire
                     return
                 }
                        
-                metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
+                guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata) else {return}
                
                 if e2eEncrypted {
                     #if !EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload!, account: account, completion: completion)
+                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
                     #endif
                 } else if background {
-                    self.uploadFileInBackground(ocId: metadataForUpload!.ocId, account: account, completion: completion)
+                    self.uploadFileInBackground(ocId: metadataForUpload.ocId, account: account, completion: completion)
                 } else {
-                    self.uploadFile(metadata: metadataForUpload!, account: account, completion: completion)
+                    self.uploadFile(ocId: metadataForUpload.ocId, account: account, completion: completion)
                 }
             }
         }
     }
     
     //
-    private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func uploadFile(ocId: String, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         completion(0, "")
     }
@@ -440,7 +444,7 @@ import Alamofire
                     
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
                     
-                    NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+                    NCNetworking.shared.upload(ocId: metadata.ocId) { (_, _) in }
                                             
                 } else {
                     
