@@ -338,31 +338,32 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 } else {
                     
                     CCUtility.extractImageVideoFromAssetLocalIdentifier(forUpload: metadataNewFile, notification: false) { (metadataNew, fileNamePath) in
-                        
-                        if metadataNew != nil {
-                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
-                            do {
-                                if mediaType == PHAssetMediaType.image {
-                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
-                                    if let image = UIImage(data: data) {
-                                        DispatchQueue.main.async {
-                                            cell.imageNewFile.image = image
+                        DispatchQueue.main.async {
+                            if metadataNew != nil {
+                                self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                                do {
+                                    if mediaType == PHAssetMediaType.image {
+                                        let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
+                                        if let image = UIImage(data: data) {
+                                            DispatchQueue.main.async {
+                                                cell.imageNewFile.image = image
+                                            }
+                                        }
+                                    } else if mediaType == PHAssetMediaType.video {
+                                        if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath!), atTime: 1) {
+                                            DispatchQueue.main.async {
+                                                cell.imageNewFile.image = image
+                                            }
                                         }
                                     }
-                                } else if mediaType == PHAssetMediaType.video {
-                                    if let image = CCGraphics.thumbnailImage(forVideo: URL(fileURLWithPath: fileNamePath!), atTime: 1) {
-                                        DispatchQueue.main.async {
-                                            cell.imageNewFile.image = image
-                                        }
-                                    }
-                                }
-                                
-                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                let fileSize = fileDictionary[FileAttributeKey.size] as! Double
-                                
-                                cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
-                                
-                            } catch { print("Error: \(error)") }
+                                    
+                                    let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
+                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                                    
+                                    cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
+                                    
+                                } catch { print("Error: \(error)") }
+                            }
                         }
                     }
                 }
