@@ -458,7 +458,7 @@ import Alamofire
                                         
             } else {
                 
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: "", sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                 
@@ -471,48 +471,43 @@ import Alamofire
     
     @objc func loadAutoUpload() {
 
-        let inBackground = UIApplication.shared.applicationState == .background
+        var counterUpload = 0
+        var sizeUpload = 0
+        var maxConcurrentOperationUpload = k_maxConcurrentOperation
+    
+        let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true)
+        counterUpload = metadatasUpload.count
         
-        DispatchQueue.global().async {
-            
-            var counterUpload = 0
-            var sizeUpload = 0
-            var maxConcurrentOperationUpload = k_maxConcurrentOperation
+        for metadata in metadatasUpload {
+            sizeUpload = sizeUpload + Int(metadata.size)
+        }
         
-            let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true)
-            counterUpload = metadatasUpload.count
+        debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
+   
+        // ------------------------- <selector Upload> -------------------------
+        
+        while counterUpload < maxConcurrentOperationUpload {
+            if sizeUpload > k_maxSizeOperationUpload { break }
+            var predicate = NSPredicate()
             
-            for metadata in metadatasUpload {
+            if UIApplication.shared.applicationState == .background {
+                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadFile, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
+            } else {
+                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
+            }
+            
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, freeze: true) {
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload))
+                self.upload(metadata: metadata, background: true) { (_, _) in }
+                counterUpload += 1
                 sizeUpload = sizeUpload + Int(metadata.size)
+            } else {
+                break
             }
+        }
             
-            debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
-       
-            // ------------------------- <selector Upload> -------------------------
-            
-            while counterUpload < maxConcurrentOperationUpload {
-                if sizeUpload > k_maxSizeOperationUpload { break }
-                var predicate = NSPredicate()
-                
-                if inBackground {
-                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadFile, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
-                } else {
-                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
-                }
-                
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, freeze: true) {
-                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload))
-                    self.upload(metadata: metadata, background: true) { (_, _) in }
-                    counterUpload += 1
-                    sizeUpload = sizeUpload + Int(metadata.size)
-                } else {
-                    break
-                }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + TimeInterval(k_timerProcessAutoUpload)) {
-                self.loadAutoUpload()
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.loadAutoUpload()
         }
     }
 
