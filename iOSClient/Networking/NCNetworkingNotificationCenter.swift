@@ -179,7 +179,7 @@ import Foundation
                                                 
                 if metadata.account == appDelegate.activeAccount {
                     if errorCode == 0 {
-                        appDelegate.startLoadAutoUpload()
+                        //appDelegate.startLoadAutoUpload()
                     } else {
                         if errorCode != -999 && errorCode != 401 && errorDescription != "" {
                             NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)

@@ -113,7 +113,6 @@
     }
         
     // Start Timer
-    self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(loadAutoUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
 
@@ -157,6 +156,11 @@
     // Passcode
     dispatch_async(dispatch_get_main_queue(), ^{
         [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
+    });
+    
+    // Auto upload
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [NCNetworking.shared loadAutoUpload];
     });
     
     return YES;
@@ -1046,8 +1050,6 @@
     
     NSLog(@"%@", [NSString stringWithFormat:@"[LOG] PROCESS-AUTO-UPLOAD %ld - %@", counterUpload, [CCUtility transformedSize:sizeUpload]]);
     
-    // Stop Timer
-    [_timerProcessAutoUpload invalidate];
         
     // ------------------------- <selector Upload> -------------------------
     
@@ -1216,16 +1218,6 @@
     if (counterUpload == 0 && self.passcodeViewController == nil) {
         
         [[NCUtility sharedInstance] deleteAssetLocalIdentifiersWithAccount:self.activeAccount sessionSelector:selectorUploadAutoUpload];
-    }
-    
-    // Start Timer
-    _timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:self selector:@selector(loadAutoUpload) userInfo:nil repeats:YES];
-}
-
-- (void)startLoadAutoUpload
-{
-    if (self.timerProcessAutoUpload.isValid) {
-        [self performSelectorOnMainThread:@selector(loadAutoUpload) withObject:nil waitUntilDone:YES];
     }
 }
 

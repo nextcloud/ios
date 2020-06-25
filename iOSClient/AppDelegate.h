@@ -44,7 +44,6 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
@@ -136,10 +135,6 @@
 // Theming Color
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
-
-// Task Networking
-- (void)loadAutoUpload;
-- (void)startLoadAutoUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;
