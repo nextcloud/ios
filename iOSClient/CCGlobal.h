@@ -143,7 +143,7 @@
 #define k_metadataStatusUploadForcedStart               10
 
 // Timer
-#define k_timerProcessAutoUpload                        5
+#define k_timerAutoUpload                               5
 #define k_timerUpdateApplicationIconBadgeNumber         5
 #define k_timerErrorNetworking                          3
 
