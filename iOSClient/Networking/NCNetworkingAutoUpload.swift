@@ -27,25 +27,35 @@ import NCCommunication
 class NCNetworkingAutoUpload: NSObject {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var timerProcess: Timer?
     
     override init() {
         super.init()
-        process()
+
+        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: false)
+    }
+    
+    @objc func startProcess() {
+        if timerProcess?.isValid ?? false {
+            process()
+        }
     }
 
-    @objc func process() {
+    @objc private func process() {
 
         var counterUpload = 0
         var sizeUpload = 0
         var maxConcurrentOperationUpload = k_maxConcurrentOperation
-     
+        
+        timerProcess?.invalidate()
+        
         let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true)
         counterUpload = metadatasUpload.count
          
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
-         
+        
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
         // ------------------------- <selector Upload> -------------------------
@@ -145,12 +155,9 @@ class NCNetworkingAutoUpload: NSObject {
         // verify delete Asset Local Identifiers in auto upload (Photos album)
         if (counterUpload == 0 && appDelegate.passcodeViewController == nil) {
             NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload)
-         }
-         
-         DispatchQueue.main.asyncAfter(deadline: .now() + TimeInterval(k_timerAutoUpload)) {
-             //self.loadAutoUpload()
-         }
+        }
+        
+        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: false)
      }
-
 }
 

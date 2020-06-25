@@ -40,6 +40,7 @@
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 @class NCDetailViewController;
+@class NCNetworkingAutoUpload;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
@@ -110,6 +111,9 @@
 
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
+
+// Network Auto Upload
+@property (nonatomic, strong) NCNetworkingAutoUpload *networkingAutoUpload;
 
 // Login
 - (void)startTimerErrorNetworking;
