@@ -1559,21 +1559,14 @@
 
 - (void)viewRichWorkspaceTapAction:(UITapGestureRecognizer *)tapGesture
 {
-    [UIView animateWithDuration:0.5 animations:^{
-       
-        [self.tableView setContentOffset:CGPointMake(0, heightSearchBar)];
-        
-    } completion:^(BOOL finished) {
-        
-        UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
-        NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
-        viewerRichWorkspace.richWorkspaceText = self.richWorkspaceText;
-        viewerRichWorkspace.serverUrl = self.serverUrl;
-        
-        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
-        
-        [self presentViewController:navigationController animated:NO completion:NULL];
-    }];
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCViewerRichWorkspace" bundle:nil] instantiateInitialViewController];
+    NCViewerRichWorkspace *viewerRichWorkspace = (NCViewerRichWorkspace *)[navigationController topViewController];
+    viewerRichWorkspace.richWorkspaceText = self.richWorkspaceText;
+    viewerRichWorkspace.serverUrl = self.serverUrl;
+    
+    navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+    
+    [self presentViewController:navigationController animated:NO completion:NULL];
 }
 
 - (void)createRichWorkspace
