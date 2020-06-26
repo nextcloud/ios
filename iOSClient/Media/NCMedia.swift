@@ -50,6 +50,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var newInProgress = false
     
     private var lastContentOffsetY: CGFloat = 0
+    private var mediaPath = ""
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -230,7 +231,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                 )
             )
             
-            /*
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_select_media_folder_", comment: ""),
@@ -247,18 +247,19 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         viewController.selectFile = false
                         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         viewController.type = "mediaFolder"
+                        viewController.heightToolBarTop = 50
                         
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.present(navigationController, animated: true, completion: nil)
                     }
                 )
             )
-            */
+            
         } else {
            
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_deselect_", comment: ""),
+                    title: NSLocalizedString("_cancel_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.isEditMode = false
@@ -297,20 +298,13 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     // MARK: Select Path
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
-        /*
-        let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
-        
-        if serverUrl != nil && serverUrl != oldStartDirectoryMediaTabView {
-            
-            // Save Start Directory
-            NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
-            //
-            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
-            self.sectionDatasource = CCSectionDataSourceMetadata()
-            //
-            //loadNetworkDatasource()
+        if serverUrl != nil {
+            let path = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: appDelegate.activeUrl) ?? ""
+            NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.activeAccount)
+            reloadDataSourceWithCompletion {
+                self.searchNewPhotoVideo()
+            }
         }
-        */
     }
     
     //MARK: - NotificationCenter
@@ -589,13 +583,18 @@ extension NCMedia {
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) { return }
-                
+         
+        if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
+            self.mediaPath = tableAccount.mediaPath
+        }
+        let startServerUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) + mediaPath
+        
         if filterTypeFileImage {
-            predicate = NSPredicate(format: "account == %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
-            predicate = NSPredicate(format: "account == %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_image)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image)
         } else {
-            predicate = NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         }
                 
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
@@ -615,7 +614,8 @@ extension NCMedia {
     func updateMediaControlVisibility() {
         if self.metadatas.count == 0 {
             if !self.filterTypeFileImage && !self.filterTypeFileVideo {
-                self.mediaCommandView?.isHidden = true
+                self.mediaCommandView?.toggleEmptyView(isEmpty: true)
+                self.mediaCommandView?.isHidden = false
             } else {
                 self.mediaCommandView?.toggleEmptyView(isEmpty: true)
                 self.mediaCommandView?.isHidden = false
@@ -648,7 +648,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(path: "", lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -679,51 +679,52 @@ extension NCMedia {
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
         
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            if let cell = visibleCells.first as? NCGridMediaCell {
-                if cell.date != nil {
-                    if cell.date != metadatas.first?.date as Date? {
-                        lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
-                    }
-                }
-            }
-            if let cell = visibleCells.last as? NCGridMediaCell {
-                if cell.date != nil {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cell.date!)!
-                }
-            }
-        }
-        
         newInProgress = true
-        collectionView.reloadData()
-        
-        NCCommunication.shared.searchMedia(path: "", lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
-            
-            self.newInProgress = false
-            
-            if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
-               DispatchQueue.global().async {
-                
-                    let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
-                
-                    if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate, sorted: nil, ascending: false){
-                        let etagsMetadatas = Array(metadatas.map { $0.etag })
-                        let etagsFiles = Array(files!.map { $0.etag })
-                        for etag in etagsFiles {
-                            if !etagsMetadatas.contains(etag) {
-                                NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                                self.reloadDataSource()
-                                break;
-                            }
+        reloadDataThenPerform {
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+                if let cell = visibleCells.first as? NCGridMediaCell {
+                    if cell.date != nil {
+                        if cell.date != self.metadatas.first?.date as Date? {
+                            lessDate = Calendar.current.date(byAdding: .second, value: 1, to: cell.date!)!
                         }
-                    } else {
-                        NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                        self.reloadDataSource()
                     }
                 }
-            } else if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
-                self.searchOldPhotoVideo()
+                if let cell = visibleCells.last as? NCGridMediaCell {
+                    if cell.date != nil {
+                        greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: cell.date!)!
+                    }
+                }
+            }
+        
+
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+                
+                self.newInProgress = false
+                
+                if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
+                   DispatchQueue.global().async {
+                    
+                        let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
+                    
+                        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate, sorted: nil, ascending: false){
+                            let etagsMetadatas = Array(metadatas.map { $0.etag })
+                            let etagsFiles = Array(files!.map { $0.etag })
+                            for etag in etagsFiles {
+                                if !etagsMetadatas.contains(etag) {
+                                    NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                                    self.reloadDataSource()
+                                    break;
+                                }
+                            }
+                        } else {
+                            NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                            self.reloadDataSource()
+                        }
+                    }
+                } else if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
+                    self.searchOldPhotoVideo()
+                }
             }
         }
     }

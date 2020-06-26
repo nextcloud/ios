@@ -54,6 +54,7 @@ class tableAccount: Object {
     @objc dynamic var language = ""
     @objc dynamic var lastLogin: Double = 0
     @objc dynamic var locale = ""
+    @objc dynamic var mediaPath = ""
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
     @objc dynamic var quota: Double = 0

@@ -41,6 +41,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     @IBOutlet fileprivate weak var overwriteSwitch: UISwitch!
     @IBOutlet fileprivate weak var overwriteLabel: UILabel!
+    
+    @IBOutlet fileprivate weak var toolBarTop: NSLayoutConstraint!
 
     // ------ external settings ------------------------------------
     @objc var delegate: NCSelectDelegate?
@@ -55,6 +57,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var isButtonDone1Hide = true
     @objc var isOverwriteHide = true
     @objc var layoutViewSelect = k_layout_view_move
+    @objc var heightToolBarTop: CGFloat = 100
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
@@ -155,6 +158,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         self.navigationItem.title = titleCurrentFolder
         
+        toolBarTop.constant = -heightToolBarTop
+        
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
@@ -162,13 +167,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         overwriteView.isHidden = isOverwriteHide
         
         if selectFile {
-            buttonDone.isEnabled = false
-            buttonDone.tintColor = UIColor.clear
+            buttonDone.isHidden = true
         }
         
         if hideButtonCreateFolder {
-            buttonCreateFolder.isEnabled = false
-            buttonCreateFolder.tintColor = UIColor.clear
+            buttonCreateFolder.isHidden = true
         }
         
         (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: layoutViewSelect)
@@ -503,6 +506,7 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.isButtonDone1Hide = isButtonDone1Hide
             visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
+            visualController.heightToolBarTop = heightToolBarTop
                 
             visualController.titleCurrentFolder = metadataPush!.fileNameView
             visualController.serverUrl = serverUrlPush

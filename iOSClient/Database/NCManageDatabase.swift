@@ -673,6 +673,20 @@ class NCManageDatabase: NSObject {
     #endif
     */
     
+    @objc func setAccountMediaPath(_ path: String, account: String) {
+           
+        let realm = try! Realm()
+        do {
+            try realm.write {
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.mediaPath = path
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Activity
 
