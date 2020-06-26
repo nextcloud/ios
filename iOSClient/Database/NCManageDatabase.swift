@@ -2158,7 +2158,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool) -> [tableMetadata]? {
+    @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool, freeze: Bool = false) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2179,7 +2179,11 @@ class NCManageDatabase: NSObject {
         }
         
         if (results.count > 0) {
-            return Array(results.map { tableMetadata.init(value:$0) })
+            if freeze {
+                return Array(results.freeze())
+            } else {
+                return Array(results.map { tableMetadata.init(value:$0) })
+            }
         } else {
             return nil
         }

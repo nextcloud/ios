@@ -72,13 +72,13 @@
         NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
         NSMutableArray *addMetadatas = [NSMutableArray new];
         
-        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session != ''", account, serverUrl] sorted:nil ascending:NO];
+        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session != ''", account, serverUrl] sorted:nil ascending:NO freeze:NO];
         
         // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [NSMutableArray new];
         
-        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session == ''", account, serverUrl] sorted:nil ascending:NO];
+        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND session == ''", account, serverUrl] sorted:nil ascending:NO  freeze:NO];
         
         for (tableMetadata *record in tableMetadatas) {
             
