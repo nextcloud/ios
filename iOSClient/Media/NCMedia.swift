@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : UICollectionView!
     
@@ -229,7 +229,31 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     }
                 )
             )
-
+            
+            /*
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_select_media_folder_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "folderAutomaticUpload"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+                        let viewController = navigationController.topViewController as! NCSelect
+                        
+                        viewController.delegate = self
+                        viewController.hideButtonCreateFolder = true
+                        viewController.includeDirectoryE2EEncryption = false
+                        viewController.includeImages = false
+                        viewController.layoutViewSelect = k_layout_view_move
+                        viewController.selectFile = false
+                        viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
+                        viewController.type = "mediaFolder"
+                        
+                        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                        self.present(navigationController, animated: true, completion: nil)
+                    }
+                )
+            )
+            */
         } else {
            
             actions.append(
@@ -268,6 +292,25 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
         self.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    // MARK: Select Path
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
+        /*
+        let oldStartDirectoryMediaTabView = NCManageDatabase.sharedInstance.getAccountStartDirectoryMediaTabView(CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl))
+        
+        if serverUrl != nil && serverUrl != oldStartDirectoryMediaTabView {
+            
+            // Save Start Directory
+            NCManageDatabase.sharedInstance.setAccountStartDirectoryMediaTabView(serverUrl!)
+            //
+            NCManageDatabase.sharedInstance.clearTable(tableMedia.self, account: appDelegate.activeAccount)
+            self.sectionDatasource = CCSectionDataSourceMetadata()
+            //
+            //loadNetworkDatasource()
+        }
+        */
     }
     
     //MARK: - NotificationCenter
@@ -605,7 +648,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: "", lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -654,7 +697,7 @@ extension NCMedia {
         newInProgress = true
         collectionView.reloadData()
         
-        NCCommunication.shared.searchMedia(lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: "", lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.newInProgress = false
             
