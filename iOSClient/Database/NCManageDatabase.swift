@@ -1265,26 +1265,15 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(ocId: String, serverUrl: String, richWorkspace: String?, account: String) {
+    @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) {
         
         let realm = try! Realm()
         realm.beginWrite()
-        
-        var addObject = tableDirectory()
-        
-        let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
-        if result != nil {
-            addObject = result!
-        } else {
-            addObject.ocId = ocId
+                
+        if let result = realm.objects(tableDirectory.self).filter("serverUrl == %@", serverUrl).first {
+            result.richWorkspace = richWorkspace
+            realm.add(result, update: .all)
         }
-        addObject.account = account
-        if let richWorkspace = richWorkspace {
-            addObject.richWorkspace = richWorkspace
-        }
-        addObject.serverUrl = serverUrl
-        
-        realm.add(addObject, update: .all)
         
         do {
             try realm.commitWrite()

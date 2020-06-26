@@ -240,6 +240,13 @@
         self.serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     }
     
+    // RichWorkspace
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    if (![self.richWorkspaceText isEqualToString:directory.richWorkspace]) {
+        self.richWorkspaceText = directory.richWorkspace;
+        [self setTableViewHeader];
+    }
+    
     // Query data source
     if (self.searchController.isActive == false) {
         [self reloadDatasource:self.serverUrl ocId:nil];
@@ -268,12 +275,6 @@
         }
     }
 
-    if (appDelegate.activeAccount.length > 0 && self.serverUrl != nil) {
-        // Get RichWorkspace
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-        self.richWorkspaceText = directory.richWorkspace;
-    }
-    
     // Title
     [self setTitle];
 }
@@ -1171,18 +1172,13 @@
     if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
         return;
     
-    // RichWorkspace
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
-    self.richWorkspaceText = directory.richWorkspace;
-    [self setTableViewHeader];
-    
     [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
-        
         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
-            
             // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithOcId:metadata.ocId serverUrl:self.serverUrl richWorkspace:metadata.richWorkspace account:account];
-            self.richWorkspaceText = metadata.richWorkspace;
+            [[NCManageDatabase sharedInstance] setDirectoryWithRichWorkspace:metadata.richWorkspace serverUrl:self.serverUrl account:appDelegate.activeAccount]; 
+            if (![self.richWorkspaceText isEqualToString:metadata.richWorkspace]) {
+                self.richWorkspaceText = metadata.richWorkspace;
+            }
             [self setTableViewHeader];
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, self.serverUrl]];

@@ -59,7 +59,7 @@ import MarkdownKit
             
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 guard let metadata = metadata else { return }
-                NCManageDatabase.sharedInstance.setDirectory(ocId: metadata.ocId, serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                NCManageDatabase.sharedInstance.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
                     self.appDelegate.activeMain.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!

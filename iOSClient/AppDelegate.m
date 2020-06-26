@@ -184,7 +184,6 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode) { return; }
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
-
     
     NSLog(@"[LOG] Request Passcode");
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
