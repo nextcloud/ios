@@ -32,7 +32,7 @@ class NCNetworkingAutoUpload: NSObject {
     override init() {
         super.init()
 
-        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: false)
+        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
     
     @objc func startProcess() {
@@ -46,6 +46,10 @@ class NCNetworkingAutoUpload: NSObject {
         var counterUpload = 0
         var sizeUpload = 0
         var maxConcurrentOperationUpload = k_maxConcurrentOperation
+        
+        if appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode {
+            return
+        }
         
         timerProcess?.invalidate()
         
@@ -157,7 +161,7 @@ class NCNetworkingAutoUpload: NSObject {
             NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload)
         }
         
-        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: false)
+        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
      }
 }
 
