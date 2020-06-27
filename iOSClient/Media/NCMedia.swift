@@ -600,10 +600,8 @@ extension NCMedia {
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
             DispatchQueue.main.sync {
                 self.metadatas = metadatas
-                
-                self.updateMediaControlVisibility()
-                
                 self.reloadDataThenPerform {
+                    self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
                     completion()
                 }
