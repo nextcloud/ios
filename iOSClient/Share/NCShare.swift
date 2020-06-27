@@ -321,7 +321,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             case self.SHARE_TYPE_REMOTE:
                 cell.imageShareeType.image = UIImage(named: "shareTypeUser")
             case self.SHARE_TYPE_CIRCLE:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
+                cell.imageShareeType.image = UIImage(named: "shareTypeCircles")
             case self.SHARE_TYPE_GUEST:
                 cell.imageShareeType.image = UIImage(named: "shareTypeUser")
             case self.SHARE_TYPE_REMOTE_GROUP:
@@ -335,7 +335,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         dropDown.selectionAction = { [weak self] (index, item) in
             let sharee = sharees[index]
-            self!.networking?.createShare(name: sharee.label, shareType: sharee.shareType, metadata: self!.metadata!)
+            self!.networking?.createShare(shareWith: sharee.shareWith, shareType: sharee.shareType, metadata: self!.metadata!)
         }
         
         dropDown.show()

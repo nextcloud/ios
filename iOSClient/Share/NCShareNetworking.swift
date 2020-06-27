@@ -73,12 +73,12 @@ class NCShareNetworking: NSObject {
         }
     }
     
-    func createShare(name: String, shareType: Int, metadata: tableMetadata) {
+    func createShare(shareWith: String, shareType: Int, metadata: tableMetadata) {
         NCUtility.sharedInstance.startActivityIndicator(view: view)
         let filenamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
         var permission: Int = 1
         if metadata.directory { permission = Int(k_max_folder_share_permission) } else { permission = Int(k_max_file_share_permission) }
-        NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: name, permissions: permission) { (account, share, errorCode, errorDescription) in
+        NCCommunication.shared.createShare(path: filenamePath, shareType: shareType, shareWith: shareWith, permissions: permission) { (account, share, errorCode, errorDescription) in
             NCUtility.sharedInstance.stopActivityIndicator()
             if errorCode == 0 && share != nil {
                 NCManageDatabase.sharedInstance.addShare(account: self.metadata.account, activeUrl: self.activeUrl, shares: [share!])
