@@ -50,18 +50,6 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     private var dropDown = DropDown()
     private var networking: NCShareNetworking?
     
-    private let SHARE_TYPE_USER = 0
-    private let SHARE_TYPE_GROUP = 1
-    private let SHARE_TYPE_LINK = 3
-    private let SHARE_TYPE_EMAIL = 4
-    private let SHARE_TYPE_CONTACT = 5
-    private let SHARE_TYPE_REMOTE = 6
-    private let SHARE_TYPE_CIRCLE = 7
-    private let SHARE_TYPE_GUEST = 8
-    private let SHARE_TYPE_REMOTE_GROUP = 9
-    private let SHARE_TYPE_ROOM = 10
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -283,8 +271,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.cellNib = UINib(nibName: "NCShareUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
-            cell.imageItem.image = UIImage(named: "avatar")
             let sharee = sharees[index]
+            cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
 
             let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-" + sharee.label + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -298,39 +286,12 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                                     cell.imageItem.image = image
                                 }
                             }
-                        } else {
-                            DispatchQueue.main.async {
-                                cell.imageItem.image = UIImage(named: "avatar")
-                            }
-                        }
+                        } 
                     }
                 }
             }
 
-            switch sharee.shareType {
-            case self.SHARE_TYPE_USER:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
-            case self.SHARE_TYPE_GROUP:
-                cell.imageShareeType.image = UIImage(named: "shareTypeGroup")
-            case self.SHARE_TYPE_LINK:
-                cell.imageShareeType.image = UIImage(named: "shareTypeLink")
-            case self.SHARE_TYPE_EMAIL:
-                cell.imageShareeType.image = UIImage(named: "shareTypeEmail")
-            case self.SHARE_TYPE_CONTACT:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
-            case self.SHARE_TYPE_REMOTE:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
-            case self.SHARE_TYPE_CIRCLE:
-                cell.imageShareeType.image = UIImage(named: "shareTypeCircles")
-            case self.SHARE_TYPE_GUEST:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
-            case self.SHARE_TYPE_REMOTE_GROUP:
-                cell.imageShareeType.image = UIImage(named: "shareTypeGroup")
-            case self.SHARE_TYPE_ROOM:
-                cell.imageShareeType.image = UIImage(named: "shareTypeRoom")
-            default:
-                cell.imageShareeType.image = UIImage(named: "shareTypeUser")
-            }
+            cell.imageShareeType.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
@@ -399,6 +360,7 @@ extension NCShare: UITableViewDataSource {
                 cell.switchCanEdit.isHidden = false
                 cell.labelCanEdit.isHidden = false
                 cell.buttonMenu.isHidden = false
+                cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: tableShare.shareType)
                 
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
@@ -410,8 +372,6 @@ extension NCShare: UITableViewDataSource {
                                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                     cell.imageItem.image = image
                                 }
-                            } else {
-                                cell.imageItem.image = UIImage(named: "avatar")
                             }
                         }
                     }

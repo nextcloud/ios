@@ -30,6 +30,17 @@ class NCShareCommon: NSObject {
         return instance
     }()
     
+    private let SHARE_TYPE_USER = 0
+    private let SHARE_TYPE_GROUP = 1
+    private let SHARE_TYPE_LINK = 3
+    private let SHARE_TYPE_EMAIL = 4
+    private let SHARE_TYPE_CONTACT = 5
+    private let SHARE_TYPE_REMOTE = 6
+    private let SHARE_TYPE_CIRCLE = 7
+    private let SHARE_TYPE_GUEST = 8
+    private let SHARE_TYPE_REMOTE_GROUP = 9
+    private let SHARE_TYPE_ROOM = 10
+    
     func createLinkAvatar() -> UIImage? {
         
         let size: CGFloat = 200
@@ -202,6 +213,34 @@ class NCShareCommon: NSObject {
             }
             
             viewController.present(activityViewController, animated: true, completion: nil)
+        }
+    }
+    
+    func getImageShareType(shareType: Int) -> UIImage? {
+        
+        switch shareType {
+        case SHARE_TYPE_USER:
+            return UIImage(named: "shareTypeUser")
+        case self.SHARE_TYPE_GROUP:
+            return UIImage(named: "shareTypeGroup")
+        case self.SHARE_TYPE_LINK:
+            return UIImage(named: "shareTypeLink")
+        case self.SHARE_TYPE_EMAIL:
+            return UIImage(named: "shareTypeEmail")
+        case self.SHARE_TYPE_CONTACT:
+            return UIImage(named: "shareTypeUser")
+        case self.SHARE_TYPE_REMOTE:
+            return UIImage(named: "shareTypeUser")
+        case self.SHARE_TYPE_CIRCLE:
+            return UIImage(named: "shareTypeCircles")
+        case self.SHARE_TYPE_GUEST:
+            return UIImage(named: "shareTypeUser")
+        case self.SHARE_TYPE_REMOTE_GROUP:
+            return UIImage(named: "shareTypeGroup")
+        case self.SHARE_TYPE_ROOM:
+            return UIImage(named: "shareTypeRoom")
+        default:
+            return UIImage(named: "shareTypeUser")
         }
     }
 }
