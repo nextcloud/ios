@@ -30,16 +30,16 @@ class NCShareCommon: NSObject {
         return instance
     }()
     
-    private let SHARE_TYPE_USER = 0
-    private let SHARE_TYPE_GROUP = 1
-    private let SHARE_TYPE_LINK = 3
-    private let SHARE_TYPE_EMAIL = 4
-    private let SHARE_TYPE_CONTACT = 5
-    private let SHARE_TYPE_REMOTE = 6
-    private let SHARE_TYPE_CIRCLE = 7
-    private let SHARE_TYPE_GUEST = 8
-    private let SHARE_TYPE_REMOTE_GROUP = 9
-    private let SHARE_TYPE_ROOM = 10
+    let SHARE_TYPE_USER = 0
+    let SHARE_TYPE_GROUP = 1
+    let SHARE_TYPE_LINK = 3
+    let SHARE_TYPE_EMAIL = 4
+    let SHARE_TYPE_CONTACT = 5
+    let SHARE_TYPE_REMOTE = 6
+    let SHARE_TYPE_CIRCLE = 7
+    let SHARE_TYPE_GUEST = 8
+    let SHARE_TYPE_REMOTE_GROUP = 9
+    let SHARE_TYPE_ROOM = 10
     
     func createLinkAvatar() -> UIImage? {
         

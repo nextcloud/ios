@@ -260,7 +260,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         
         for sharee in sharees {
-            dropDown.dataSource.append(sharee.label)
+            var label = sharee.label
+            if sharee.shareType == NCShareCommon.sharedInstance.SHARE_TYPE_CIRCLE {
+                label = label + " (" + sharee.circleInfo + ", " +  sharee.circleOwner + ")"
+            }
+            dropDown.dataSource.append(label)
         }
         
         dropDown.anchorView = searchField
