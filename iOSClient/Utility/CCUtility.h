@@ -50,6 +50,9 @@
 + (BOOL)getNotPasscodeAtStart;
 + (void)setNotPasscodeAtStart:(BOOL)set;
 
++ (BOOL)getEnableTouchFaceID;
++ (void)setEnableTouchFaceID:(BOOL)set;
+
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
 

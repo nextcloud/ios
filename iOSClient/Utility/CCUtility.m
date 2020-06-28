@@ -81,6 +81,25 @@
     [UICKeyChainStore setString:sSet forKey:@"notPasscodeAtStart" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getEnableTouchFaceID
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"enableTouchFaceID" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setEnableTouchFaceID:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
+}
+
++ (void)setEnableTouchFaceID:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getOrderSettings
 {
     NSString *order = [UICKeyChainStore stringForKey:@"order" service:k_serviceShareKeyChain];
