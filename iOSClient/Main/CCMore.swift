@@ -145,13 +145,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         item.icon = "world"
                         externalSiteMenu.append(item)
                     }
-//                    if (externalSite.type == "settings") {
-//                        item.icon = "settings"
-//                        settingsMenu.append(item)
-//                    }
-//                    if (externalSite.type == "quota") {
-//                        quotaMenu.append(item)
-//                    }
+                    if (externalSite.type == "settings") {
+                        item.icon = "settings"
+                        settingsMenu.append(item)
+                    }
+                    if (externalSite.type == "quota") {
+                        quotaMenu.append(item)
+                    }
                 }
             }
         }
@@ -164,7 +164,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         settingsMenu.append(item)
 
         if (quotaMenu.count > 0) {
-
             let item = quotaMenu[0]
             labelQuotaExternalSite.text = item.name
         }
