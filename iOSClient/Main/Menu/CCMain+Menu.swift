@@ -322,7 +322,7 @@ extension CCMain {
                         action: { menuAction in
                             let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
                             NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: !isOffline, account: appDelegate.activeAccount)
-                            if(isOffline) {
+                            if (!isOffline) {
                                 CCSynchronize.shared()?.readFolder(serverUrl, selector: selectorReadFolderWithDownload, account: appDelegate.activeAccount)
                             }
                             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
