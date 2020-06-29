@@ -1209,7 +1209,7 @@
         self.passcodeViewController.delegate = self;
         self.passcodeViewController.keypadButtonShowLettering = false;
         
-        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+        if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
                     self.passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
@@ -1230,7 +1230,7 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
+        if (CCUtility.getEnableTouchFaceID && automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
             [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
                 if (success) {
                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {

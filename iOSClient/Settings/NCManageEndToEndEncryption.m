@@ -265,7 +265,7 @@
         passcodeViewController.allowCancel = true;
         passcodeViewController.keypadButtonShowLettering = false;
         
-        if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+        if (CCUtility.getEnableTouchFaceID && [laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
             if (error == NULL) {
                 if (laContext.biometryType == LABiometryTypeFaceID) {
                     passcodeViewController.biometryType = TOPasscodeBiometryTypeFaceID;
