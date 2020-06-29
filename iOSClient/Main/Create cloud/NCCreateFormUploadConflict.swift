@@ -86,10 +86,10 @@ extension NCCreateFormUploadConflictDelegate {
             labelNewFiles.text = NSLocalizedString("_file_conflict_new_", comment: "")
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         } else {
-            labelTitle.text = String(metadatasUploadInConflict.count) + " " + NSLocalizedString("_files_conflict_num_", comment: "")
-            labelSubTitle.text = NSLocalizedString("_files_conflict_desc_", comment: "")
-            labelNewFiles.text = NSLocalizedString("_files_conflict_new_", comment: "")
-            labelAlreadyExistingFiles.text = NSLocalizedString("_files_conflict_exists_", comment: "")
+            labelTitle.text = String(metadatasUploadInConflict.count) + " " + NSLocalizedString("_file_conflicts_num_", comment: "")
+            labelSubTitle.text = NSLocalizedString("_file_conflict_desc_", comment: "")
+            labelNewFiles.text = NSLocalizedString("_file_conflict_new_", comment: "")
+            labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
         
         switchNewFiles.isOn = false
