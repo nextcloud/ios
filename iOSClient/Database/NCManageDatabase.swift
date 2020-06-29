@@ -107,8 +107,11 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableDirectory.className())
                     }
                     
-                    if oldSchemaVersion < 132 {
+                    if oldSchemaVersion < 134 {
                         migration.deleteData(forType: tableShare.className())
+                        migration.deleteData(forType: tableDirectEditingCreators.className())
+                        migration.deleteData(forType: tableDirectEditingEditors.className())
+                        migration.deleteData(forType: tableExternalSites.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
