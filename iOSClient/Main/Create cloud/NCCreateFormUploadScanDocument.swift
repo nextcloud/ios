@@ -449,6 +449,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             return
         }
         
+        //
+        
         #if GOOGLEMOBILEVISION
         // Text Recognition TXT
         if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
@@ -530,6 +532,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 }
                 #else
                 image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                image = changeCompressionImage(image, dpiQuality: dpiQuality)
                 
                 UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                 UIImageView.init(image:image).layer.render(in: context!)
@@ -641,6 +644,25 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         return image
+    }
+    
+    func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
+        
+        var compressionQuality: CGFloat = 0.5
+        
+        switch dpiQuality {
+        case typeDpiQuality.low:
+            compressionQuality = 0.1
+        case typeDpiQuality.medium:
+            compressionQuality = 0.5
+        case typeDpiQuality.hight:
+            compressionQuality = 0.9
+        }
+        
+        guard let data = image.jpegData(compressionQuality: compressionQuality) else { return image }
+        guard let imageCompressed = UIImage.init(data: data) else { return image }
+        
+        return imageCompressed
     }
 }
 
