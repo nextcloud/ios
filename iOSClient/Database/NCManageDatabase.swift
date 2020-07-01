@@ -2164,7 +2164,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool, freeze: Bool = false) -> [tableMetadata]? {
+    @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool, freeze: Bool = false, nresults: Int = 0) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()

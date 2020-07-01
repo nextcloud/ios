@@ -1,3 +1,44 @@
+5.2.0 Release notes (2020-06-30)
+=============================================================
+
+Xcode 11.3 and iOS 9 are now the minimum supported versions.
+
+### Enhancements
+
+* Add support for building with Xcode 12 beta 1. watchOS currently requires
+  removing x86_64 from the supported architectures. Support for the new 64-bit
+  watch simulator will come in a future release.
+
+### Fixed
+
+* Opening a Realm file in file format v6 (created by Realm Cocoa versions
+  between 2.4 and 2.10) would crash. (Since 5.0.0, [Core #3764](https://github.com/realm/realm-core/issues/3764)).
+* Upgrading v9 (pre-5.0) Realm files would create a redundant search index for
+  primary key properties. This index would then be removed the next time the
+  Realm was opened, resulting in some extra i/o in the upgrade process.
+  (Since 5.0.0, [Core #3787](https://github.com/realm/realm-core/issues/3787)).
+* Fixed a performance issue with upgrading v9 files with search indexes on
+  non-primary-key properties. (Since 5.0.0, [Core #3767](https://github.com/realm/realm-core/issues/3767)).
+* `List.index(of:)` would give incorrect results if it was the very first thing
+  called on that List after a Realm was refreshed following a write which
+  modified the List. (Since 5.0.0, [#6606](https://github.com/realm/realm-cocoa/issues/6606)).
+* If a ThreadSafeReference was the only remaining reference to a Realm,
+  multiple copies of the file could end up mapped into memory at once. This
+  probably did not have any symptoms other than increased memory usage. (Since 5.0.0).
+
+### Compatibility
+
+* File format: Generates Realms with format v10 (Reads and upgrades all previous formats)
+* Realm Object Server: 3.21.0 or later.
+* Realm Studio: 3.11 or later.
+* APIs are backwards compatible with all previous releases in the 5.x.y series.
+* Carthage release for Swift is built with Xcode 11.5.
+
+### Internal
+
+* Upgraded realm-core from v6.0.6 to v6.0.8
+* Upgraded realm-sync from v5.0.5 to v5.0.7
+
 5.1.0 Release notes (2020-06-22)
 =============================================================
 

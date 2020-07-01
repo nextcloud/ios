@@ -24,6 +24,8 @@
 #include "results.hpp"
 #include "shared_realm.hpp"
 
+#include "impl/realm_coordinator.hpp"
+
 #include <realm/db.hpp>
 #include <realm/keys.hpp>
 
@@ -33,6 +35,7 @@ public:
     virtual ~Payload() = default;
     Payload(Realm& realm)
     : m_transaction(realm.is_in_read_transaction() ? realm.duplicate() : nullptr)
+    , m_coordinator(Realm::Internal::get_coordinator(realm).shared_from_this())
     , m_created_in_write_transaction(realm.is_in_transaction())
     {
     }
@@ -43,7 +46,7 @@ protected:
     const TransactionRef m_transaction;
 
 private:
-    const VersionID m_target_version;
+    const std::shared_ptr<_impl::RealmCoordinator> m_coordinator;
     const bool m_created_in_write_transaction;
 };
 

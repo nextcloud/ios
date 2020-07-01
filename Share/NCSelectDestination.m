@@ -225,7 +225,7 @@
         }
     }
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource sorted:nil ascending:NO freeze:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource sorted:nil ascending:NO freeze:NO nresults:0];
     
     if (result)
         return [result count];
