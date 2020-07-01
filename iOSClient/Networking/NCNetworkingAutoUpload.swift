@@ -53,11 +53,11 @@ class NCNetworkingAutoUpload: NSObject {
         
         timerProcess?.invalidate()
         
-        let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true)
-        counterUpload = metadatasUpload.count
-         
-        for metadata in metadatasUpload {
-            sizeUpload = sizeUpload + Int(metadata.size)
+        if let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true) {
+            counterUpload = metadatasUpload.count
+            for metadata in metadatasUpload {
+                sizeUpload = sizeUpload + Int(metadata.size)
+            }
         }
         
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
@@ -118,9 +118,10 @@ class NCNetworkingAutoUpload: NSObject {
         // ------------------------- <selector Auto Upload All> ----------------------
          
         // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-        let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true)
-        if metadatasInError.count >= k_maxErrorAutoUploadAll {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_automatic_all_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+        if let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true) {
+            if metadatasInError.count >= k_maxErrorAutoUploadAll {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_automatic_all_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+            }
         } else {
             while counterUpload < maxConcurrentOperationUpload {
                 if sizeUpload > k_maxSizeOperationUpload { break }
@@ -149,10 +150,10 @@ class NCNetworkingAutoUpload: NSObject {
          
         // No upload available ? --> Retry Upload in Error
         if counterUpload == 0 {
-             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true)
-            for metadata in metadatas {
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusInUpload))
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true) {
+                for metadata in metadatas {
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusInUpload))
+                }
             }
         }
          

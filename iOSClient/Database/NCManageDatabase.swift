@@ -2164,49 +2164,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, sorted: String?, ascending: Bool, freeze: Bool = false, nresults: Int = 0) -> [tableMetadata]? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let results: Results<tableMetadata>
-        
-        if let sorted = sorted {
-            
-            if (tableMetadata().objectSchema.properties.contains { $0.name == sorted }) {
-                results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            } else {
-                results = realm.objects(tableMetadata.self).filter(predicate)
-            }
-            
-        } else {
-            
-            results = realm.objects(tableMetadata.self).filter(predicate)
-        }
-        
-        if (results.count > 0) {
-            if freeze {
-                return Array(results.freeze())
-            } else {
-                return Array(results.map { tableMetadata.init(value:$0) })
-            }
-        } else {
-            return nil
-        }
-    }
-    
-    @objc func getMetadatas(predicate: NSPredicate, freeze: Bool) -> [tableMetadata] {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        if freeze {
-            return Array(realm.objects(tableMetadata.self).filter(predicate).freeze())
-        } else {
-            return Array(realm.objects(tableMetadata.self).filter(predicate))
-        }
-    }
-    
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
@@ -2246,32 +2203,38 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, page: Int, limit: Int, sorted: String, ascending: Bool) -> [tableMetadata]? {
+    @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false, freeze: Bool = false) -> [tableMetadata]? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results : Results<tableMetadata>
-        results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if results.count > 0 {
-        
-            let nFrom = (page - 1) * limit
-            let nTo = nFrom + (limit - 1)
-            var metadatas: [tableMetadata] = []
-            
-            for n in nFrom...nTo {
-                if n == results.count {
-                    break
+            if page == 0 || limit == 0 {
+                if freeze {
+                    return Array(results.freeze())
+                } else {
+                    return Array(results.map { tableMetadata.init(value:$0) })
                 }
-                let metadata = tableMetadata.init(value: results[n])
-                metadatas.append(metadata)
+            } else {
+                var metadatas: [tableMetadata] = []
+                let nFrom = (page - 1) * limit
+                let nTo = nFrom + (limit - 1)
+                
+                for n in nFrom...nTo {
+                    if n == results.count {
+                        break
+                    }
+                    if freeze {
+                        metadatas.append(results[n].freeze())
+                    } else {
+                        metadatas.append(tableMetadata.init(value: results[n]))
+                    }
+                }
+                return metadatas
             }
-            
-            return metadatas
-            
         } else {
-            
             return nil
         }
     }

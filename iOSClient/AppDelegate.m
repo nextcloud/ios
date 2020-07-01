@@ -712,7 +712,7 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode) return;
             
     NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
-    NSInteger counterUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] freeze:true].count;
+    NSInteger counterUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES].count;
     NSInteger total = counterDownload + counterUpload;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
@@ -984,9 +984,9 @@
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != ''"] sorted:nil ascending:NO freeze:YES nresults:0];
+         NSInteger results = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != ''"] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES].count;
         
-        if ([records count] > 0) {
+        if (results > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
         } else {
             completionHandler(UIBackgroundFetchResultNoData);
