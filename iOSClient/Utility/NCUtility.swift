@@ -347,7 +347,8 @@ class NCUtility: NSObject {
                 if mimetype == contentType {
                     return result.editor
                 }
-                // HARD CODE
+                // HARDCODE
+                // https://github.com/nextcloud/text/issues/913
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
                     return result.editor
                 }
