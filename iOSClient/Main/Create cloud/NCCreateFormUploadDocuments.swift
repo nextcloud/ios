@@ -267,7 +267,10 @@ import NCCommunication
             return
         } else {
             
-            fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+            let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameForm as! String, contentType: "", directory: false)
+            if NCUtility.sharedInstance.isDirectEditing(account: appDelegate.activeAccount, contentType: result.contentType) == nil {
+                fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
+            }
             
             if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
@@ -322,18 +325,10 @@ import NCCommunication
                 if errorCode == 0 && account == self.appDelegate.activeAccount {
                     
                     if url != nil && url!.count > 0 {
-                        
-                        var contentType = "text/markdown"
-                        if let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: self.appDelegate.activeAccount) {
-                            for directEditingCreator in directEditingCreators {
-                                if directEditingCreator.ext == self.fileNameExtension {
-                                    contentType = directEditingCreator.mimetype
-                                }
-                            }
-                        }
+                        let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: "", directory: false)
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url ?? "", contentType: contentType)
+                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, url: url ?? "", contentType: result.contentType)
                             self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })

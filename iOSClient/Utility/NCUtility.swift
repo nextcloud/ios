@@ -336,20 +336,24 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func isDirectEditing(_ metadata: tableMetadata) -> String? {
+    @objc func isDirectEditing(account: String, contentType: String) -> String? {
         
-        guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: metadata.account) else {
+        guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) else {
             return nil
         }
         
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
-                if mimetype == metadata.contentType {
+                if mimetype == contentType {
+                    return result.editor
+                }
+                // HARD CODE
+                if mimetype == "text/markdown" && contentType == "text/x-markdown" {
                     return result.editor
                 }
             }
             for mimetype in result.optionalMimetypes {
-                if mimetype == metadata.contentType {
+                if mimetype == contentType {
                     return result.editor
                 }
             }

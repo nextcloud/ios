@@ -481,9 +481,9 @@ class NCDetailViewController: UIViewController {
             }
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
-            if NCUtility.sharedInstance.isDirectEditing(metadata) != nil &&  NCCommunication.shared.isNetworkReachable() {
+            if NCUtility.sharedInstance.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
                 
-                let editor = NCUtility.sharedInstance.isDirectEditing(metadata)!
+                guard let editor = NCUtility.sharedInstance.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
                     
                     NCUtility.sharedInstance.startActivityIndicator(view: backgroundView)

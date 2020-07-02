@@ -585,7 +585,7 @@
                         
                     [self shouldPerformSegue:self.metadata selector:@""];
                 
-                    } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditing:self.metadata] != nil) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditingWithAccount:self.metadata.account contentType:self.metadata.contentType] != nil) {
                         
                         if (NCCommunication.shared.isNetworkReachable) {
                             [self shouldPerformSegue:self.metadata selector:@""];
