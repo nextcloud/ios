@@ -75,7 +75,7 @@ class NCContentPresenter: NSObject {
         else if errorCode == -1005 { return }   // Connection lost
         else if errorCode == 0 && type == messageType.error { return }
         
-        // No repeat message 
+        // No repeat message for:
         if errorCode == lastErrorCode {
             if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
         } else {
