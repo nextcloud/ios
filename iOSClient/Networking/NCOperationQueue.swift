@@ -65,8 +65,7 @@ import NCCommunication
     
     // Download Thumbnail
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
-        if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) || metadata.typeFile == k_metadataTypeFile_document) {
-            
+        if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in  downloadThumbnailQueue.operations {
                 if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId { return }
             }
@@ -89,7 +88,6 @@ import NCCommunication
     // Verify exists yet file
     
     @objc func readFileForMedia(metadata: tableMetadata) {
-        
         for operation in readFileForMediaQueue.operations {
             if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId { return }
         }
@@ -153,7 +151,6 @@ class NCOperationReadFolderSync: ConcurrentOperation {
             self.finish()
         } else {
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                
                 if errorCode == 0 && files != nil {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         
