@@ -115,14 +115,14 @@
     return newImage;
 }
 
-+ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId typeFile:(NSString *)typeFile
++ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag typeFile:(NSString *)typeFile
 {
     UIImage *originalImage;
     UIImage *scaleImagePreview;
     UIImage *scaleImageIcon;
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName];
-    NSString *fileNamePathPreview = [CCUtility getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileName];
-    NSString *fileNamePathIcon = [CCUtility getDirectoryProviderStorageIconOcId:ocId fileNameView:fileName];
+    NSString *fileNamePathPreview = [CCUtility getDirectoryProviderStoragePreviewOcId:ocId etag:etag];
+    NSString *fileNamePathIcon = [CCUtility getDirectoryProviderStorageIconOcId:ocId etag:etag];
 
     if (![CCUtility fileProviderStorageExists:ocId fileNameView:fileName]) return;
     

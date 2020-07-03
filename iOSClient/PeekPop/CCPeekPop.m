@@ -49,7 +49,7 @@
     
     if (self.metadata.hasPreview) {
         
-        if ([CCUtility fileProviderStoragePreviewIconExists:self.metadata.ocId fileNameView:self.metadata.fileNameView]) {
+        if ([CCUtility fileProviderStoragePreviewIconExists:self.metadata.ocId etag:self.metadata.etag]) {
             
             UIImage *fullImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView]];
             if (fullImage != nil) {
@@ -102,8 +102,8 @@
 - (void)downloadThumbnail
 {
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl activeUrl:appDelegate.activeUrl];
-    NSString *fileNamePreviewLocalPath = [CCUtility getDirectoryProviderStoragePreviewOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
-    NSString *fileNameIconLocalPath = [CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId fileNameView:self.metadata.fileNameView];
+    NSString *fileNamePreviewLocalPath = [CCUtility getDirectoryProviderStoragePreviewOcId:self.metadata.ocId etag:self.metadata.etag];
+    NSString *fileNameIconLocalPath = [CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId etag:self.metadata.etag];
     
     [[NCCommunication shared] downloadPreviewWithFileNamePathOrFileId:fileNamePath fileNamePreviewLocalPath:fileNamePreviewLocalPath widthPreview:k_sizePreview heightPreview:k_sizePreview fileNameIconLocalPath:fileNameIconLocalPath sizeIcon:k_sizeIcon customUserAgent:nil addCustomHeaders:nil endpointTrashbin:false useInternalEndpoint:true completionHandler:^(NSString *account, UIImage *imagePreview, UIImage *imageIcon, NSInteger errorCode,  NSString *errorDescription) {
         

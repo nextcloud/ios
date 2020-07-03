@@ -280,7 +280,7 @@
         
         } else {
             
-            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
+            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId etag:metadata.etag]];
 
             if (cell.fileImageView.image == nil) {
                 

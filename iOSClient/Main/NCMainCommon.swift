@@ -291,8 +291,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
             } else {
                 
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
@@ -416,8 +416,8 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
             } else {
                 
-                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
-                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                    cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else if(!metadata.hasPreview) {
                     if metadata.iconName.count > 0 {
                         cell.imageItem.image = UIImage.init(named: metadata.iconName)
@@ -520,7 +520,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
             } else {
                 
-                let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 
                 // Lable Info
                 cell.labelInfoFile.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
@@ -528,7 +528,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 // File Image
                 if iconFileExists {
                     cell.file.backgroundColor = nil
-                    cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else if(!metadata.hasPreview){
                     cell.file.backgroundColor = nil
                     if metadata.iconName.count > 0 {
@@ -668,10 +668,10 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 progress = 0.0
             }
             
-            let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
 
             if iconFileExists {
-                cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else if(!metadata.hasPreview){
                 if metadata.iconName.count > 0 {
                     cell.file.image = UIImage.init(named: metadata.iconName)

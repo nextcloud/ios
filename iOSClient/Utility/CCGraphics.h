@@ -32,7 +32,7 @@
 
 + (UIImage *)thumbnailImageForVideo:(NSURL *)videoURL atTime:(NSTimeInterval)time;
 
-+ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId typeFile:(NSString *)typeFile;
++ (void)createNewImageFrom:(NSString *)fileName ocId:(NSString *)ocId etag:(NSString *)etag typeFile:(NSString *)typeFile;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
 + (UIColor *)colorFromHexString:(NSString *)hexString;

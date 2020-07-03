@@ -204,11 +204,11 @@
 + (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId;
 + (NSString *)getDirectoryProviderStorageOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag;
++ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId etag:(NSString *)etag;
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag;
 
 + (void)removeGroupApplicationSupport;
 + (void)removeGroupLibraryDirectory;

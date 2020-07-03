@@ -341,7 +341,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             }
 
             var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)) {
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
@@ -396,7 +396,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             }
 
             var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)) {
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
                 iconHeader = icon
             } else {
                 if(tableTrash.directory) {
@@ -535,10 +535,10 @@ extension NCTrash: UICollectionViewDataSource {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName))
         } else {
-            if tableTrash.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(tableTrash.fileId, fileNameView: tableTrash.fileName) {
+            if tableTrash.hasPreview && !CCUtility.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
                 downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
@@ -743,8 +743,8 @@ extension NCTrash {
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
         
-        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
-        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, fileNameView: tableTrash.fileName)!
+        let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)!
+        let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)!
         
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon), endpointTrashbin: true) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
             

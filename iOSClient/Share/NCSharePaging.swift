@@ -207,8 +207,8 @@ class NCSharePagingView: PagingView {
         headerView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         headerView.ocId = metadata!.ocId
         
-        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, fileNameView: metadata!.fileNameView)) {
-            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, fileNameView: metadata!.fileNameView))
+        if FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag)) {
+            headerView.imageView.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata!.ocId, etag: metadata!.etag))
         } else {
             if metadata!.directory {
                 let image = UIImage.init(named: "folder")!

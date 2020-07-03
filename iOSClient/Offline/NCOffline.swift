@@ -301,7 +301,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
 
 
             var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                 iconHeader = icon
             } else {
                 iconHeader = UIImage(named: metadata.iconName)

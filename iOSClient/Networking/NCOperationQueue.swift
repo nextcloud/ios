@@ -65,7 +65,7 @@ import NCCommunication
     
     // Download Thumbnail
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
-        if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, fileNameView: metadata.fileName) || metadata.typeFile == k_metadataTypeFile_document) {
+        if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) || metadata.typeFile == k_metadataTypeFile_document) {
             
             for operation in  downloadThumbnailQueue.operations {
                 if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId { return }
@@ -192,8 +192,8 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             self.finish()
         } else {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 

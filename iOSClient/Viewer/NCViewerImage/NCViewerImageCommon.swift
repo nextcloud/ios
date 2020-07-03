@@ -70,8 +70,8 @@ class NCViewerImageCommon: NSObject {
     
     func getThumbnailImage(metadata: tableMetadata) -> UIImage? {
         
-        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             return UIImage.init(contentsOfFile: imagePath)
         }
         
@@ -85,12 +85,12 @@ class NCViewerImageCommon: NSObject {
         
         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
            
-            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
             
             if ext == "GIF" {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
             } else if ext == "SVG" {
@@ -112,7 +112,7 @@ class NCViewerImageCommon: NSObject {
                 }
             } else {
                 if !FileManager().fileExists(atPath: previewPath) {
-                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 }
                 image = UIImage.init(contentsOfFile: imagePath)
             }

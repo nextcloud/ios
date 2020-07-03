@@ -367,7 +367,7 @@ import Alamofire
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
             
             #if !EXTENSION
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
             #endif
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
@@ -878,14 +878,8 @@ import Alamofire
                     // Move file system
                     let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                     let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-                    let atPathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileName)!
-                    let toPathPreview = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: fileNameNew)!
-                    let atPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileName)!
-                    let toPathIcon = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: fileNameNew)!
                     do {
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                        try FileManager.default.moveItem(atPath: atPathPreview, toPath: toPathPreview)
-                        try FileManager.default.moveItem(atPath: atPathIcon, toPath: toPathIcon)
                     } catch { }
                 }
                 

@@ -276,8 +276,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             // -----> Already Existing File
             
             guard let metadataAlreadyExists = NCUtility.sharedInstance.getMetadataConflict(account: metadataNewFile.account, serverUrl: metadataNewFile.serverUrl, fileName: metadataNewFile.fileNameView) else { return UITableViewCell() }
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) {
-                cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag)) {
+                cell.imageAlreadyExistingFile.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadataAlreadyExists.ocId, etag: metadataAlreadyExists.etag))
             } else if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView)) && metadataAlreadyExists.contentType == "application/pdf" {
             
                 let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId, fileNameView: metadataAlreadyExists.fileNameView))

@@ -263,7 +263,7 @@
         
     } else {
         
-        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId fileNameView:metadata.fileNameView]];
+        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconOcId:metadata.ocId etag:metadata.etag]];
         
         if (thumb) {
             cell.imageView.image = thumb;

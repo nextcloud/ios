@@ -196,9 +196,9 @@ extension FileProviderExtension {
                     // rename file
                     _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
                     
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
                     NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
                 }

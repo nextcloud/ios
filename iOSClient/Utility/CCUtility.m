@@ -1143,14 +1143,14 @@
     return fileNamePath;
 }
 
-+ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag
 {
-    return [NSString stringWithFormat:@"%@/%@.small.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.small.ico", [self getDirectoryProviderStorageOcId:ocId], etag];
 }
 
-+ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId etag:(NSString *)etag
 {
-    return [NSString stringWithFormat:@"%@/%@.preview.ico", [self getDirectoryProviderStorageOcId:ocId], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.preview.ico", [self getDirectoryProviderStorageOcId:ocId], etag];
 }
 
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
@@ -1172,20 +1172,10 @@
     return fileSize;
 }
 
-+ (BOOL)fileProviderStorageIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageIconOcId:ocId fileNameView:fileNameView];
-    
-    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
-    
-    if (fileSize > 0) return true;
-    else return false;
-}
-
-+ (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId fileNameView:(NSString *)fileNameView
-{
-    NSString *fileNamePathPreview = [self getDirectoryProviderStoragePreviewOcId:ocId fileNameView:fileNameView];
-    NSString *fileNamePathIcon = [self getDirectoryProviderStorageIconOcId:ocId fileNameView:fileNameView];
+    NSString *fileNamePathPreview = [self getDirectoryProviderStoragePreviewOcId:ocId etag:etag];
+    NSString *fileNamePathIcon = [self getDirectoryProviderStorageIconOcId:ocId etag:etag];
     
     unsigned long long fileSizePreview = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePathPreview error:nil] fileSize];
     unsigned long long fileSizeIcon = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePathIcon error:nil] fileSize];

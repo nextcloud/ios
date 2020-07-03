@@ -638,7 +638,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         if index >= metadatas.count { return }
         let metadata = metadatas[index]
-        let isPreview = CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, fileNameView: metadata.fileNameView)
+        let isPreview = CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
         let isImage = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0
         let ext = CCUtility.getExtension(metadata.fileNameView)
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
@@ -657,7 +657,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         // Preview for Video
         if metadata.typeFile == k_metadataTypeFile_video && !isPreview && isImage {
             
-            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, typeFile: metadata.typeFile)
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
         }
         
         // Original only for actual
@@ -721,8 +721,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         } else if metadata.hasPreview {
                 
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 && imagePreview != nil {
