@@ -784,6 +784,7 @@
 "_invalid_data_format_"                 = "Invalid data format";
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
 "_internal_generic_error_"              = "internal error";
+"_editor_unknown_"                      = "Failed to open file: Editor is unknown";
 
 // QRCode
 

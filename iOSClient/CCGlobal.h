@@ -158,13 +158,7 @@
 #define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
-#define k_CCErrorTaskNil                                -9999
-#define k_CCErrorTaskDownloadNotFound                   -9998
-#define k_CCErrorUserNotAvailble                        -9997
-#define k_CCErrorInternalError                          -9996
-#define k_CCErrorFileAlreadyInDownload                  -9995
-#define k_CCErrorWebdavResponseError                    -9994
-#define k_CCErrorNotPermission                          -9993
+#define k_CCErrorInternalError                          -9999
 
 // Search
 #define k_minCharsSearch                                2
