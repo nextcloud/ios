@@ -338,29 +338,36 @@ class NCUtility: NSObject {
     
     @objc func isDirectEditing(account: String, contentType: String) -> String? {
         
+        var editor: String?
+        
         guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) else {
-            return nil
+            return editor
         }
         
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == contentType {
-                    return result.editor
+                    editor = result.editor
                 }
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    return result.editor
+                    editor = result.editor
                 }
             }
             for mimetype in result.optionalMimetypes {
                 if mimetype == contentType {
-                    return result.editor
+                    editor = result.editor
                 }
             }
         }
         
-        return nil
+        // HARDCODE
+        if editor == "" {
+            editor = k_editor_text
+        }
+        
+        return editor
     }
     
     @objc func removeAllSettings() {
