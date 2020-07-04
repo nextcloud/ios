@@ -406,7 +406,7 @@
             metadataForUpload.status = k_metadataStatusWaitUpload;
             metadataForUpload.typeFile = k_metadataTypeFile_image;
             if (assetMediaType == PHAssetMediaTypeVideo) {
-                metadata.typeFile = k_metadataTypeFile_video;
+                metadataForUpload.typeFile = k_metadataTypeFile_video;
             }
 
             // Add Medtadata MOV LIVE PHOTO for upload

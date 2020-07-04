@@ -66,14 +66,8 @@ class NCNetworkingAutoUpload: NSObject {
          
         while counterUpload < maxConcurrentOperationUpload {
             if sizeUpload > k_maxSizeOperationUpload { break }
-            var predicate = NSPredicate()
+            let predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
              
-            if UIApplication.shared.applicationState == .background {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadFile, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
-            } else {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
-            }
-
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true, freeze: true) {
                 if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
                     if UIApplication.shared.applicationState == .background { break }
