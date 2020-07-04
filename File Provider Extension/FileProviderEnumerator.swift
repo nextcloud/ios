@@ -277,13 +277,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         let offset = (page - 1) * limit
         let serverUrl = fileProviderData.sharedInstance.accountUrl
-        var fileNamePath = "/"
-        
-        if serverUrl != fileProviderData.sharedInstance.accountUrl {
-            fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
+        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
+        if fileNamePath == "" {
+            fileNamePath = "/"
         }
         
-        NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, offset: offset, limit: limit) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, serverUrl: serverUrl, offset: offset, limit: limit) { (account, files, errorCode, errorDescription) in
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 

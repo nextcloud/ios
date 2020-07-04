@@ -245,11 +245,36 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
             """
             <?xml version=\"1.0\" encoding=\"UTF-8\"?>
             <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+            <d:prop>
+                <has-preview xmlns=\"http://nextcloud.org/ns\"/>
+                <creation_time xmlns=\"http://nextcloud.org/ns\"/>
+                <upload_time xmlns=\"http://nextcloud.org/ns\"/>
+            </d:prop>
             </d:propfind>
             """
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8)) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 404 {
+                if errorCode == 0 && files != nil {
+                    if let file = files?[0] {
+                        let metadata = tableMetadata.init(value: self.metadata)
+                        var modify = false
+                        if metadata.hasPreview != file.hasPreview {
+                            metadata.hasPreview = file.hasPreview
+                            modify = true
+                        }
+                        if file.creationDate != nil && metadata.creationDate != file.creationDate {
+                            metadata.creationDate = file.creationDate!
+                            modify = true
+                        }
+                        if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
+                            metadata.uploadDate = file.uploadDate!
+                            modify = true
+                        }
+                        if modify {
+                            NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        }
+                    }
+                } else if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": self.metadata, "errorCode": errorCode])
                 }
