@@ -404,10 +404,6 @@
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
             metadataForUpload.status = k_metadataStatusWaitUpload;
-            metadataForUpload.typeFile = k_metadataTypeFile_image;
-            if (assetMediaType == PHAssetMediaTypeVideo) {
-                metadataForUpload.typeFile = k_metadataTypeFile_video;
-            }
 
             // Add Medtadata MOV LIVE PHOTO for upload
             if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
@@ -428,8 +424,7 @@
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
-                        metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
-
+                        
                         [metadataFull addObject:metadataMOVForUpload];
                         
                         // Update database Auto Upload

@@ -1804,6 +1804,7 @@ class NCManageDatabase: NSObject {
         metadata.contentType = results.contentType
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
+        metadata.hasPreview = true
         metadata.iconName = results.iconName
         metadata.ocId = ocId
         metadata.fileName = fileName
