@@ -50,5 +50,7 @@ import Foundation
 
     @objc public let capabilitiesRichdocumentsMimetypes:        Array = ["ocs","data","capabilities","richdocuments","mimetypes"]
 
+    @objc public let capabilitiesPaginationEndpoint:            Array = ["ocs","data","capabilities","files","pagination","endpoint"]
+    
     @objc public let capabilitiesHWCEnabled:                    Array = ["ocs","data","capabilities","handwerkcloud","enabled"]
 }

@@ -186,21 +186,9 @@ class NCShareCommon: NSObject {
     }
     
     func copyLink(tableShare: tableShare?, viewController: UIViewController, sender: Any) {
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        var url: String = ""
-        
         guard let tableShare = tableShare else { return }
         
-        if tableShare.token.hasPrefix("http://") || tableShare.token.hasPrefix("https://") {
-            url = tableShare.token
-        } else if tableShare.path != "" {
-            url = tableShare.path
-        } else {
-            url = appDelegate.activeUrl + "/" + k_share_link_middle_part_url_after_version_8 + tableShare.token
-        }
-        
-        if let name = URL(string: url), !name.absoluteString.isEmpty {
+        if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
             let objectsToShare = [name]
             
             let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
