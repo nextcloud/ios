@@ -151,7 +151,7 @@ class NCNetworkingAutoUpload: NSObject {
             }
         }
          
-        // verify delete Asset Local Identifiers in auto upload (Photos album)
+        // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
         if (counterUpload == 0 && appDelegate.passcodeViewController == nil) {
             NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload)
         }
