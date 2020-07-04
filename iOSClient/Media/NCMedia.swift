@@ -597,7 +597,7 @@ extension NCMedia {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         }
                 
-        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!) { (metadatas) in
+        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: "date") { (metadatas) in
             DispatchQueue.main.sync {
                 self.metadatas = metadatas
                 self.reloadDataThenPerform {

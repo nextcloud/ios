@@ -2384,7 +2384,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getMetadatasMedia(predicate: NSPredicate, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+    @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending:Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
                 
         DispatchQueue.global().async {
             autoreleasepool {
