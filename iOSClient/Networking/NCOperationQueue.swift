@@ -270,6 +270,10 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
                             metadata.uploadDate = file.uploadDate!
                             modify = true
                         }
+                        if metadata.date != file.date {
+                            metadata.date = file.date
+                            modify = true
+                        }
                         if modify {
                             NCManageDatabase.sharedInstance.addMetadata(metadata)
                         }
