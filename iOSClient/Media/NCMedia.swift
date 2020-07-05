@@ -51,7 +51,6 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
-    private var mediaSort = "date"
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -253,6 +252,45 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.present(navigationController, animated: true, completion: nil)
+                    }
+                )
+            )
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_by_modified_date_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "imageno"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    selected: CCUtility.getMediaSortDate() == "date",
+                    on: true,
+                    action: { menuAction in
+                        CCUtility.setMediaSortDate("date")
+                        self.reloadDataSource()
+                    }
+                )
+            )
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_by_created_date_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "imageno"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    selected: CCUtility.getMediaSortDate() == "creationDate",
+                    on: true,
+                    action: { menuAction in
+                        CCUtility.setMediaSortDate("creationDate")
+                        self.reloadDataSource()
+                    }
+                )
+            )
+            
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_media_by_upload_date_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "imageno"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    selected: CCUtility.getMediaSortDate() == "uploadDate",
+                    on: true,
+                    action: { menuAction in
+                        CCUtility.setMediaSortDate("uploadDate")
+                        self.reloadDataSource()
                     }
                 )
             )
@@ -601,7 +639,7 @@ extension NCMedia {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         }
                 
-        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: mediaSort) { (metadatas) in
+        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: CCUtility.getMediaSortDate()) { (metadatas) in
             DispatchQueue.main.sync {
                 self.metadatas = metadatas
                 self.reloadDataThenPerform {

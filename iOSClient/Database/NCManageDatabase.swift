@@ -2393,7 +2393,7 @@ class NCManageDatabase: NSObject {
                 realm.refresh()
                 var metadatas = [tableMetadata]()
                 
-                let sortProperties = [SortDescriptor(keyPath: "date", ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+                let sortProperties = [SortDescriptor(keyPath: sort, ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
                 if (results.count > 0) {
                     

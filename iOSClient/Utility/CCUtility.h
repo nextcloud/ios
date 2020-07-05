@@ -171,6 +171,9 @@
 + (BOOL)getLivePhoto;
 + (void)setLivePhoto:(BOOL)set;
 
++ (NSString *)getMediaSortDate;
++ (void)setMediaSortDate:(NSString *)value;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

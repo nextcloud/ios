@@ -694,6 +694,23 @@
     [UICKeyChainStore setString:sSet forKey:@"livePhoto" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)getMediaSortDate
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"mediaSortDate" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setMediaSortDate:@"date"];
+        return @"date";
+    }
+    
+    return valueString;
+}
+
++ (void)setMediaSortDate:(NSString *)value
+{
+    [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:k_serviceShareKeyChain];
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
