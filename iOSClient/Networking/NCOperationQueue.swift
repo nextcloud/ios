@@ -36,6 +36,7 @@ import NCCommunication
     private let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private var timerReadFileForMediaQueue: Timer?
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
@@ -45,6 +46,7 @@ import NCCommunication
     }
     
     // Download file
+    
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
     }
@@ -64,6 +66,7 @@ import NCCommunication
     }
     
     // Download Thumbnail
+    
     @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in  downloadThumbnailQueue.operations {
@@ -85,7 +88,7 @@ import NCCommunication
         downloadThumbnailQueue.cancelAll()
     }
     
-    // Verify exists yet file
+    // Get file information
     
     @objc func readFileForMedia(metadata: tableMetadata) {
         for operation in readFileForMediaQueue.operations {
@@ -104,6 +107,16 @@ import NCCommunication
     
     @objc func readFileForMediaCancelAll() {
         readFileForMediaQueue.cancelAll()
+    }
+    
+    @objc func notificationReloadDataSourceMedia() {
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadMediaDataSource)
+    }
+    
+    func reloadDataSourceMedia() {
+        if !(timerReadFileForMediaQueue?.isValid ?? false) {
+            timerReadFileForMediaQueue = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(notificationReloadDataSourceMedia), userInfo: nil, repeats: false)
+        }
     }
 }
 
@@ -272,6 +285,7 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
                         }
                         if modify {
                             NCManageDatabase.sharedInstance.addMetadata(metadata)
+                            NCOperationQueue.shared.reloadDataSourceMedia()
                         }
                     }
                 } else if errorCode == 404 {

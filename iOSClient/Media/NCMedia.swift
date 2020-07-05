@@ -65,6 +65,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         appDelegate.activeMedia = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
+         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadMediaDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
@@ -327,7 +328,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                     let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
                     self.metadatas = metadatas
                     
-                    if let row = indexes.first {
+                    if self.metadatas.count == 0 {
+                        collectionView?.reloadData()
+                    } else if let row = indexes.first {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.deleteItems(at: [indexPath])
                     }
