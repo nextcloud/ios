@@ -2384,7 +2384,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending:Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+    @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
                 
         DispatchQueue.global().async {
             autoreleasepool {
@@ -2393,7 +2393,7 @@ class NCManageDatabase: NSObject {
                 realm.refresh()
                 var metadatas = [tableMetadata]()
                 
-                let sortProperties = [SortDescriptor(keyPath: sort, ascending: false), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+                let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
                 if (results.count > 0) {
                     
