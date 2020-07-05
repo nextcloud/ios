@@ -51,6 +51,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
+    private var mediaSort = "date"
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -600,7 +601,7 @@ extension NCMedia {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         }
                 
-        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: "date") { (metadatas) in
+        NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: mediaSort) { (metadatas) in
             DispatchQueue.main.sync {
                 self.metadatas = metadatas
                 self.reloadDataThenPerform {
