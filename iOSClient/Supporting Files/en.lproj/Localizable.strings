@@ -476,6 +476,10 @@
 "_media_viewimage_hide_"        = "Hide images";
 "_media_viewvideo_show_"        = "Show video";
 "_media_viewvideo_hide_"        = "Hide video";
+"_media_by_created_date_"       = "Sort by created date";
+"_media_by_upload_date_"        = "Sort by upload date";
+"_media_by_modified_date_"      = "Sort by modified date";
+
 
 // Files Preview
 
