@@ -94,8 +94,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         } else {
         
         /*** ServerUrl ***/
-            
-            let isPaginationEnabled = false
+                
+            let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: fileProviderData.sharedInstance.account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
             
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
@@ -104,9 +104,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             if (page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
                 
-                if isPaginationEnabled {
+                if paginationEndpoint != nil {
                                     
-                    self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
                         self.completeObserver(observer, numPage: 1, metadatas: metadatas)
                     }
                     
@@ -126,10 +126,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
 
-                if isPaginationEnabled {
+                if paginationEndpoint != nil {
 
-                    self.readFolder(serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
-                        self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: numPage, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                        self.completeObserver(observer, numPage: numPage, metadatas: metadatas)
                     }
                     
                 } else {
@@ -273,10 +273,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         })
     }
     
-    func readFolder(serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+    func getPagination(endpoint:String, serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         
         let offset = (page - 1) * limit
-        let serverUrl = fileProviderData.sharedInstance.accountUrl
         var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
         if fileNamePath == "" {
             fileNamePath = "/"
@@ -286,7 +285,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Prepare DB
                     if offset == 0 {
