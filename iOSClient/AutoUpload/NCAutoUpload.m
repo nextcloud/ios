@@ -486,18 +486,17 @@
 - (void)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
-    NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];    
+    NSString *filename = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-  
-    [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0 && useSubFolder) {
-            for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
-                NSString *fileName = dateSubFolder.lastPathComponent;
-                NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder].stringByDeletingLastPathComponent;
-                [[NCNetworking shared] createFolderWithFileName:fileName serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeAccount overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-            }
+    
+    [[NCOperationQueue shared] createFolderWithFilename:filename serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:true];
+    if (useSubFolder) {
+        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
+            NSString *filename = dateSubFolder.lastPathComponent;
+            NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder].stringByDeletingLastPathComponent;
+            [[NCOperationQueue shared] createFolderWithFilename:filename serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:true];
         }
-    }];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
