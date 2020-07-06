@@ -92,16 +92,35 @@ class NCUtility: NSObject {
         return false
     }
     
-    @objc func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
+    @objc func resizeImage(image: UIImage, toHeight: CGFloat) -> UIImage {
+        return autoreleasepool { () -> UIImage in
+            let toWidth = image.size.width * (toHeight/image.size.height)
+            let targetSize = CGSize(width: toWidth, height: toHeight)
+            let size = image.size
         
-        let scale = newWidth / image.size.width
-        let newHeight = image.size.height * scale
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        image.draw(in: (CGRect(x: 0, y: 0, width: newWidth, height: newHeight)))
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
+            let widthRatio  = targetSize.width  / size.width
+            let heightRatio = targetSize.height / size.height
         
-        return newImage
+            // Orientation detection
+            var newSize: CGSize
+            if(widthRatio > heightRatio) {
+            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
+            } else {
+            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+            }
+        
+            // Calculated rect
+            let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        
+            // Resize
+            UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+            image.draw(in: rect)
+        
+            let newImage = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+        
+            return newImage!
+        }
     }
     
     func cellBlurEffect(with frame: CGRect) -> UIView {

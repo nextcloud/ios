@@ -405,7 +405,7 @@
     else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         image = [UIImage imageWithContentsOfFile:[NSTemporaryDirectory() stringByAppendingString:fileName]];
         if (image) {
-            image = [NCUtility.sharedInstance resizeImageWithImage:image newWidth:cell.frame.size.width];
+            image = [NCUtility.sharedInstance resizeImageWithImage:image toHeight:cell.frame.size.width];
         } else {
             image = [UIImage imageNamed:@"file_photo"];
         }
