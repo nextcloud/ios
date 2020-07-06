@@ -456,7 +456,7 @@
         }
     }
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         // Insert all assets (Full) in tableQueueUpload
         if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
             [[NCManageDatabase sharedInstance] addMetadatas:metadataFull];
