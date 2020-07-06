@@ -272,7 +272,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_created_date_", comment: ""),
-                    icon: UIImage(named: "nothing")!,
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "MenuOrdeyByDate"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     selected: CCUtility.getMediaSortDate() == "creationDate",
                     on: true,
                     action: { menuAction in
@@ -285,7 +285,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_media_by_upload_date_", comment: ""),
-                    icon: UIImage(named: "nothing")!,
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "MenuOrdeyByDate"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     selected: CCUtility.getMediaSortDate() == "uploadDate",
                     on: true,
                     action: { menuAction in
