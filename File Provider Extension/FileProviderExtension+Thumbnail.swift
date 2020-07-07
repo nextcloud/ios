@@ -43,7 +43,6 @@ extension FileProviderExtension {
             if (metadata.hasPreview) {
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
-                //let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     
                 NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: Int(k_sizeIcon), heightPreview: Int(k_sizeIcon)) { (account, data, errorCode, errorDescription) in
@@ -61,9 +60,10 @@ extension FileProviderExtension {
                     }
                 }
             } else {
-                
                 counterProgress += 1
-                if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }
+                if (counterProgress == progress.totalUnitCount) {
+                    completionHandler(nil)
+                }
             }
         }
         
