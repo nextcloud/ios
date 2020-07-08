@@ -1837,14 +1837,11 @@ class NCManageDatabase: NSObject {
     @discardableResult
     @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
         
-        var directoryToClearDate: [String: String] = [:]
-
         let realm = try! Realm()
 
         do {
             try realm.write {
                 for metadata in metadatas {
-                    directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: .all)
                 }
             }
@@ -1856,7 +1853,7 @@ class NCManageDatabase: NSObject {
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
-
+    
     @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {
     
         guard let files = files else { return }
@@ -1915,19 +1912,12 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func deleteMetadata(predicate: NSPredicate) {
-        
-        var directoryToClearDate: [String: String] = [:]
-        
+                
         let realm = try! Realm()
 
         realm.beginWrite()
 
         let results = realm.objects(tableMetadata.self).filter(predicate)
-        
-        for result in results {
-            directoryToClearDate[result.serverUrl] = result.account
-        }
-        
         realm.delete(results)
         
         do {
@@ -2005,21 +1995,35 @@ class NCManageDatabase: NSObject {
         
         return tableMetadata.init(value: result!)
     }
-    
-    @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+
+    @objc func updateMetadatasServerUrl(_ serverUrl: String, account: String, metadatas: [tableMetadata]) {
         
         let realm = try! Realm()
-
+        
         do {
             try realm.write {
-                realm.add(metadata, update: .all)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                // DELETE
+                for result in results {
+                    let values = metadatas.filter { $0.ocId == result.ocId }
+                    if values.count == 0 {
+                        realm.delete(result)
+                    }
+                }
+                // UPDATE/INSERT
+                for metadata in metadatas {
+                    let values = results.filter { $0.ocId == metadata.ocId }
+                    if values.count == 1 && values[0].status == k_metadataStatusNormal {
+                        realm.add(metadata, update: .all)
+                    } else if values.count == 0 {
+                        realm.add(metadata, update: .all)
+                    }
+                }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
+            return
         }
-                
-        return tableMetadata.init(value: metadata)
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
