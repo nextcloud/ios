@@ -2011,9 +2011,10 @@ class NCManageDatabase: NSObject {
                         realm.delete(result)
                     }
                 }
-                // UPDATE/INSERT
+                // UPDATE/NEW
                 for metadata in metadatas {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
+                        // update
                         if result.status == k_metadataStatusNormal {
                             realm.add(metadata, update: .all)
                             if result.etag != metadata.etag {
@@ -2023,6 +2024,7 @@ class NCManageDatabase: NSObject {
                             debugPrint("In upload/download")
                         }
                     } else {
+                        // new
                         realm.add(metadata, update: .all)
                         metadatasChangeEtag.append(metadata)
                     }
