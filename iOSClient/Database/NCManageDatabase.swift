@@ -1996,9 +1996,11 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result!)
     }
 
-    @objc func updateMetadatasServerUrl(_ serverUrl: String, account: String, metadatas: [tableMetadata]) {
+    @discardableResult
+    @objc func updateMetadatasServerUrl(_ serverUrl: String, account: String, metadatas: [tableMetadata]) -> [tableMetadata] {
         
         let realm = try! Realm()
+        var metadatasChangeEtag : [tableMetadata] = []
         
         do {
             try realm.write {
@@ -2015,6 +2017,9 @@ class NCManageDatabase: NSObject {
                     let values = results.filter { $0.ocId == metadata.ocId }
                     if values.count == 1 && values[0].status == k_metadataStatusNormal {
                         realm.add(metadata, update: .all)
+                        if values[0].etag != metadata.etag {
+                            metadatasChangeEtag.append(metadata.freeze())
+                        }
                     } else if values.count == 0 {
                         realm.add(metadata, update: .all)
                     } else {
@@ -2024,8 +2029,9 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return
         }
+        
+        return metadatasChangeEtag
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {

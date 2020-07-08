@@ -229,8 +229,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var needReadFolder = true
         
             if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                if errorCode == 0 && files != nil && files!.count == 1 {
-                    if tableDirectory.etag == files![0].etag {
+                if errorCode == 0 && files.count == 1 {
+                    if tableDirectory.etag == files[0].etag {
                         needReadFolder = false
                     }
                 }
@@ -240,9 +240,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
                     
-                    if errorCode == 0 && files != nil {
+                    if errorCode == 0 {
                         
-                       let fileFolder = files![0]
+                        let fileFolder = files[0]
                                                 
                         // Add directory
                         NCManageDatabase.sharedInstance.addDirectory(encrypted: fileFolder.e2eEncrypted, favorite: fileFolder.favorite, ocId: fileFolder.ocId, fileId: fileFolder.fileId, etag: fileFolder.etag, permissions: fileFolder.permissions, serverUrl: serverUrl, richWorkspace: fileFolder.richWorkspace, account: account)

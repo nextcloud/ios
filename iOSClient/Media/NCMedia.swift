@@ -695,8 +695,8 @@ extension NCMedia {
             self.collectionView.reloadData()
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                if files?.count ?? 0 > 0 {
-                    
+                if files.count > 0 {
+
                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
                     self.reloadDataSource()
                     
@@ -741,7 +741,7 @@ extension NCMedia {
                 
                 self.newInProgress = false
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
+                if errorCode == 0 && account == self.appDelegate.activeAccount && files.count > 0 {
                    DispatchQueue.global().async {
                     
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
@@ -749,7 +749,7 @@ extension NCMedia {
                     
                         if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate){
                             let etagsMetadatas = Array(metadatas.map { $0.etag })
-                            let etagsFiles = Array(files!.map { $0.etag })
+                            let etagsFiles = Array(files.map { $0.etag })
                             for etag in etagsFiles {
                                 if !etagsMetadatas.contains(etag) {
                                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
@@ -762,7 +762,7 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
-                } else if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
+                } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldPhotoVideo()
                 }
             }

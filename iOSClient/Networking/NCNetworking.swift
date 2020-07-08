@@ -575,9 +575,9 @@ import Alamofire
         
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
             
-            if errorCode == 0 && files != nil {
+            if errorCode == 0  {
                               
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Add directory
                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrl, richWorkspace: metadataFolder.richWorkspace, account: account)
@@ -627,9 +627,9 @@ import Alamofire
         
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
 
-            if errorCode == 0 && files != nil {
-                if files?.count ?? 0 == 1 {
-                    let file = files![0]
+            if errorCode == 0 {
+                if files.count == 1 {
+                    let file = files[0]
                     let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account)
                     let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
                     completion(account, metadata, errorCode, "")
@@ -637,7 +637,6 @@ import Alamofire
                     completion(account, nil, errorCode, "")
                 }
             } else {
-
                 completion(account, nil, errorCode, errorDescription)
             }
         }

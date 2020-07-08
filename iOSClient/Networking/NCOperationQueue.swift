@@ -177,8 +177,8 @@ class NCOperationReadFolderSync: ConcurrentOperation {
             self.finish()
         } else {
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 && files != nil {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                if errorCode == 0 {
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         
                         if metadatas.count > 0 {
                             CCSynchronize.shared()?.readFolder(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector)
@@ -309,26 +309,25 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
             """
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8)) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 && files != nil {
-                    if let file = files?[0] {
-                        let metadata = tableMetadata.init(value: self.metadata)
-                        var modify = false
-                        if metadata.hasPreview != file.hasPreview {
-                            metadata.hasPreview = file.hasPreview
-                            modify = true
-                        }
-                        if file.creationDate != nil && metadata.creationDate != file.creationDate {
-                            metadata.creationDate = file.creationDate!
-                            modify = true
-                        }
-                        if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
-                            metadata.uploadDate = file.uploadDate!
-                            modify = true
-                        }
-                        if modify {
-                            NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            NCOperationQueue.shared.reloadDataSourceMedia()
-                        }
+                if errorCode == 0 && files.count > 0 {
+                    let file = files[0]
+                    let metadata = tableMetadata.init(value: self.metadata)
+                    var modify = false
+                    if metadata.hasPreview != file.hasPreview {
+                        metadata.hasPreview = file.hasPreview
+                        modify = true
+                    }
+                    if file.creationDate != nil && metadata.creationDate != file.creationDate {
+                        metadata.creationDate = file.creationDate!
+                        modify = true
+                    }
+                    if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
+                        metadata.uploadDate = file.uploadDate!
+                        modify = true
+                    }
+                    if modify {
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCOperationQueue.shared.reloadDataSourceMedia()
                     }
                 } else if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
