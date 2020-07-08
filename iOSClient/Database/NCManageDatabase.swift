@@ -2017,6 +2017,8 @@ class NCManageDatabase: NSObject {
                         realm.add(metadata, update: .all)
                     } else if values.count == 0 {
                         realm.add(metadata, update: .all)
+                    } else {
+                        debugPrint("metadata status != Normal")
                     }
                 }
             }

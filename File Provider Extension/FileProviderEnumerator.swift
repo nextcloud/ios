@@ -286,21 +286,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
              if errorCode == 0 && files != nil  && files!.count >= 1 {
                                 
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                    
-                    // Prepare DB
-                    if offset == 0 {
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-                        let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError))
-                        let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError))
-                        if metadatasInDownload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
-                        }
-                        if metadatasInUpload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                        }
+                    NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                    for metadata in metadatasFolder {
+                        let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
                     }
-                    
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatas)
                 }
             }
             
