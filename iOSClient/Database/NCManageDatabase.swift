@@ -2019,6 +2019,8 @@ class NCManageDatabase: NSObject {
                             if result.etag != metadata.etag {
                                 metadatasChangeEtag.append(metadata)
                             }
+                        } else {
+                            debugPrint("In upload/download")
                         }
                     } else {
                         realm.add(metadata, update: .all)
