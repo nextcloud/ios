@@ -2007,23 +2007,24 @@ class NCManageDatabase: NSObject {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 // DELETE
                 for result in results {
-                    let values = metadatas.filter { $0.ocId == result.ocId }
-                    if values.count == 0 {
+                    let index = results.firstIndex(where: { $0.ocId == result.ocId })
+                    if index == nil {
                         realm.delete(result)
                     }
                 }
                 // UPDATE/INSERT
                 for metadata in metadatas {
-                    let values = results.filter { $0.ocId == metadata.ocId }
-                    if values.count == 1 && values[0].status == k_metadataStatusNormal {
-                        realm.add(metadata, update: .all)
-                        if values[0].etag != metadata.etag {
-                            metadatasChangeEtag.append(metadata.freeze())
+                    if let index = results.firstIndex(where: { $0.ocId == metadata.ocId }) {
+                        let findMetadata = results[index]
+                        if findMetadata.status == k_metadataStatusNormal {
+                            realm.add(metadata, update: .all)
+                            if findMetadata.etag != metadata.etag {
+                                metadatasChangeEtag.append(metadata)
+                            }
                         }
-                    } else if values.count == 0 {
-                        realm.add(metadata, update: .all)
                     } else {
-                        debugPrint("metadata status != Normal")
+                        realm.add(metadata, update: .all)
+                        metadatasChangeEtag.append(metadata)
                     }
                 }
             }
