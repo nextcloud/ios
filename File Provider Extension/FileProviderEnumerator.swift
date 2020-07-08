@@ -282,10 +282,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
         
         NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, serverUrl: serverUrl, offset: offset, limit: limit) { (account, files, errorCode, errorDescription) in
-            
-             if errorCode == 0 && files != nil  && files!.count >= 1 {
-                                
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+             
+            if errorCode == 0 {
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
                     for metadata in metadatasFolder {
                         let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
