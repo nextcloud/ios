@@ -46,7 +46,6 @@ extension AppDelegate {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: appDelegate.activeAccount)
         let isEncrypted = CCUtility.isFolderEncrypted(appDelegate.activeMain.serverUrl, e2eEncrypted: false, account: appDelegate.activeAccount)
-        let isRichWorkspacesEnabled = appDelegate.activeMain.metadata.richWorkspace == nil ? false : true
         let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         
         actions.append(
@@ -131,7 +130,7 @@ extension AppDelegate {
             )
         )
 
-        if serverVersionMajor >= k_nextcloud_version_18_0 && isRichWorkspacesEnabled && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0) && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
+        if serverVersionMajor >= k_nextcloud_version_18_0 && (self.activeMain.richWorkspaceText == nil || self.activeMain.richWorkspaceText.count == 0) && !isEncrypted && NCCommunication.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""),
