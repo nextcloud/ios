@@ -412,6 +412,10 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
+    // DISABLE E2EE
+    return false;
+    // DISABLE E2EE
+    
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     
     NSString *publicKey = [self getEndToEndPublicKey:account];
