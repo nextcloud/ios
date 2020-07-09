@@ -1997,14 +1997,14 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatasWithFilter(_ filter: String, metadatas: [tableMetadata]) -> [tableMetadata] {
+    @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata]) -> [tableMetadata] {
         
         let realm = try! Realm()
         var metadatasChangeEtag : [tableMetadata] = []
         
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(filter)
+                let results = realm.objects(tableMetadata.self).filter(predicate)
                 // DELETE
                 for result in results {
                     if metadatas.firstIndex(where: { $0.ocId == result.ocId }) == nil {

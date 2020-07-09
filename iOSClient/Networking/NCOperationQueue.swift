@@ -176,22 +176,23 @@ class NCOperationSynchronization: ConcurrentOperation {
         } else {
             var depth: String = ""
             var serverUrlFileName: String = ""
-            var filter: String = ""
+            var predicate = NSPredicate()
             if metadata.directory {
                 depth = "infinity"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                filter = "account == " + metadata.account + " AND serverUrl BEGINSWITH " + metadata.serverUrl
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)
             } else {
                 depth = "0"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                filter = "account == " + metadata.account + " AND serverUrl == " + metadata.serverUrl
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)
             }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         if metadatas.count > 0 {
-                            let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithFilter(filter, metadatas: metadatas)
+                            let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
+                            print("")
                         }
                     }
                 } else if errorCode == 404 {
