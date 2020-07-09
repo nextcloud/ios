@@ -2007,7 +2007,7 @@ class NCManageDatabase: NSObject {
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 // DELETE
                 for result in results {
-                    if results.firstIndex(where: { $0.ocId == result.ocId }) == nil {
+                    if metadatas.firstIndex(where: { $0.ocId == result.ocId }) == nil {
                         realm.delete(result)
                     }
                 }
