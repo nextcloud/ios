@@ -1124,9 +1124,14 @@
             BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
             [self setTitle];
             
-            for (tableMetadata *metadata in metadatasChanged) {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
-            }
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+                for (tableMetadata *metadata in metadatasChanged) {
+                    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                    if (localFile != nil) {
+                        [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false completion:^(NSInteger errorCode) { }];
+                    }
+                }
+            });
             
             // E2EE Is encrypted folder get metadata
             if (isFolderEncrypted) {
