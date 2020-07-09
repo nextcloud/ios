@@ -128,10 +128,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                     
                 } else {
-            
-                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: numPage, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
-                    
-                    completeObserver(observer, numPage: numPage, metadatas: metadatas)
+
+                    completeObserver(observer, numPage: numPage, metadatas: nil)
                 }
             }
         }
@@ -231,7 +229,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
             }
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: 1, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
             
             completionHandler(metadatas)
         })
