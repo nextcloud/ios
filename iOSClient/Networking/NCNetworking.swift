@@ -588,28 +588,11 @@ import Alamofire
                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                     }
                     
-                    // Save status transfer metadata
-                    let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError))
-                    
-                    let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError))
+                    NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
-                    // Delete metadata
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-                    
-                    // Add metadata
-                    let metadataFolderInserted = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
-                    let metadatasInserted = NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-                     
-                    if metadatasInDownload != nil {
-                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
-                    }
-                    if metadatasInUpload != nil {
-                        NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                    }
-                    
+                    completion(account, metadataFolder, metadatas, errorCode, "")
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
-                    
-                    completion(account, metadataFolderInserted, metadatasInserted, errorCode, "")
                 }
             
             } else {
