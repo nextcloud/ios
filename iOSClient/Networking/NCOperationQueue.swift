@@ -33,7 +33,7 @@ import NCCommunication
     }()
     
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let createFolderQueue = Queuer(name: "createFolderQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -42,7 +42,7 @@ import NCCommunication
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        readFolderSyncCancelAll()
+        synchronizationCancelAll()
         createFolderCancelAll()
         downloadThumbnailCancelAll()
         readFileForMediaCancelAll()
@@ -60,13 +60,13 @@ import NCCommunication
         return downloadQueue.operationCount
     }
     
-    // Read Folder Synchronize
+    // Synchronization
     
-    @objc func readFolderSync(serverUrl: String, selector: String ,account: String) {
-        readFolderSyncQueue.addOperation(NCOperationReadFolderSync.init(serverUrl: serverUrl, selector: selector, account: account))
+    @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
+        synchronizationQueue.addOperation(NCOperationSynchronization.init(metadata: metadata, selector: selector))
     }
-    @objc func readFolderSyncCancelAll() {
-        readFolderSyncQueue.cancelAll()
+    @objc func synchronizationCancelAll() {
+        synchronizationQueue.cancelAll()
     }
     
     // Create Folder
@@ -160,23 +160,31 @@ class NCOperationDownload: ConcurrentOperation {
 
 //MARK: -
 
-class NCOperationReadFolderSync: ConcurrentOperation {
+class NCOperationSynchronization: ConcurrentOperation {
    
-    private var serverUrl: String
+    private var metadata: tableMetadata
     private var selector: String
-    private var account: String
     
-    init(serverUrl: String, selector: String, account: String) {
-        self.serverUrl = serverUrl
+    init(metadata: tableMetadata, selector: String) {
+        self.metadata = metadata
         self.selector = selector
-        self.account = account
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+            var depth: String = ""
+            var serverUrlFileName: String = ""
+            if metadata.directory {
+                depth = "2"
+                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            } else {
+                depth = "2"
+                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            }
+            
+            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         if metadatas.count > 0 {
@@ -184,7 +192,7 @@ class NCOperationReadFolderSync: ConcurrentOperation {
                         }
                     }
                 } else if errorCode == 404 {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.serverUrl, account: account)
+                    //NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.serverUrl, account: account)
                 }
                 self.finish()
             }
