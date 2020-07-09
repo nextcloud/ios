@@ -1154,13 +1154,6 @@
 			path = BrowserWeb;
 			sourceTree = "<group>";
 		};
-		F7B0C0CA1EE7E7750033AC24 /* Synchronize */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Synchronize;
-			sourceTree = "<group>";
-		};
 		F7B0C1701EE8397E0033AC24 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
@@ -1436,7 +1429,6 @@
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,
 				F7169A161EE590930086BD69 /* Shares */,
-				F7B0C0CA1EE7E7750033AC24 /* Synchronize */,
 				F7E9C41320F4CA870040CF18 /* Transfers */,
 				F78F74322163753B00C2ADAD /* Trash */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
