@@ -112,14 +112,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                 } else {
                     
-                    readFileOrFolder(serverUrl: serverUrl) {
-                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: 1, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
-                        
+                    self.readFileOrFolder(serverUrl: serverUrl) { (metadatas) in
                         self.completeObserver(observer, numPage: 1, metadatas: metadatas)
-                    }
-                    
-                    // Update the WorkingSet -> Favorite
-                    fileProviderData.sharedInstance.updateFavoriteForWorkingSet()
+                    }                    
                 }
                 
             } else {
@@ -222,54 +217,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
     }
         
-    func readFileOrFolder(serverUrl: String, completionHandler: @escaping () -> Void) {
+    func readFileOrFolder(serverUrl: String, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         
-        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
+        NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
             
-            var needReadFolder = true
-        
-            if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) {
-                if errorCode == 0 && files.count == 1 {
-                    if tableDirectory.etag == files[0].etag {
-                        needReadFolder = false
+            if errorCode == 0 {
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                    for metadata in metadatasFolder {
+                        let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
                     }
                 }
             }
             
-            if needReadFolder {
-
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles(), completionHandler: { (account, files, responseData, errorCode, errorDescription) in
-                    
-                    if errorCode == 0 {
-                        
-                        let fileFolder = files[0]
-                                                
-                        // Add directory
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: fileFolder.e2eEncrypted, favorite: fileFolder.favorite, ocId: fileFolder.ocId, fileId: fileFolder.fileId, etag: fileFolder.etag, permissions: fileFolder.permissions, serverUrl: serverUrl, richWorkspace: fileFolder.richWorkspace, account: account)
-                        
-                        // Save status transfer metadata
-                        let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError))
-                        
-                        let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", account, serverUrl, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading, k_metadataStatusUploadError))
-
-                        // Delete metadata
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-
-                        // Add metadata
-                        NCManageDatabase.sharedInstance.addMetadatas(files: files, account: account)
-                         
-                        if metadatasInDownload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload!)
-                        }
-                        if metadatasInUpload != nil {
-                            NCManageDatabase.sharedInstance.addMetadatas(metadatasInUpload!)
-                        }
-                    }
-                    completionHandler()
-                })
-            } else {
-                completionHandler()
-            }
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: 1, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+            
+            completionHandler(metadatas)
         })
     }
     
@@ -298,5 +262,4 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             completionHandler(metadatas)
         }
     }
-    
 }
