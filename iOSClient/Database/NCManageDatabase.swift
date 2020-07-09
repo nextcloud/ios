@@ -2015,14 +2015,10 @@ class NCManageDatabase: NSObject {
                 for metadata in metadatas {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == k_metadataStatusNormal {
+                        if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
                             realm.add(metadata, update: .all)
-                            if result.etag != metadata.etag {
-                                metadatasChangeEtag.append(metadata)
-                            }
-                        } else {
-                            debugPrint("In upload/download")
-                        }
+                            metadatasChangeEtag.append(metadata)
+                        } 
                     } else {
                         // new
                         realm.add(metadata, update: .all)
