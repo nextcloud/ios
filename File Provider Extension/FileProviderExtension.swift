@@ -60,6 +60,11 @@ class FileProviderExtension: NSFileProviderExtension {
         
         // Create directory File Provider Storage
         CCUtility.getDirectoryProviderStorage()
+        
+        // Update the WorkingSet -> Favorite
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//            fileProviderData.sharedInstance.updateFavoriteForWorkingSet()
+//        }
     }
     
     // MARK: - Enumeration
