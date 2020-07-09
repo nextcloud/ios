@@ -180,7 +180,7 @@ class NCOperationSynchronization: ConcurrentOperation {
             if metadata.directory {
                 depth = "infinity"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINWITH %@", metadata.account, serverUrlFileName)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, serverUrlFileName)
             } else {
                 depth = "0"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
