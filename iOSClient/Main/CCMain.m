@@ -530,8 +530,8 @@
                 selector = selectorReadFolderWithDownload;
             else
                 selector = selectorReadFolder;
-                       
-//            [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName] selector:selector account:appDelegate.activeAccount];
+                  
+            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selector];
         }
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
