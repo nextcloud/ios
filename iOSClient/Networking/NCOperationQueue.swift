@@ -177,18 +177,18 @@ class NCOperationSynchronization: ConcurrentOperation {
             var depth: String = ""
             var serverUrlFileName: String = ""
             if metadata.directory {
-                depth = "2"
+                depth = "infinity"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             } else {
-                depth = "2"
+                depth = "0"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         if metadatas.count > 0 {
-                            //CCSynchronize.shared()?.readFolder(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector)
+                            
                         }
                     }
                 } else if errorCode == 404 {

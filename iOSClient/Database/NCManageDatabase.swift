@@ -2017,12 +2017,12 @@ class NCManageDatabase: NSObject {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
                             realm.add(metadata, update: .all)
-                            metadatasChangeEtag.append(metadata.freeze())
+                            metadatasChangeEtag.append(tableMetadata.init(value:metadata))
                         } 
                     } else {
                         // new
                         realm.add(metadata, update: .all)
-                        metadatasChangeEtag.append(metadata.freeze())
+                        metadatasChangeEtag.append(tableMetadata.init(value:metadata))
                     }
                 }
             }
