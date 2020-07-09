@@ -23,7 +23,6 @@
 
 #import "AppDelegate.h"
 #import "CCGraphics.h"
-#import "CCSynchronize.h"
 #import "CCMain.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"

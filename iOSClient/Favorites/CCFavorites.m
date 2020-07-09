@@ -23,7 +23,6 @@
 
 #import "CCFavorites.h"
 #import "AppDelegate.h"
-#import "CCSynchronize.h"
 
 #import "NCBridgeSwift.h"
 
@@ -193,15 +192,15 @@
                     NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
                     if (![serverUrlSon containsString:father]) {
                         if (metadata.directory) {
-                            if ([CCUtility getFavoriteOffline])
-                                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:account];
-                            else
-                                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder account:account];
+//                            if ([CCUtility getFavoriteOffline])
+//                                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:account];
+//                            else
+//                                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolder account:account];
                         } else {
-                            if ([CCUtility getFavoriteOffline])
-                                [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
-                            else
-                                [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
+//                            if ([CCUtility getFavoriteOffline])
+//                                [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload account:account];
+//                            else
+//                                [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile account:account];
                         }
                         father = serverUrlSon;
                     }

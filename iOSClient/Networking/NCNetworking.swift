@@ -571,7 +571,7 @@ import Alamofire
     
     //MARK: - WebDav Read file, folder
     
-    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func readFolder(serverUrl: String, account: String, completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasChanged: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
             
@@ -586,12 +586,12 @@ import Alamofire
                     }
                     
                     DispatchQueue.global().async {
-                        NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
                         DispatchQueue.main.async {
                             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                             let metadataFolder = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
 
-                            completion(account, metadataFolder, metadatas, errorCode, "")
+                            completion(account, metadataFolder, metadatas, metadatasChanged, errorCode, "")
                             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
                         }
                     }
@@ -603,7 +603,7 @@ import Alamofire
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
                 
-                completion(account, nil, nil, errorCode, errorDescription)
+                completion(account, nil, nil, nil, errorCode, errorDescription)
             }
         }
     }
