@@ -586,7 +586,8 @@ import Alamofire
                     }
                     
                     DispatchQueue.global().async {
-                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                        let filter = "account == " + account + " AND serverUrl == " + serverUrl
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatasWithFilter(filter, metadatas: metadatas)
                         DispatchQueue.main.async {
                             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                             let metadataFolder = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)

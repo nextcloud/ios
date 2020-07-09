@@ -1997,14 +1997,14 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatasServerUrl(_ serverUrl: String, account: String, metadatas: [tableMetadata]) -> [tableMetadata] {
+    @objc func updateMetadatasWithFilter(_ filter: String, metadatas: [tableMetadata]) -> [tableMetadata] {
         
         let realm = try! Realm()
         var metadatasChangeEtag : [tableMetadata] = []
         
         do {
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                let results = realm.objects(tableMetadata.self).filter(filter)
                 // DELETE
                 for result in results {
                     if metadatas.firstIndex(where: { $0.ocId == result.ocId }) == nil {

@@ -222,7 +222,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             if errorCode == 0 {
                 DispatchQueue.global().async {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                        NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                        let filter = "account == " + account + " AND serverUrl == " + serverUrl
+                        NCManageDatabase.sharedInstance.updateMetadatasWithFilter(filter, metadatas: metadatas)
                         for metadata in metadatasFolder {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
                             NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: metadata.account)
@@ -261,7 +262,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     if errorCode == 0 {
                         DispatchQueue.global().async {
                             NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                NCManageDatabase.sharedInstance.updateMetadatasServerUrl(serverUrl, account: account, metadatas: metadatas)
+                                let filter = "account == " + account + " AND serverUrl == " + serverUrl
+                                NCManageDatabase.sharedInstance.updateMetadatasWithFilter(filter, metadatas: metadatas)
                                 for metadata in metadatasFolder {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
                                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
