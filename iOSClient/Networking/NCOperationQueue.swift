@@ -180,11 +180,11 @@ class NCOperationSynchronization: ConcurrentOperation {
             if metadata.directory {
                 depth = "infinity"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName)
             } else {
                 depth = "0"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)
             }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
