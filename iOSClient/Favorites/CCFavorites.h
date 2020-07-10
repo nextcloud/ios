@@ -41,7 +41,6 @@
 @property (nonatomic, strong) NSString *titleViewControl;
 
 - (void)shouldPerformSegue:(tableMetadata *)metadata selector:(NSString *)selector;
-- (void)listingFavorites;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 
 @end

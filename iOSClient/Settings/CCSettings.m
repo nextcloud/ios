@@ -291,7 +291,7 @@
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 [CCUtility setFavoriteOffline:true];
-                [appDelegate.activeFavorites listingFavorites];
+                [[NCNetworking shared] listingFavoritescompletionWithCompletion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) { }];
             }]];
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
