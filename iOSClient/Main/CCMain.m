@@ -528,12 +528,10 @@
             } else {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
             }
-        }
-                   
-        if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
-                   
+        } else if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
             [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true completion:^(NSInteger errorCode) { }];
         }
+        
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
     }
