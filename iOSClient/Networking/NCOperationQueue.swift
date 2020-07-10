@@ -188,17 +188,19 @@ class NCOperationSynchronization: ConcurrentOperation {
             }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                        if metadatas.count > 0 {
-                            let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
-                            print("")
+                DispatchQueue.global().async {
+                    if errorCode == 0 {
+                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                            if metadatas.count > 0 {
+                                let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
+                                print("")
+                            }
                         }
+                    } else if errorCode == 404 {
+                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
-                } else if errorCode == 404 {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
+                    self.finish()
                 }
-                self.finish()
             }
         }
     }

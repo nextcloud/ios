@@ -2016,13 +2016,13 @@ class NCManageDatabase: NSObject {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
+                            metadatasChangeEtag.append(metadata)
                             realm.add(metadata, update: .all)
-                            metadatasChangeEtag.append(tableMetadata.init(value:metadata))
-                        } 
+                        }
                     } else {
                         // new
                         realm.add(metadata, update: .all)
-                        metadatasChangeEtag.append(tableMetadata.init(value:metadata))
+                        metadatasChangeEtag.append(metadata)
                     }
                 }
             }
