@@ -177,6 +177,7 @@ class NCOperationSynchronization: ConcurrentOperation {
             var depth: String = ""
             var serverUrlFileName: String = ""
             var predicate = NSPredicate()
+            var download = false
             if metadata.directory {
                 depth = "infinity"
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -186,14 +187,17 @@ class NCOperationSynchronization: ConcurrentOperation {
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)
             }
+            if selector == selectorReadFolderWithDownload {
+                download = true
+            }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 DispatchQueue.global().async {
                     if errorCode == 0 {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
-                                let updatedMetadatas = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
-                                if self.selector == selectorReadFolderWithDownload {
+                                let updatedMetadatas = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas, withVerifyLocal: download)
+                                if download {
                                     for metadata in updatedMetadatas {
                                         NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }                                        
                                     }

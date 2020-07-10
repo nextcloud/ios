@@ -1997,7 +1997,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata]) -> [tableMetadata] {
+    @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata], withVerifyLocal local: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
         var metadatasUdate : [tableMetadata] = []
@@ -2013,16 +2013,24 @@ class NCManageDatabase: NSObject {
                 }
                 // UPDATE/NEW
                 for metadata in metadatas {
+                    var updated = false
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
                             metadatasUdate.append(metadata)
                             realm.add(metadata, update: .all)
+                            updated = true
                         }
                     } else {
                         // new
                         metadatasUdate.append(metadata)
                         realm.add(metadata, update: .all)
+                        updated = true
+                    }
+                    if local && !updated {
+                        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) == nil {
+                            metadatasUdate.append(metadata)
+                        }
                     }
                 }
             }
