@@ -178,12 +178,15 @@ class NCOperationSynchronization: ConcurrentOperation {
             var serverUrlFileName: String = ""
             var predicate = NSPredicate()
             var download = false
+            var useMetadataFolder = false
             if metadata.directory {
                 depth = "infinity"
+                useMetadataFolder = true
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, serverUrlFileName)
             } else {
                 depth = "0"
+                useMetadataFolder = false
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)
             }
@@ -194,7 +197,7 @@ class NCOperationSynchronization: ConcurrentOperation {
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 DispatchQueue.global().async {
                     if errorCode == 0 {
-                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
                                 let updatedMetadatas = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas, withVerifyLocal: download)
                                 if download {
