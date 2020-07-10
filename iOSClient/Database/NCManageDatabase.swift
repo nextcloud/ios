@@ -2000,6 +2000,7 @@ class NCManageDatabase: NSObject {
     @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata], withVerifyLocal local: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
+        var ocIdsUdated : [String] = []
         var metadatasUdated : [tableMetadata] = []
         
         do {
@@ -2017,19 +2018,19 @@ class NCManageDatabase: NSObject {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
-                            metadatasUdated.append(metadata)
+                            ocIdsUdated.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                             updated = true
                         }
                     } else {
                         // new
-                        metadatasUdated.append(metadata)
+                        ocIdsUdated.append(metadata.ocId)
                         realm.add(metadata, update: .all)
                         updated = true
                     }
                     if local && !updated {
-                        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) == nil {
-                            metadatasUdated.append(metadata)
+                        if realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first == nil {
+                           ocIdsUdated.append(metadata.ocId)
                         }
                     }
                 }
@@ -2038,7 +2039,13 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return Array(metadatasUdated.map { $0.freeze() })
+        for ocId in ocIdsUdated {
+            if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
+                metadatasUdated.append(result.freeze())
+            }
+        }
+        
+        return metadatasUdated
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
