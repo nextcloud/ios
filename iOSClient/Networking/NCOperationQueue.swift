@@ -208,7 +208,9 @@ class NCOperationSynchronization: ConcurrentOperation {
                             }
                         }
                     } else if errorCode == 404 {
-                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
+                        if self.metadata.directory {
+                            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
+                        }
                     }
                     self.finish()
                 }
