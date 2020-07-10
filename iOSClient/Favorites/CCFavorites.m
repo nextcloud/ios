@@ -106,8 +106,8 @@
 
     [self reloadDatasource];
 
-    if (self.serverUrl == nil) {
-        [self listingFavorites];
+    if (self.serverUrl == nil && appDelegate.activeAccount.length > 0) {
+        [[NCNetworking shared] listingFavoritescompletionWithCompletion:^(NSString *account, NSArray* metadatas, NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 
@@ -167,59 +167,6 @@
     NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== listingFavorites =====
-#pragma--------------------------------------------------------------------------------------------
-
-- (void)listingFavorites
-{
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
-
-    [[NCCommunication shared] listingFavoritesWithShowHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorMessage) {
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
-            [[NCManageDatabase sharedInstance] convertNCCommunicationFilesToMetadatas:files useMetadataFolder:false account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
-                NSString *father = @"";
-                NSMutableArray *filesOcId = [NSMutableArray new];
-                 
-                for (tableMetadata *metadata in metadatas) {
-                    // insert for test NOT favorite
-                    [filesOcId addObject:metadata.ocId];
-                    NSString *serverUrl = metadata.serverUrl;
-                    NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                    if (![serverUrlSon containsString:father]) {
-                        if ([CCUtility getFavoriteOffline]) {
-                            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
-                        } else {
-                            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
-                        }
-                        father = serverUrlSon;
-                    }
-                    tableMetadata *metadataFavorite = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
-                    if (metadataFavorite == nil) {
-                        [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                    } else if (!metadataFavorite.favorite) {
-                        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:true];
-                    }
-                }
-                 
-                // Verify remove favorite
-                NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", account] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO];
-                for (tableMetadata *metadata in allRecordFavorite)
-                    if (![filesOcId containsObject:metadata.ocId])
-                        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithOcId:metadata.ocId favorite:NO];
-                
-                [self reloadDatasource];
-            }];
-        } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorMessage delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
-        } else {
-            NSLog(@"[LOG] It has been changed user during networking process, error.");
-        }
-    }];
 }
 
 - (void)tapActionComment:(UITapGestureRecognizer *)tapGesture
