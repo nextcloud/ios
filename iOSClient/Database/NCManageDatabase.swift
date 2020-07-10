@@ -2000,7 +2000,7 @@ class NCManageDatabase: NSObject {
     @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata], withVerifyLocal local: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
-        var metadatasUdate : [tableMetadata] = []
+        var metadatasUdated : [tableMetadata] = []
         
         do {
             try realm.write {
@@ -2017,19 +2017,19 @@ class NCManageDatabase: NSObject {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
-                            metadatasUdate.append(metadata)
+                            metadatasUdated.append(metadata)
                             realm.add(metadata, update: .all)
                             updated = true
                         }
                     } else {
                         // new
-                        metadatasUdate.append(metadata)
+                        metadatasUdated.append(metadata)
                         realm.add(metadata, update: .all)
                         updated = true
                     }
                     if local && !updated {
                         if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) == nil {
-                            metadatasUdate.append(metadata)
+                            metadatasUdated.append(metadata)
                         }
                     }
                 }
@@ -2038,7 +2038,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return Array(metadatasUdate.map { $0.freeze() })
+        return Array(metadatasUdated.map { $0.freeze() })
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
