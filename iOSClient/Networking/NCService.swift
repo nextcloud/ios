@@ -68,7 +68,10 @@ class NCService: NSObject {
                 let url = tableAccount.url
                 
                 self.appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: CCUtility.getPassword(tableAccount.account))
-                                
+                       
+                // Synchronize favorite ---
+                NCNetworking.shared.listingFavoritescompletion { (_, _, _, _) in }
+                
                 // Synchronize Offline ---
                 let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true)
                 if (directories != nil) {

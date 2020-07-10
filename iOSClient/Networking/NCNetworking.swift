@@ -804,8 +804,8 @@ import Alamofire
                     }
                     #if !EXTENSION
                     for metadata in metadatas {
+                        NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: true)
                         if CCUtility.getFavoriteOffline() {
-                            NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: true)
                             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
                         } else {
                             NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorSynchronize)
