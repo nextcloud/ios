@@ -104,10 +104,10 @@
     // Active Main
     appDelegate.activeFavorites = self;
 
-    [self reloadDatasource];
-
     if (self.serverUrl == nil && appDelegate.activeAccount.length > 0) {
-        [[NCNetworking shared] listingFavoritescompletionWithCompletion:^(NSString *account, NSArray* metadatas, NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] listingFavoritescompletionWithCompletion:^(NSString *account, NSArray* metadatas, NSInteger errorCode, NSString *errorDescription) {
+             [self reloadDatasource];
+        }];
     }
 }
 
