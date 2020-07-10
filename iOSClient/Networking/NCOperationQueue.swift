@@ -189,7 +189,7 @@ class NCOperationSynchronization: ConcurrentOperation {
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                         if metadatas.count > 0 {
                             let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
                             print("")
