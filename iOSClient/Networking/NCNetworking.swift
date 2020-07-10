@@ -789,6 +789,37 @@ import Alamofire
         }
     }
     
+    @objc func listingFavoritescompletion(completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+        NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+            
+            if errorCode == 0 {
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
+                    // remove
+                    if let metadatasFavorite = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", account), freeze: true) {
+                        for metadata in metadatasFavorite {
+                            if metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) == nil {
+                                NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: false)
+                            }
+                        }
+                    }
+                    #if !EXTENSION
+                    for metadata in metadatas {
+                        if CCUtility.getFavoriteOffline() {
+                            NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: true)
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
+                        } else {
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorSynchronize)
+                        }
+                    }
+                    #endif
+                    completion(account, metadatas, errorCode, errorDescription)
+                }
+            } else {
+                completion(account, nil, errorCode, errorDescription)
+            }
+        }
+    }
+    
     //MARK: - WebDav Rename
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
