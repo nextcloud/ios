@@ -83,7 +83,7 @@ class NCService: NSObject {
                         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
                             continue
                         }
-                        //CCSynchronize.shared()?.readFile(metadata.ocId, fileName: metadata.fileName, serverUrl: metadata.serverUrl, selector: selectorReadFileWithDownload, account: tableAccount.account)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
                     }
                 }
                         

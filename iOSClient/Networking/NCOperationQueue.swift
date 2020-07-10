@@ -187,7 +187,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)
             }
-            if selector == selectorReadFolderWithDownload {
+            if selector == selectorDownloadSynchronize {
                 download = true
             }
             

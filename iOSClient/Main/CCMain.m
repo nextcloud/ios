@@ -527,11 +527,9 @@
             NSString *selector;
                        
             if ([CCUtility getFavoriteOffline])
-                selector = selectorReadFolderWithDownload;
+                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
             else
-                selector = selectorReadFolder;
-                  
-            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selector];
+                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
         }
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
@@ -964,15 +962,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
         for (tableMetadata *metadata in selectedMetadatas) {
-            
-            if (metadata.directory) {
-                
-//                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:metadata.serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload account:appDelegate.activeAccount];
-                    
-            } else {
-                
-//                [[CCSynchronize sharedSynchronize] readFile:metadata.ocId fileName:metadata.fileName serverUrl:metadata.serverUrl selector:selectorReadFileWithDownload account:appDelegate.activeAccount];
-            }
+            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
         }
         
         [_hud hideHud];
