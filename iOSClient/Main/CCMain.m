@@ -952,21 +952,12 @@
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
-
-    NSLog(@"[LOG] Start download selected ...");
-    
-    [_hud visibleHudTitle:NSLocalizedString(@"_downloading_progress_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
     NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         
-        for (tableMetadata *metadata in selectedMetadatas) {
-            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
-        }
-        
-        [_hud hideHud];
-    });
+    for (tableMetadata *metadata in selectedMetadatas) {
+        [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
+    }
     
     [self tableViewSelect:false];
 }
