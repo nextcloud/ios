@@ -523,13 +523,11 @@
         } 
         
         if (metadata.directory && favorite) {
-                       
-            NSString *selector;
-                       
-            if ([CCUtility getFavoriteOffline])
+            if ([CCUtility getFavoriteOffline]) {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
-            else
+            } else {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
+            }
         }
                    
         if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
