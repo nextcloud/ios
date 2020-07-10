@@ -2000,7 +2000,7 @@ class NCManageDatabase: NSObject {
     @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata]) -> [tableMetadata] {
         
         let realm = try! Realm()
-        var metadatasChangeEtag : [tableMetadata] = []
+        var metadatasUdate : [tableMetadata] = []
         
         do {
             try realm.write {
@@ -2016,13 +2016,13 @@ class NCManageDatabase: NSObject {
                     if let result = results.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
-                            metadatasChangeEtag.append(metadata)
+                            metadatasUdate.append(metadata)
                             realm.add(metadata, update: .all)
                         }
                     } else {
                         // new
+                        metadatasUdate.append(metadata)
                         realm.add(metadata, update: .all)
-                        metadatasChangeEtag.append(metadata)
                     }
                 }
             }
@@ -2030,7 +2030,7 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
         
-        return metadatasChangeEtag
+        return metadatasUdate
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {

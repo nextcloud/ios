@@ -192,8 +192,12 @@ class NCOperationSynchronization: ConcurrentOperation {
                     if errorCode == 0 {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
-                                let updatedMetadata = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
-                                print("")
+                                let updatedMetadatas = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
+                                if self.selector == selectorReadFolderWithDownload {
+                                    for metadata in updatedMetadatas {
+                                        NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }                                        
+                                    }
+                                }
                             }
                         }
                     } else if errorCode == 404 {
