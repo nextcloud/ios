@@ -73,7 +73,10 @@ class NCService: NSObject {
                 let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true)
                 if (directories != nil) {
                     for directory: tableDirectory in directories! {
-                        //CCSynchronize.shared()?.readFolder(directory.serverUrl, selector: selectorReadFolderWithDownload, account: tableAccount.account)
+                        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", directory.ocId)) else {
+                            continue
+                        }
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
                     }
                 }
                 
