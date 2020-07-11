@@ -1450,17 +1450,31 @@
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found, remove from upload"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found locally, remove from upload"}];
         }
         
         completion(nil, nil);
         return;
     }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    PHAsset *asset = result[0];
+    NSDate *creationDate = asset.creationDate;
+    NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
+    BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
+    if (!isLocallayAvailable) {
+        if (notification) {
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found locally, remove from upload"}];
+        }
         
-        PHAsset *asset = result[0];
-        NSDate *creationDate = asset.creationDate;
+        completion(nil, nil);
+        return;
+    }
+    long fileSize = [[resourceArray.firstObject valueForKey:@"fileSize"] longValue];
+
+    
+    
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
         // IMAGE
         if (asset.mediaType == PHAssetMediaTypeImage) {
@@ -1520,13 +1534,8 @@
                 if (attributes[NSFileModificationDate]) {
                     newMetadata.date = attributes[NSFileModificationDate];
                 }
-                if ([attributes[NSFileSize] longValue] > 0) {
-                    newMetadata.size = [attributes[NSFileSize] longValue];
-                } else {
-                    completion(nil, nil);
-                    return;
-                }
-                               
+                newMetadata.size = fileSize;
+                
                 completion(newMetadata, fileNamePath);
             }];
         }
@@ -1581,12 +1590,7 @@
                             if (attributes[NSFileModificationDate]) {
                                 newMetadata.date = attributes[NSFileModificationDate];
                             }
-                            if ([attributes[NSFileSize] longValue] > 0) {
-                                newMetadata.size = [attributes[NSFileSize] longValue];
-                            } else {
-                                completion(nil, nil);
-                                return;
-                            }
+                            newMetadata.size = fileSize;
                             
                             completion(newMetadata, fileNamePath);
                         }
