@@ -664,9 +664,9 @@ extension NCTrash {
         NCCommunication.shared.listingTrash(showHiddenFiles: false) { (account, items, errorCode, errorDescription) in
             self.refreshControl.endRefreshing()
          
-            if errorCode == 0 && account == self.appDelegate.activeAccount && items != nil {
+            if errorCode == 0 && account == self.appDelegate.activeAccount {
                 NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
-                NCManageDatabase.sharedInstance.addTrash(account: account, items: items!)
+                NCManageDatabase.sharedInstance.addTrash(account: account, items: items)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
