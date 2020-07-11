@@ -1504,6 +1504,7 @@
                 
                 [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
+                
                 NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                 
                 if (creationDate) {
