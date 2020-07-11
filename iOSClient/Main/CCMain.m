@@ -2343,6 +2343,20 @@
         
     } else {
         
+        /*
+         self.viewRichWorkspace.translatesAutoresizingMaskIntoConstraints = false;
+         self.viewRichWorkspace.backgroundColor = [UIColor redColor];
+         
+         //[[self.viewRichWorkspace.leftAnchor constraintEqualToAnchor:self.tableView.leftAnchor] setActive:true];
+         //[[self.viewRichWorkspace.rightAnchor constraintEqualToAnchor:self.tableView.rightAnchor] setActive:true];
+         [[self.viewRichWorkspace.widthAnchor constraintEqualToAnchor:self.tableView.widthAnchor] setActive:true];
+         [[self.viewRichWorkspace.centerXAnchor constraintEqualToAnchor:self.tableView.centerXAnchor] setActive:true];
+         [[self.viewRichWorkspace.topAnchor constraintEqualToAnchor:self.tableView.topAnchor] setActive:true];
+         [[self.viewRichWorkspace.heightAnchor constraintEqualToConstant:200] setActive:true];
+         */
+        
+        self.viewRichWorkspace.backgroundColor = [UIColor redColor];
+
         [self.viewRichWorkspace setFrame:CGRectMake(self.tableView.tableHeaderView.frame.origin.x, self.tableView.tableHeaderView.frame.origin.y, self.tableView.frame.size.width, heightRichWorkspace)];
     }
     
