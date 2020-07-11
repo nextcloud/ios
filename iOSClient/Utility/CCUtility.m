@@ -1459,6 +1459,7 @@
     
     PHAsset *asset = result[0];
     NSDate *creationDate = asset.creationDate;
+    NSDate *modificationDate = asset.modificationDate;
     NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
     BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
     if (!isLocallayAvailable) {
@@ -1526,14 +1527,8 @@
                     newMetadata.fileName = fileName;
                 }
                      
-                NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
-                
-                if (creationDate) {
-                    newMetadata.creationDate = creationDate;
-                }
-                if (attributes[NSFileModificationDate]) {
-                    newMetadata.date = attributes[NSFileModificationDate];
-                }
+                newMetadata.creationDate = creationDate;
+                newMetadata.date = modificationDate;
                 newMetadata.size = fileSize;
                 
                 completion(newMetadata, fileNamePath);
@@ -1581,15 +1576,9 @@
                             completion(nil, nil);
                             
                         } else {
-                                
-                            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                             
-                            if (creationDate) {
-                                newMetadata.creationDate = creationDate;
-                            }
-                            if (attributes[NSFileModificationDate]) {
-                                newMetadata.date = attributes[NSFileModificationDate];
-                            }
+                            newMetadata.creationDate = creationDate;
+                            newMetadata.date = modificationDate;
                             newMetadata.size = fileSize;
                             
                             completion(newMetadata, fileNamePath);
