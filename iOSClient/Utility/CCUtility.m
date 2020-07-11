@@ -1439,10 +1439,6 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
     
     if (tableAccount == nil) {
-        if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
-        }
-        
         completion(nil, nil);
         return;
     }
@@ -1450,7 +1446,7 @@
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found locally, remove from upload"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
         }
         
         completion(nil, nil);
@@ -1464,7 +1460,7 @@
     BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
     if (!isLocallayAvailable) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found locally, remove from upload"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
         }
         
         completion(nil, nil);
@@ -1478,7 +1474,7 @@
         if (asset.mediaType == PHAssetMediaTypeImage) {
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES; // iCloud
+            options.networkAccessAllowed = NO; // iCloud
             options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             options.synchronous = YES;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
@@ -1536,7 +1532,7 @@
         if (asset.mediaType == PHAssetMediaTypeVideo) {
             
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES;
+            options.networkAccessAllowed = NO;
             options.version = PHVideoRequestOptionsVersionOriginal;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
                 

@@ -789,6 +789,7 @@
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
 "_internal_generic_error_"              = "internal error";
 "_editor_unknown_"                      = "Failed to open file: Editor is unknown";
+"_err_asset_not_found_"                 = "Error photo/video not found locally, removed from upload";
 
 // QRCode
 
