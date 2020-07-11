@@ -1506,12 +1506,15 @@
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                 
-                if (creationDate != nil) {
+                if (creationDate) {
                     newMetadata.creationDate = creationDate;
                 }
-                newMetadata.date = attributes[NSFileModificationDate];
-                newMetadata.size = [attributes[NSFileSize] longValue];
-                
+                if (attributes[NSFileModificationDate]) {
+                    newMetadata.date = attributes[NSFileModificationDate];
+                }
+                if ([attributes[NSFileSize] longValue] > 0) {
+                    newMetadata.size = [attributes[NSFileSize] longValue];
+                }
                 if (newMetadata.e2eEncrypted) {
                     newMetadata.fileNameView = fileName;
                 } else {
@@ -1567,13 +1570,15 @@
                                 
                             NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                             
-                            if (creationDate != nil) {
+                            if (creationDate) {
                                 newMetadata.creationDate = creationDate;
                             }
                             if (attributes[NSFileModificationDate]) {
                                 newMetadata.date = attributes[NSFileModificationDate];
                             }
-                            newMetadata.size = [attributes[NSFileSize] longValue];
+                            if ([attributes[NSFileSize] longValue] > 0) {
+                                newMetadata.size = [attributes[NSFileSize] longValue];
+                            }
                             
                             completion(newMetadata, fileNamePath);
                         }
