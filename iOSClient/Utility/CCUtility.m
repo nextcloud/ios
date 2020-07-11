@@ -1505,6 +1505,13 @@
                 [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 
+                if (newMetadata.e2eEncrypted) {
+                    newMetadata.fileNameView = fileName;
+                } else {
+                    newMetadata.fileNameView = fileName;
+                    newMetadata.fileName = fileName;
+                }
+                     
                 NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                 
                 if (creationDate) {
@@ -1515,14 +1522,11 @@
                 }
                 if ([attributes[NSFileSize] longValue] > 0) {
                     newMetadata.size = [attributes[NSFileSize] longValue];
-                }
-                if (newMetadata.e2eEncrypted) {
-                    newMetadata.fileNameView = fileName;
                 } else {
-                    newMetadata.fileNameView = fileName;
-                    newMetadata.fileName = fileName;
+                    completion(nil, nil);
+                    return;
                 }
-                                    
+                               
                 completion(newMetadata, fileNamePath);
             }];
         }
@@ -1579,6 +1583,9 @@
                             }
                             if ([attributes[NSFileSize] longValue] > 0) {
                                 newMetadata.size = [attributes[NSFileSize] longValue];
+                            } else {
+                                completion(nil, nil);
+                                return;
                             }
                             
                             completion(newMetadata, fileNamePath);
