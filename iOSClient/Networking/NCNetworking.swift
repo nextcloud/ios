@@ -593,10 +593,11 @@ import Alamofire
                         let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
                         DispatchQueue.main.async {
                             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
-                            let metadataFolder = NCManageDatabase.sharedInstance.addMetadata(metadataFolder)
-
+                                                        
                             completion(account, metadataFolder, metadatas, metadatasChanged, errorCode, "")
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
+                            if metadatasChanged.count > 0 {
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
+                            }
                         }
                     }
                 }
