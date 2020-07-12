@@ -1141,6 +1141,7 @@
         }
         
         _loadingFolder = NO;
+        [self tableViewReloadData];
     }];
 }
 
