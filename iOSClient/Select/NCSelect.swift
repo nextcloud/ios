@@ -680,10 +680,8 @@ extension NCSelect {
             }
         }
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!) {
-            
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
-        }
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
+        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
         
         if withLoadFolder {
             loadFolder()

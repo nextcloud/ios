@@ -190,23 +190,21 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)  {
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
+            for metadata in metadatas {
                 
-                for metadata in metadatas {
+                // Modify
+                if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                    metadata.session = ""
+                    metadata.sessionSelector = ""
+                    metadata.status = Int(k_metadataStatusNormal)
                     
-                    // Modify
-                    if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                        metadata.session = ""
-                        metadata.sessionSelector = ""
-                        metadata.status = Int(k_metadataStatusNormal)
-                        
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    }
-                    
-                    // Cancel Task
-                    if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                        self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
-                    }
+                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                }
+                
+                // Cancel Task
+                if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                    self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
                 }
             }
         }

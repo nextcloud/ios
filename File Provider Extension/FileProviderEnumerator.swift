@@ -262,8 +262,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     if errorCode == 0 {
                         DispatchQueue.global().async {
                             NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)
-                                NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas)
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.sharedInstance.account, serverUrl, k_metadataStatusNormal), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                                NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
                                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
