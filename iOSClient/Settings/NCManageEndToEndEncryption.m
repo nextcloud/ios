@@ -44,9 +44,6 @@
     XLFormRowDescriptor *row;
     
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
-    // DISABLE E2EE
-    isE2EEEnabled = NO;
-    // DISABLE E2EE
     if (isE2EEEnabled == NO) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
