@@ -190,7 +190,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true, freeze: false)
             for metadata in metadatas {
                 
                 // Modify

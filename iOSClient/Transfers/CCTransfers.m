@@ -314,7 +314,7 @@
     NSInteger typeOfSession = 0;
     NSString *sessionDownload = [[NCCommunicationCommon shared] sessionIdentifierDownload];
 
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES] count];
 
     NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
     NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
@@ -396,7 +396,7 @@
     if ([titleSection containsString:@"download"] && titleSection != nil) {
         
         NSString *session = [[NCCommunicationCommon shared] sessionIdentifierDownload];
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", session] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", session] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES] count];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);

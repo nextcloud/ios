@@ -378,11 +378,11 @@
     
     if (!_serverUrl) {
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES];
         
     } else {
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES];
     }
     
     sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:sorted ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];

@@ -677,12 +677,12 @@ extension NCOffline {
                 }
             }
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds))
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), freeze: true)
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             
         } else {
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl)) 
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl), freeze: true) 
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
             
         }

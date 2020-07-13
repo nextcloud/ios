@@ -535,7 +535,7 @@ class NCUtility: NSObject {
     @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String) {
         
         if UIApplication.shared.applicationState != .active { return }
-        let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+        let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"), freeze: true)
         if metadatasSessionUpload.count > 0 { return }
         let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
         if localIdentifiers.count == 0 { return }

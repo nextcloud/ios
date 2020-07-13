@@ -480,7 +480,7 @@ import Alamofire
         var session: URLSession?
         
         // download
-        var metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusDownloading)))
+        var metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", Int(k_metadataStatusDownloading)), freeze: false)
         for metadata in metadatas {
             guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { continue }
             let request = downloadRequest[fileNameLocalPath]

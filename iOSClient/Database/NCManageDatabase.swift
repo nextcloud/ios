@@ -2308,7 +2308,7 @@ class NCManageDatabase: NSObject {
                     if freeze {
                         metadatas.append(results[n].freeze())
                     } else {
-                        metadatas.append(tableMetadata.init(value: results[n]))
+                        metadatas.append(results[n])
                     }
                 }
             }

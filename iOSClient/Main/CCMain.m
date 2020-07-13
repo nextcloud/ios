@@ -1834,7 +1834,7 @@
 
 - (BOOL)canOpenMenuAction:(tableMetadata *)metadata
 {
-    if (metadata == nil || _metadataFolder == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || metadata.status != k_metadataStatusNormal || [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])
+    if (metadata == nil || metadata.status != k_metadataStatusNormal)
         return NO;
     
     // E2EE
@@ -1992,7 +1992,7 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:YES];
         
         // [CCUtility getGroupBySettings]
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
