@@ -140,7 +140,7 @@ extension FileProviderExtension {
                     NCManageDatabase.sharedInstance.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)                    
                 }
                 
-                _ = NCManageDatabase.sharedInstance.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
+                NCManageDatabase.sharedInstance.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo, freeze: true)
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdFrom)) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -177,7 +177,7 @@ extension FileProviderExtension {
             if errorCode == 0 {
                 
                 // Rename metadata
-                guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: metadata.ocId) else {
+                guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: metadata.ocId, freeze: false) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }

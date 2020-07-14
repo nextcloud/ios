@@ -1920,7 +1920,7 @@ class NCManageDatabase: NSObject {
     }
     
     @discardableResult
-    @objc func moveMetadata(ocId: String, serverUrlTo: String, freeze: Bool = true) -> tableMetadata? {
+    @objc func moveMetadata(ocId: String, serverUrlTo: String, freeze: Bool) -> tableMetadata? {
         
         var result: tableMetadata?
         let realm = try! Realm()
@@ -1962,7 +1962,7 @@ class NCManageDatabase: NSObject {
     }
     
     @discardableResult
-    @objc func renameMetadata(fileNameTo: String, ocId: String, freeze: Bool = true) -> tableMetadata? {
+    @objc func renameMetadata(fileNameTo: String, ocId: String, freeze: Bool) -> tableMetadata? {
         
         var result: tableMetadata?
         let realm = try! Realm()
