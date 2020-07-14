@@ -84,15 +84,13 @@ class NCService: NSObject {
                 }
                 
                 let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
-                if (files != nil) {
-                    for file: tableLocalFile in files! {
-                        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
-                            continue
-                        }
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
+                for file: tableLocalFile in files {
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
+                        continue
                     }
+                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
                 }
-                        
+                                        
                 let avatarUrl = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                 let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-" + self.appDelegate.activeUser + ".png"
                         

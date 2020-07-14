@@ -54,18 +54,15 @@ class NCViewerImageCommon: NSObject {
             var datasourceSorted = ""
             var datasourceAscending = true
             (_, datasourceSorted, datasourceAscending, _, _) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", metadata.account), sorted: datasourceSorted, ascending: datasourceAscending) {
-                var ocIds: [String] = []
-                for file: tableLocalFile in files {
-                    ocIds.append(file.ocId)
-                }
-                return NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, ocIds, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: datasourceSorted, ascending: datasourceAscending)
+            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", metadata.account), sorted: datasourceSorted, ascending: datasourceAscending)
+            var ocIds: [String] = []
+            for file: tableLocalFile in files {
+                ocIds.append(file.ocId)
             }
+            return NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, ocIds, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: datasourceSorted, ascending: datasourceAscending)
         } else {
             return NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
         }
-        
-        return nil
     }
     
     func getThumbnailImage(metadata: tableMetadata) -> UIImage? {

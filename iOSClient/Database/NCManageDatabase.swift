@@ -1572,8 +1572,7 @@ class NCManageDatabase: NSObject {
         return tableLocalFile.init(value: localFile)
     }
     
-    @discardableResult
-    @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
+    @objc func addLocalFile(metadata: tableMetadata) {
         
         let realm = try! Realm()
         let addObject = tableLocalFile()
@@ -1595,10 +1594,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        return tableLocalFile.init(value: addObject)
     }
     
     @objc func deleteLocalFile(predicate: NSPredicate) {
@@ -1660,22 +1656,17 @@ class NCManageDatabase: NSObject {
         guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
             return nil
         }
-
-        return tableLocalFile.init(value: result)
+        
+        return result.freeze()
     }
     
-    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile]? {
+    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        
-        if (results.count > 0) {
-            return Array(results.map { tableLocalFile.init(value:$0) })
-        } else {
-            return nil
-        }
+        return Array(results.map { $0.freeze() })
     }
     
     @objc func setLocalFile(ocId: String, offline: Bool) {

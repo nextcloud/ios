@@ -289,7 +289,7 @@
                 metadata.size = size;
                 
                 [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];

@@ -302,9 +302,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 //  image local
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
-                    var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                      if tableLocalFile == nil && size == metadata.size {
-                        tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
@@ -537,9 +537,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 // Local Image - Offline
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
-                    var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if tableLocalFile == nil && size == metadata.size {
-                        tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile != nil && tableLocalFile!.offline { cell.local.image = UIImage.init(named: "offlineFlag") }
                     else { cell.local.image = UIImage.init(named: "local") }

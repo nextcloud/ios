@@ -671,10 +671,9 @@ extension NCOffline {
                 }
             }
             
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
-                for file: tableLocalFile in files {
-                    ocIds.append(file.ocId)
-                }
+            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+            for file: tableLocalFile in files {
+                ocIds.append(file.ocId)
             }
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds), freeze: true)
