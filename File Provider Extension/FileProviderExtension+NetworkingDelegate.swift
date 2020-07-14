@@ -61,8 +61,8 @@ extension FileProviderExtension: NCNetworkingDelegate {
             metadata.size = Double(size)
             metadata.status = Int(k_metadataStatusNormal)
                   
-            guard let metadataUpdated = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
-            _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadataUpdated)
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
+            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
             
             // New file
             if ocId != ocIdTemp {
@@ -76,7 +76,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             }
             
             // Signal update
-            item = FileProviderItem(metadata: metadataUpdated, parentItemIdentifier: parentItemIdentifier)
+            item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
             fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])

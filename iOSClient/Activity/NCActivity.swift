@@ -423,9 +423,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
                                                        
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
-                            if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
-                                self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
-                            }
+                            NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                            self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
                         }
                     }
                     

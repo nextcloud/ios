@@ -216,7 +216,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -232,7 +232,7 @@ class FileProviderExtension: NSFileProviderExtension {
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
             metadata.status = Int(k_metadataStatusDownloading)
-            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
             downloadRequest = request
             self.outstandingSessionTasks[url] = task
             
@@ -255,7 +255,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.etag = etag ?? ""
                 
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 completionHandler(nil)
                 
@@ -366,10 +366,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)
                 
-                guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
@@ -379,7 +376,7 @@ class FileProviderExtension: NSFileProviderExtension {
                     NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
                 }
                 
-                let item = FileProviderItem(metadata: metadataForUpload, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
             }
         }

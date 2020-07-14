@@ -184,7 +184,6 @@ import Alamofire
     
     func upload(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        var metadata = metadata
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
         
@@ -239,7 +238,7 @@ import Alamofire
                 // Start Upload file
                 metadata.status = Int(k_metadataStatusInUpload)
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                 
@@ -247,7 +246,7 @@ import Alamofire
                     
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
                     metadata.status = Int(k_metadataStatusUploading)
-                    if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                    NCManageDatabase.sharedInstance.addMetadata(metadata)
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
                     
@@ -278,7 +277,7 @@ import Alamofire
                         metadata.status = Int(k_metadataStatusNormal)
                                            
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                        if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                         
                         //CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
@@ -305,7 +304,7 @@ import Alamofire
                         metadata.sessionError = errorDescription
                         metadata.status = Int(k_metadataStatusUploadError)
                        
-                        if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                         
                         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                     }

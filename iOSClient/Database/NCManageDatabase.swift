@@ -1817,8 +1817,7 @@ class NCManageDatabase: NSObject {
         return metadata
     }
     
-    @discardableResult
-    @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    @objc func addMetadata(_ metadata: tableMetadata) {
 
         let realm = try! Realm()
 
@@ -1828,14 +1827,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-                
-        return tableMetadata.init(value: metadata)
     }
     
-    @discardableResult
-    @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
+    @objc func addMetadatas(_ metadatas: [tableMetadata]) {
         
         let realm = try! Realm()
 
@@ -1847,11 +1842,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        
-        return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
     @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {

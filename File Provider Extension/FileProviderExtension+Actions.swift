@@ -51,22 +51,19 @@ extension FileProviderExtension {
                 metadata.serverUrl = tableDirectory.serverUrl
                 metadata.typeFile = k_metadataTypeFile_directory
                 
-                guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: "", etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadataUpdate, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
                 
             } else {
@@ -247,11 +244,8 @@ extension FileProviderExtension {
                 if errorCode == 0 {
                     // Change DB
                     metadata.favorite = favorite
-                    guard let metadataUpdate = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                        completionHandler(nil, NSFileProviderError(.noSuchItem))
-                        return
-                    }
-                    let item = FileProviderItem(metadata: metadataUpdate, parentItemIdentifier: parentItemIdentifier)
+                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                     
                     fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                     fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])

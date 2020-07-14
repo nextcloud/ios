@@ -151,8 +151,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 session = NCCommunicationBackground.shared.sessionManagerTransferExtension
             }
             
-            var metadata = metadata
-
             session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
                 
                 var cancel = false
@@ -162,7 +160,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                         if task.taskIdentifier == metadata.sessionTaskIdentifier {
                             if uploadStatusForcedStart {
                                 metadata.status = Int(k_metadataStatusUploadForcedStart)
-                                metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                                NCManageDatabase.sharedInstance.addMetadata(metadata)
                             }
                             task.cancel()
                             cancel = true

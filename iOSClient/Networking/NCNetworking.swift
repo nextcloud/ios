@@ -298,16 +298,16 @@ import Alamofire
                 return
             }
                
-            guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else { return }
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
            
             if e2eEncrypted {
                 #if !EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
+                NCNetworkingE2EE.shared.upload(metadata: metadata, account: account, completion: completion)
                 #endif
             } else if background {
-                uploadFileInBackground(metadata: metadataForUpload, account: account, completion: completion)
+                uploadFileInBackground(metadata: metadata, account: account, completion: completion)
             } else {
-                uploadFile(metadata: metadataForUpload, account: account, completion: completion)
+                uploadFile(metadata: metadata, account: account, completion: completion)
             }
            
         } else {
@@ -329,16 +329,16 @@ import Alamofire
                     return
                 }
                        
-                guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(extractMetadata) else {return}
+                NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
                
                 if e2eEncrypted {
                     #if !EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: metadataForUpload, account: account, completion: completion)
+                    NCNetworkingE2EE.shared.upload(metadata: extractMetadata, account: account, completion: completion)
                     #endif
                 } else if background {
-                    self.uploadFileInBackground(metadata: metadataForUpload, account: account, completion: completion)
+                    self.uploadFileInBackground(metadata: extractMetadata, account: account, completion: completion)
                 } else {
-                    self.uploadFile(metadata: metadataForUpload, account: account, completion: completion)
+                    self.uploadFile(metadata: extractMetadata, account: account, completion: completion)
                 }
             }
         }
@@ -418,7 +418,7 @@ import Alamofire
                         metadata.deleteAssetLocalIdentifier = true;
                 }
                 
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
 
                 if CCUtility.getDisableLocalCacheAfterUpload() {
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -466,7 +466,7 @@ import Alamofire
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                 
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
             }
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])

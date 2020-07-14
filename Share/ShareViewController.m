@@ -288,7 +288,7 @@
                 metadata.serverUrl = self.serverUrl;
                 metadata.size = size;
                 
-                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];

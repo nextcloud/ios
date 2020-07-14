@@ -1189,8 +1189,8 @@
              
              [[NCManageDatabase sharedInstance] convertNCCommunicationFilesToMetadatas:files useMetadataFolder:false account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
                  
-                 NSMutableArray *metadatasDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas];
-                 _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasDB];
+                 [[NCManageDatabase sharedInstance] addMetadatas:metadatas];
+                 _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
                  _metadataFolder = nil;
                  
                  [self reloadDatasource:_serverUrl ocId:nil];
