@@ -587,7 +587,8 @@ import Alamofire
                     }
                     
                     DispatchQueue.global().async {
-                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl), metadatas: metadatas)
+                        let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         if metadatasChanged.count > 0 {
                             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
                         }

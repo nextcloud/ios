@@ -183,12 +183,12 @@ class NCOperationSynchronization: ConcurrentOperation {
                 depth = "infinity"
                 useMetadataFolder = true
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, serverUrlFileName)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", metadata.account, serverUrlFileName, k_metadataStatusNormal)
             } else {
                 depth = "0"
                 useMetadataFolder = false
                 serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileName)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.serverUrl, metadata.fileName, k_metadataStatusNormal)
             }
             if selector == selectorDownloadSynchronize {
                 download = true
@@ -199,9 +199,10 @@ class NCOperationSynchronization: ConcurrentOperation {
                     if errorCode == 0 {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
-                                let updatedMetadatas = NCManageDatabase.sharedInstance.updateMetadatasWithPredicate(predicate, metadatas: metadatas, withVerifyLocal: download)
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 if download {
-                                    for metadata in updatedMetadatas {
+                                    for metadata in metadatasChanged {
                                         NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }                                        
                                     }
                                 }

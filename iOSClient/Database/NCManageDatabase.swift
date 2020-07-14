@@ -1988,58 +1988,6 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatasWithPredicate(_ predicate: NSPredicate, metadatas: [tableMetadata], withVerifyLocal local: Bool = false) -> [tableMetadata] {
-        
-        let realm = try! Realm()
-        var ocIdsUdated : [String] = []
-        var metadatasUdated : [tableMetadata] = []
-        
-        do {
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(predicate)
-                // DELETE
-                for result in results {
-                    if metadatas.firstIndex(where: { $0.ocId == result.ocId }) == nil {
-                        realm.delete(result)
-                    }
-                }
-                // UPDATE/NEW
-                for metadata in metadatas {
-                    var updated = false
-                    if let result = results.first(where: { $0.ocId == metadata.ocId }) {
-                        // update
-                        if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
-                            ocIdsUdated.append(metadata.ocId)
-                            realm.add(metadata, update: .all)
-                            updated = true
-                        }
-                    } else {
-                        // new
-                        ocIdsUdated.append(metadata.ocId)
-                        realm.add(metadata, update: .all)
-                        updated = true
-                    }
-                    if local && !updated {
-                        if realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first == nil {
-                           ocIdsUdated.append(metadata.ocId)
-                        }
-                    }
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-        
-        for ocId in ocIdsUdated {
-            if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                metadatasUdated.append(result.freeze())
-            }
-        }
-        
-        return metadatasUdated
-    }
-    
-    @discardableResult
     @objc func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata] ,withVerifyLocal local: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
