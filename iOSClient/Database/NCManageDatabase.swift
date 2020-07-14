@@ -1920,7 +1920,7 @@ class NCManageDatabase: NSObject {
     }
     
     @discardableResult
-    @objc func moveMetadata(ocId: String, serverUrlTo: String) -> tableMetadata? {
+    @objc func moveMetadata(ocId: String, serverUrlTo: String, freeze: Bool = true) -> tableMetadata? {
         
         var result: tableMetadata?
         let realm = try! Realm()
@@ -1937,11 +1937,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if result == nil {
-            return nil
+        if freeze && result != nil {
+            return result!.freeze()
+        } else {
+            return result
         }
-        
-        return tableMetadata.init(value: result!)
     }
     
     @objc func addMetadataServerUrl(ocId: String, serverUrl: String) {
@@ -1962,7 +1962,7 @@ class NCManageDatabase: NSObject {
     }
     
     @discardableResult
-    @objc func renameMetadata(fileNameTo: String, ocId: String) -> tableMetadata? {
+    @objc func renameMetadata(fileNameTo: String, ocId: String, freeze: Bool = true) -> tableMetadata? {
         
         var result: tableMetadata?
         let realm = try! Realm()
@@ -1980,11 +1980,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if result == nil {
-            return nil
+        if freeze && result != nil {
+            return result!.freeze()
+        } else {
+            return result
         }
-        
-        return tableMetadata.init(value: result!)
     }
 
     @discardableResult
@@ -2187,19 +2187,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
-            return nil
-        }
-        
-        return tableMetadata.init(value: result)
-    }
-    
-    @objc func getMetadata(predicate: NSPredicate, freeze: Bool) -> tableMetadata? {
+    @objc func getMetadata(predicate: NSPredicate, freeze: Bool = true) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2215,22 +2203,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool, freeze: Bool = false) -> tableMetadata? {
+    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool, freeze: Bool = true) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        
-        if (results.count > 0) {
+        if let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first {
             if freeze {
-                return results[0].freeze()
+                return result.freeze()
             } else {
-                return tableMetadata.init(value: results[0])
+                return result
             }
-        } else {
-            return nil
         }
+       
+        return nil
     }
     
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
@@ -2266,13 +2252,13 @@ class NCManageDatabase: NSObject {
         }
         
         if (finals.count > 0) {
-            return Array(finals.map { tableMetadata.init(value:$0) })
+            return Array(finals.map { tableMetadata.init(value:$0.freeze()) })
         } else {
             return nil
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false, freeze: Bool = false) -> [tableMetadata] {
+    @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false, freeze: Bool = true) -> [tableMetadata] {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2285,7 +2271,7 @@ class NCManageDatabase: NSObject {
                 if freeze {
                     return Array(results.freeze())
                 } else {
-                    return Array(results.map { tableMetadata.init(value:$0) })
+                    return Array(results.map { $0 })
                 }
             } else {
                 
@@ -2307,7 +2293,7 @@ class NCManageDatabase: NSObject {
         return metadatas
     }
     
-    @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
+    @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int, freeze: Bool = true) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2315,13 +2301,17 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
-            return tableMetadata.init(value: results[index])
+            if freeze {
+                return tableMetadata.init(value: results[index].freeze())
+            } else {
+                return tableMetadata.init(value: results[index])
+            }
         } else {
             return nil
         }
     }
     
-    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int, freeze: Bool) -> tableMetadata? {
+    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int, freeze: Bool = true) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2333,7 +2323,7 @@ class NCManageDatabase: NSObject {
         if freeze {
             return result.freeze()
         } else {
-            return tableMetadata.init(value: result)
+            return result
         }
     }
     
@@ -2422,7 +2412,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
+    @objc func isLivePhoto(metadata: tableMetadata, freeze: Bool = true) -> tableMetadata? {
            
         let realm = try! Realm()
         realm.refresh()
@@ -2448,7 +2438,11 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableMetadata.init(value: result)
+        if freeze {
+            return result.freeze()
+        } else {
+            return result
+        }
     }
     
     @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {

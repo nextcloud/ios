@@ -1461,7 +1461,7 @@
         
         if (metadataSection) {
             
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataSection.ocId]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadataSection.ocId] freeze:YES];
             if (metadata)
                 [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
         }
@@ -1550,7 +1550,7 @@
 - (void)createRichWorkspace
 {
     NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString] freeze:YES];
     
     if (metadata) {
         [richWorkspaceCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
@@ -1655,7 +1655,7 @@
             NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
             
             if (ocId) {
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId] freeze:YES];
                 if (metadata) {
                     return [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView];
                 } else {
@@ -1684,7 +1684,7 @@
             NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
 
             if (ocId) {
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId] freeze:YES];
                 if (metadata) {
                     if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                         isValid = YES;
@@ -1799,7 +1799,7 @@
         NSData *dataocId = [dic objectForKey: k_metadataKeyedUnarchiver];
         NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
 
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId] freeze:YES];
         
         if (metadata) {
             
@@ -1885,7 +1885,7 @@
     
     if (localFile) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-            tableMetadata *metadataLivePhoto = [[NCManageDatabase sharedInstance] isLivePhotoWithMetadata:metadata];
+            tableMetadata *metadataLivePhoto = [[NCManageDatabase sharedInstance] isLivePhotoWithMetadata:metadata freeze:YES];
             
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId] error:nil];
@@ -1953,7 +1953,7 @@
         // Create metadatas
         NSMutableArray *metadatas = [NSMutableArray new];
         for (tableMetadata *resultMetadata in _searchResultMetadatas) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", resultMetadata.ocId]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", resultMetadata.ocId] freeze:YES];
             if (metadata) {
                 [metadatas addObject:metadata];
             }
@@ -1983,9 +1983,9 @@
     
     // Get MetadataFolder
     if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, k_serverUrl_root]];
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, k_serverUrl_root] freeze:YES];
     else
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] freeze:YES];
     
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
