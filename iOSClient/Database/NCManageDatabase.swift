@@ -994,7 +994,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
-        return Array(results.map { tableComments.init(value:$0) })
+        return Array(results.map { $0.freeze() })
     }
     
     //MARK: -
@@ -1061,7 +1061,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1074,7 +1074,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1086,7 +1086,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingEditors.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1099,8 +1099,7 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
     
-    @discardableResult
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1134,10 +1133,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-    
-        return tableDirectory.init(value: addObject)
     }
     
     @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {

@@ -52,11 +52,7 @@ extension FileProviderExtension {
                 metadata.typeFile = k_metadataTypeFile_directory
                 
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
-                
-                guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: "", etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
+                NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: "", etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account)
                 
                 guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
