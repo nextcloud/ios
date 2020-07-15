@@ -413,14 +413,15 @@
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
+    NSString* versionE2EE = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];    
     
-    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0 && isE2EEEnabled) {
-        
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0 && isE2EEEnabled && [versionE2EE isEqual:k_E2EE_API]) {
+       
         return YES;
         
     } else {
