@@ -100,7 +100,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         if path == "" {
             let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
+            path = "/trashbin/" + userID! + "/trash/"
         }
         
         if (datasource.count == 0) {

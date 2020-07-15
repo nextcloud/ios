@@ -38,7 +38,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             serverUrl = fileProviderData.sharedInstance.homeServerUrl
         } else {
             
-            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier, freeze: true)
             if metadata != nil  {
                 if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
@@ -220,18 +220,18 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
             
             if errorCode == 0 {
-               
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                    let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-                    NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                    for metadata in metadatasFolder {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: metadata.account)
+                DispatchQueue.global().async {
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                        let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
+                        NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        for metadata in metadatasFolder {
+                            let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
+                            NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: metadata.account)
+                        }
+                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true, freeze: true)
+                        completionHandler(metadatas)
                     }
-                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true, freeze: false)
-                    completionHandler(metadatas)
                 }
-                
             } else {
                 let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
                 completionHandler(metadatas)
@@ -260,18 +260,18 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 NCCommunication.shared.iosHelper(fileNamePath: fileNamePath, serverUrl: serverUrl, offset: offset, limit: limit) { (account, files, errorCode, errorDescription) in
                      
                     if errorCode == 0 {
-
-                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.sharedInstance.account, serverUrl, k_metadataStatusNormal), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
-                            NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
-                            for metadata in metadatasFolder {
-                                let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
-                                NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
+                        DispatchQueue.global().async {
+                            NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.sharedInstance.account, serverUrl, k_metadataStatusNormal), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                                NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                                for metadata in metadatasFolder {
+                                    let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
+                                    NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
+                                }
+                                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true, freeze: true)
+                                completionHandler(metadatas)
                             }
-                            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true, freeze: false)
-                            completionHandler(metadatas)
                         }
-                        
                     } else {
                         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
                         completionHandler(metadatas)

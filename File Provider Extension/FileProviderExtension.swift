@@ -142,7 +142,7 @@ class FileProviderExtension: NSFileProviderExtension {
             
         } else {
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
@@ -216,7 +216,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: false) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
