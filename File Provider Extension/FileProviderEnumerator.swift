@@ -38,7 +38,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             serverUrl = fileProviderData.sharedInstance.homeServerUrl
         } else {
             
-            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier, freeze: true)
+            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
                 if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName

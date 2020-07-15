@@ -33,7 +33,7 @@ extension FileProviderExtension {
         
         for itemIdentifier in itemIdentifiers {
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier, freeze: true) else {
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 
                 counterProgress += 1
                 if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }

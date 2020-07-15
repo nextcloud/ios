@@ -142,7 +142,7 @@ class FileProviderExtension: NSFileProviderExtension {
             
         } else {
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) else {
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
@@ -216,7 +216,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -232,7 +232,7 @@ class FileProviderExtension: NSFileProviderExtension {
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
-            if var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) {
+            if var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) {
                 metadata = tableMetadata.init(value: metadata)
                 metadata.status = Int(k_metadataStatusDownloading)
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
@@ -252,7 +252,7 @@ class FileProviderExtension: NSFileProviderExtension {
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
-            guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: false) else {
+            guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }

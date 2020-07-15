@@ -35,10 +35,10 @@ class fileProviderUtility: NSObject {
         return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))?.account
     }
     
-    func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier, freeze: Bool) -> tableMetadata? {
+    func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
         
         let ocId = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId), freeze: freeze)
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
@@ -84,7 +84,7 @@ class fileProviderUtility: NSObject {
             
         } else {
             
-            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier, freeze: true) else { return nil }
+            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else { return nil }
             predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
         }
         
