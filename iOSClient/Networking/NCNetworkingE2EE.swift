@@ -67,9 +67,7 @@ import Alamofire
                                                                 
                                 NCCommunication.shared.markE2EEFolder(fileId: metadataFolder!.fileId, delete: false) { (account, errorCode, errorDescription) in
                                     if errorCode == 0 {
-                                        
-                                        /* NEW VERSION
-                                         
+                                                                                 
                                         let object = tableE2eEncryption()
                                         
                                         NCEndToEndEncryption.sharedManager()?.encryptkey(&key, initializationVector: &initializationVector)
@@ -102,7 +100,6 @@ import Alamofire
                                         self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
                                             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                         }
-                                        */
                                         
                                         self.NotificationPost(name: k_notificationCenter_reloadDataSource, serverUrl: serverUrl, userInfo: ["serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                         
