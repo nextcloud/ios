@@ -89,12 +89,8 @@ import Alamofire
                                         }
                                         object.mimeType = "httpd/unix-directory"
                                         object.serverUrl = serverUrl
-                                        if let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion) {
-                                            object.version = Int(e2eeApiVersion) ?? 1
-                                        } else {
-                                            object.version = 1
-                                        }
-                                        
+                                        object.version = 1
+                                       
                                         let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                         
                                         self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
@@ -218,9 +214,7 @@ import Alamofire
         objectE2eEncryption.initializationVector = initializationVector! as String
         objectE2eEncryption.mimeType = metadata.contentType
         objectE2eEncryption.serverUrl = serverUrl
-        
-        let e2eeApiVersion = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)!
-        objectE2eEncryption.version = Int(e2eeApiVersion) ?? 1
+        objectE2eEncryption.version = 1
         
         if NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption) == false {
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
