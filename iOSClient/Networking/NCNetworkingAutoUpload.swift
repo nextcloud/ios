@@ -67,7 +67,7 @@ class NCNetworkingAutoUpload: NSObject {
             if sizeUpload > k_maxSizeOperationUpload { break }
             let predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
              
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true, freeze: true) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
                 if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
                     if UIApplication.shared.applicationState == .background { break }
                     maxConcurrentOperationUpload = 1
@@ -94,7 +94,7 @@ class NCNetworkingAutoUpload: NSObject {
                 predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload)
             }
              
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true, freeze: true) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
                 if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
                     if UIApplication.shared.applicationState == .background { break }
                     maxConcurrentOperationUpload = 1
@@ -125,7 +125,7 @@ class NCNetworkingAutoUpload: NSObject {
                     predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload)
                 }
                         
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true, freeze: true) {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
                     if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
                         if UIApplication.shared.applicationState == .background { break }
                                 maxConcurrentOperationUpload = 1
