@@ -193,11 +193,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // Modify
                 if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                    metadata.session = ""
-                    metadata.sessionSelector = ""
-                    metadata.status = Int(k_metadataStatusNormal)
-                    
-                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
                 }
                 
                 // Cancel Task
