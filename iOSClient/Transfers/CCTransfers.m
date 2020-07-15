@@ -249,11 +249,12 @@
     if (metadataForRecognizer.status == k_metadataStatusUploading) {
         [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
     } else {
-        metadataForRecognizer.status = k_metadataStatusInUpload;
-        metadataForRecognizer.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
+        metadata.status = k_metadataStatusInUpload;
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
        
-        [[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer];
-        [[NCNetworking shared] uploadWithMetadata:metadataForRecognizer background: true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [[NCNetworking shared] uploadWithMetadata:metadata background: true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 
