@@ -746,7 +746,7 @@ extension NCMedia {
                     
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
-                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate, freeze: true)
+                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate)
                         if metadatas.count > 0 {
                             let etagsMetadatas = Array(metadatas.map { $0.etag })
                             let etagsFiles = Array(files.map { $0.etag })

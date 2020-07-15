@@ -53,7 +53,7 @@ class NCNetworkingAutoUpload: NSObject {
         
         timerProcess?.invalidate()
         
-        let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading), freeze: true)
+        let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
         counterUpload = metadatasUpload.count
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
@@ -111,7 +111,7 @@ class NCNetworkingAutoUpload: NSObject {
         // ------------------------- <selector Auto Upload All> ----------------------
          
         // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-        let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true)
+        let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError))
         if metadatasInError.count >= k_maxErrorAutoUploadAll {
             NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_automatic_all_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
         } else {
@@ -142,7 +142,7 @@ class NCNetworkingAutoUpload: NSObject {
          
         // No upload available ? --> Retry Upload in Error
         if counterUpload == 0 {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError), freeze: true)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError))
             for metadata in metadatas {
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusInUpload))
             }
