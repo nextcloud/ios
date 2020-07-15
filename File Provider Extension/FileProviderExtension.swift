@@ -216,10 +216,11 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: false) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
+        
         let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
             completionHandler(nil)
@@ -231,8 +232,12 @@ class FileProviderExtension: NSFileProviderExtension {
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
-            metadata.status = Int(k_metadataStatusDownloading)
-            NCManageDatabase.sharedInstance.addMetadata(metadata)
+            if var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: true) {
+                metadata = tableMetadata.init(value: metadata)
+                metadata.status = Int(k_metadataStatusDownloading)
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
+            }
+            
             downloadRequest = request
             self.outstandingSessionTasks[url] = task
             
@@ -247,6 +252,11 @@ class FileProviderExtension: NSFileProviderExtension {
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
+            guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier, freeze: false) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
+            metadata = tableMetadata.init(value: metadata)
             
             if errorCode == 0  {
                 
