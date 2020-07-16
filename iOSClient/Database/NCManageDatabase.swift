@@ -1968,9 +1968,11 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 // DELETE
-                for result in metadatasResult {
-                    if metadatas.firstIndex(where: { $0.ocId == result.ocId }) == nil {
-                        realm.delete(result)
+                for metadataResult in metadatasResult {
+                    if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
+                        if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", metadataResult.ocId)).first {
+                            realm.delete(result)
+                        }
                     }
                 }
                 // UPDATE/NEW

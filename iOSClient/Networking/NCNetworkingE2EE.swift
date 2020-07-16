@@ -186,6 +186,12 @@ import Alamofire
         metadata.fileName = CCUtility.generateRandomIdentifier()!
         metadata.e2eEncrypted = true
         
+        // Start Upload file ------
+        metadata.status = Int(k_metadataStatusInUpload)
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        //-----------------------
+        
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
         
@@ -306,6 +312,7 @@ import Alamofire
                 
             } else {
                 
+                let metadata = tableMetadata.init(value: metadata)
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
                 
                 completion(errorCode, errorDescription ?? "")
@@ -328,7 +335,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
         
-        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, delete: false) { (account, e2eToken, errorCode, errorDescription) in
+        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { (account, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil {
                 NCManageDatabase.sharedInstance.setE2ETokenLock(serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
             }
@@ -349,7 +356,7 @@ import Alamofire
             e2eToken = tableLock.e2eToken
         }
         
-        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, delete: true) { (account, e2eToken, errorCode, errorDescription) in
+        NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { (account, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.deteleE2ETokenLock(serverUrl: serverUrl)
             }
@@ -415,7 +422,7 @@ import Alamofire
             
             // unlock
             if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: serverUrl) {
-                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, delete: true) { (_, _, _, _) in }
+                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
             }
             
             if errorDescription == nil { userInfo["errorDescription"] = "" }
