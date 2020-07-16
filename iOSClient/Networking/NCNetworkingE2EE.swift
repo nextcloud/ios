@@ -180,6 +180,7 @@ import Alamofire
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
         
+        let metadata = tableMetadata.init(value: metadata)
         let serverUrl = metadata.serverUrl
 
         metadata.fileName = CCUtility.generateRandomIdentifier()!
@@ -236,8 +237,7 @@ import Alamofire
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], requestHandler: { (request) in
                     
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
-                    metadata.status = Int(k_metadataStatusUploading)
-                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: nil, sessionSelector: nil, sessionTaskIdentifier: nil, status: Int(k_metadataStatusUploading))
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
                     
@@ -255,7 +255,8 @@ import Alamofire
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
                     } else if errorCode == 0 && ocId != nil {
-                            
+                        
+                        let metadata = tableMetadata.init(value: metadata)
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             
@@ -291,11 +292,7 @@ import Alamofire
                                                 
                     } else {
                         
-                        metadata.session = ""
-                        metadata.sessionError = errorDescription
-                        metadata.status = Int(k_metadataStatusUploadError)
-                       
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                         
                         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
                     }
