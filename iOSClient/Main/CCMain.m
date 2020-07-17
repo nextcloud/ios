@@ -137,6 +137,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     
     // Search
     self.definesPresentationContext = YES;
@@ -430,6 +431,21 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== NotificationCenter ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)createFolder:(NSNotification *)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSString *serverUrl = userInfo[@"serverUrl"];
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    
+    if (![serverUrl isEqualToString:self.serverUrl]) { return; }
+    if (errorCode == 0) {
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.activeAccount];
+        if (isFolderEncrypted) {
+            [self readFolder:serverUrl];
+        }
+    }
+}
 
 - (void)deleteFile:(NSNotification *)notification
 {

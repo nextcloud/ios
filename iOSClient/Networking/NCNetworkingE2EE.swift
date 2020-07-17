@@ -86,7 +86,7 @@ import Alamofire
                                     self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                 }
                                 
-                                self.NotificationPost(name: k_notificationCenter_reloadDataSource, serverUrl: serverUrl, userInfo: ["serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                                //self.NotificationPost(name: k_notificationCenter_reloadDataSource, serverUrl: serverUrl, userInfo: ["serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                 
                             } else {
                                 self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
