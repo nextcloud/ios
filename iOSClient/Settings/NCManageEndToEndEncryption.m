@@ -56,7 +56,7 @@
         
         section = [XLFormSectionDescriptor formSection];
         if (isE2EEEnabled) {
-            section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption V. %@", versionE2EE];
+            section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption %@", versionE2EE];
         }
         [form addFormSection:section];
         
@@ -79,7 +79,7 @@
         // Section SERVICE ACTIVATED -------------------------------------------------
         
         section = [XLFormSectionDescriptor formSection];
-        section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption V. %@", versionE2EE];
+        section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption %@", versionE2EE];
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
