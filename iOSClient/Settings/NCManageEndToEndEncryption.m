@@ -45,7 +45,8 @@
     
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     NSString *versionE2EE = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
-    if (![versionE2EE isEqual:k_E2EE_API]) {
+    
+    if (![versionE2EE isEqual:k_E2EE_API] && isE2EEEnabled) {
         [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
     }
     
