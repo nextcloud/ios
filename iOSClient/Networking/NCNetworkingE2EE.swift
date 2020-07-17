@@ -248,7 +248,8 @@ import Alamofire
                 }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
-                    
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
+
                     if error?.isExplicitlyCancelledError ?? false {
                     
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -256,9 +257,11 @@ import Alamofire
                         
                     } else if errorCode == 0 && ocId != nil {
                         
-                        let metadata = tableMetadata.init(value: metadata)
+                        guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
+                        let metadata = tableMetadata.init(value: metadataTemp)
+                        let ocIdTemp = metadata.ocId
+                        
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             
                         metadata.date = date ?? NSDate()
                         metadata.etag = etag ?? ""
@@ -266,10 +269,12 @@ import Alamofire
                         
                         metadata.session = ""
                         metadata.sessionError = ""
+                        metadata.sessionTaskIdentifier = 0
                         metadata.status = Int(k_metadataStatusNormal)
-                                           
-                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        
                         NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                         
                         //CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
                         
