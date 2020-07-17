@@ -1144,6 +1144,8 @@
                             
                             [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
                         }
+                        
+                       [self reloadDatasource:_serverUrl ocId:nil];
                     }];
                     
                 } else {
