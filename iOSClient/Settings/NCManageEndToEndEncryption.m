@@ -45,12 +45,18 @@
     
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     NSString *versionE2EE = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
-
+    if (![versionE2EE isEqual:k_E2EE_API]) {
+        [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+    }
+    
     if (isE2EEEnabled == NO || ![versionE2EE isEqual:k_E2EE_API]) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
         
         section = [XLFormSectionDescriptor formSection];
+        if (isE2EEEnabled) {
+            section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption V. %@", versionE2EE];
+        }
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
@@ -72,6 +78,7 @@
         // Section SERVICE ACTIVATED -------------------------------------------------
         
         section = [XLFormSectionDescriptor formSection];
+        section.footerTitle = [NSString stringWithFormat:@"End-to-End Encryption V. %@", versionE2EE];
         [form addFormSection:section];
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
