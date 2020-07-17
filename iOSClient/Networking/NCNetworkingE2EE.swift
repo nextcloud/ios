@@ -86,8 +86,6 @@ import Alamofire
                                     self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                 }
                                 
-                                //self.NotificationPost(name: k_notificationCenter_reloadDataSource, serverUrl: serverUrl, userInfo: ["serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
-                                
                             } else {
                                 self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                             }
@@ -174,6 +172,7 @@ import Alamofire
         metadataUpdate.e2eEncrypted = true
         metadataUpdate.status = Int(k_metadataStatusInUpload)
         metadataUpdate.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        metadataUpdate.sessionError = ""
         NCManageDatabase.sharedInstance.addMetadata(metadataUpdate)
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
@@ -214,6 +213,8 @@ import Alamofire
         }
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+        
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: account.url, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             if errorCode == 0 && e2eToken != nil {
@@ -298,6 +299,8 @@ import Alamofire
             } else {
                 
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) {
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
+
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
                 }
                 

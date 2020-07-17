@@ -142,9 +142,9 @@ class NCNetworkingAutoUpload: NSObject {
          
         // No upload available ? --> Retry Upload in Error
         if counterUpload == 0 {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError))
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", k_metadataStatusUploadError))
             for metadata in metadatas {
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusInUpload))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusWaitUpload))
             }
         }
          
