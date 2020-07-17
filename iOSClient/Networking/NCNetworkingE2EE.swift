@@ -186,12 +186,6 @@ import Alamofire
         metadata.fileName = CCUtility.generateRandomIdentifier()!
         metadata.e2eEncrypted = true
         
-        // Start Upload file ------
-        metadata.status = Int(k_metadataStatusInUpload)
-        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-        NCManageDatabase.sharedInstance.addMetadata(metadata)
-        //-----------------------
-        
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
         
