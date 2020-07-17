@@ -473,7 +473,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.filePreviewImageView.backgroundColor = UIColor.lightGray
             
             // Download preview
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
+            if !(metadataFolder?.e2eEncrypted ?? false) {
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
+            }
             
             // Share
             var isShare = false
