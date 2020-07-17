@@ -179,12 +179,16 @@ import Alamofire
         
         let objectE2eEncryption = tableE2eEncryption()
         var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
-        
-        let metadata = tableMetadata.init(value: metadata)
+        let ocIdTemp = metadata.ocId
         let serverUrl = metadata.serverUrl
-
-        metadata.fileName = CCUtility.generateRandomIdentifier()!
-        metadata.e2eEncrypted = true
+        
+        // Update metadata
+        let metadataUpdate = tableMetadata.init(value: metadata)
+        metadataUpdate.fileName = CCUtility.generateRandomIdentifier()!
+        metadataUpdate.e2eEncrypted = true
+        metadataUpdate.status = Int(k_metadataStatusInUpload)
+        metadataUpdate.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        NCManageDatabase.sharedInstance.addMetadata(metadataUpdate)
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
@@ -223,15 +227,11 @@ import Alamofire
             return
         }
         
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: account.url, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             if errorCode == 0 && e2eToken != nil {
                                 
-                // Start Upload file
-                metadata.status = Int(k_metadataStatusInUpload)
-                metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-                NCManageDatabase.sharedInstance.addMetadata(metadata)
-                
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
                 
                 NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.date as Date, dateModificationFile: metadata.date as Date, addCustomHeaders: ["e2e-token":e2eToken!], requestHandler: { (request) in
@@ -259,7 +259,7 @@ import Alamofire
                         
                         guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
                         let metadata = tableMetadata.init(value: metadataTemp)
-                        let ocIdTemp = metadata.ocId
+                       
                         
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                             
@@ -311,8 +311,9 @@ import Alamofire
                 
             } else {
                 
-                let metadata = tableMetadata.init(value: metadata)
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) {
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription ?? ""])
+                }
                 
                 completion(errorCode, errorDescription ?? "")
             }
@@ -394,6 +395,8 @@ import Alamofire
                     let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
                     if tableE2eEncryption != nil {
                         e2eMetadataNew = NCEndToEndMetadata.sharedInstance.encoderMetadata(tableE2eEncryption!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl)
+                    } else {
+                        method = "DELETE"
                     }
                     
                     NCCommunication.shared.putE2EEMetadata(fileId: directory!.fileId, e2eToken: e2eToken!, e2eMetadata: e2eMetadataNew, method: method) { (account, e2eMetadata, errorCode, errorDescription) in
