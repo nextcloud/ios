@@ -19,7 +19,7 @@ github "scenee/FloatingPanel"
 github "ivanbruel/MarkdownKit"
 github "getsentry/sentry-cocoa"
 github "FabrizioBrancati/Queuer"
+github "xmartlabs/XLForm" ~> 4.1
 
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
-github "https://github.com/marinofaggiana/XLForm" "master"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.7"

@@ -75,7 +75,7 @@
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:13.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:avatar forKey:@"imageView.image"];
         if (account.active) {
             row.value = @"YES";
@@ -341,16 +341,13 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue) {
-        
-        if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount]) {
-            [self ChangeDefaultAccount:newValue];
-        }
-        
-        if ([newValue isEqualToString:@""]) {
-            NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-            if ([listAccount count] > 0) {
-                [self ChangeDefaultAccount:listAccount[0]];
+    NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
+    tableAccount *accountActive = [[NCManageDatabase sharedInstance] getAccountActive];
+
+    for (tableAccount *account in accounts) {
+        if ([rowDescriptor.tag isEqualToString:account.account]) {
+            if (![account.account isEqualToString:accountActive.account]) {
+                [self ChangeDefaultAccount:account.account];
             }
         }
     }
@@ -379,10 +376,8 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
-        
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", pickerAccount.rowDescriptor.value]];
-        NSString *account = tableAccount.account;
+        tableAccount *accountActive = [[NCManageDatabase sharedInstance] getAccountActive];
+        NSString *account = accountActive.account;
         
         if (account) {
             [appDelegate deleteAccount:account wipe:false];
