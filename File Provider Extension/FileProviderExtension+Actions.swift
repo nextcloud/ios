@@ -287,13 +287,20 @@ extension FileProviderExtension {
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadataForTag = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
+        let ocId = metadataForTag.ocId
+        let account = metadataForTag.account
         
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(metadata.ocId, tagIOS: tagData, account: metadata.account)
+        NCManageDatabase.sharedInstance.addTag(ocId, tagIOS: tagData, account: account)
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
         
         guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
