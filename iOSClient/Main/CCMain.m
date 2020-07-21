@@ -1159,7 +1159,7 @@
         }
         
         _loadingFolder = NO;
-        [self tableViewReloadData];
+        [self reloadDatasource:serverUrl ocId:nil];
     }];
 }
 
