@@ -40,27 +40,33 @@ extension FileProviderExtension {
                         
             if errorCode == 0 {
                 
-                let metadata = tableMetadata()
-                
-                metadata.account = account
-                metadata.directory = true
-                metadata.ocId = ocId!
-                metadata.fileId = ""
-                metadata.fileName = directoryName
-                metadata.fileNameView = directoryName
-                metadata.serverUrl = tableDirectory.serverUrl
-                metadata.typeFile = k_metadataTypeFile_directory
-                
-                NCManageDatabase.sharedInstance.addMetadata(metadata)
-                NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: "", etag: nil, permissions: nil, serverUrl: tableDirectory.serverUrl + "/" + directoryName, richWorkspace: nil, account: account)
-                
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                    
+                    if errorCode == 0 && files.count > 0 {
+                        
+                        let file = files.first!
+                        let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: false, account: fileProviderData.sharedInstance.account)
+            
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, richWorkspace: metadata.richWorkspace, account: metadata.account)
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        
+                        guard let metadataInsert = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId!)) else {
+                            completionHandler(nil, NSFileProviderError(.noSuchItem))
+                            return
+                        }
+                        
+                        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadataInsert, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+                            completionHandler(nil, NSFileProviderError(.noSuchItem))
+                            return
+                        }
+                     
+                        let item = FileProviderItem(metadata: metadataInsert, parentItemIdentifier: parentItemIdentifier)
+                        completionHandler(item, nil)
+                        
+                    } else {
+                        completionHandler(nil, NSFileProviderError(.serverUnreachable))
+                    }
                 }
-                
-                let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
-                completionHandler(item, nil)
                 
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
