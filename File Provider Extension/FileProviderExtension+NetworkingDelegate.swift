@@ -29,7 +29,8 @@ extension FileProviderExtension: NCNetworkingDelegate {
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
                 
         guard let ocIdTemp = description else { return }
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
+        guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
+        let metadata = tableMetadata.init(value: metadataTemp)
         
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -39,9 +40,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
         
         if errorCode == 0 {
             
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
-                return
-            }
+            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else { return }
             var item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
             
             // New file
@@ -51,7 +50,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
-            
+                        
             metadata.fileName = fileName
             metadata.serverUrl = serverUrl
             if let etag = etag { metadata.etag = etag }

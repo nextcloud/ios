@@ -101,6 +101,7 @@
 "_denied_album_"            = "This app does not have access to \"Photos\", you can enable access in Privacy Settings";
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
+"_force_start_"             = "Force the start";
 "_purchase_"                = "Purchase";
 "_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";

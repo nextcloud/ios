@@ -155,7 +155,7 @@
 
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         
-        UIMenuItem *startTaskItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_start_", nil) action:@selector(startTask:)];
+        UIMenuItem *startTaskItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_force_start_", nil) action:@selector(startTask:)];
 
         [menuController setMenuItems:[NSArray arrayWithObjects:startTaskItem, nil]];
 
@@ -186,11 +186,9 @@
         }
     }
     
-    /*
-    if (!([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) &&(metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
+    if ((metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusInUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
-    */
     
     return NO;
 }
@@ -254,7 +252,7 @@
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
        
         [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        [[NCNetworking shared] uploadWithMetadata:metadata background: true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 
