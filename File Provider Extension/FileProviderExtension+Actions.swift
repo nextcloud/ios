@@ -171,13 +171,19 @@ extension FileProviderExtension {
         let fileNameFrom = metadata.fileNameView
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
+        let ocId = metadata.ocId
         
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
                 
                 // Rename metadata
-                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: metadata.ocId)
+                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: ocId)
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
+                }
                 
                 if metadata.directory {
                     
@@ -194,7 +200,7 @@ extension FileProviderExtension {
                     
                     _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
-                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
+                    NCManageDatabase.sharedInstance.setLocalFile(ocId: ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
                 }
                 
                 guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
@@ -202,7 +208,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
                 
             } else {
