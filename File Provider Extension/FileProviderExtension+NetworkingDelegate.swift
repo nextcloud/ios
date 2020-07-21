@@ -75,7 +75,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             }
             
             // Signal update
-            item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+            item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
             fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
