@@ -230,6 +230,8 @@ extension FileProviderExtension {
         }
         
         var favorite = false
+        let ocId = metadata.ocId
+        
         if favoriteRank == nil {
             fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
@@ -244,17 +246,32 @@ extension FileProviderExtension {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: fileProviderData.sharedInstance.accountUrl)!
             
             NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { (account, errorCode, errorDescription) in
+                
                 if errorCode == 0 {
+                    
+                    guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+                        completionHandler(nil, NSFileProviderError(.noSuchItem))
+                        return
+                    }
+                    let metadata = tableMetadata.init(value: metadataTemp)
+                    
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                    let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
                     
                     fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                     fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
 
                     completionHandler(item, nil)
+                    
                 } else {
+                    
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+                        completionHandler(nil, NSFileProviderError(.noSuchItem))
+                        return
+                    }
+                    
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
