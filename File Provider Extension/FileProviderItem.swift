@@ -147,9 +147,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        if metadata.isFrozen {
-            print("Frozen")
-        }
         self.metadata = metadata
         self.parentItemIdentifier = parentItemIdentifier
     }

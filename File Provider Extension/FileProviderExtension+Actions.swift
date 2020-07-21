@@ -59,7 +59,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
                 
             } else {
@@ -75,7 +75,11 @@ extension FileProviderExtension {
             return
         }
         
+        let ocId = metadata.ocId
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let isDirectory = metadata.directory
+        let serverUrl = metadata.serverUrl;
+        let fileName = metadata.fileName;
         
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             
@@ -88,13 +92,13 @@ extension FileProviderExtension {
                     print("error: \(error)")
                 }
                 
-                if metadata.directory {
-                    let dirForDelete = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                if isDirectory {
+                    let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: fileName)
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
                 }
                 
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                 
                 completionHandler(nil)
 
