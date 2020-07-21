@@ -71,11 +71,11 @@
             UIGraphicsEndImageContext();
             
         } else {
-            avatar = [CCGraphics scaleImage:[UIImage imageNamed:@"avatarBN"] toSize:CGSizeMake(30, 30) isAspectRation:YES];
+            avatar = [CCGraphics scaleImage:[UIImage imageNamed:@"avatarBN"] toSize:CGSizeMake(35, 35) isAspectRation:YES];
         }
         
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:12.0] forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
         [row.cellConfig setObject:avatar forKey:@"imageView.image"];
         if (account.active) {
             row.value = @"YES";
