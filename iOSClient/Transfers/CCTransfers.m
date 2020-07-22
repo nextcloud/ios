@@ -277,8 +277,6 @@
             sectionDataSource = sectionDataSourceTemp;
             [self.tableView reloadData];
         });
-        
-        [[NCNetworking shared] verifyTransfer];
     });
 }
 
