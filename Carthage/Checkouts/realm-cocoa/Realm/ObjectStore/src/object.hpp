@@ -146,6 +146,7 @@ private:
 
     void verify_attached() const;
     Property const& property_for_name(StringData prop_name) const;
+    void validate_property_for_setter(Property const&) const;
 };
 
 struct InvalidatedObjectException : public std::logic_error {
