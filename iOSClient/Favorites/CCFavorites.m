@@ -524,7 +524,7 @@
                 
             if (tableDirectory.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                     
-                [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
                     
             } else {
                     
@@ -537,7 +537,7 @@
                         if (NCCommunication.shared.isNetworkReachable) {
                             [self shouldPerformSegue:self.metadata selector:@""];
                         } else {
-                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
                         }
                         
                     } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
@@ -545,7 +545,7 @@
                         if (NCCommunication.shared.isNetworkReachable) {
                             [self shouldPerformSegue:self.metadata selector:@""];
                         } else {
-                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
                         }
                         
                 } else {

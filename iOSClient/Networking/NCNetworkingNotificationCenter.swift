@@ -86,7 +86,7 @@ import Foundation
                         if metadata.typeFile == k_metadataTypeFile_imagemeter {
                             
                             if !IMUtility.shared.IMUnzip(metadata: metadata) {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: 0)
+                                NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                                 return
                             }
                             

@@ -445,7 +445,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func dismissAndUpload(_ metadata: tableMetadata) {
         
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
             return
         }
         
@@ -475,7 +475,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 do {
                     try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
                 } catch {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     return
                 }
             }
@@ -553,14 +553,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             let image =  changeImageFromQuality(self.arrayImages[0], dpiQuality: dpiQuality)
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                 return
             }
             
             do {
                 try data.write(to: NSURL.fileURL(withPath: fileNameGenerateExport), options: .atomic)
             } catch {
-                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                 return
             }
         }

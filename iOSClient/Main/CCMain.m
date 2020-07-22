@@ -473,7 +473,7 @@
     }
     
     if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
 }
 
@@ -496,7 +496,7 @@
     }
     
     if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
 }
 
@@ -519,7 +519,7 @@
     }
     
     if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
 }
 
@@ -549,7 +549,7 @@
         }
         
     } else {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
 }
 
@@ -796,12 +796,12 @@
 
                 } else {
                                         
-                    [[NCContentPresenter shared] messageNotification:@"_error_" description:error.description delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+                    [[NCContentPresenter shared] messageNotification:@"_error_" description:error.description delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code forced:false];
                 }
                 
             } else {
                 
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_read_file_error_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_read_file_error_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code forced:false];
             }
         }];
     }
@@ -863,7 +863,7 @@
         if (image)
             UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
         else
-            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:false];
     }
     
     if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
@@ -872,7 +872,7 @@
             
             UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
         } else {
-            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+            [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:false];
         }
     }
     
@@ -889,7 +889,7 @@
 - (void)saveSelectedFilesSelector:(NSString *)path didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error) {
-        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code];
+        [[NCContentPresenter shared] messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" delay:k_dismissAfterSecond type:messageTypeError errorCode:error.code forced:false];
     }
 }
 
@@ -1137,12 +1137,12 @@
                             BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl];
                             
                             if (result == false) {
-                                [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError];
+                                [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
                             }
                                                         
                         } else if (errorCode != 404) {
                             
-                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                            [[NCContentPresenter shared] messageNotification:@"_e2e_error_get_metadata_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:true];
                         }
                         
                        [self reloadDatasource:_serverUrl ocId:nil];
@@ -1150,12 +1150,12 @@
                     
                 } else {
                     
-                    [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                    [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
                 }
             }
             
         } else {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:true];
         }
         
         _loadingFolder = NO;
@@ -1185,7 +1185,7 @@
             }
             
         } else if (errorCode != 0) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
         }
     }];
 }
@@ -1219,10 +1219,11 @@
          } else {
              
              if (errorCode != 0) {
-                 [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode];
+                 [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:true];
              }
              
              _searchFileName = @"";
+             [self cancelSearchBar];
          }
         
     }];
@@ -1373,7 +1374,7 @@
         // E2EE DENIED
         if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
             
-            [[NCContentPresenter shared] messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
             return;
         }
         
@@ -2457,7 +2458,7 @@
             
             if (_metadataFolder.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                 
-                [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
                 
             } else {
             
@@ -2470,7 +2471,7 @@
                     if (NCCommunication.shared.isNetworkReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
-                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
                     }
                     
                 } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
@@ -2478,7 +2479,7 @@
                     if (NCCommunication.shared.isNetworkReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];
                     } else {
-                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+                        [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
                     }
                     
                 } else {
@@ -2606,7 +2607,7 @@
         // E2EE Check enable
         if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
             
-            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+            [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:true];
             return;
         }
         

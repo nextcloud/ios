@@ -173,6 +173,19 @@ inline constexpr bool is_nullable(PropertyType a)
     return to_underlying(a & PropertyType::Nullable) == to_underlying(PropertyType::Nullable);
 }
 
+// Some of the places we use switch_on_type() the Obj version isn't instantiatable
+// or reachable, so we want to map it to a valid type to let the unreachable code compile
+template<typename T>
+struct NonObjType {
+    using type = std::remove_reference_t<T>;
+};
+template<>
+struct NonObjType<Obj&> {
+    using type = int64_t;
+};
+template<typename T>
+using NonObjTypeT = typename NonObjType<T>::type;
+
 template<typename ObjType=Obj, typename Fn>
 static auto switch_on_type(PropertyType type, Fn&& fn)
 {

@@ -131,7 +131,7 @@ class NCManageDatabase: NSObject {
                 if let databaseFilePath = databaseFilePath {
                     do {
                         #if !EXTENSION
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
                         #endif
                         try FileManager.default.removeItem(at: databaseFilePath)
                     } catch {}
@@ -153,7 +153,7 @@ class NCManageDatabase: NSObject {
             if let databaseFilePath = databaseFilePath {
                 do {
                     #if !EXTENSION
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
                     #endif
                     try FileManager.default.removeItem(at: databaseFilePath)
                 } catch {}

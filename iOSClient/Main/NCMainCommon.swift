@@ -671,33 +671,21 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
             if iconFileExists {
                 cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            } else if(!metadata.hasPreview){
-                if metadata.iconName.count > 0 {
-                    cell.file.image = UIImage.init(named: metadata.iconName)
+            } else {
+                if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError {
+                
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "cloudUpload"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
+                
                 } else {
-                    cell.file.image = UIImage.init(named: "file")
-                }
-            }           
-            
-            // uploadFile
-            if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError {
                 
-                if (!iconFileExists) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "uploadCloud"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "cloudDownload"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
                 }
-                
-                cell.labelTitle.isEnabled = false
             }
             
             // uploadFileError
             if metadata.status == k_metadataStatusUploadError {
                 
-                cell.labelTitle.isEnabled = false
                 cell.status.image = UIImage.init(named: "statuserror")
-                
-                if !iconFileExists {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "uploadCloud"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
-                }
                 
                 if metadata.sessionError.count == 0 {
                     cell.labelInfoFile.text = NSLocalizedString("_error_", comment: "") + ", " + NSLocalizedString("_file_not_uploaded_", comment: "")

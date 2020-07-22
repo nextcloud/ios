@@ -838,7 +838,7 @@
         UIViewController *vc = _activeMain.splitViewController.viewControllers[0];
         [self showMenuInViewController: vc];
     } else {
-        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:0];
+        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
     }
 }
 

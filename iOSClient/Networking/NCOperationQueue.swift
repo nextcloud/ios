@@ -200,7 +200,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
                                 let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
-                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
                                 if download {
                                     for metadata in metadatasChanged {
                                         NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }                                        
