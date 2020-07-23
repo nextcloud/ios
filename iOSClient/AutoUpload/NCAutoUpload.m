@@ -333,10 +333,15 @@
 
 - (void)uploadAssetsNewAndFull:(NSString *)selector
 {
-     if (!appDelegate.activeAccount || appDelegate.maintenanceMode)
+    if (!appDelegate.activeAccount || appDelegate.maintenanceMode) {
          return;
+    }
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    if (tableAccount == nil) {
+        return;
+    }
+    
     NSMutableArray *metadataFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     NSString *serverUrl;
