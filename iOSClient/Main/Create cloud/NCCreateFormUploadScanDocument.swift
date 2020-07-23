@@ -451,9 +451,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                             return
                         }
                         for observation in observations {
-                            guard let topCandidate = observation.topCandidates(1).first else { continue }
+                            guard let textLine = observation.topCandidates(1).first else { continue }
                                
-                            textFile += topCandidate.string
+                            textFile += textLine.string
                             textFile += "\n"
                         }
                     }
@@ -489,17 +489,31 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                     
                     if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                         
+                        UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                        UIImageView.init(image:image).layer.render(in: context!)
+
                         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
                         
                         let request = VNRecognizeTextRequest { (request, error) in
                             guard let observations = request.results as? [VNRecognizedTextObservation] else {
                                 return
                             }
-                            for currentObservation in observations {
-                                let topCandidate = currentObservation.topCandidates(1)
-                                if let recognizedText = topCandidate.first {
-                                   
-                                    
+                            for observation in observations {
+                                guard let textLine = observation.topCandidates(1).first else { continue }
+                                
+                                let words = textLine.string.split{ $0.isWhitespace }.map{ String($0)}
+                                for word in words {
+                                    if let wordRange = textLine.string.range(of: word) {
+                                        if let rect = try? textLine.boundingBox(for: wordRange)?.boundingBox {
+                                            // here you can check if word == textField.text
+                                            // rect is in image coordinate space, normalized with origin in the bottom left corner
+                                            let fontColor = UIColor.red
+                                            let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                                            let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: word, in: rect, fontDescriptor: font.fontDescriptor)
+                                            
+                                            word.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
+                                        }
+                                    }
                                 }
                             }
                         }
