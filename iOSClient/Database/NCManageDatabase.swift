@@ -1782,7 +1782,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, url: String, contentType: String) -> tableMetadata {
+    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String) -> tableMetadata {
         
         let metadata = tableMetadata()
         let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
@@ -1800,6 +1800,7 @@ class NCManageDatabase: NSObject {
         metadata.typeFile = results.typeFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
+        metadata.urlBase = urlBase
         
         return metadata
     }
