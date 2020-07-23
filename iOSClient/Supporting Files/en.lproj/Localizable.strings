@@ -675,6 +675,7 @@
 "_e2e_error_delete_mark_folder_"    = "Decrypt marked folder";
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
+"_e2e_error_not_move_"              = "Is not possible move files to encrypted directory";
 
 // Scan Document
 

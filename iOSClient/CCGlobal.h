@@ -158,7 +158,12 @@
 #define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
-#define k_CCErrorInternalError                          -9999
+#define k_CCErrorInternalError                          -99999
+#define k_CCErrorFileNotSaved                           -99998
+#define k_CCErrorDecodeMetadata                         -99997
+#define k_CCErrorE2EENotEnabled                         -99996
+#define k_CCErrorE2EENotMove                            -99995
+
 
 // Search
 #define k_minCharsSearch                                2
