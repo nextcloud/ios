@@ -163,6 +163,8 @@
 #define k_CCErrorDecodeMetadata                         -99997
 #define k_CCErrorE2EENotEnabled                         -99996
 #define k_CCErrorE2EENotMove                            -99995
+#define k_CCErrorOffline                                -99994
+#define k_CCErrorCharactersForbidden                    -99993
 
 
 // Search
