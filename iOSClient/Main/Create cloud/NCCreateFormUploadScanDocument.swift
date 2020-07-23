@@ -450,13 +450,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                         guard let observations = request.results as? [VNRecognizedTextObservation] else {
                             return
                         }
-                        for currentObservation in observations {
-                            let topCandidate = currentObservation.topCandidates(1)
-                            if let recognizedText = topCandidate.first {
+                        for observation in observations {
+                            guard let topCandidate = observation.topCandidates(1).first else { continue }
                                
-                                textFile += recognizedText.string
-                                textFile += "\n"
-                            }
+                            textFile += topCandidate.string
+                            textFile += "\n"
                         }
                     }
                     
@@ -473,40 +471,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 return
             }
         }
-    
-        
-        /*
-        #if GOOGLEMOBILEVISION
-        // Text Recognition TXT
-        if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
-            
-            var textFile = ""
-            
-            for image in self.arrayImages {
-                
-                guard let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] else {
-                    continue
-                }
-                
-                for textBlock in features {
-                    
-                    guard let text = textBlock.value else {
-                        continue
-                    }
-                    
-                    textFile = textFile + text + "\n\n"
-                }
-                
-                do {
-                    try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
-                } catch {
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
-                    return
-                }
-            }
-        }
-        #endif
-        */
         
         if fileType == "PDF" {
             
@@ -538,14 +502,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                                     
                                 }
                             }
-                            
                         }
                         
                         request.recognitionLevel = .accurate
                         request.usesLanguageCorrection = true
                         try? requestHandler.perform([request])
-                        
-                        
                         
                     } else {
                         
