@@ -532,13 +532,22 @@ class NCUtility: NSObject {
     }
     
     // Delete Asset on Photos album
-    @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String) {
+    @objc func deleteAssetLocalIdentifiers(account: String, sessionSelector: String, completition: @escaping () -> ()) {
         
-        if UIApplication.shared.applicationState != .active { return }
+        if UIApplication.shared.applicationState != .active {
+            completition()
+            return
+        }
         let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
-        if metadatasSessionUpload.count > 0 { return }
+        if metadatasSessionUpload.count > 0 {
+            completition()
+            return
+        }
         let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
-        if localIdentifiers.count == 0 { return }
+        if localIdentifiers.count == 0 {
+            completition()
+            return
+        }
         let assets = PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil)
         
         PHPhotoLibrary.shared().performChanges({
@@ -546,6 +555,7 @@ class NCUtility: NSObject {
         }, completionHandler: { success, error in
             DispatchQueue.main.async {
                 NCManageDatabase.sharedInstance.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                completition()
             }
         })
     }

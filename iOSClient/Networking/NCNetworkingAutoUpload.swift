@@ -150,10 +150,14 @@ class NCNetworkingAutoUpload: NSObject {
          
         // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
         if (counterUpload == 0 && appDelegate.passcodeViewController == nil) {
-            NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload)
+            NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload) {
+                
+                self.timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(self.process), userInfo: nil, repeats: true)
+            }
+        } else {
+            
+            timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
         }
-        
-        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
      }
 }
 
