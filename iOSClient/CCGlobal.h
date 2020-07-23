@@ -165,6 +165,7 @@
 #define k_CCErrorE2EENotMove                            -99995
 #define k_CCErrorOffline                                -99994
 #define k_CCErrorCharactersForbidden                    -99993
+#define k_CCErrorCreationFile                           -99992
 
 
 // Search
