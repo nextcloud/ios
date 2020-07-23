@@ -138,7 +138,7 @@ extension NCLoginWeb: WKNavigationDelegate {
             if server != "" && user != "" && password != "" {
                 
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
-                let username: String = user.replacingOccurrences(of: "user:", with: "")
+                let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
                 
                 createAccount(server: server, username: username, password: password)
