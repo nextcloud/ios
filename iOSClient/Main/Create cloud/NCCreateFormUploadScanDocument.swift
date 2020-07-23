@@ -25,10 +25,7 @@
 import Foundation
 import WeScan
 import NCCommunication
-
-#if GOOGLEMOBILEVISION
-import GoogleMobileVision
-#endif
+import Vision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
@@ -45,10 +42,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password: String = ""
     var fileType = "PDF"
-    
-    #if GOOGLEMOBILEVISION
-    var textDetector: GMVDetector?
-    #endif
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -87,10 +80,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
-        
-        #if GOOGLEMOBILEVISION
-        textDetector = GMVDetector(ofType: GMVDetectorTypeText, options: nil)
-        #endif
         
         // Theming view
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
@@ -170,22 +159,21 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         // Section: Text recognition
         
-        
-        #if GOOGLEMOBILEVISION
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
-        form.addFormSection(section)
+        if #available(iOS 13.0, *) {
+            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+            form.addFormSection(section)
+                
+            row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+            row.value = 0
+            row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+
+            row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
             
-        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
-        row.value = 0
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
 
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-        
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
-
-        section.addFormRow(row)
-        #endif
+            section.addFormRow(row)
+        }
         
         // Section: File
         
@@ -410,7 +398,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         //Create metadata for upload
-        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, url: appDelegate.activeUrl, contentType: "")
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: serverUrl, url: "", contentType: "")
         
         metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
@@ -449,8 +437,45 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             return
         }
         
-        //
+        // Text Recognition TXT
+        if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
+            
+            var textFile = ""
+            for image in self.arrayImages {
+                if #available(iOS 13.0, *) {
+                    
+                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                    
+                    let request = VNRecognizeTextRequest { (request, error) in
+                        guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                            return
+                        }
+                        for currentObservation in observations {
+                            let topCandidate = currentObservation.topCandidates(1)
+                            if let recognizedText = topCandidate.first {
+                               
+                                textFile += recognizedText.string
+                                textFile += "\n"
+                            }
+                        }
+                    }
+                    
+                    request.recognitionLevel = .accurate
+                    request.usesLanguageCorrection = true
+                    try? requestHandler.perform([request])
+                }
+            }
+            
+            do {
+                try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
+            } catch {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
+                return
+            }
+        }
+    
         
+        /*
         #if GOOGLEMOBILEVISION
         // Text Recognition TXT
         if fileType == "TXT" && self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
@@ -481,6 +506,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             }
         }
         #endif
+        */
         
         if fileType == "PDF" {
             
@@ -495,6 +521,52 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             for var image in self.arrayImages {
                 
+                if #available(iOS 13.0, *) {
+                    
+                    if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
+                        
+                        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                        
+                        let request = VNRecognizeTextRequest { (request, error) in
+                            guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                                return
+                            }
+                            for currentObservation in observations {
+                                let topCandidate = currentObservation.topCandidates(1)
+                                if let recognizedText = topCandidate.first {
+                                   
+                                    
+                                }
+                            }
+                            
+                        }
+                        
+                        request.recognitionLevel = .accurate
+                        request.usesLanguageCorrection = true
+                        try? requestHandler.perform([request])
+                        
+                        
+                        
+                    } else {
+                        
+                        image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                        image = changeCompressionImage(image, dpiQuality: dpiQuality)
+                        
+                        UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                        UIImageView.init(image:image).layer.render(in: context!)
+                    }
+                    
+                } else {
+                    
+                    image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                    image = changeCompressionImage(image, dpiQuality: dpiQuality)
+                    
+                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
+                    UIImageView.init(image:image).layer.render(in: context!)
+                }
+                
+                
+                /*
                 #if GOOGLEMOBILEVISION
                 if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                     
@@ -537,6 +609,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                 UIImageView.init(image:image).layer.render(in: context!)
                 #endif
+                */
             }
             
             UIGraphicsEndPDFContext();
