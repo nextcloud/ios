@@ -203,7 +203,9 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
                                 if download {
                                     for metadata in metadatasChanged {
-                                        NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }                                        
+                                        if metadata.directory == false {
+                                            NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }
+                                        }
                                     }
                                 }
                             }
