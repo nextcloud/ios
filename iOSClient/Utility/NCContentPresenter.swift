@@ -68,6 +68,7 @@ class NCContentPresenter: NSObject {
                        
         // No notification message
         if forced == false {
+            
             if errorCode == -999 { return }         // Cancelled transfer
             else if errorCode == 200 { return }     // Transfer stopped
             else if errorCode == 207 { return }     // WebDAV multistatus
@@ -75,13 +76,13 @@ class NCContentPresenter: NSObject {
             else if errorCode == -1001 { return }   // Time out
             else if errorCode == -1005 { return }   // Connection lost
             else if errorCode == 0 && type == messageType.error { return }
-        }
-        
-        // No repeat message for:
-        if errorCode == lastErrorCode {
-            if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
-        } else {
-            lastErrorCode = errorCode
+            
+            // No repeat message for:
+            if errorCode == lastErrorCode {
+                if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
+            } else {
+                lastErrorCode = errorCode
+            }
         }
         
         DispatchQueue.main.async {
