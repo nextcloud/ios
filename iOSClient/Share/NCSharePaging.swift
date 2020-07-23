@@ -68,7 +68,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.dataSource = self
         pagingViewController.delegate = self
         pagingViewController.select(index: indexPage)
-        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemForIndex: indexPage) as PagingIndexItem
+        let pagingIndexItem = self.pagingViewController(pagingViewController, pagingItemAt: indexPage) as! PagingIndexItem
         self.title = pagingIndexItem.title
         
         changeTheming()
@@ -110,7 +110,7 @@ class NCSharePaging: UIViewController {
 
 extension NCSharePaging: PagingViewControllerDelegate {
     
-    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, willScrollToItem pagingItem: T, startingViewController: UIViewController, destinationViewController: UIViewController) where T : PagingItem, T : Comparable, T : Hashable {
+    func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
         self.title = item.title
@@ -121,8 +121,8 @@ extension NCSharePaging: PagingViewControllerDelegate {
 
 extension NCSharePaging: PagingViewControllerDataSource {
     
-    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, viewControllerForIndex index: Int) -> UIViewController {
-        
+    func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
+    
         let height = pagingViewController.options.menuHeight + NCSharePagingView.HeaderHeight
         let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
@@ -149,27 +149,28 @@ extension NCSharePaging: PagingViewControllerDataSource {
         }
     }
     
-    func pagingViewController<T>(_ pagingViewController: PagingViewController<T>, pagingItemForIndex index: Int) -> T {
+    func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
+        
         switch index {
         case 0:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: "")) as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
         case 1:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: "")) as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: ""))
         case 2:
-            return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: "")) as! T
+            return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         default:
-            return PagingIndexItem(index: index, title: "") as! T
+            return PagingIndexItem(index: index, title: "")
         }
     }
-    
-    func numberOfViewControllers<T>(in: PagingViewController<T>) -> Int{
+   
+    func numberOfViewControllers(in pagingViewController: PagingViewController) -> Int {
         return 3
     }
 }
 
 // MARK: - Header
 
-class NCShareHeaderViewController: PagingViewController<PagingIndexItem> {
+class NCShareHeaderViewController: PagingViewController {
     
     public var image: UIImage?
     public var metadata: tableMetadata?
