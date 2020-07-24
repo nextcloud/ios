@@ -415,15 +415,21 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             self.present(conflictViewController, animated: true, completion: nil)
             
         } else {
-                            
-            dismissAndUpload(metadataForUpload)
+                     
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.dismissAndUpload(metadataForUpload)
+            }
         }
     }
     
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         
         if metadatas != nil && metadatas!.count > 0 {
-                                
+                 
+            NCUtility.sharedInstance.startActivityIndicator(view: self.view)
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismissAndUpload(metadatas![0])
             }
@@ -433,6 +439,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func dismissAndUpload(_ metadata: tableMetadata) {
         
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
+            NCUtility.sharedInstance.stopActivityIndicator()
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
             return
         }
@@ -449,10 +456,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                     
                     let request = VNRecognizeTextRequest { (request, error) in
                         guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                            NCUtility.sharedInstance.stopActivityIndicator()
                             return
                         }
                         for observation in observations {
-                            guard let textLine = observation.topCandidates(1).first else { continue }
+                            guard let textLine = observation.topCandidates(1).first else {
+                                continue
+                            }
                                
                             textFile += textLine.string
                             textFile += "\n"
@@ -468,6 +478,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             do {
                 try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
             } catch {
+                NCUtility.sharedInstance.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
@@ -504,10 +515,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                         
                         let request = VNRecognizeTextRequest { (request, error) in
                             guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                                NCUtility.sharedInstance.stopActivityIndicator()
                                 return
                             }
                             for observation in observations {
-                                guard let textLine = observation.topCandidates(1).first else { continue }
+                                guard let textLine = observation.topCandidates(1).first else {
+                                    continue
+                                }
                                 
                                 var t: CGAffineTransform = CGAffineTransform.identity
                                 t = t.scaledBy(x: image.size.width, y: -image.size.height)
@@ -552,6 +566,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             let image =  changeImageFromQuality(self.arrayImages[0], dpiQuality: dpiQuality)
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
+                NCUtility.sharedInstance.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
@@ -559,11 +574,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             do {
                 try data.write(to: NSURL.fileURL(withPath: fileNameGenerateExport), options: .atomic)
             } catch {
+                NCUtility.sharedInstance.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
         }
         
+        NCUtility.sharedInstance.stopActivityIndicator()
+
         NCManageDatabase.sharedInstance.addMetadata(metadata)
         
         appDelegate.networkingAutoUpload.startProcess()
