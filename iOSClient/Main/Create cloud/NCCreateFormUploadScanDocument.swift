@@ -501,20 +501,16 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                             for observation in observations {
                                 guard let textLine = observation.topCandidates(1).first else { continue }
                                 
-                                let words = textLine.string.split{ $0.isWhitespace }.map{ String($0)}
-                                for word in words {
-                                    if let wordRange = textLine.string.range(of: word) {
-                                        if let rect = try? textLine.boundingBox(for: wordRange)?.boundingBox {
-                                            // here you can check if word == textField.text
-                                            // rect is in image coordinate space, normalized with origin in the bottom left corner
-                                            let fontColor = UIColor.red
-                                            let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                            let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: word, in: rect, fontDescriptor: font.fontDescriptor)
-                                            
-                                            word.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
-                                        }
-                                    }
-                                }
+                                var t: CGAffineTransform = CGAffineTransform.identity
+                                t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                                t = t.translatedBy(x: 0, y: -1)
+                                let rect = observation.boundingBox.applying(t)
+                                
+                                let fontColor = UIColor.red
+                                let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                                let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: textLine.string, in: rect, fontDescriptor: font.fontDescriptor)
+                                
+                                textLine.string.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
                             }
                         }
                         
@@ -539,52 +535,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                     UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                     UIImageView.init(image:image).layer.render(in: context!)
                 }
-                
-                
-                /*
-                #if GOOGLEMOBILEVISION
-                if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
-                    
-                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                    UIImageView.init(image:image).layer.render(in: context!)
-                    
-                    if let features = self.textDetector?.features(in: image, options: nil) as? [GMVTextBlockFeature] {
-                        for textBlock in features {
-                            for textLine in textBlock.lines {
-                                
-                                let bounds = textLine.bounds
-                                let text = textLine.value!
-                                var fontColor = UIColor.clear
-                                
-                                #if targetEnvironment(simulator)
-                                fontColor = UIColor.red
-                                #endif
-                                
-                                //print(text)
-                                
-                                let font = UIFont.systemFont(ofSize: bounds.size.height, weight: .regular)
-                                let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: text, in: bounds, fontDescriptor: font.fontDescriptor)
-                                
-                                text.draw(in: bounds, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
-                            }
-                        }
-                    }
-                    
-                } else {
-                    
-                    image = changeImageFromQuality(image, dpiQuality: dpiQuality)
-                    
-                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                    UIImageView.init(image:image).layer.render(in: context!)
-                }
-                #else
-                image = changeImageFromQuality(image, dpiQuality: dpiQuality)
-                image = changeCompressionImage(image, dpiQuality: dpiQuality)
-                
-                UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                UIImageView.init(image:image).layer.render(in: context!)
-                #endif
-                */
             }
             
             UIGraphicsEndPDFContext();
