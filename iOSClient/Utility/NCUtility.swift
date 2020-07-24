@@ -305,31 +305,7 @@ class NCUtility: NSObject {
             }
         }
     }
-    
-    @objc func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor) -> UIFont {
         
-        let constrainingDimension = min(bounds.width, bounds.height)
-        let properBounds = CGRect(origin: .zero, size: bounds.size)
-        var attributes: [NSAttributedString.Key: Any] = [:]
-        
-        let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
-        var bestFontSize: CGFloat = constrainingDimension
-        
-        for fontSize in stride(from: bestFontSize, through: 0, by: -1) {
-            let newFont = UIFont(descriptor: fontDescriptor, size: fontSize)
-            attributes[.font] = newFont
-            
-            let currentFrame = text.boundingRect(with: infiniteBounds, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil)
-            
-            if properBounds.contains(currentFrame) {
-                bestFontSize = fontSize
-                break
-            }
-        }
-        
-        return UIFont(descriptor: fontDescriptor, size: bestFontSize)
-    }
-    
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {

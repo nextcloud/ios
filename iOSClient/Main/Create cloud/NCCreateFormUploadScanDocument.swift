@@ -482,6 +482,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
             }
             let context = UIGraphicsGetCurrentContext()
+            var fontColor = UIColor.clear
+            #if targetEnvironment(simulator)
+            fontColor = UIColor.red
+            #endif
             
             for var image in self.arrayImages {
                 
@@ -505,12 +509,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                                 t = t.scaledBy(x: image.size.width, y: -image.size.height)
                                 t = t.translatedBy(x: 0, y: -1)
                                 let rect = observation.boundingBox.applying(t)
-                                
-                                let fontColor = UIColor.red
+                                                                
                                 let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                let bestFittingFont = NCUtility.sharedInstance.bestFittingFont(for: textLine.string, in: rect, fontDescriptor: font.fontDescriptor)
+                                let bestFont = self.bestFittingFont(for: textLine.string, in: rect, fontDescriptor: font.fontDescriptor)
                                 
-                                textLine.string.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFittingFont, NSAttributedString.Key.foregroundColor: fontColor])
+                                textLine.string.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.foregroundColor: fontColor])
                             }
                         }
                         
@@ -662,6 +665,31 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         return imageCompressed
     }
+    
+    func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor) -> UIFont {
+        
+        let constrainingDimension = min(bounds.width, bounds.height)
+        let properBounds = CGRect(origin: .zero, size: bounds.size)
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        
+        let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
+        var bestFontSize: CGFloat = constrainingDimension
+        
+        for fontSize in stride(from: bestFontSize, through: 0, by: -1) {
+            let newFont = UIFont(descriptor: fontDescriptor, size: fontSize)
+            attributes[.font] = newFont
+            
+            let currentFrame = text.boundingRect(with: infiniteBounds, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: attributes, context: nil)
+            
+            if properBounds.contains(currentFrame) {
+                bestFontSize = fontSize
+                break
+            }
+        }
+        
+        return UIFont(descriptor: fontDescriptor, size: bestFontSize)
+    }
+
 }
 
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
