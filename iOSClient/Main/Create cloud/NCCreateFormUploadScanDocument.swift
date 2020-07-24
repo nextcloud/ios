@@ -230,7 +230,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 rowFileTape.value = "PDF"
                 fileType = "PDF"
                 rowPassword.disabled = true
-                rowCompressionQuality.disabled = true
+                rowCompressionQuality.disabled = false
             } else {
                 if arrayImages.count == 1 {
                     rowFileTape.selectorOptions = ["PDF","JPG"]
@@ -442,6 +442,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             var textFile = ""
             for image in self.arrayImages {
+                
                 if #available(iOS 13.0, *) {
                     
                     let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
@@ -489,6 +490,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             for var image in self.arrayImages {
                 
+                image = changeImageFromQuality(image, dpiQuality: dpiQuality)
+                image = changeCompressionImage(image, dpiQuality: dpiQuality)
+                
                 if #available(iOS 13.0, *) {
                     
                     if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
@@ -523,17 +527,11 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                         
                     } else {
                         
-                        image = changeImageFromQuality(image, dpiQuality: dpiQuality)
-                        image = changeCompressionImage(image, dpiQuality: dpiQuality)
-                        
                         UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                         UIImageView.init(image:image).layer.render(in: context!)
                     }
                     
                 } else {
-                    
-                    image = changeImageFromQuality(image, dpiQuality: dpiQuality)
-                    image = changeCompressionImage(image, dpiQuality: dpiQuality)
                     
                     UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
                     UIImageView.init(image:image).layer.render(in: context!)
