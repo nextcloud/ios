@@ -672,11 +672,13 @@ extension NCMedia {
         else { oldInProgress = true }
         collectionView.reloadData()
 
-        var lessDate = Date()
         var greaterDate: Date
-        
-        if metadatas.count > 0 {
-            lessDate = metadatas.last!.date as Date
+
+        var lessDate = Date()
+        if predicate != nil {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate!, sorted: "date", ascending: true) {
+                lessDate = metadata.date as Date
+            }
         }
         
         if value == -999 {
