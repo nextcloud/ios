@@ -696,10 +696,32 @@ extension NCMedia {
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if files.count > 0 {
-
-                    NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    self.reloadDataSource()
                     
+                    var addFiles = [NCCommunicationFile]()
+                    for file in files {
+                        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ && etag == %@", file.ocId, file.etag)) == nil {
+                            addFiles.append(file)
+                        }
+                    }
+                    NCManageDatabase.sharedInstance.addMetadatas(files: addFiles, account: self.appDelegate.activeAccount)
+                    
+                    if addFiles.count < 100 {
+                        
+                        if value == -30 {
+                            self.searchOldPhotoVideo(value: -90)
+                        } else if value == -90 {
+                            self.searchOldPhotoVideo(value: -180)
+                        } else if value == -180 {
+                            self.searchOldPhotoVideo(value: -999)
+                        } else {
+                            self.reloadDataSource()
+                        }
+                        
+                    } else {
+                        
+                        self.reloadDataSource()
+                    }
+
                 } else {
                     
                     if value == -30 {
@@ -735,7 +757,6 @@ extension NCMedia {
                     }
                 }
             }
-        
 
             NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
                 

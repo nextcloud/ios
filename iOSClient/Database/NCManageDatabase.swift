@@ -2339,7 +2339,7 @@ class NCManageDatabase: NSObject {
         return result.freeze()
     }
     
-    @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
                 
         DispatchQueue.global().async {
             autoreleasepool {
