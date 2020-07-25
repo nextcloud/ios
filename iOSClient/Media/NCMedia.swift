@@ -675,8 +675,6 @@ extension NCMedia {
         else { oldInProgress = true }
         collectionView.reloadData()
 
-        var greaterDate: Date
-
         var lessDate = Date()
         if predicateDefault != nil {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicateDefault!, sorted: "date", ascending: true) {
@@ -684,6 +682,7 @@ extension NCMedia {
             }
         }
         
+        var greaterDate: Date
         if value == -999 {
             greaterDate = Date.distantPast
         } else {
