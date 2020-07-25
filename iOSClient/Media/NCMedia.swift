@@ -35,8 +35,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     public var metadatas: [tableMetadata] = []
     private var metadataPush: tableMetadata?
+    private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
-    
+
     private var isEditMode = false
     private var selectocId: [String] = []
     
@@ -631,12 +632,14 @@ extension NCMedia {
         }
         let startServerUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) + mediaPath
         
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        
         if filterTypeFileImage {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image)
         } else {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            predicate = predicateDefault
         }
                 
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: CCUtility.getMediaSortDate()) { (metadatas) in
@@ -675,8 +678,8 @@ extension NCMedia {
         var greaterDate: Date
 
         var lessDate = Date()
-        if predicate != nil {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate!, sorted: "date", ascending: true) {
+        if predicateDefault != nil {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicateDefault!, sorted: "date", ascending: true) {
                 lessDate = metadata.date as Date
             }
         }
