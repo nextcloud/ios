@@ -44,7 +44,10 @@ import Alamofire
     var lastReachability: Bool = true
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
+    
+    var uploadMetadata: [String: tableMetadata] = [:]
 
+    
     //MARK: - Communication Delegate
        
     func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
@@ -382,9 +385,17 @@ import Alamofire
     func uploadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask) {
         delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) {
-                        
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
+        var metadata: tableMetadata?
+        
+        if let metadataTmp = self.uploadMetadata[fileName+serverUrl] {
+            metadata = metadataTmp
+        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) {
+            self.uploadMetadata[fileName+serverUrl] = metadataTmp
+            metadata = metadataTmp
+        }
+        
+        if metadata != nil {
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata!.account, "ocId":metadata!.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress), "totalBytes":NSNumber(value: totalBytes), "totalBytesExpected":NSNumber(value: totalBytesExpected)])
         }
     }
     
@@ -393,12 +404,12 @@ import Alamofire
             delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         } else {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) else { return }
+            guard let metadata = self.uploadMetadata[fileName+serverUrl] else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
             
             if errorCode == 0 && ocId != nil {
                 
-                guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) else { return }
+                guard let metadataTemp = self.uploadMetadata[fileName+serverUrl] else { return }
                 let metadata = tableMetadata.init(value: metadataTemp)
                 let ocIdTemp = metadata.ocId
                 
@@ -467,6 +478,9 @@ import Alamofire
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
             }
+            
+            // Delete
+            self.uploadMetadata[fileName+serverUrl] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
