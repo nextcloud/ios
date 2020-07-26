@@ -1455,7 +1455,7 @@
     BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
     if (!isLocallayAvailable) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_locally_"}];
         }
         
         completion(nil, nil);
