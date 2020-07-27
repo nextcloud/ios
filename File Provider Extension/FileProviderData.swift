@@ -153,11 +153,14 @@ class fileProviderData: NSObject {
     }
     
     // MARK: -
-    
-    func updateFavoriteForWorkingSet() {
-        
+
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+                
         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
+        currentAnchor += 1
         
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {
@@ -180,17 +183,6 @@ class fileProviderData: NSObject {
                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             }
         }
-        
-        signalEnumerator(for: [.workingSet])
-    }
-    
-    // MARK: -
-
-    // Convinent method to signal the enumeration for containers.
-    //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
-                
-        currentAnchor += 1
         
         for containerItemIdentifier in containerItemIdentifiers {
             

@@ -1850,7 +1850,7 @@
 
 - (BOOL)canOpenMenuAction:(tableMetadata *)metadata
 {
-    if (metadata == nil || metadata.status != k_metadataStatusNormal)
+    if (metadata == nil)
         return NO;
     
     // E2EE

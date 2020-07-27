@@ -221,6 +221,8 @@
         [self.window.rootViewController presentViewController:vc animated:YES completion:nil];
     }
     #endif
+    
+     [[NCNetworking shared] verifyTransfer];
 }
 
 //
