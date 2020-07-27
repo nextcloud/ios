@@ -222,7 +222,7 @@
     }
     #endif
     
-    [[NCNetworking shared] verifyTransferZombie];
+    //[[NCNetworking shared] verifyUploadZombie];
 }
 
 //
