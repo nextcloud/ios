@@ -164,60 +164,7 @@ import Alamofire
         
         return result
     }
-    
-    //MARK: - Download / Upload
-    
-    @objc func verifyTransfer() {
         
-        var session: URLSession?
-        
-        // k_metadataStatusUploading (BACKGROUND)
-        let sessionBackground = NCCommunicationCommon.shared.sessionIdentifierBackground
-        let sessionBackgroundWWan = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan
-        let sessionBackgroundExtension = NCCommunicationCommon.shared.sessionIdentifierExtension
-        var metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusUploading))
-        for metadata in metadatas {
-            
-            if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
-                session = NCCommunicationBackground.shared.sessionManagerTransfer
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
-                session = NCCommunicationBackground.shared.sessionManagerTransferWWan
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
-                session = NCCommunicationBackground.shared.sessionManagerTransferExtension
-            }
-            
-            var findTask = false
-            
-            session?.getAllTasks(completionHandler: { (tasks) in
-                for task in tasks {
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        findTask = true
-                    }
-                }
-                
-                if !findTask {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, k_metadataStatusUploading)) {
-                            NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
-                        }
-                    }
-                }
-            })
-        }
-        
-        
-        // verify k_metadataStatusInUpload (BACKGROUND)
-        metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusInUpload))
-        for metadata in metadatas {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, k_metadataStatusInUpload)) {
-                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
-                }
-            }
-        }
-        
-    }
-    
     //MARK: - Download
     
     @objc func cancelDownload(ocId: String, serverUrl:String, fileNameView: String) {
@@ -536,6 +483,57 @@ import Alamofire
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
+    }
+    
+    @objc func verifyUploadZombie() {
+        
+        var session: URLSession?
+        
+        // k_metadataStatusUploading (BACKGROUND)
+        let sessionBackground = NCCommunicationCommon.shared.sessionIdentifierBackground
+        let sessionBackgroundWWan = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan
+        let sessionBackgroundExtension = NCCommunicationCommon.shared.sessionIdentifierExtension
+        var metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusUploading))
+        for metadata in metadatas {
+            
+            if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
+                session = NCCommunicationBackground.shared.sessionManagerTransfer
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
+                session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
+                session = NCCommunicationBackground.shared.sessionManagerTransferExtension
+            }
+            
+            var findTask = false
+            
+            session?.getAllTasks(completionHandler: { (tasks) in
+                for task in tasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        findTask = true
+                    }
+                }
+                
+                if !findTask {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, k_metadataStatusUploading)) {
+                            NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
+                        }
+                    }
+                }
+            })
+        }
+        
+        
+        // verify k_metadataStatusInUpload (BACKGROUND)
+        metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusInUpload))
+        for metadata in metadatas {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, k_metadataStatusInUpload)) {
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
+                }
+            }
+        }
+        
     }
         
     //MARK: - WebDav Read file, folder
