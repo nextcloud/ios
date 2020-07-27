@@ -1488,8 +1488,11 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-                tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
+                tableMetadata *newMetadata = metadata;
+                tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                if (metadataTmp != nil) {
+                    newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
+                }
                 
                 NSError *error = nil;
                 NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
@@ -1549,8 +1552,11 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-                    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
+                    tableMetadata *newMetadata = metadata;
+                    tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                    if (metadataTmp != nil) {
+                        newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
+                    }
                     
                     NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:newMetadata.fileNameView];
                     NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
