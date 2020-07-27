@@ -158,31 +158,7 @@ class fileProviderData: NSObject {
     //
     func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
                 
-        let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
         currentAnchor += 1
-        
-        // (ADD)
-        for (identifier, _) in listFavoriteIdentifierRank {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        
-        // (REMOVE)
-        for (identifier, _) in oldListFavoriteIdentifierRank {
-            
-            if !listFavoriteIdentifierRank.keys.contains(identifier) {
-                
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                
-                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-            }
-        }
         
         for containerItemIdentifier in containerItemIdentifiers {
             
