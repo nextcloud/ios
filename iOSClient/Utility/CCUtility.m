@@ -1603,7 +1603,6 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account
 {
-    
     if (e2eEncrypted) {
         
         return true;
@@ -1628,8 +1627,8 @@
 #pragma mark ===== Share Permissions =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder {
-    
++ (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder
+{    
     NSInteger permissionsValue = k_read_share_permission;
     
     if (canEdit && !isFolder) {
