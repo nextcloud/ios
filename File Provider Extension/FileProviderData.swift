@@ -156,7 +156,6 @@ class fileProviderData: NSObject {
     
     func updateFavoriteForWorkingSet() {
         
-        var updateWorkingSet = false
         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
         
@@ -168,7 +167,6 @@ class fileProviderData: NSObject {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            updateWorkingSet = true
         }
         
         // (REMOVE)
@@ -180,13 +178,10 @@ class fileProviderData: NSObject {
                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                 
                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                updateWorkingSet = true
             }
         }
         
-        if updateWorkingSet {
-            signalEnumerator(for: [.workingSet])
-        }
+        signalEnumerator(for: [.workingSet])
     }
     
     // MARK: -
