@@ -292,6 +292,7 @@
 "_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, the photo selected in \"Live Photo\" format";
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
+"_no_capabilities_found_"       = "Capabilities not found";
 
 // Login
 
