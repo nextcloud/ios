@@ -179,7 +179,7 @@ class NCService: NSObject {
                     }
                 }
                 
-                let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
+                let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false)
                 if (isExternalSitesServerEnabled) {
                     NCCommunication.shared.getExternalSite() { (account, externalSites, errorCode, errorDescription) in
                         if errorCode == 0 && account == self.appDelegate.activeAccount {
