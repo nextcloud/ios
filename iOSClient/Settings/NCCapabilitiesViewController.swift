@@ -26,7 +26,13 @@ import UIKit
 class NCCapabilitiesViewController: UIViewController {
 
     @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var imageFileSharing: UIImageView!
+    @IBOutlet weak var imageStatusFileSharing: UIImageView!
     
+    private var account: String = ""
+    private var imageEnable: UIImage?
+    private var imageDisable: UIImage?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,10 +41,16 @@ class NCCapabilitiesViewController: UIViewController {
         let closeButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
         self.navigationItem.leftBarButtonItem = closeButton
         
+        imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
+        imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
+        imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
+
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
+        self.account = account.account
         
         if let jsonText = NCManageDatabase.sharedInstance.getCapabilities(account: account.account) {
             textView.text = jsonText
+            readCapabilities()
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             
@@ -47,9 +59,18 @@ class NCCapabilitiesViewController: UIViewController {
             }
         }
     }
-    
+   
     @objc func close() {
         
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func readCapabilities() {
+        
+        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
+            imageStatusFileSharing.image = imageEnable
+        } else {
+            imageStatusFileSharing.image = imageDisable
+        }
     }
 }
