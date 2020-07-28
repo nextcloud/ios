@@ -26,8 +26,15 @@ import UIKit
 class NCCapabilitiesViewController: UIViewController {
 
     @IBOutlet weak var textView: UITextView!
+    
     @IBOutlet weak var imageFileSharing: UIImageView!
     @IBOutlet weak var imageStatusFileSharing: UIImageView!
+    
+    @IBOutlet weak var imageDirectEditing: UIImageView!
+    @IBOutlet weak var imageStatusDirectEditing: UIImageView!
+    
+    @IBOutlet weak var imageExternalSite: UIImageView!
+    @IBOutlet weak var imageStatusExternalSite: UIImageView!
     
     private var account: String = ""
     private var imageEnable: UIImage?
@@ -44,6 +51,8 @@ class NCCapabilitiesViewController: UIViewController {
         imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
         imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
+        imageDirectEditing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "document"), width: 100, height: 100, color: .gray)
+        imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "country"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -71,6 +80,18 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusFileSharing.image = imageEnable
         } else {
             imageStatusFileSharing.image = imageDisable
+        }
+        
+        if NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account) != nil {
+            imageStatusDirectEditing.image = imageEnable
+        } else {
+            imageStatusDirectEditing.image = imageDisable
+        }
+        
+        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false) {
+            imageStatusExternalSite.image = imageEnable
+        } else {
+            imageStatusExternalSite.image = imageDisable
         }
     }
 }
