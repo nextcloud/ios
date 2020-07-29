@@ -127,7 +127,7 @@
     }
     
     // Section CAPABILITIES -------------------------------------------------
-    
+    /*
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_view_capabilities_", nil);
@@ -146,7 +146,7 @@
         [self presentViewController:capabilities animated:YES completion:nil];
     };
     [section addFormRow:row];
-    
+    */
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
