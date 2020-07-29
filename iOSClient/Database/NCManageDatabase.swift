@@ -1054,10 +1054,10 @@ class NCManageDatabase: NSObject {
                         addObject.mimetypes.append(mimeType)
                     }
                     addObject.name = editor.name
-                    if editor.name.lowercased() == "onlyoffice" {
-                        addObject.editor = "onlyoffice"
-                    } else if editor.name.lowercased() == "nextcloud text" {
-                        addObject.editor = "text"
+                    if editor.name.lowercased() == k_editor_onlyoffice {
+                        addObject.editor = k_editor_onlyoffice
+                    } else {
+                        addObject.editor = k_editor_text
                     }
                     for mimeType in editor.optionalMimetypes {
                         addObject.optionalMimetypes.append(mimeType)

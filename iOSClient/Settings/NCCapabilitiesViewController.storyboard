@@ -437,6 +437,8 @@
                         <outlet property="imageStatusNotification" destination="Tnn-tg-iQW" id="kYb-yF-Wem"/>
                         <outlet property="imageStatusOnlyOffice" destination="W8r-13-sho" id="W5U-fo-4hO"/>
                         <outlet property="imageStatusPaginatedFileListing" destination="ev4-w2-gLQ" id="Q3j-Dh-yio"/>
+                        <outlet property="imageStatusText" destination="LNE-l0-lef" id="3Vt-Mi-jkx"/>
+                        <outlet property="imageText" destination="iCB-2A-phO" id="uit-Ku-oOF"/>
                         <outlet property="textView" destination="RIO-6X-GG1" id="lPs-Ev-hQf"/>
                     </connections>
                 </viewController>
