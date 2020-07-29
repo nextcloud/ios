@@ -142,8 +142,20 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusNotification.image = imageDisable
         }
         
-        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account)
-        if directEditingCreators != nil {
+        var textEditor = false
+        var onlyofficeEditors = false
+        if let editors = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) {
+            for editor in editors {
+                if editor.editor == k_editor_text {
+                    textEditor = true
+                } else if editor.editor == k_editor_onlyoffice {
+                    onlyofficeEditors = true
+                }
+                
+            }
+        }
+        
+        if textEditor {
             imageStatusText.image = imageEnable
         } else {
             imageStatusText.image = imageDisable
@@ -154,6 +166,12 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusCollabora.image = imageEnable
         } else {
             imageStatusCollabora.image = imageDisable
+        }
+        
+        if onlyofficeEditors {
+            imageStatusOnlyOffice.image = imageEnable
+        } else {
+            imageStatusOnlyOffice.image = imageDisable
         }
         
         print("end.")
