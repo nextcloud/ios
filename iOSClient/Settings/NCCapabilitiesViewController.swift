@@ -45,8 +45,8 @@ class NCCapabilitiesViewController: UIViewController {
     @IBOutlet weak var imageNotification: UIImageView!
     @IBOutlet weak var imageStatusNotification: UIImageView!
     
-    @IBOutlet weak var imageDirectEditing: UIImageView!
-    @IBOutlet weak var imageStatusDirectEditing: UIImageView!
+    @IBOutlet weak var imageText: UIImageView!
+    @IBOutlet weak var imageStatusText: UIImageView!
     
     @IBOutlet weak var imageCollabora: UIImageView!
     @IBOutlet weak var imageStatusCollabora: UIImageView!
@@ -69,13 +69,14 @@ class NCCapabilitiesViewController: UIViewController {
         imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
         imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
-        imageDirectEditing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "document"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "country"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
         imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
         imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
         imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
+        imageText.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "text"), width: 100, height: 100, color: .gray)
         imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
+        imageOnlyOffice.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "onlyoffice"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -103,13 +104,6 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusFileSharing.image = imageEnable
         } else {
             imageStatusFileSharing.image = imageDisable
-        }
-        
-        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account)
-        if directEditingCreators != nil {
-            imageStatusDirectEditing.image = imageEnable
-        } else {
-            imageStatusDirectEditing.image = imageDisable
         }
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false) {
@@ -146,6 +140,13 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusNotification.image = imageEnable
         } else {
             imageStatusNotification.image = imageDisable
+        }
+        
+        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account)
+        if directEditingCreators != nil {
+            imageStatusText.image = imageEnable
+        } else {
+            imageStatusText.image = imageDisable
         }
         
         let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
