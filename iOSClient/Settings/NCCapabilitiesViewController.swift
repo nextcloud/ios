@@ -30,9 +30,6 @@ class NCCapabilitiesViewController: UIViewController {
     @IBOutlet weak var imageFileSharing: UIImageView!
     @IBOutlet weak var imageStatusFileSharing: UIImageView!
     
-    @IBOutlet weak var imageDirectEditing: UIImageView!
-    @IBOutlet weak var imageStatusDirectEditing: UIImageView!
-    
     @IBOutlet weak var imageExternalSite: UIImageView!
     @IBOutlet weak var imageStatusExternalSite: UIImageView!
     
@@ -47,6 +44,15 @@ class NCCapabilitiesViewController: UIViewController {
    
     @IBOutlet weak var imageNotification: UIImageView!
     @IBOutlet weak var imageStatusNotification: UIImageView!
+    
+    @IBOutlet weak var imageDirectEditing: UIImageView!
+    @IBOutlet weak var imageStatusDirectEditing: UIImageView!
+    
+    @IBOutlet weak var imageCollabora: UIImageView!
+    @IBOutlet weak var imageStatusCollabora: UIImageView!
+    
+    @IBOutlet weak var imageOnlyOffice: UIImageView!
+    @IBOutlet weak var imageStatusOnlyOffice: UIImageView!
     
     private var account: String = ""
     private var imageEnable: UIImage?
@@ -69,6 +75,7 @@ class NCCapabilitiesViewController: UIViewController {
         imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
         imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
         imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
+        imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -98,7 +105,8 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusFileSharing.image = imageDisable
         }
         
-        if NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account) != nil {
+        let directEditingCreators = NCManageDatabase.sharedInstance.getDirectEditingCreators(account: account)
+        if directEditingCreators != nil {
             imageStatusDirectEditing.image = imageEnable
         } else {
             imageStatusDirectEditing.image = imageDisable
@@ -138,6 +146,13 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusNotification.image = imageEnable
         } else {
             imageStatusNotification.image = imageDisable
+        }
+        
+        let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
+        if richdocumentsMimetypes != nil {
+            imageStatusCollabora.image = imageEnable
+        } else {
+            imageStatusCollabora.image = imageDisable
         }
         
         print("end.")

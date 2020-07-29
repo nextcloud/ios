@@ -86,7 +86,7 @@
                                                             <constraint firstAttribute="height" constant="30" id="kdP-OK-U2a"/>
                                                         </constraints>
                                                     </imageView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Direct Editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOv-Ld-QFB">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Text" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOv-Ld-QFB">
                                                         <rect key="frame" x="40" y="14.5" width="319" height="21"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
@@ -292,6 +292,42 @@
                                                     <constraint firstItem="W6x-fO-A6L" firstAttribute="leading" secondItem="cgb-3g-trc" secondAttribute="trailing" constant="10" id="zGE-fg-e3h"/>
                                                 </constraints>
                                             </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dhs-06-3RT" userLabel="Collabora">
+                                                <rect key="frame" x="0.0" y="350" width="404" height="50"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="collabora" translatesAutoresizingMaskIntoConstraints="NO" id="GXZ-Rj-WCE">
+                                                        <rect key="frame" x="0.0" y="10" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="kcH-Br-yZB"/>
+                                                            <constraint firstAttribute="width" constant="30" id="ros-hl-Jec"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Collabora" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IJ7-i8-AvX">
+                                                        <rect key="frame" x="40" y="14.5" width="319" height="21"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="9wU-lQ-TOx">
+                                                        <rect key="frame" x="369" y="12.5" width="25" height="25"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="25" id="nUg-eY-H1x"/>
+                                                            <constraint firstAttribute="width" constant="25" id="rIa-nD-kkg"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                <constraints>
+                                                    <constraint firstItem="IJ7-i8-AvX" firstAttribute="centerY" secondItem="dhs-06-3RT" secondAttribute="centerY" id="8Rv-kP-XDs"/>
+                                                    <constraint firstItem="GXZ-Rj-WCE" firstAttribute="centerY" secondItem="dhs-06-3RT" secondAttribute="centerY" id="DiJ-1E-bIC"/>
+                                                    <constraint firstItem="IJ7-i8-AvX" firstAttribute="leading" secondItem="GXZ-Rj-WCE" secondAttribute="trailing" constant="10" id="M7l-uB-RhH"/>
+                                                    <constraint firstItem="9wU-lQ-TOx" firstAttribute="leading" secondItem="IJ7-i8-AvX" secondAttribute="trailing" constant="10" id="QqO-Hv-iCc"/>
+                                                    <constraint firstItem="9wU-lQ-TOx" firstAttribute="centerY" secondItem="dhs-06-3RT" secondAttribute="centerY" id="dbx-Xo-Vta"/>
+                                                    <constraint firstAttribute="trailing" secondItem="9wU-lQ-TOx" secondAttribute="trailing" constant="10" id="l3p-eQ-FsB"/>
+                                                    <constraint firstItem="GXZ-Rj-WCE" firstAttribute="leading" secondItem="dhs-06-3RT" secondAttribute="leading" id="lCd-tJ-nvi"/>
+                                                    <constraint firstAttribute="height" constant="50" id="xgw-IO-enA"/>
+                                                </constraints>
+                                            </view>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
@@ -308,15 +344,18 @@
                                             <constraint firstItem="00l-HL-Ljt" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="SkB-av-5lO"/>
                                             <constraint firstItem="00l-HL-Ljt" firstAttribute="top" secondItem="nVq-4i-FNy" secondAttribute="bottom" id="TdY-oP-UfF"/>
                                             <constraint firstItem="jdW-oZ-cH8" firstAttribute="top" secondItem="Sms-Ez-fLO" secondAttribute="top" id="UBW-Mx-NTs"/>
+                                            <constraint firstItem="dhs-06-3RT" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="UwG-6b-pEk"/>
                                             <constraint firstItem="nVq-4i-FNy" firstAttribute="top" secondItem="mSC-JU-xuk" secondAttribute="bottom" id="VfU-sj-S9y"/>
                                             <constraint firstAttribute="trailing" secondItem="lGp-bh-Ysz" secondAttribute="trailing" id="bUd-8w-D8k"/>
                                             <constraint firstItem="UPC-L1-VKj" firstAttribute="top" secondItem="lGp-bh-Ysz" secondAttribute="bottom" id="br5-nz-w7h"/>
                                             <constraint firstItem="jdW-oZ-cH8" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="eNi-cO-UFd"/>
                                             <constraint firstItem="nVq-4i-FNy" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="efi-mm-hvP"/>
                                             <constraint firstAttribute="trailing" secondItem="UPC-L1-VKj" secondAttribute="trailing" id="f2Y-D9-fMV"/>
+                                            <constraint firstAttribute="trailing" secondItem="dhs-06-3RT" secondAttribute="trailing" id="ijj-gU-Gdk"/>
                                             <constraint firstAttribute="trailing" secondItem="jdW-oZ-cH8" secondAttribute="trailing" id="k81-ap-Nwy"/>
                                             <constraint firstAttribute="trailing" secondItem="mSC-JU-xuk" secondAttribute="trailing" id="pBU-xQ-0qV"/>
                                             <constraint firstAttribute="trailing" secondItem="ZNB-jF-9zg" secondAttribute="trailing" id="v5H-SV-MvM"/>
+                                            <constraint firstItem="dhs-06-3RT" firstAttribute="top" secondItem="UPC-L1-VKj" secondAttribute="bottom" id="zfq-6D-bz7"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -344,6 +383,7 @@
                     <navigationItem key="navigationItem" id="fnR-ht-Muv"/>
                     <connections>
                         <outlet property="imageActivity" destination="tl5-S1-p9X" id="pT5-X7-R2q"/>
+                        <outlet property="imageCollabora" destination="GXZ-Rj-WCE" id="cOv-xH-ZKC"/>
                         <outlet property="imageDirectEditing" destination="iCB-2A-phO" id="J35-Op-36Q"/>
                         <outlet property="imageEndToEndEncryption" destination="S7m-5Z-ktw" id="0Pv-Yt-YJB"/>
                         <outlet property="imageExternalSite" destination="JWO-C0-32L" id="JKi-n1-5IQ"/>
@@ -351,6 +391,7 @@
                         <outlet property="imageNotification" destination="cgb-3g-trc" id="fa5-99-76C"/>
                         <outlet property="imagePaginatedFileListing" destination="itj-Iy-gT3" id="9Zj-fQ-eRC"/>
                         <outlet property="imageStatusActivity" destination="2lM-1o-eYa" id="Pna-fT-IDP"/>
+                        <outlet property="imageStatusCollabora" destination="9wU-lQ-TOx" id="iyp-ce-ozc"/>
                         <outlet property="imageStatusDirectEditing" destination="LNE-l0-lef" id="YrK-IF-D73"/>
                         <outlet property="imageStatusEndToEndEncryption" destination="qbN-VY-iSu" id="4Fh-f4-Hwp"/>
                         <outlet property="imageStatusExternalSite" destination="GRj-nZ-KYG" id="7hn-jn-LO4"/>
@@ -386,6 +427,7 @@
     <resources>
         <image name="activity" width="512" height="512"/>
         <image name="application" width="425" height="425"/>
+        <image name="collabora" width="425" height="425"/>
         <image name="country" width="300" height="300"/>
         <image name="document" width="300" height="300"/>
         <image name="lock" width="300" height="300"/>
