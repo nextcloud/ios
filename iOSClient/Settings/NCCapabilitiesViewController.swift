@@ -22,8 +22,9 @@
 //
 
 import UIKit
+import NCCommunication
 
-class NCCapabilitiesViewController: UIViewController {
+class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionControllerDelegate {
 
     @IBOutlet weak var textView: UITextView!
     
@@ -55,6 +56,7 @@ class NCCapabilitiesViewController: UIViewController {
     @IBOutlet weak var imageStatusOnlyOffice: UIImageView!
     
     private var account: String = ""
+    private var capabilitiesText = ""
     private var imageEnable: UIImage?
     private var imageDisable: UIImage?
 
@@ -63,9 +65,10 @@ class NCCapabilitiesViewController: UIViewController {
         
         self.title = NSLocalizedString("_capabilities_", comment: "")
                
-        let closeButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
-        self.navigationItem.leftBarButtonItem = closeButton
-        
+        let shareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareFill"), width: 50, height: 50, color: .gray)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
+
         imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
         imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
@@ -81,8 +84,8 @@ class NCCapabilitiesViewController: UIViewController {
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
         
-        if let jsonText = NCManageDatabase.sharedInstance.getCapabilities(account: account.account) {
-            textView.text = jsonText
+        if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account.account) {
+            capabilitiesText = text
             readCapabilities()
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
@@ -93,12 +96,38 @@ class NCCapabilitiesViewController: UIViewController {
         }
     }
    
-    @objc func close() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
+            if errorCode == 0 && data != nil {
+                NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+                if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account) {
+                    self.capabilitiesText = text
+                }
+                self.readCapabilities()
+            }
+        }
+    }
+    
+    @objc func share() {
+        let tempDirectoryURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true)
+        let fileURL = tempDirectoryURL.appendingPathComponent("capabilities.txt")
+        
+        NCUtilityFileSystem.shared.writeFile(fileURL: fileURL, text: capabilitiesText)
+
+        let documentController = UIDocumentInteractionController.init(url: fileURL)
+        documentController.delegate = self
+        documentController.presentOpenInMenu(from: CGRect.zero, in: self.view, animated: true)
+    }
+    
+    @objc func close() {
         self.dismiss(animated: true, completion: nil)
     }
     
     func readCapabilities() {
+        
+        textView.text = capabilitiesText
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
             imageStatusFileSharing.image = imageEnable

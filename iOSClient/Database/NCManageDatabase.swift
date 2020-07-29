@@ -886,7 +886,7 @@ class NCManageDatabase: NSObject {
                
         let json = JSON(jsondata)
         
-        return json.rawString()
+        return json.rawString()?.replacingOccurrences(of: "\\/", with: "/")
     }
     
     @objc func getCapabilitiesServerString(account: String, elements: Array<String>) -> String? {
