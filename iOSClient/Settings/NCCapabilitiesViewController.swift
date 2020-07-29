@@ -36,6 +36,12 @@ class NCCapabilitiesViewController: UIViewController {
     @IBOutlet weak var imageExternalSite: UIImageView!
     @IBOutlet weak var imageStatusExternalSite: UIImageView!
     
+    @IBOutlet weak var imageEndToEndEncryption: UIImageView!
+    @IBOutlet weak var imageStatusEndToEndEncryption: UIImageView!
+    
+    @IBOutlet weak var imagePaginatedFileListing: UIImageView!
+    @IBOutlet weak var imageStatusPaginatedFileListing: UIImageView!
+    
     private var account: String = ""
     private var imageEnable: UIImage?
     private var imageDisable: UIImage?
@@ -53,6 +59,8 @@ class NCCapabilitiesViewController: UIViewController {
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageDirectEditing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "document"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "country"), width: 100, height: 100, color: .gray)
+        imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
+        imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -92,6 +100,22 @@ class NCCapabilitiesViewController: UIViewController {
             imageStatusExternalSite.image = imageEnable
         } else {
             imageStatusExternalSite.image = imageDisable
+        }
+        
+        let isE2EEEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
+        let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
+        
+        if isE2EEEnabled && versionE2EE == k_E2EE_API {
+            imageStatusEndToEndEncryption.image = imageEnable
+        } else {
+            imageStatusEndToEndEncryption.image = imageDisable
+        }
+        
+        let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
+        if paginationEndpoint != nil {
+            imageStatusPaginatedFileListing.image = imageEnable
+        } else {
+            imageStatusPaginatedFileListing.image = imageDisable
         }
     }
 }
