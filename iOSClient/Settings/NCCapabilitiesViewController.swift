@@ -42,6 +42,12 @@ class NCCapabilitiesViewController: UIViewController {
     @IBOutlet weak var imagePaginatedFileListing: UIImageView!
     @IBOutlet weak var imageStatusPaginatedFileListing: UIImageView!
     
+    @IBOutlet weak var imageActivity: UIImageView!
+    @IBOutlet weak var imageStatusActivity: UIImageView!
+   
+    @IBOutlet weak var imageNotification: UIImageView!
+    @IBOutlet weak var imageStatusNotification: UIImageView!
+    
     private var account: String = ""
     private var imageEnable: UIImage?
     private var imageDisable: UIImage?
@@ -61,6 +67,8 @@ class NCCapabilitiesViewController: UIViewController {
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "country"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
         imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
+        imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
+        imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -117,5 +125,21 @@ class NCCapabilitiesViewController: UIViewController {
         } else {
             imageStatusPaginatedFileListing.image = imageDisable
         }
+        
+        let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
+        if activity != nil {
+            imageStatusActivity.image = imageEnable
+        } else {
+            imageStatusActivity.image = imageDisable
+        }
+        
+        let notification = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification)
+        if notification != nil {
+            imageStatusNotification.image = imageEnable
+        } else {
+            imageStatusNotification.image = imageDisable
+        }
+        
+        print("end.")
     }
 }
