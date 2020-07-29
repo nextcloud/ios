@@ -35,8 +35,9 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     public var metadatas: [tableMetadata] = []
     private var metadataPush: tableMetadata?
+    private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
-    
+
     private var isEditMode = false
     private var selectocId: [String] = []
     
@@ -631,12 +632,14 @@ extension NCMedia {
         }
         let startServerUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) + mediaPath
         
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        
         if filterTypeFileImage {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
             predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image)
         } else {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+            predicate = predicateDefault
         }
                 
         NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicate!, sort: CCUtility.getMediaSortDate()) { (metadatas) in
@@ -673,12 +676,13 @@ extension NCMedia {
         collectionView.reloadData()
 
         var lessDate = Date()
-        var greaterDate: Date
-        
-        if metadatas.count > 0 {
-            lessDate = metadatas.last!.date as Date
+        if predicateDefault != nil {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicateDefault!, sorted: "date", ascending: true) {
+                lessDate = metadata.date as Date
+            }
         }
         
+        var greaterDate: Date
         if value == -999 {
             greaterDate = Date.distantPast
         } else {
@@ -695,11 +699,34 @@ extension NCMedia {
             self.collectionView.reloadData()
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
-                if files?.count ?? 0 > 0 {
+                if files.count > 0 {
                     
-                    NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                    self.reloadDataSource()
+                    let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                    let predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
+                    let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
                     
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.activeAccount) { (_, _, metadatas) in
+                        
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        
+                        if metadatasChanged.count < 100 {
+                            
+                            if value == -30 {
+                                self.searchOldPhotoVideo(value: -90)
+                            } else if value == -90 {
+                                self.searchOldPhotoVideo(value: -180)
+                            } else if value == -180 {
+                                self.searchOldPhotoVideo(value: -999)
+                            } else {
+                                self.reloadDataSource()
+                            }
+                            
+                        } else {
+                            
+                            self.reloadDataSource()
+                        }
+                    }
+
                 } else {
                     
                     if value == -30 {
@@ -735,21 +762,20 @@ extension NCMedia {
                     }
                 }
             }
-        
 
             NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount && files?.count ?? 0 > 0 {
+                if errorCode == 0 && account == self.appDelegate.activeAccount && files.count > 0 {
                    DispatchQueue.global().async {
                     
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
-                    
-                        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate){
+                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate)
+                        if metadatas.count > 0 {
                             let etagsMetadatas = Array(metadatas.map { $0.etag })
-                            let etagsFiles = Array(files!.map { $0.etag })
+                            let etagsFiles = Array(files.map { $0.etag })
                             for etag in etagsFiles {
                                 if !etagsMetadatas.contains(etag) {
                                     NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
@@ -762,7 +788,7 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
-                } else if errorCode == 0 && files?.count ?? 0 == 0 && self.metadatas.count == 0 {
+                } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldPhotoVideo()
                 }
             }

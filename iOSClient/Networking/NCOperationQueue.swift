@@ -33,7 +33,7 @@ import NCCommunication
     }()
     
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
-    private let readFolderSyncQueue = Queuer(name: "readFolderSyncQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let createFolderQueue = Queuer(name: "createFolderQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -42,7 +42,7 @@ import NCCommunication
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
-        readFolderSyncCancelAll()
+        synchronizationCancelAll()
         createFolderCancelAll()
         downloadThumbnailCancelAll()
         readFileForMediaCancelAll()
@@ -60,13 +60,13 @@ import NCCommunication
         return downloadQueue.operationCount
     }
     
-    // Read Folder Synchronize
+    // Synchronization
     
-    @objc func readFolderSync(serverUrl: String, selector: String ,account: String) {
-        readFolderSyncQueue.addOperation(NCOperationReadFolderSync.init(serverUrl: serverUrl, selector: selector, account: account))
+    @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
+        synchronizationQueue.addOperation(NCOperationSynchronization.init(metadata: metadata, selector: selector))
     }
-    @objc func readFolderSyncCancelAll() {
-        readFolderSyncQueue.cancelAll()
+    @objc func synchronizationCancelAll() {
+        synchronizationQueue.cancelAll()
     }
     
     // Create Folder
@@ -160,34 +160,61 @@ class NCOperationDownload: ConcurrentOperation {
 
 //MARK: -
 
-class NCOperationReadFolderSync: ConcurrentOperation {
+class NCOperationSynchronization: ConcurrentOperation {
    
-    private var serverUrl: String
+    private var metadata: tableMetadata
     private var selector: String
-    private var account: String
     
-    init(serverUrl: String, selector: String, account: String) {
-        self.serverUrl = serverUrl
+    init(metadata: tableMetadata, selector: String) {
+        self.metadata = metadata
         self.selector = selector
-        self.account = account
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 && files != nil {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files!, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                        
-                        if metadatas.count > 0 {
-                            CCSynchronize.shared()?.readFolder(withAccount: account, serverUrl: self.serverUrl, metadataFolder: metadataFolder, metadatas: metadatas, selector: self.selector)
+            var depth: String = ""
+            var serverUrlFileName: String = ""
+            var predicate = NSPredicate()
+            var download = false
+            var useMetadataFolder = false
+            if metadata.directory {
+                depth = "infinity"
+                useMetadataFolder = true
+                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", metadata.account, serverUrlFileName, k_metadataStatusNormal)
+            } else {
+                depth = "0"
+                useMetadataFolder = false
+                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.serverUrl, metadata.fileName, k_metadataStatusNormal)
+            }
+            if selector == selectorDownloadSynchronize {
+                download = true
+            }
+            
+            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                DispatchQueue.global().async {
+                    if errorCode == 0 {
+                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                            if metadatas.count > 0 {
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
+                                if download {
+                                    for metadata in metadatasChanged {
+                                        if metadata.directory == false {
+                                            NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }
+                                        }
+                                    }
+                                }
+                            }
                         }
+                    } else if errorCode == 404 && self.metadata.directory {
+                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
-                } else if errorCode == 404 {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.serverUrl, account: account)
+                    self.finish()
                 }
-                self.finish()
             }
         }
     }
@@ -309,26 +336,25 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
             """
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8)) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 && files != nil {
-                    if let file = files?[0] {
-                        let metadata = tableMetadata.init(value: self.metadata)
-                        var modify = false
-                        if metadata.hasPreview != file.hasPreview {
-                            metadata.hasPreview = file.hasPreview
-                            modify = true
-                        }
-                        if file.creationDate != nil && metadata.creationDate != file.creationDate {
-                            metadata.creationDate = file.creationDate!
-                            modify = true
-                        }
-                        if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
-                            metadata.uploadDate = file.uploadDate!
-                            modify = true
-                        }
-                        if modify {
-                            NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            NCOperationQueue.shared.reloadDataSourceMedia()
-                        }
+                if errorCode == 0 && files.count > 0 {
+                    let file = files[0]
+                    let metadata = tableMetadata.init(value: self.metadata)
+                    var modify = false
+                    if metadata.hasPreview != file.hasPreview {
+                        metadata.hasPreview = file.hasPreview
+                        modify = true
+                    }
+                    if file.creationDate != nil && metadata.creationDate != file.creationDate {
+                        metadata.creationDate = file.creationDate!
+                        modify = true
+                    }
+                    if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
+                        metadata.uploadDate = file.uploadDate!
+                        modify = true
+                    }
+                    if modify {
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCOperationQueue.shared.reloadDataSourceMedia()
                     }
                 } else if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))

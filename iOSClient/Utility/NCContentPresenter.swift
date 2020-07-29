@@ -64,22 +64,25 @@ class NCContentPresenter: NSObject {
 
     //MARK: - Message
     
-    @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int) {
+    @objc func messageNotification(_ title: String, description: String?, delay: TimeInterval, type: messageType, errorCode: Int, forced: Bool = false) {
                        
         // No notification message
-        if errorCode == -999 { return }         // Cancelled transfer
-        else if errorCode == 200 { return }     // Transfer stopped
-        else if errorCode == 207 { return }     // WebDAV multistatus
-        else if errorCode == 423 { return }     // WebDAV locked
-        else if errorCode == -1001 { return }   // Time out
-        else if errorCode == -1005 { return }   // Connection lost
-        else if errorCode == 0 && type == messageType.error { return }
-        
-        // No repeat message for:
-        if errorCode == lastErrorCode {
-            if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
-        } else {
-            lastErrorCode = errorCode
+        if forced == false {
+            
+            if errorCode == -999 { return }         // Cancelled transfer
+            else if errorCode == 200 { return }     // Transfer stopped
+            else if errorCode == 207 { return }     // WebDAV multistatus
+            else if errorCode == 423 { return }     // WebDAV locked
+            else if errorCode == -1001 { return }   // Time out
+            else if errorCode == -1005 { return }   // Connection lost
+            else if errorCode == 0 && type == messageType.error { return }
+            
+            // No repeat message for:
+            if errorCode == lastErrorCode {
+                if errorCode ==  Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue) { return }
+            } else {
+                lastErrorCode = errorCode
+            }
         }
         
         DispatchQueue.main.async {

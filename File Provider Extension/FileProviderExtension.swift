@@ -211,10 +211,11 @@ class FileProviderExtension: NSFileProviderExtension {
             return
         }
         
-        guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
+        
         let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && tableLocalFile?.etag == metadata.etag  {
             completionHandler(nil)
@@ -226,8 +227,12 @@ class FileProviderExtension: NSFileProviderExtension {
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
-            metadata.status = Int(k_metadataStatusDownloading)
-            if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+            if var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) {
+                metadata = tableMetadata.init(value: metadata)
+                metadata.status = Int(k_metadataStatusDownloading)
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
+            }
+            
             downloadRequest = request
             self.outstandingSessionTasks[url] = task
             
@@ -242,6 +247,11 @@ class FileProviderExtension: NSFileProviderExtension {
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
+            guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
+            metadata = tableMetadata.init(value: metadata)
             
             if errorCode == 0  {
                 
@@ -250,7 +260,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.etag = etag ?? ""
                 
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                if let result = NCManageDatabase.sharedInstance.addMetadata(metadata) { metadata = result }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 completionHandler(nil)
                 
@@ -356,15 +366,12 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "")
+                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrl, url: "", contentType: "")
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierExtension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)
                 
-                guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
@@ -374,7 +381,7 @@ class FileProviderExtension: NSFileProviderExtension {
                     NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
                 }
                 
-                let item = FileProviderItem(metadata: metadataForUpload, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
             }
         }

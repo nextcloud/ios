@@ -158,12 +158,21 @@
 #define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
-#define k_CCErrorInternalError                          -9999
+#define k_CCErrorInternalError                          -99999
+#define k_CCErrorFileNotSaved                           -99998
+#define k_CCErrorDecodeMetadata                         -99997
+#define k_CCErrorE2EENotEnabled                         -99996
+#define k_CCErrorE2EENotMove                            -99995
+#define k_CCErrorOffline                                -99994
+#define k_CCErrorCharactersForbidden                    -99993
+#define k_CCErrorCreationFile                           -99992
+
 
 // Search
 #define k_minCharsSearch                                2
 
 // Selector
+#define selectorSynchronize                             @"synchronize"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
@@ -172,10 +181,6 @@
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenInDetail                            @"openInDetail"
-#define selectorReadFile                                @"readFile"
-#define selectorReadFileWithDownload                    @"readFileWithDownload"
-#define selectorReadFolder                              @"readFolder"
-#define selectorReadFolderWithDownload                  @"readFolderWithDownload"
 #define selectorSave                                    @"save"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
@@ -233,6 +238,7 @@
 
 // E2EE
 #define k_max_filesize_E2EE                             524288000   // 500 MB
+#define k_E2EE_API                                      @"1.1"
 
 // Flow Version
 #define k_flow_version_available                        12

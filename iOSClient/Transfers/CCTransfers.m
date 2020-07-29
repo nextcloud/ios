@@ -155,7 +155,7 @@
 
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         
-        UIMenuItem *startTaskItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_start_", nil) action:@selector(startTask:)];
+        UIMenuItem *startTaskItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_force_start_", nil) action:@selector(startTask:)];
 
         [menuController setMenuItems:[NSArray arrayWithObjects:startTaskItem, nil]];
 
@@ -176,7 +176,7 @@
     
     // Detect E2EE
     NSString *saveserverUrl = @"";
-    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] page:0 limit:0 sorted:@"serverUrl" ascending:NO freeze:YES];
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status != %d", k_metadataStatusNormal] page:0 limit:0 sorted:@"serverUrl" ascending:NO];
     for (tableMetadata *metadata in metadatasForE2EE) {
         if (![saveserverUrl isEqualToString:metadata.serverUrl]) {
             saveserverUrl = metadata.serverUrl;
@@ -186,11 +186,9 @@
         }
     }
     
-    /*
-    if (!([metadataForRecognizer.session isEqualToString:k_upload_session_extension]) &&(metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
+    if ((metadataForRecognizer.status == k_metadataStatusWaitUpload || metadataForRecognizer.status == k_metadataStatusInUpload || metadataForRecognizer.status == k_metadataStatusUploading)) {
         return YES;
     }
-    */
     
     return NO;
 }
@@ -249,10 +247,12 @@
     if (metadataForRecognizer.status == k_metadataStatusUploading) {
         [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
     } else {
-        metadataForRecognizer.status = k_metadataStatusInUpload;
-        metadataForRecognizer.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
+        metadata.status = k_metadataStatusInUpload;
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
        
-        [[NCNetworking shared] uploadWithMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadataForRecognizer] background: true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 
@@ -263,11 +263,13 @@
 - (void)reloadDatasource
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || self.view.window == nil)
+    if (appDelegate.activeAccount.length == 0 || self.view.window == nil) {
         return;
+    }
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] page:1 limit:100 sorted:@"sessionTaskIdentifier" ascending:NO freeze:YES];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] page:1 limit:100 sorted:@"sessionTaskIdentifier" ascending:NO];
         
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
@@ -277,8 +279,6 @@
             sectionDataSource = sectionDataSourceTemp;
             [self.tableView reloadData];
         });
-        
-        [[NCNetworking shared] verifyTransfer];
     });
 }
 
@@ -314,10 +314,10 @@
     NSInteger typeOfSession = 0;
     NSString *sessionDownload = [[NCCommunicationCommon shared] sessionIdentifierDownload];
 
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", sessionDownload] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
 
-    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
-    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
+    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
     
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [sectionDataSource.sections objectAtIndex:section];
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
@@ -396,7 +396,7 @@
     if ([titleSection containsString:@"download"] && titleSection != nil) {
         
         NSString *session = [[NCCommunicationCommon shared] sessionIdentifierDownload];
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", session] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", session] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -413,7 +413,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackground] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -430,7 +430,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] page:0 limit:0 sorted:@"fileName" ascending:NO freeze:NO] count];
+        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session == %@", NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan] page:0 limit:0 sorted:@"fileName" ascending:NO] count];
        
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);

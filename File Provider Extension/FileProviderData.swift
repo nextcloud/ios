@@ -153,43 +153,6 @@ class fileProviderData: NSObject {
     }
     
     // MARK: -
-    
-    func updateFavoriteForWorkingSet() {
-        
-        var updateWorkingSet = false
-        let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
-        
-        // (ADD)
-        for (identifier, _) in listFavoriteIdentifierRank {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            updateWorkingSet = true
-        }
-        
-        // (REMOVE)
-        for (identifier, _) in oldListFavoriteIdentifierRank {
-            
-            if !listFavoriteIdentifierRank.keys.contains(identifier) {
-                
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                
-                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                updateWorkingSet = true
-            }
-        }
-        
-        if updateWorkingSet {
-            signalEnumerator(for: [.workingSet])
-        }
-    }
-    
-    // MARK: -
 
     // Convinent method to signal the enumeration for containers.
     //
@@ -206,4 +169,41 @@ class fileProviderData: NSObject {
             }
         }
     }
+    
+    /*
+     func updateFavoriteForWorkingSet() {
+         
+         var updateWorkingSet = false
+         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
+         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
+         
+         // (ADD)
+         for (identifier, _) in listFavoriteIdentifierRank {
+             
+             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
+             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                 
+             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+             updateWorkingSet = true
+         }
+         
+         // (REMOVE)
+         for (identifier, _) in oldListFavoriteIdentifierRank {
+             
+             if !listFavoriteIdentifierRank.keys.contains(identifier) {
+                 
+                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+                 
+                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+                 updateWorkingSet = true
+             }
+         }
+         
+         if updateWorkingSet {
+             signalEnumerator(for: [.workingSet])
+         }
+     }
+     */
 }

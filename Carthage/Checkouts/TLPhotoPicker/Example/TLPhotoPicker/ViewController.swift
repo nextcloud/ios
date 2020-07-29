@@ -31,6 +31,24 @@ class ViewController: UIViewController,TLPhotosPickerViewControllerDelegate {
         self.present(viewController, animated: true, completion: nil)
     }
     
+    @IBAction func onlyVideoRecording(_ sender: Any) {
+        let viewController = CustomPhotoPickerViewController()
+        viewController.delegate = self
+        viewController.didExceedMaximumNumberOfSelection = { [weak self] (picker) in
+            self?.showExceededMaximumAlert(vc: picker)
+        }
+        var configure = TLPhotosPickerConfigure()
+        configure.numberOfColumn = 3
+        configure.allowedPhotograph = false
+        configure.allowedVideoRecording = true
+        configure.mediaType = .video
+        viewController.configure = configure
+        viewController.selectedAssets = self.selectedAssets
+        viewController.logDelegate = self
+
+        self.present(viewController, animated: true, completion: nil)
+    }
+    
     @IBAction func pickerWithCustomCameraCell() {
         let viewController = CustomPhotoPickerViewController()
         viewController.delegate = self

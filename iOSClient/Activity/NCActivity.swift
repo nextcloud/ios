@@ -361,7 +361,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         viewController.path = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
                     }
                 }
             }
@@ -423,9 +423,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
                                                        
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
-                            if let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata!) {
-                                self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
-                            }
+                            NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                            self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
                         }
                     }
                     

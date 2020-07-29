@@ -68,6 +68,7 @@
         [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] url:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        
         _activeAccount = tableAccount.account;
+        _activeUrl = tableAccount.url;
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             
@@ -281,15 +282,15 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl url:@"" contentType:@""];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.activeUrl url:@"" contentType:@""];
                                
                 metadata.date = date;
                 metadata.etag = etag;
                 metadata.serverUrl = self.serverUrl;
                 metadata.size = size;
                 
-                metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                (void)[[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];

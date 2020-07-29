@@ -189,11 +189,9 @@ class NCEndToEndMetadata : NSObject  {
                 }
                 
                 do {
-                    
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
-                    
-                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier))
-                    if  metadata != nil {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                        let metadata = tableMetadata.init(value: metadata)
                     
                         let object = tableE2eEncryption()
                     
@@ -220,17 +218,15 @@ class NCEndToEndMetadata : NSObject  {
                         }
                         
                         // Update metadata on tableMetadata
-                        metadata?.fileNameView = encryptedFileAttributes.filename
+                        metadata.fileNameView = encryptedFileAttributes.filename
                         
-                        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: encryptedFileAttributes.filename, contentType: metadata!.contentType, directory: metadata!.directory)
+                        let results = NCCommunicationCommon.shared.getInternalContenType(fileName: encryptedFileAttributes.filename, contentType: metadata.contentType, directory: metadata.directory)
                         
-                        metadata?.contentType = results.contentType
-                        metadata?.iconName = results.iconName
-                        metadata?.typeFile = results.typeFile
+                        metadata.contentType = results.contentType
+                        metadata.iconName = results.iconName
+                        metadata.typeFile = results.typeFile
                                                 
-                        DispatchQueue.main.async {
-                            NCManageDatabase.sharedInstance.addMetadata(metadata!)
-                        }
+                        NCManageDatabase.sharedInstance.addMetadata(metadata)
                     }
                     
                 } catch let error {

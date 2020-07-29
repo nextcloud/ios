@@ -134,7 +134,12 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
         
-        if metadata.session.count == 0 { return }
+        if metadata.session.count == 0 {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
+            return
+        }
+        let metadata = tableMetadata.init(value: metadata)
 
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
             NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
@@ -151,8 +156,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 session = NCCommunicationBackground.shared.sessionManagerTransferExtension
             }
             
-            var metadata = metadata
-
             session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
                 
                 var cancel = false
@@ -162,7 +165,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                         if task.taskIdentifier == metadata.sessionTaskIdentifier {
                             if uploadStatusForcedStart {
                                 metadata.status = Int(k_metadataStatusUploadForcedStart)
-                                metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) ?? metadata
+                                NCManageDatabase.sharedInstance.addMetadata(metadata)
                             }
                             task.cancel()
                             cancel = true
@@ -190,23 +193,17 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)  {
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
+            for metadata in metadatas {
                 
-                for metadata in metadatas {
-                    
-                    // Modify
-                    if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                        metadata.session = ""
-                        metadata.sessionSelector = ""
-                        metadata.status = Int(k_metadataStatusNormal)
-                        
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    }
-                    
-                    // Cancel Task
-                    if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                        self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
-                    }
+                // Modify
+                if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
+                }
+                
+                // Cancel Task
+                if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                    self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
                 }
             }
         }
@@ -306,9 +303,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 //  image local
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
-                    var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                      if tableLocalFile == nil && size == metadata.size {
-                        tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
                     else { cell.imageLocal.image = UIImage.init(named: "local") }
@@ -476,7 +473,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.filePreviewImageView.backgroundColor = UIColor.lightGray
             
             // Download preview
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
+            if !(metadataFolder?.e2eEncrypted ?? false) {
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: appDelegate.activeUrl, view: tableView, indexPath: indexPath)
+            }
             
             // Share
             var isShare = false
@@ -541,9 +540,9 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 // Local Image - Offline
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
-                    var tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if tableLocalFile == nil && size == metadata.size {
-                        tableLocalFile = NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile != nil && tableLocalFile!.offline { cell.local.image = UIImage.init(named: "offlineFlag") }
                     else { cell.local.image = UIImage.init(named: "local") }
@@ -672,33 +671,21 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
             if iconFileExists {
                 cell.file.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            } else if(!metadata.hasPreview){
-                if metadata.iconName.count > 0 {
-                    cell.file.image = UIImage.init(named: metadata.iconName)
+            } else {
+                if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError {
+                
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "cloudUpload"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
+                
                 } else {
-                    cell.file.image = UIImage.init(named: "file")
-                }
-            }           
-            
-            // uploadFile
-            if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError {
                 
-                if (!iconFileExists) {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "uploadCloud"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "cloudDownload"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
                 }
-                
-                cell.labelTitle.isEnabled = false
             }
             
             // uploadFileError
             if metadata.status == k_metadataStatusUploadError {
                 
-                cell.labelTitle.isEnabled = false
                 cell.status.image = UIImage.init(named: "statuserror")
-                
-                if !iconFileExists {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "uploadCloud"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
-                }
                 
                 if metadata.sessionError.count == 0 {
                     cell.labelInfoFile.text = NSLocalizedString("_error_", comment: "") + ", " + NSLocalizedString("_file_not_uploaded_", comment: "")

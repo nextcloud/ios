@@ -412,19 +412,16 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    // DISABLE E2EE
-    return false;
-    // DISABLE E2EE
-    
     BOOL isE2EEEnabled = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
+    NSString* versionE2EE = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];    
     
-    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0 && isE2EEEnabled) {
-        
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0 && isE2EEEnabled && [versionE2EE isEqual:k_E2EE_API]) {
+       
         return YES;
         
     } else {
@@ -1435,38 +1432,44 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
 {
-    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-    
-    if (tableAccount == nil) {
-        if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Upload error, account not found"}];
-        }
-        
+    if ([[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]] == nil) {
         completion(nil, nil);
         return;
     }
+    NSString *ocId = metadata.ocId;
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"Error photo/video not found, remove from upload"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
         }
         
         completion(nil, nil);
         return;
     }
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    PHAsset *asset = result[0];
+    NSDate *creationDate = asset.creationDate;
+    NSDate *modificationDate = asset.modificationDate;
+    NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
+    BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
+    if (!isLocallayAvailable) {
+        if (notification) {
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_locally_"}];
+        }
         
-        PHAsset *asset = result[0];
-        NSDate *creationDate = asset.creationDate;
+        completion(nil, nil);
+        return;
+    }
+    long fileSize = [[resourceArray.firstObject valueForKey:@"fileSize"] longValue];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
         // IMAGE
         if (asset.mediaType == PHAssetMediaTypeImage) {
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES; // iCloud
+            options.networkAccessAllowed = NO; // iCloud
             options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             options.synchronous = YES;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
@@ -1484,6 +1487,12 @@
             };
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                
+                tableMetadata *newMetadata = metadata;
+                tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                if (metadataTmp != nil) {
+                    newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
+                }
                 
                 NSError *error = nil;
                 NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
@@ -1504,11 +1513,6 @@
                 
                 [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
-                NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
-                
-                newMetadata.creationDate = creationDate;
-                newMetadata.date = attributes[NSFileModificationDate];
-                newMetadata.size = [attributes[NSFileSize] longValue];
                 
                 if (newMetadata.e2eEncrypted) {
                     newMetadata.fileNameView = fileName;
@@ -1516,7 +1520,11 @@
                     newMetadata.fileNameView = fileName;
                     newMetadata.fileName = fileName;
                 }
-                                    
+                     
+                newMetadata.creationDate = creationDate;
+                newMetadata.date = modificationDate;
+                newMetadata.size = fileSize;
+                
                 completion(newMetadata, fileNamePath);
             }];
         }
@@ -1525,7 +1533,7 @@
         if (asset.mediaType == PHAssetMediaTypeVideo) {
             
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES;
+            options.networkAccessAllowed = NO;
             options.version = PHVideoRequestOptionsVersionOriginal;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
                 
@@ -1543,7 +1551,13 @@
             [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
-                                       
+                    
+                    tableMetadata *newMetadata = metadata;
+                    tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                    if (metadataTmp != nil) {
+                        newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
+                    }
+                    
                     NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:newMetadata.fileNameView];
                     NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
                     NSError *error = nil;
@@ -1562,14 +1576,10 @@
                             completion(nil, nil);
                             
                         } else {
-                                
-                            NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
                             
                             newMetadata.creationDate = creationDate;
-                            if (attributes[NSFileModificationDate]) {
-                                newMetadata.date = attributes[NSFileModificationDate];
-                            }
-                            newMetadata.size = [attributes[NSFileSize] longValue];
+                            newMetadata.date = modificationDate;
+                            newMetadata.size = fileSize;
                             
                             completion(newMetadata, fileNamePath);
                         }
@@ -1593,7 +1603,6 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account
 {
-    
     if (e2eEncrypted) {
         
         return true;
@@ -1618,8 +1627,8 @@
 #pragma mark ===== Share Permissions =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder {
-    
++ (NSInteger) getPermissionsValueByCanEdit:(BOOL)canEdit andCanCreate:(BOOL)canCreate andCanChange:(BOOL)canChange andCanDelete:(BOOL)canDelete andCanShare:(BOOL)canShare andIsFolder:(BOOL) isFolder
+{    
     NSInteger permissionsValue = k_read_share_permission;
     
     if (canEdit && !isFolder) {

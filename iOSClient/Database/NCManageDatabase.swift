@@ -47,7 +47,7 @@ class NCManageDatabase: NSObject {
             let config = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
                 schemaVersion: UInt64(k_databaseSchemaVersion),
-                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self]
+                objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self]
             )
             
             Realm.Configuration.defaultConfiguration = config
@@ -131,7 +131,7 @@ class NCManageDatabase: NSObject {
                 if let databaseFilePath = databaseFilePath {
                     do {
                         #if !EXTENSION
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
                         #endif
                         try FileManager.default.removeItem(at: databaseFilePath)
                     } catch {}
@@ -153,7 +153,7 @@ class NCManageDatabase: NSObject {
             if let databaseFilePath = databaseFilePath {
                 do {
                     #if !EXTENSION
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: 0)
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_database_corrupt_", delay: TimeInterval(k_dismissAfterSecondLong), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
                     #endif
                     try FileManager.default.removeItem(at: databaseFilePath)
                 } catch {}
@@ -872,6 +872,23 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getCapabilities(account: String) -> String? {
+                           
+        let realm = try! Realm()
+        realm.refresh()
+               
+        guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
+            return nil
+        }
+        guard let jsondata = result.jsondata else {
+            return nil
+        }
+               
+        let json = JSON(jsondata)
+        
+        return json.rawString()
+    }
+    
     @objc func getCapabilitiesServerString(account: String, elements: Array<String>) -> String? {
 
         let realm = try! Realm()
@@ -994,7 +1011,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
-        return Array(results.map { tableComments.init(value:$0) })
+        return Array(results.map { $0.freeze() })
     }
     
     //MARK: -
@@ -1061,7 +1078,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1074,7 +1091,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingCreators.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1086,7 +1103,7 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
         
         if (results.count > 0) {
-            return Array(results.map { tableDirectEditingEditors.init(value:$0) })
+            return Array(results.map { $0.freeze() })
         } else {
             return nil
         }
@@ -1099,8 +1116,7 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
     
-    @discardableResult
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String?, permissions: String?, serverUrl: String, richWorkspace: String?, account: String) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -1134,10 +1150,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-    
-        return tableDirectory.init(value: addObject)
     }
     
     @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
@@ -1572,8 +1585,7 @@ class NCManageDatabase: NSObject {
         return tableLocalFile.init(value: localFile)
     }
     
-    @discardableResult
-    @objc func addLocalFile(metadata: tableMetadata) -> tableLocalFile? {
+    @objc func addLocalFile(metadata: tableMetadata) {
         
         let realm = try! Realm()
         let addObject = tableLocalFile()
@@ -1595,10 +1607,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        return tableLocalFile.init(value: addObject)
     }
     
     @objc func deleteLocalFile(predicate: NSPredicate) {
@@ -1660,22 +1669,17 @@ class NCManageDatabase: NSObject {
         guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
             return nil
         }
-
-        return tableLocalFile.init(value: result)
+        
+        return result.freeze()
     }
     
-    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile]? {
+    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
         
         let realm = try! Realm()
         realm.refresh()
         
         let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        
-        if (results.count > 0) {
-            return Array(results.map { tableLocalFile.init(value:$0) })
-        } else {
-            return nil
-        }
+        return Array(results.map { $0.freeze() })
     }
     
     @objc func setLocalFile(ocId: String, offline: Bool) {
@@ -1795,7 +1799,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, url: String, contentType: String) -> tableMetadata {
+    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String) -> tableMetadata {
         
         let metadata = tableMetadata()
         let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
@@ -1813,12 +1817,12 @@ class NCManageDatabase: NSObject {
         metadata.typeFile = results.typeFile
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
+        metadata.urlBase = urlBase
         
         return metadata
     }
     
-    @discardableResult
-    @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    @objc func addMetadata(_ metadata: tableMetadata) {
 
         let realm = try! Realm()
 
@@ -1828,35 +1832,24 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-                
-        return tableMetadata.init(value: metadata)
     }
     
-    @discardableResult
-    @objc func addMetadatas(_ metadatas: [tableMetadata]) -> [tableMetadata]? {
+    @objc func addMetadatas(_ metadatas: [tableMetadata]) {
         
-        var directoryToClearDate: [String: String] = [:]
-
         let realm = try! Realm()
 
         do {
             try realm.write {
                 for metadata in metadatas {
-                    directoryToClearDate[metadata.serverUrl] = metadata.account
                     realm.add(metadata, update: .all)
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        
-        return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
-
+    
     @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {
     
         guard let files = files else { return }
@@ -1915,19 +1908,12 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func deleteMetadata(predicate: NSPredicate) {
-        
-        var directoryToClearDate: [String: String] = [:]
-        
+                
         let realm = try! Realm()
 
         realm.beginWrite()
 
         let results = realm.objects(tableMetadata.self).filter(predicate)
-        
-        for result in results {
-            directoryToClearDate[result.serverUrl] = result.account
-        }
-        
         realm.delete(results)
         
         do {
@@ -1938,8 +1924,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @discardableResult
-    @objc func moveMetadata(ocId: String, serverUrlTo: String) -> tableMetadata? {
+    @objc func moveMetadata(ocId: String, serverUrlTo: String) {
         
         var result: tableMetadata?
         let realm = try! Realm()
@@ -1953,14 +1938,7 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        if result == nil {
-            return nil
-        }
-        
-        return tableMetadata.init(value: result!)
     }
     
     @objc func addMetadataServerUrl(ocId: String, serverUrl: String) {
@@ -1980,8 +1958,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @discardableResult
-    @objc func renameMetadata(fileNameTo: String, ocId: String) -> tableMetadata? {
+    @objc func renameMetadata(fileNameTo: String, ocId: String) {
         
         var result: tableMetadata?
         let realm = try! Realm()
@@ -1996,30 +1973,60 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-        
-        if result == nil {
-            return nil
-        }
-        
-        return tableMetadata.init(value: result!)
     }
-    
-    @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+
+    @discardableResult
+    @objc func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata] ,withVerifyLocal local: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
-
+        var ocIdsUdated : [String] = []
+        var metadatasUdated : [tableMetadata] = []
+        
         do {
             try realm.write {
-                realm.add(metadata, update: .all)
+                // DELETE
+                for metadataResult in metadatasResult {
+                    if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
+                        if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", metadataResult.ocId)).first {
+                            realm.delete(result)
+                        }
+                    }
+                }
+                // UPDATE/NEW
+                for metadata in metadatas {
+                    var updated = false
+                    if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
+                        // update
+                        if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
+                            ocIdsUdated.append(metadata.ocId)
+                            realm.add(metadata, update: .all)
+                            updated = true
+                        }
+                    } else {
+                        // new
+                        ocIdsUdated.append(metadata.ocId)
+                        realm.add(metadata, update: .all)
+                        updated = true
+                    }
+                    if local && !updated {
+                        if realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first == nil {
+                           ocIdsUdated.append(metadata.ocId)
+                        }
+                    }
+                }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
         }
-                
-        return tableMetadata.init(value: metadata)
+        
+        for ocId in ocIdsUdated {
+            if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
+                metadatasUdated.append(result.freeze())
+            }
+        }
+        
+        return metadatasUdated
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
@@ -2128,41 +2135,19 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableMetadata.init(value: result)
+        return result.freeze()
     }
     
-    @objc func getMetadata(predicate: NSPredicate, freeze: Bool) -> tableMetadata? {
+    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first else {
             return nil
         }
-        
-        if freeze {
-            return result.freeze()
-        } else {
-            return result
-        }
-    }
-    
-    @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool, freeze: Bool = false) -> tableMetadata? {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        
-        if (results.count > 0) {
-            if freeze {
-                return results[0].freeze()
-            } else {
-                return tableMetadata.init(value: results[0])
-            }
-        } else {
-            return nil
-        }
+       
+        return result.freeze()
     }
     
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
@@ -2198,28 +2183,25 @@ class NCManageDatabase: NSObject {
         }
         
         if (finals.count > 0) {
-            return Array(finals.map { tableMetadata.init(value:$0) })
+            return Array(finals.map { tableMetadata.init(value:$0.freeze()) })
         } else {
             return nil
         }
     }
     
-    @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false, freeze: Bool = false) -> [tableMetadata]? {
+    @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
         realm.refresh()
+        var metadatas: [tableMetadata] = []
         
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if results.count > 0 {
             if page == 0 || limit == 0 {
-                if freeze {
-                    return Array(results.freeze())
-                } else {
-                    return Array(results.map { tableMetadata.init(value:$0) })
-                }
+                return Array(results.freeze())
             } else {
-                var metadatas: [tableMetadata] = []
+                
                 let nFrom = (page - 1) * limit
                 let nTo = nFrom + (limit - 1)
                 
@@ -2227,17 +2209,11 @@ class NCManageDatabase: NSObject {
                     if n == results.count {
                         break
                     }
-                    if freeze {
-                        metadatas.append(results[n].freeze())
-                    } else {
-                        metadatas.append(tableMetadata.init(value: results[n]))
-                    }
+                    metadatas.append(results[n].freeze())
                 }
-                return metadatas
             }
-        } else {
-            return nil
         }
+        return metadatas
     }
     
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
@@ -2248,13 +2224,13 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
-            return tableMetadata.init(value: results[index])
+            return tableMetadata.init(value: results[index].freeze())
         } else {
             return nil
         }
     }
     
-    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int, freeze: Bool) -> tableMetadata? {
+    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
@@ -2263,11 +2239,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        if freeze {
-            return result.freeze()
-        } else {
-            return tableMetadata.init(value: result)
-        }
+        return result.freeze()
     }
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
@@ -2381,10 +2353,10 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableMetadata.init(value: result)
+        return result.freeze()
     }
     
-    @objc func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
+    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
                 
         DispatchQueue.global().async {
             autoreleasepool {

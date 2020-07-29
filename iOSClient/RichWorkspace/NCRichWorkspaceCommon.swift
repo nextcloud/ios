@@ -31,7 +31,7 @@ import NCCommunication
     @objc func createViewerNextcloudText(serverUrl: String,viewController: UIViewController) {
         
         if !NCCommunication.shared.isNetworkReachable() {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             return;
         }
         
@@ -64,7 +64,7 @@ import NCCommunication
         
         if !NCCommunication.shared.isNetworkReachable() {
             
-            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: 0)
+            NCContentPresenter.shared.messageNotification("_error_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             return;
         }
         

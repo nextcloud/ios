@@ -101,6 +101,7 @@
 "_denied_album_"            = "This app does not have access to \"Photos\", you can enable access in Privacy Settings";
 "_denied_camera_"           = "This app does not have access to \"Camera\", you can enable access in Privacy Settings";
 "_start_"                   = "Start";
+"_force_start_"             = "Force the start";
 "_purchase_"                = "Purchase";
 "_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
 "_error_parameter_schema_"  = "Wrong parameters, impossible to continue";
@@ -289,6 +290,9 @@
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect";
 "_upload_mov_livephoto_"        = "Live Photo";
 "_upload_mov_livephoto_footer_" = "\"Live Photo\" will save, when possible, the photo selected in \"Live Photo\" format";
+"_view_capabilities_"           = "View the capabilities";
+"_capabilities_"                = "Capabilities";
+"_no_capabilities_found_"       = "Capabilities not found";
 
 // Login
 
@@ -674,6 +678,7 @@
 "_e2e_error_delete_mark_folder_"    = "Decrypt marked folder";
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
+"_e2e_error_not_move_"              = "It is not possible move files to encrypted directory";
 
 // Scan Document
 
@@ -789,6 +794,9 @@
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
 "_internal_generic_error_"              = "internal error";
 "_editor_unknown_"                      = "Failed to open file: Editor is unknown";
+"_err_asset_not_found_locally_"         = "Error photo/video not found locally, removed from upload";
+"_err_asset_not_found_"                 = "Error photo/video not found, removed from upload";
+"_err_e2ee_app_version_"                = "Error, the version of app End-to-End Encryption is not compatible, please update your server";
 
 // QRCode
 

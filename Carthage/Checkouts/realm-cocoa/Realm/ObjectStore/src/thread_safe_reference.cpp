@@ -109,19 +109,6 @@ private:
     std::string m_object_schema_name;
 };
 
-template<typename T>
-struct ListType {
-    using type = Lst<std::remove_reference_t<T>>;
-};
-
-// The code path which would instantiate List<Obj> isn't reachable, but still
-// produces errors about the type not being instantiable so we instead map it
-// to an arbitrary valid type
-template<>
-struct ListType<Obj&> {
-    using type = Lst<int64_t>;
-};
-
 template<>
 class ThreadSafeReference::PayloadImpl<Results> : public ThreadSafeReference::Payload {
 public:
@@ -161,7 +148,7 @@ public:
                 // match what happens for other types of handover where the
                 // object doesn't exist.
                 switch_on_type(ObjectSchema::from_core_type(*table, m_col_key), [&](auto* t) -> void {
-                    list = std::make_unique<typename ListType<decltype(*t)>::type>();
+                    list = std::make_unique<Lst<NonObjTypeT<decltype(*t)>>>();
                 });
             }
             return Results(r, std::move(list), m_ordering);
