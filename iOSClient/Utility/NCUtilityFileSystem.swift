@@ -73,14 +73,20 @@ class NCUtilityFileSystem: NSObject {
         return nil
     }
     
-    @objc func writeFile(fileURL: URL, text: String) {
+    @objc func writeFile(fileURL: URL, text: String) -> Bool {
         
         do {
             try FileManager.default.removeItem(at: fileURL)
-            try text.write(to: fileURL, atomically: false, encoding: .utf8)
         }
-        catch { }
-
+        catch {}
+        
+        do {
+            try text.write(to: fileURL, atomically: true, encoding: .utf8)
+            return true
+        }
+        catch {
+            return false
+        }
     }
 }
 

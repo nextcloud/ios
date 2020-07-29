@@ -55,6 +55,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var imageOnlyOffice: UIImageView!
     @IBOutlet weak var imageStatusOnlyOffice: UIImageView!
     
+    private var documentController: UIDocumentInteractionController?
     private var account: String = ""
     private var capabilitiesText = ""
     private var imageEnable: UIImage?
@@ -111,14 +112,17 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     }
     
     @objc func share() {
+        
         let tempDirectoryURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true)
         let fileURL = tempDirectoryURL.appendingPathComponent("capabilities.txt")
         
-        NCUtilityFileSystem.shared.writeFile(fileURL: fileURL, text: capabilitiesText)
-
-        let documentController = UIDocumentInteractionController.init(url: fileURL)
-        documentController.delegate = self
-        documentController.presentOpenInMenu(from: CGRect.zero, in: self.view, animated: true)
+        if NCUtilityFileSystem.shared.writeFile(fileURL: fileURL, text: capabilitiesText) {
+            documentController = UIDocumentInteractionController.init(url: fileURL)
+            if documentController != nil {
+                documentController!.delegate = self
+                documentController!.presentOpenInMenu(from: CGRect.zero, in: self.view, animated: true)
+            }
+        }
     }
     
     @objc func close() {
