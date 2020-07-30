@@ -527,11 +527,17 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                                 t = t.scaledBy(x: image.size.width, y: -image.size.height)
                                 t = t.translatedBy(x: 0, y: -1)
                                 let rect = observation.boundingBox.applying(t)
-                                                                
+                                let text = textLine.string
+
                                 let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                let bestFont = self.bestFittingFont(for: textLine.string, in: rect, fontDescriptor: font.fontDescriptor)
+                                let bestFont = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor)
                                 
-                                textLine.string.draw(in: rect, withAttributes: [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.foregroundColor: fontColor])
+                                let paragraphStyle = NSMutableParagraphStyle()
+                                paragraphStyle.alignment = .justified
+
+                                let attributes = [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: fontColor]
+                                
+                                text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
                             }
                         }
                         
