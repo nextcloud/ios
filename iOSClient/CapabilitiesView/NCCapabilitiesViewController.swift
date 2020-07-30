@@ -75,9 +75,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
-        textView.layer.borderWidth = 1
-        textView.layer.cornerRadius = 10
-        textView.layer.borderColor = UIColor.gray.cgColor
+        textView.layer.cornerRadius = 15
+        textView.backgroundColor = NCBrandColor.sharedInstance.graySoft
         
         imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
         imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
@@ -216,7 +215,6 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                 } else if editor.editor == k_editor_onlyoffice {
                     onlyofficeEditors = true
                 }
-                
             }
         }
         
