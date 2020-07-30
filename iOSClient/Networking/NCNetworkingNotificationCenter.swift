@@ -102,14 +102,17 @@ import Foundation
                         }
                         #else
                         if metadata.typeFile == k_metadataTypeFile_imagemeter {
-                            NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
+                            
+                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                             return
                         }
                         #endif
                         
                         if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                            NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
+                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                             
                         } else {
                             
@@ -124,7 +127,8 @@ import Foundation
                     // Open in...
                     if (selector == selectorOpenIn || selector == selectorOpenInDetail) && UIApplication.shared.applicationState == UIApplication.State.active {
 
-                        NCMainCommon.sharedInstance.openIn(metadata: metadata, selector: selector)
+                        let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                        NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                     }
                     
                     // Save to Photo Album

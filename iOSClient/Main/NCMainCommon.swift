@@ -783,10 +783,10 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
     //MARK: - OpenIn
     
-    func openIn(metadata: tableMetadata, selector: String) {
+    func openIn(fileURL: URL, selector: String?) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        docController = UIDocumentInteractionController(url: NSURL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) as URL)
+        docController = UIDocumentInteractionController(url: fileURL)
         docController?.delegate = self
         
         if selector == selectorOpenInDetail {
