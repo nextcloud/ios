@@ -128,7 +128,7 @@
     
     // Section CAPABILITIES -------------------------------------------------
 
-    section = [XLFormSectionDescriptor formSection];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_view_capabilities_", nil);
     

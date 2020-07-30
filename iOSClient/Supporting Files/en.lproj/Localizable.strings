@@ -293,6 +293,7 @@
 "_view_capabilities_"           = "View the capabilities";
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
+"_diagnostics_"                 = "Diagnostics";
 
 // Login
 
