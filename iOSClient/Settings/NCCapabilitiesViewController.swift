@@ -46,6 +46,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var imageNotification: UIImageView!
     @IBOutlet weak var imageStatusNotification: UIImageView!
     
+    @IBOutlet weak var imageDeletedFiles: UIImageView!
+    @IBOutlet weak var imageStatusDeletedFiles: UIImageView!
+    
     @IBOutlet weak var imageText: UIImageView!
     @IBOutlet weak var imageStatusText: UIImageView!
     
@@ -79,6 +82,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
         imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
         imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
+        imageDeletedFiles.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "delete"), width: 100, height: 100, color: .gray)
         imageText.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "text"), width: 100, height: 100, color: .gray)
         imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
         imageOnlyOffice.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "onlyoffice"), width: 100, height: 100, color: .gray)
@@ -167,6 +171,13 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             imageStatusNotification.image = imageEnable
         } else {
             imageStatusNotification.image = imageDisable
+        }
+        
+        let deleteFiles = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
+        if deleteFiles {
+            imageStatusDeletedFiles.image = imageEnable
+        } else {
+            imageStatusDeletedFiles.image = imageDisable
         }
         
         var textEditor = false

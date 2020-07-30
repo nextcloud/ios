@@ -20,7 +20,7 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OO4-N7-9vp">
-                                        <rect key="frame" x="0.0" y="460" width="414" height="43"/>
+                                        <rect key="frame" x="0.0" y="510" width="414" height="43"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RIO-6X-GG1">
                                                 <rect key="frame" x="5" y="5" width="404" height="33"/>
@@ -38,7 +38,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Sms-Ez-fLO">
-                                        <rect key="frame" x="5" y="5" width="404" height="450"/>
+                                        <rect key="frame" x="5" y="5" width="404" height="500"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jdW-oZ-cH8" userLabel="FileSharing">
                                                 <rect key="frame" x="0.0" y="0.0" width="404" height="50"/>
@@ -256,8 +256,44 @@
                                                     <constraint firstItem="W6x-fO-A6L" firstAttribute="leading" secondItem="cgb-3g-trc" secondAttribute="trailing" constant="10" id="zGE-fg-e3h"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZNB-jF-9zg" userLabel="direct editing">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8nf-zJ-Qas" userLabel="Notification">
                                                 <rect key="frame" x="0.0" y="300" width="404" height="50"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="delete" translatesAutoresizingMaskIntoConstraints="NO" id="8Zc-9W-n27">
+                                                        <rect key="frame" x="0.0" y="10" width="30" height="30"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="30" id="GE1-Yd-rOr"/>
+                                                            <constraint firstAttribute="height" constant="30" id="aQW-Uy-znK"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Deleted files" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EVN-t6-jzB">
+                                                        <rect key="frame" x="40" y="16" width="324" height="18"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kl7-Ho-jmb">
+                                                        <rect key="frame" x="374" y="15" width="20" height="20"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="20" id="Mur-7v-dxp"/>
+                                                            <constraint firstAttribute="height" constant="20" id="w2C-Dd-AdR"/>
+                                                        </constraints>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                <constraints>
+                                                    <constraint firstItem="8Zc-9W-n27" firstAttribute="leading" secondItem="8nf-zJ-Qas" secondAttribute="leading" id="0gl-yZ-NHn"/>
+                                                    <constraint firstItem="kl7-Ho-jmb" firstAttribute="leading" secondItem="EVN-t6-jzB" secondAttribute="trailing" constant="10" id="1Ki-TH-f2b"/>
+                                                    <constraint firstItem="EVN-t6-jzB" firstAttribute="centerY" secondItem="8nf-zJ-Qas" secondAttribute="centerY" id="5dv-S0-9bY"/>
+                                                    <constraint firstItem="8Zc-9W-n27" firstAttribute="centerY" secondItem="8nf-zJ-Qas" secondAttribute="centerY" id="9H1-hH-E2o"/>
+                                                    <constraint firstAttribute="trailing" secondItem="kl7-Ho-jmb" secondAttribute="trailing" constant="10" id="H1s-Oi-JJg"/>
+                                                    <constraint firstItem="kl7-Ho-jmb" firstAttribute="centerY" secondItem="8nf-zJ-Qas" secondAttribute="centerY" id="LCi-KA-zVT"/>
+                                                    <constraint firstAttribute="height" constant="50" id="NJt-Ob-qAJ"/>
+                                                    <constraint firstItem="EVN-t6-jzB" firstAttribute="leading" secondItem="8Zc-9W-n27" secondAttribute="trailing" constant="10" id="rDk-Z6-y2x"/>
+                                                </constraints>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZNB-jF-9zg" userLabel="direct editing">
+                                                <rect key="frame" x="0.0" y="350" width="404" height="50"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="text" translatesAutoresizingMaskIntoConstraints="NO" id="iCB-2A-phO">
                                                         <rect key="frame" x="0.0" y="10" width="30" height="30"/>
@@ -293,7 +329,7 @@
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dhs-06-3RT" userLabel="Collabora">
-                                                <rect key="frame" x="0.0" y="350" width="404" height="50"/>
+                                                <rect key="frame" x="0.0" y="400" width="404" height="50"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="collabora" translatesAutoresizingMaskIntoConstraints="NO" id="GXZ-Rj-WCE">
                                                         <rect key="frame" x="0.0" y="10" width="30" height="30"/>
@@ -329,7 +365,7 @@
                                                 </constraints>
                                             </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LTt-2C-rPb" userLabel="OnlyOffice">
-                                                <rect key="frame" x="0.0" y="400" width="404" height="50"/>
+                                                <rect key="frame" x="0.0" y="450" width="404" height="50"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="onlyoffice" translatesAutoresizingMaskIntoConstraints="NO" id="xvv-h0-9bM">
                                                         <rect key="frame" x="0.0" y="10" width="30" height="30"/>
@@ -368,10 +404,10 @@
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
                                             <constraint firstItem="lGp-bh-Ysz" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="0qE-PV-O2f"/>
-                                            <constraint firstAttribute="height" constant="450" id="6nU-Cb-MzH" userLabel="height = 250"/>
+                                            <constraint firstAttribute="trailing" secondItem="8nf-zJ-Qas" secondAttribute="trailing" id="0vv-HQ-Qqx"/>
+                                            <constraint firstAttribute="height" constant="500" id="6nU-Cb-MzH"/>
                                             <constraint firstAttribute="trailing" secondItem="00l-HL-Ljt" secondAttribute="trailing" id="8KN-x1-W0c"/>
                                             <constraint firstItem="mSC-JU-xuk" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="9Nq-du-3ah"/>
-                                            <constraint firstItem="ZNB-jF-9zg" firstAttribute="top" secondItem="UPC-L1-VKj" secondAttribute="bottom" id="BHj-tM-Fuq"/>
                                             <constraint firstItem="lGp-bh-Ysz" firstAttribute="top" secondItem="00l-HL-Ljt" secondAttribute="bottom" id="Feq-pd-Vch"/>
                                             <constraint firstItem="ZNB-jF-9zg" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="GdE-lt-vZC"/>
                                             <constraint firstAttribute="trailing" secondItem="nVq-4i-FNy" secondAttribute="trailing" id="HSG-Ia-fYc"/>
@@ -381,10 +417,12 @@
                                             <constraint firstItem="00l-HL-Ljt" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="SkB-av-5lO"/>
                                             <constraint firstItem="00l-HL-Ljt" firstAttribute="top" secondItem="nVq-4i-FNy" secondAttribute="bottom" id="TdY-oP-UfF"/>
                                             <constraint firstItem="jdW-oZ-cH8" firstAttribute="top" secondItem="Sms-Ez-fLO" secondAttribute="top" id="UBW-Mx-NTs"/>
+                                            <constraint firstItem="8nf-zJ-Qas" firstAttribute="top" secondItem="UPC-L1-VKj" secondAttribute="bottom" id="UqS-Lx-6mL"/>
                                             <constraint firstItem="dhs-06-3RT" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="UwG-6b-pEk"/>
                                             <constraint firstItem="nVq-4i-FNy" firstAttribute="top" secondItem="mSC-JU-xuk" secondAttribute="bottom" id="VfU-sj-S9y"/>
                                             <constraint firstAttribute="trailing" secondItem="lGp-bh-Ysz" secondAttribute="trailing" id="bUd-8w-D8k"/>
                                             <constraint firstItem="UPC-L1-VKj" firstAttribute="top" secondItem="lGp-bh-Ysz" secondAttribute="bottom" id="br5-nz-w7h"/>
+                                            <constraint firstItem="8nf-zJ-Qas" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="dsm-XA-dZD"/>
                                             <constraint firstItem="jdW-oZ-cH8" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="eNi-cO-UFd"/>
                                             <constraint firstItem="nVq-4i-FNy" firstAttribute="leading" secondItem="Sms-Ez-fLO" secondAttribute="leading" id="efi-mm-hvP"/>
                                             <constraint firstAttribute="trailing" secondItem="LTt-2C-rPb" secondAttribute="trailing" id="erZ-V1-p76"/>
@@ -394,12 +432,13 @@
                                             <constraint firstItem="dhs-06-3RT" firstAttribute="top" secondItem="ZNB-jF-9zg" secondAttribute="bottom" id="mJv-Ta-ZbY"/>
                                             <constraint firstAttribute="trailing" secondItem="mSC-JU-xuk" secondAttribute="trailing" id="pBU-xQ-0qV"/>
                                             <constraint firstAttribute="trailing" secondItem="ZNB-jF-9zg" secondAttribute="trailing" id="v5H-SV-MvM"/>
+                                            <constraint firstItem="ZNB-jF-9zg" firstAttribute="top" secondItem="8nf-zJ-Qas" secondAttribute="bottom" id="w6t-hz-cPZ"/>
                                             <constraint firstItem="mSC-JU-xuk" firstAttribute="top" secondItem="jdW-oZ-cH8" secondAttribute="bottom" id="y2u-2j-cif"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="460" id="A9O-TK-Vz6" userLabel="View.top = top + 260"/>
+                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="510" id="A9O-TK-Vz6"/>
                                     <constraint firstAttribute="bottom" secondItem="OO4-N7-9vp" secondAttribute="bottom" id="MpX-OZ-MDh"/>
                                     <constraint firstItem="OO4-N7-9vp" firstAttribute="width" secondItem="hTE-ys-qsF" secondAttribute="width" id="PWW-C3-Qcw"/>
                                     <constraint firstItem="OO4-N7-9vp" firstAttribute="leading" secondItem="hTE-ys-qsF" secondAttribute="leading" id="Q4I-CY-qdY"/>
@@ -423,6 +462,7 @@
                     <connections>
                         <outlet property="imageActivity" destination="tl5-S1-p9X" id="pT5-X7-R2q"/>
                         <outlet property="imageCollabora" destination="GXZ-Rj-WCE" id="cOv-xH-ZKC"/>
+                        <outlet property="imageDeletedFiles" destination="8Zc-9W-n27" id="XYP-JN-JFc"/>
                         <outlet property="imageEndToEndEncryption" destination="S7m-5Z-ktw" id="0Pv-Yt-YJB"/>
                         <outlet property="imageExternalSite" destination="JWO-C0-32L" id="JKi-n1-5IQ"/>
                         <outlet property="imageFileSharing" destination="G9c-Nd-Ikl" id="Wha-2g-8o0"/>
@@ -431,6 +471,7 @@
                         <outlet property="imagePaginatedFileListing" destination="itj-Iy-gT3" id="9Zj-fQ-eRC"/>
                         <outlet property="imageStatusActivity" destination="2lM-1o-eYa" id="Pna-fT-IDP"/>
                         <outlet property="imageStatusCollabora" destination="9wU-lQ-TOx" id="iyp-ce-ozc"/>
+                        <outlet property="imageStatusDeletedFiles" destination="kl7-Ho-jmb" id="8K7-Sh-o5e"/>
                         <outlet property="imageStatusEndToEndEncryption" destination="qbN-VY-iSu" id="4Fh-f4-Hwp"/>
                         <outlet property="imageStatusExternalSite" destination="GRj-nZ-KYG" id="7hn-jn-LO4"/>
                         <outlet property="imageStatusFileSharing" destination="lGk-Lk-3Ya" id="i7x-7x-TtE"/>
@@ -469,6 +510,7 @@
         <image name="activity" width="512" height="512"/>
         <image name="application" width="425" height="425"/>
         <image name="collabora" width="425" height="425"/>
+        <image name="delete" width="425" height="425"/>
         <image name="externalsites" width="425" height="425"/>
         <image name="lock" width="300" height="300"/>
         <image name="notification" width="512" height="512"/>
