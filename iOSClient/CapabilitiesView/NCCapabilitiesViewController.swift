@@ -121,12 +121,12 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                             NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
                             self.readCapabilities()
                         }
-                        if (self.view.window != nil) {
+                        if self.view.window != nil {
                             self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
                         }
                     }
                 } else {
-                    if (self.view.window != nil) {
+                    if self.view.window != nil {
                         self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
                     }
                 }
