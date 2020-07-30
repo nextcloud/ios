@@ -64,7 +64,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     private var capabilitiesText = ""
     private var imageEnable: UIImage?
     private var imageDisable: UIImage?
-
+    private var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -74,6 +75,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
+        textView.layer.borderWidth = 1
+        textView.layer.cornerRadius = 10
+        textView.layer.borderColor = UIColor.gray.cgColor
+        
         imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
         imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
@@ -92,7 +97,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account.account) {
             capabilitiesText = text
-            readCapabilities()
+            updateCapabilities()
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: "_no_capabilities_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
             
@@ -101,22 +106,43 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             }
         }
     }
-   
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+
+    @objc func updateCapabilities() {
         
         NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
             if errorCode == 0 && data != nil {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+                
+                // EDITORS
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                if serverVersionMajor >= k_nextcloud_version_18_0 {
+                    NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
+                        if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
+                            self.readCapabilities()
+                        }
+                        if (self.view.window != nil) {
+                            self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
+                        }
+                    }
+                } else {
+                    if (self.view.window != nil) {
+                        self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
+                    }
+                }
+                
                 if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account) {
                     self.capabilitiesText = text
                 }
                 self.readCapabilities()
             }
         }
+        
+        readCapabilities()
     }
     
     @objc func share() {
+        timer?.invalidate()
         self.dismiss(animated: true) {
             let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
             NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
@@ -124,6 +150,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     }
     
     @objc func close() {
+        timer?.invalidate()
         self.dismiss(animated: true, completion: nil)
     }
     
