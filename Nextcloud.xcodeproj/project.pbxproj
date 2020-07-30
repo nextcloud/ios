@@ -954,6 +954,15 @@
 			path = Offline;
 			sourceTree = "<group>";
 		};
+		F73FAEE224D2CA830090692E /* CapabilitiesView */ = {
+			isa = PBXGroup;
+			children = (
+				F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */,
+				F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */,
+			);
+			path = CapabilitiesView;
+			sourceTree = "<group>";
+		};
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
@@ -1133,8 +1142,6 @@
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
-				F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */,
-				F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */,
 				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
 				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE42C1BAC0268006C0017 /* CCManageAccount.h */,
@@ -1419,6 +1426,7 @@
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
+				F73FAEE224D2CA830090692E /* CapabilitiesView */,
 				F7BAAD951ED5A63D00B7EAD4 /* Database */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7BFFA621A24D7300044ED85 /* Login */,
