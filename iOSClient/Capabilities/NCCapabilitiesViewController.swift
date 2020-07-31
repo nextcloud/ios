@@ -76,7 +76,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         textView.layer.cornerRadius = 15
         textView.backgroundColor = NCBrandColor.sharedInstance.graySoft
         
-        statusFileSharing.layer.cornerRadius = 10
+        statusFileSharing.layer.cornerRadius = 12.5
         statusFileSharing.layer.borderWidth = 0.5
         statusFileSharing.layer.borderColor = UIColor.black.cgColor
         statusFileSharing.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
@@ -204,13 +204,13 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         textView.text = capabilitiesText
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
-            statusFileSharing.text = NSLocalizedString("_available_", comment: "")
+            statusFileSharing.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusFileSharing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false) {
-            statusExternalSite.text = NSLocalizedString("_available_", comment: "")
+            statusExternalSite.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusExternalSite.text = NSLocalizedString("_not_available_", comment: "")
         }
@@ -219,35 +219,35 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
         
         if isE2EEEnabled && versionE2EE == k_E2EE_API {
-            statusEndToEndEncryption.text = NSLocalizedString("_available_", comment: "")
+            statusEndToEndEncryption.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusEndToEndEncryption.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
         if paginationEndpoint != nil {
-            statusPaginatedFileListing.text = NSLocalizedString("_available_", comment: "")
+            statusPaginatedFileListing.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusPaginatedFileListing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
         if activity != nil {
-            statusActivity.text = NSLocalizedString("_available_", comment: "")
+            statusActivity.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusActivity.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let notification = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification)
         if notification != nil {
-            statusNotification.text = NSLocalizedString("_available_", comment: "")
+            statusNotification.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusNotification.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let deleteFiles = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
         if deleteFiles {
-            statusDeletedFiles.text = NSLocalizedString("_available_", comment: "")
+            statusDeletedFiles.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusDeletedFiles.text = NSLocalizedString("_not_available_", comment: "")
         }
@@ -265,20 +265,20 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         if textEditor {
-            statusText.text = NSLocalizedString("_available_", comment: "")
+            statusText.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusText.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
         if richdocumentsMimetypes != nil {
-            statusCollabora.text = NSLocalizedString("_available_", comment: "")
+            statusCollabora.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusCollabora.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         if onlyofficeEditors {
-            statusOnlyOffice.text = NSLocalizedString("_available_", comment: "")
+            statusOnlyOffice.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusOnlyOffice.text = NSLocalizedString("_not_available_", comment: "")
         }
