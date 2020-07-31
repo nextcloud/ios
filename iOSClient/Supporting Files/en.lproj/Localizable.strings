@@ -213,6 +213,7 @@
 "_change_simply_passcode_"      = "Change password type";
 "_quota_"                       = "Quota";
 "_available_"                   = "available";
+"_not_available_"               = "Not available";
 "_accounts_"                    = "Accounts";
 "_information_"                 = "Information";
 "_personal_information_"        = "Personal info";
@@ -294,8 +295,6 @@
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
 "_diagnostics_"                 = "Diagnostics";
-"_not_available_"               = "Not available";
-"_available_"                   = "Available";
 
 // Login
 
