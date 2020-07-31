@@ -174,6 +174,9 @@
 + (NSString *)getMediaSortDate;
 + (void)setMediaSortDate:(NSString *)value;
 
++ (NSInteger)getTextRecognitionStatus;
++ (void)setTextRecognitionStatus:(NSInteger)value;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

@@ -84,6 +84,9 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         // Theming view
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
+        
+        let value = CCUtility.getTextRecognitionStatus()
+        SetTextRecognition(newValue: value)
     }
     
     @objc func changeTheming() {
@@ -218,36 +221,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         if formRow.tag == "textRecognition" {
             
-            let rowCompressionQuality: XLFormRowDescriptor = self.form.formRow(withTag: "compressionQuality")!
-            let rowFileTape: XLFormRowDescriptor = self.form.formRow(withTag: "filetype")!
-            let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
-            let rowPassword: XLFormRowDescriptor = self.form.formRow(withTag: "password")!
-           
-            self.form.delegate = nil
-            
-            if newValue as! Int == 1 {
-                rowFileTape.selectorOptions = ["PDF","TXT"]
-                rowFileTape.value = "PDF"
-                fileType = "PDF"
-                rowPassword.disabled = true
-                rowCompressionQuality.disabled = false
-            } else {
-                if arrayImages.count == 1 {
-                    rowFileTape.selectorOptions = ["PDF","JPG"]
-                } else {
-                    rowFileTape.selectorOptions = ["PDF"]
-                }
-                rowFileTape.value = "PDF"
-                fileType = "PDF"
-                rowPassword.disabled = false
-                rowCompressionQuality.disabled = false
-            }
-            
-            rowFileName.value = createFileName(rowFileName.value as? String)
-            self.updateFormRow(rowFileName)
-            self.tableView.reloadData()
-
-            self.form.delegate = self
+            self.SetTextRecognition(newValue: newValue as! Int)
         }
         
         if formRow.tag == "fileName" {
@@ -323,6 +297,44 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
             self.updateFormRow(rowPassword)
         }
+    }
+    
+    func SetTextRecognition(newValue: Int) {
+        
+        let rowCompressionQuality: XLFormRowDescriptor = self.form.formRow(withTag: "compressionQuality")!
+        let rowFileTape: XLFormRowDescriptor = self.form.formRow(withTag: "filetype")!
+        let rowFileName: XLFormRowDescriptor = self.form.formRow(withTag: "fileName")!
+        let rowPassword: XLFormRowDescriptor = self.form.formRow(withTag: "password")!
+        let rowTextRecognition: XLFormRowDescriptor = self.form.formRow(withTag: "textRecognition")!
+
+        self.form.delegate = nil
+         
+        if newValue == 1 {
+            rowFileTape.selectorOptions = ["PDF","TXT"]
+            rowFileTape.value = "PDF"
+            fileType = "PDF"
+            rowPassword.disabled = true
+            rowCompressionQuality.disabled = false
+        } else {
+            if arrayImages.count == 1 {
+                rowFileTape.selectorOptions = ["PDF","JPG"]
+            } else {
+                rowFileTape.selectorOptions = ["PDF"]
+            }
+            rowFileTape.value = "PDF"
+            fileType = "PDF"
+            rowPassword.disabled = false
+            rowCompressionQuality.disabled = false
+        }
+         
+        rowFileName.value = createFileName(rowFileName.value as? String)
+        self.updateFormRow(rowFileName)
+        self.tableView.reloadData()
+        
+        CCUtility.setTextRecognitionStatus(newValue)
+        rowTextRecognition.value = newValue
+        
+        self.form.delegate = self
     }
     
     override func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -708,7 +720,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         // Search kern (W)
         let font = UIFont(descriptor: fontDescriptor, size: bestFontSize)
         attributes = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: 0] as [NSAttributedString.Key : Any]
-        for kern in 1...1000 {
+        for kern in stride(from: 0, through: 100, by: 0.1) {
             let attributesTmp = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: kern] as [NSAttributedString.Key : Any]
             let size = text.size(withAttributes: attributesTmp).width
             if size <= bounds.width {

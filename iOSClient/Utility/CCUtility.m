@@ -712,6 +712,25 @@
 {
     [UICKeyChainStore setString:value forKey:@"mediaSortDate" service:k_serviceShareKeyChain];
 }
+
++ (NSInteger)getTextRecognitionStatus
+{
+    NSString *value = [UICKeyChainStore stringForKey:@"textRecognitionStatus" service:k_serviceShareKeyChain];
+    
+    if (value == nil) {
+        return 0;
+    } else {
+        return [value integerValue];
+    }
+}
+
++ (void)setTextRecognitionStatus:(NSInteger)value
+{
+    NSString *valueString = [@(value) stringValue];
+    [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:k_serviceShareKeyChain];
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------
