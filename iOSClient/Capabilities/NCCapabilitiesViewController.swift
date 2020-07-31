@@ -29,41 +29,39 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var textView: UITextView!
     
     @IBOutlet weak var imageFileSharing: UIImageView!
-    @IBOutlet weak var imageStatusFileSharing: UIImageView!
+    @IBOutlet weak var statusFileSharing: UILabel!
     
     @IBOutlet weak var imageExternalSite: UIImageView!
-    @IBOutlet weak var imageStatusExternalSite: UIImageView!
+    @IBOutlet weak var statusExternalSite: UILabel!
     
     @IBOutlet weak var imageEndToEndEncryption: UIImageView!
-    @IBOutlet weak var imageStatusEndToEndEncryption: UIImageView!
+    @IBOutlet weak var statusEndToEndEncryption: UILabel!
     
     @IBOutlet weak var imagePaginatedFileListing: UIImageView!
-    @IBOutlet weak var imageStatusPaginatedFileListing: UIImageView!
+    @IBOutlet weak var statusPaginatedFileListing: UILabel!
     
     @IBOutlet weak var imageActivity: UIImageView!
-    @IBOutlet weak var imageStatusActivity: UIImageView!
+    @IBOutlet weak var statusActivity: UILabel!
    
     @IBOutlet weak var imageNotification: UIImageView!
-    @IBOutlet weak var imageStatusNotification: UIImageView!
+    @IBOutlet weak var statusNotification: UILabel!
     
     @IBOutlet weak var imageDeletedFiles: UIImageView!
-    @IBOutlet weak var imageStatusDeletedFiles: UIImageView!
+    @IBOutlet weak var statusDeletedFiles: UILabel!
     
     @IBOutlet weak var imageText: UIImageView!
-    @IBOutlet weak var imageStatusText: UIImageView!
+    @IBOutlet weak var statusText: UILabel!
     
     @IBOutlet weak var imageCollabora: UIImageView!
-    @IBOutlet weak var imageStatusCollabora: UIImageView!
+    @IBOutlet weak var statusCollabora: UILabel!
     
     @IBOutlet weak var imageOnlyOffice: UIImageView!
-    @IBOutlet weak var imageStatusOnlyOffice: UIImageView!
+    @IBOutlet weak var statusOnlyOffice: UILabel!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
     private var capabilitiesText = ""
-    private var imageEnable: UIImage?
-    private var imageDisable: UIImage?
     private var timer: Timer?
     
     override func viewDidLoad() {
@@ -78,8 +76,56 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         textView.layer.cornerRadius = 15
         textView.backgroundColor = NCBrandColor.sharedInstance.graySoft
         
-        imageEnable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .green)
-        imageDisable = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: 50, height: 50, color: .red)
+        statusFileSharing.layer.cornerRadius = 10
+        statusFileSharing.layer.borderWidth = 0.5
+        statusFileSharing.layer.borderColor = UIColor.black.cgColor
+        statusFileSharing.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusExternalSite.layer.cornerRadius = 10
+        statusExternalSite.layer.borderWidth = 0.5
+        statusExternalSite.layer.borderColor = UIColor.black.cgColor
+        statusExternalSite.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusEndToEndEncryption.layer.cornerRadius = 10
+        statusEndToEndEncryption.layer.borderWidth = 0.5
+        statusEndToEndEncryption.layer.borderColor = UIColor.black.cgColor
+        statusEndToEndEncryption.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusPaginatedFileListing.layer.cornerRadius = 10
+        statusPaginatedFileListing.layer.borderWidth = 0.5
+        statusPaginatedFileListing.layer.borderColor = UIColor.black.cgColor
+        statusPaginatedFileListing.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusActivity.layer.cornerRadius = 10
+        statusActivity.layer.borderWidth = 0.5
+        statusActivity.layer.borderColor = UIColor.black.cgColor
+        statusActivity.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusNotification.layer.cornerRadius = 10
+        statusNotification.layer.borderWidth = 0.5
+        statusNotification.layer.borderColor = UIColor.black.cgColor
+        statusNotification.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusDeletedFiles.layer.cornerRadius = 10
+        statusDeletedFiles.layer.borderWidth = 0.5
+        statusDeletedFiles.layer.borderColor = UIColor.black.cgColor
+        statusDeletedFiles.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
+        statusText.layer.cornerRadius = 10
+        statusText.layer.borderWidth = 0.5
+        statusText.layer.borderColor = UIColor.black.cgColor
+        statusText.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+
+        statusCollabora.layer.cornerRadius = 10
+        statusCollabora.layer.borderWidth = 0.5
+        statusCollabora.layer.borderColor = UIColor.black.cgColor
+        statusCollabora.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+ 
+        statusOnlyOffice.layer.cornerRadius = 10
+        statusOnlyOffice.layer.borderWidth = 0.5
+        statusOnlyOffice.layer.borderColor = UIColor.black.cgColor
+        statusOnlyOffice.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
@@ -158,52 +204,52 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         textView.text = capabilitiesText
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
-            imageStatusFileSharing.image = imageEnable
+            statusFileSharing.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusFileSharing.image = imageDisable
+            statusFileSharing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false) {
-            imageStatusExternalSite.image = imageEnable
+            statusExternalSite.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusExternalSite.image = imageDisable
+            statusExternalSite.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let isE2EEEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
         let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
         
         if isE2EEEnabled && versionE2EE == k_E2EE_API {
-            imageStatusEndToEndEncryption.image = imageEnable
+            statusEndToEndEncryption.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusEndToEndEncryption.image = imageDisable
+            statusEndToEndEncryption.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
         if paginationEndpoint != nil {
-            imageStatusPaginatedFileListing.image = imageEnable
+            statusPaginatedFileListing.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusPaginatedFileListing.image = imageDisable
+            statusPaginatedFileListing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
         if activity != nil {
-            imageStatusActivity.image = imageEnable
+            statusActivity.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusActivity.image = imageDisable
+            statusActivity.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let notification = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification)
         if notification != nil {
-            imageStatusNotification.image = imageEnable
+            statusNotification.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusNotification.image = imageDisable
+            statusNotification.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let deleteFiles = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
         if deleteFiles {
-            imageStatusDeletedFiles.image = imageEnable
+            statusDeletedFiles.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusDeletedFiles.image = imageDisable
+            statusDeletedFiles.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         var textEditor = false
@@ -219,22 +265,22 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         if textEditor {
-            imageStatusText.image = imageEnable
+            statusText.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusText.image = imageDisable
+            statusText.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
         if richdocumentsMimetypes != nil {
-            imageStatusCollabora.image = imageEnable
+            statusCollabora.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusCollabora.image = imageDisable
+            statusCollabora.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         if onlyofficeEditors {
-            imageStatusOnlyOffice.image = imageEnable
+            statusOnlyOffice.text = NSLocalizedString("_available_", comment: "")
         } else {
-            imageStatusOnlyOffice.image = imageDisable
+            statusOnlyOffice.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         print("end.")
