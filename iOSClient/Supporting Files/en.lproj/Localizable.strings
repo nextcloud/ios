@@ -294,6 +294,8 @@
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
 "_diagnostics_"                 = "Diagnostics";
+"_not_available_"               = "Not available";
+"_available_"                   = "Available";
 
 // Login
 
