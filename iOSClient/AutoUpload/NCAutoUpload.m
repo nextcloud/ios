@@ -370,7 +370,13 @@
     });
     
     // Create the folder for auto upload & if request the subfolders
-    [[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector];
+    if ([[NCNetworking shared] createFoloderWithAssets:newAssetToUpload selector:selector useSubFolder:tableAccount.autoUploadCreateSubfolder account:appDelegate.activeAccount url:appDelegate.activeUrl]) {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_hud hideHud];
+        });
+        return;
+    }
     
     for (PHAsset *asset in newAssetToUpload) {
         
@@ -480,26 +486,6 @@
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.activeAccount];
-        }
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos/Videos ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
-{
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
-    NSString *filename = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-    
-    [[NCOperationQueue shared] createFolderWithFilename:filename serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:true];
-    if (useSubFolder) {
-        for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
-            NSString *filename = dateSubFolder.lastPathComponent;
-            NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder].stringByDeletingLastPathComponent;
-            [[NCOperationQueue shared] createFolderWithFilename:filename serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:true];
         }
     }
 }

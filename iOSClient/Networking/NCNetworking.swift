@@ -25,6 +25,7 @@ import Foundation
 import OpenSSL
 import NCCommunication
 import Alamofire
+import Queuer
 
 @objc public protocol NCNetworkingDelegate {
     @objc optional func downloadProgress(_ progress: Double, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -649,7 +650,38 @@ import Alamofire
             }
         }
     }
+    
+    @objc func createFoloder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, url: String) -> Bool {
         
+        let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(url)
+        let fileName =  NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(url)
+        var error = false
+        
+        error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, url: url)
+        if useSubFolder && !error {
+            for dateSubFolder in CCUtility.createNameSubFolder(assets) {
+                let fileName = (dateSubFolder as! NSString).lastPathComponent
+                let serverUrl = ((autoUploadPath + "/" + (dateSubFolder as! String)) as NSString).deletingLastPathComponent
+                error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, url: url)
+                if error { break }
+            }
+        }
+        
+        return error
+    }
+    
+    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, url: String) -> Bool {
+        var error = false
+        let semaphore = Semaphore()
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, overwrite: true) { (errorCode, errorDescription) in
+            if errorCode != 0 { error = true }
+            semaphore.continue()
+        }
+        if semaphore.wait() != .success { error = true }
+        return error
+    }
+    
     //MARK: - WebDav Delete
 
     @objc func deleteMetadata(_ metadata: tableMetadata, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {

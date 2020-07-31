@@ -34,9 +34,6 @@
 - (void)initStateAutoUpload;
 - (BOOL)checkIfLocationIsEnabled;
 - (void)setupAutoUploadFull;
-
-- (void)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector;
-
 - (void)alignPhotoLibrary;
 
 @end

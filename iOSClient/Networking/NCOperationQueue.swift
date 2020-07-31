@@ -34,7 +34,6 @@ import NCCommunication
     
     private var downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: 5, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    private let createFolderQueue = Queuer(name: "createFolderQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
@@ -43,7 +42,6 @@ import NCCommunication
     @objc func cancelAllQueue() {
         downloadCancelAll()
         synchronizationCancelAll()
-        createFolderCancelAll()
         downloadThumbnailCancelAll()
         readFileForMediaCancelAll()
     }
@@ -67,15 +65,6 @@ import NCCommunication
     }
     @objc func synchronizationCancelAll() {
         synchronizationQueue.cancelAll()
-    }
-    
-    // Create Folder
-    
-    @objc func createFolder(filename: String, serverUrl: String, account: String, url: String, overwrite: Bool) {
-        createFolderQueue.addOperation(NCOperationCreaterFolder.init(filename: filename, serverUrl: serverUrl, account: account, url: url, overwrite: overwrite))
-    }
-    @objc func createFolderCancelAll() {
-        createFolderQueue.cancelAll()
     }
     
     // Download Thumbnail
@@ -215,35 +204,6 @@ class NCOperationSynchronization: ConcurrentOperation {
                     }
                     self.finish()
                 }
-            }
-        }
-    }
-}
-
-//MARK: -
-
-class NCOperationCreaterFolder: ConcurrentOperation {
-   
-    private var filename: String
-    private var serverUrl: String
-    private var account: String
-    private var url: String
-    private var overwrite: Bool
-
-    init(filename: String, serverUrl: String, account: String, url: String, overwrite: Bool) {
-        self.filename = filename
-        self.serverUrl = serverUrl
-        self.account = account
-        self.url = url
-        self.overwrite = overwrite
-    }
-    
-    override func start() {
-        if isCancelled {
-            self.finish()
-        } else {
-            NCNetworking.shared.createFolder(fileName: filename, serverUrl: serverUrl, account: account, url: url, overwrite: overwrite) { (errorCode, errorDescription) in
-                self.finish()
             }
         }
     }
