@@ -711,7 +711,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         for kern in 1...1000 {
             let attributesTmp = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: kern] as [NSAttributedString.Key : Any]
             let size = text.size(withAttributes: attributesTmp).width
-            if size < bounds.width {
+            if size <= bounds.width {
                 attributes = attributesTmp
             } else {
                 break
