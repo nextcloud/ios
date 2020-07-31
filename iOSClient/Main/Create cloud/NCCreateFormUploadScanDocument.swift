@@ -530,13 +530,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                                 let text = textLine.string
 
                                 let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                let bestFont = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor)
-                                
-                                let paragraphStyle = NSMutableParagraphStyle()
-                                paragraphStyle.alignment = .justified
-
-                                let attributes = [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: fontColor]
-                                
+                                let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
+                            
                                 text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
                             }
                         }
@@ -688,7 +683,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         return imageCompressed
     }
     
-    func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor) -> UIFont {
+    func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
         
         let constrainingDimension = min(bounds.width, bounds.height)
         let properBounds = CGRect(origin: .zero, size: bounds.size)
@@ -697,6 +692,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         let infiniteBounds = CGSize(width: CGFloat.infinity, height: CGFloat.infinity)
         var bestFontSize: CGFloat = constrainingDimension
         
+        // Search font (H)
         for fontSize in stride(from: bestFontSize, through: 0, by: -1) {
             let newFont = UIFont(descriptor: fontDescriptor, size: fontSize)
             attributes[.font] = newFont
@@ -709,9 +705,20 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             }
         }
         
-        // let attributes = [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: 10] as [NSAttributedString.Key : Any]
+        // Search kern (W)
+        let font = UIFont(descriptor: fontDescriptor, size: bestFontSize)
+        attributes = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: 0] as [NSAttributedString.Key : Any]
+        for kern in 1...1000 {
+            let attributesTmp = [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: kern] as [NSAttributedString.Key : Any]
+            let size = text.size(withAttributes: attributesTmp).width
+            if size < bounds.width {
+                attributes = attributesTmp
+            } else {
+                break
+            }
+        }
         
-        return UIFont(descriptor: fontDescriptor, size: bestFontSize)
+        return attributes
     }
 
 }
