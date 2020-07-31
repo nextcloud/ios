@@ -438,7 +438,11 @@ import Queuer
                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 }
                 
-                #if !EXTENSION                
+                
+                #if !EXTENSION
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                appDelegate.networkingAutoUpload.startProcess()
+
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                 #endif
                 
