@@ -438,7 +438,6 @@ import Queuer
                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 }
                 
-                
                 #if !EXTENSION
                 let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.networkingAutoUpload.startProcess()
