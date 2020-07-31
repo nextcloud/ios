@@ -709,6 +709,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             }
         }
         
+        // let attributes = [NSAttributedString.Key.font: bestFont, NSAttributedString.Key.paragraphStyle: paragraphStyle, NSAttributedString.Key.foregroundColor: fontColor, NSAttributedString.Key.kern: 10] as [NSAttributedString.Key : Any]
+        
         return UIFont(descriptor: fontDescriptor, size: bestFontSize)
     }
 
