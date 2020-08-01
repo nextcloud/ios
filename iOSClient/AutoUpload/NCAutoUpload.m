@@ -371,9 +371,7 @@
     
     // Create the folder for auto upload & if request the subfolders
     if ([[NCNetworking shared] createFoloderWithAssets:newAssetToUpload selector:selector useSubFolder:tableAccount.autoUploadCreateSubfolder account:appDelegate.activeAccount url:appDelegate.activeUrl]) {
-        
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-        
+        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {        
             [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_hud hideHud];
