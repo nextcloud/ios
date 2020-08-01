@@ -23,7 +23,7 @@
                                         <rect key="frame" x="0.0" y="510" width="414" height="43"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RIO-6X-GG1">
-                                                <rect key="frame" x="5" y="5" width="404" height="33"/>
+                                                <rect key="frame" x="10" y="5" width="394" height="33"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -31,8 +31,8 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
-                                            <constraint firstItem="RIO-6X-GG1" firstAttribute="leading" secondItem="OO4-N7-9vp" secondAttribute="leading" constant="5" id="63w-yC-mGi"/>
-                                            <constraint firstAttribute="trailing" secondItem="RIO-6X-GG1" secondAttribute="trailing" constant="5" id="9cj-M6-K3f"/>
+                                            <constraint firstItem="RIO-6X-GG1" firstAttribute="leading" secondItem="OO4-N7-9vp" secondAttribute="leading" constant="10" id="63w-yC-mGi"/>
+                                            <constraint firstAttribute="trailing" secondItem="RIO-6X-GG1" secondAttribute="trailing" constant="10" id="9cj-M6-K3f"/>
                                             <constraint firstItem="RIO-6X-GG1" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" constant="5" id="ODH-TK-qMG"/>
                                             <constraint firstAttribute="bottom" secondItem="RIO-6X-GG1" secondAttribute="bottom" constant="5" id="ajP-yK-idK"/>
                                         </constraints>
