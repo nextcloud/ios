@@ -1055,12 +1055,7 @@
             metadataMOVForUpload.status = k_metadataStatusWaitUpload;
             
             // Prepare file and directory
-            [CCUtility moveFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
-            
-            //
-            if ([CCUtility fileProviderStorageExists:metadataMOVForUpload.ocId fileNameView:metadataMOVForUpload.fileNameView] == false) {
-                NSLog(@"qualcosa nn va");
-            }
+            [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
             
             [metadatasMOV addObject:metadataMOVForUpload];
         }
