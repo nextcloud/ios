@@ -1055,7 +1055,7 @@
             metadataMOVForUpload.status = k_metadataStatusWaitUpload;
             
             // Prepare file and directory
-            [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
+            [CCUtility moveFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
             
             [metadatasMOV addObject:metadataMOVForUpload];
         }
