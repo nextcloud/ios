@@ -1059,7 +1059,7 @@
             
             //
             if ([CCUtility fileProviderStorageExists:metadataMOVForUpload.ocId fileNameView:metadataMOVForUpload.fileNameView] == false) {
-                
+                NSLog(@"qualcosa nn va");
             }
             
             [metadatasMOV addObject:metadataMOVForUpload];
