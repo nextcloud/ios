@@ -831,12 +831,12 @@
 {
     NCPhotosPickerViewController *viewController = [[NCPhotosPickerViewController alloc] init:self maxSelectedAssets:100 singleSelectedMode:false];
     
-    [viewController openPhotosPickerViewControllerWithPhAssets:^(NSArray<PHAsset *> * _Nullable assets, NSArray<NSURL *> * urls) {
+    [viewController openPhotosPickerViewControllerWithPhAssets:^(NSArray<PHAsset *> * _Nullable assets) {
         if (assets.count > 0) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                 NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
                 
-                NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets urls:(NSMutableArray *)urls cryptated:NO session:NCCommunicationCommon.shared.sessionIdentifierBackground delegate:self];
+                NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets cryptated:NO session:NCCommunicationCommon.shared.sessionIdentifierBackground delegate:self];
                 
                 UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
                 [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -978,7 +978,7 @@
 #pragma mark ===== Upload new Photos/Videos =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileAsset:(NSMutableArray *)assets urls:(NSMutableArray *)urls serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
+- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
@@ -990,10 +990,12 @@
         }
     }
     
-    [self uploadFileAsset:assets urls:urls serverUrl:serverUrl autoUploadPath:autoUploadPath useSubFolder:useSubFolder session:session];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self uploadFileAsset:assets serverUrl:serverUrl autoUploadPath:autoUploadPath useSubFolder:useSubFolder session:session];
+    });
 }
 
-- (void)uploadFileAsset:(NSArray *)assets urls:(NSArray *)urls serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
+- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     NSMutableArray *metadatasNOConflict = [NSMutableArray new];
     NSMutableArray *metadatasMOV = [NSMutableArray new];
@@ -1039,46 +1041,57 @@
         }
         
         // Add Medtadata MOV LIVE PHOTO for upload
-        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto && urls.count == assets.count) {
+        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
                 
-            NSUInteger index = [assets indexOfObject:asset];
-            NSURL *url = [urls objectAtIndex:index];
-            NSString *fileNameNoExt = [fileName stringByDeletingPathExtension];
-            NSString *fileName = [NSString stringWithFormat:@"%@.mov", fileNameNoExt];
-            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
+            NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
+            NSString *ocId = [[NSUUID UUID] UUIDString];
+            NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
 
-            tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
             
-            metadataMOVForUpload.session = session;
-            metadataMOVForUpload.sessionSelector = selectorUploadFile;
-            metadataMOVForUpload.size = fileSize;
-            metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+            [CCUtility extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
+                if (url != nil) {
+                    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
+                    
+                    tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
+                    
+                    metadataMOVForUpload.session = session;
+                    metadataMOVForUpload.sessionSelector = selectorUploadFile;
+                    metadataMOVForUpload.size = fileSize;
+                    metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+                    metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
+
+                    [metadatasMOV addObject:metadataMOVForUpload];
+                }
+                
+                dispatch_semaphore_signal(semaphore);
+            }];
             
-            // Prepare file and directory
-            [CCUtility copyFileAtPath:url.path toPath:[CCUtility getDirectoryProviderStorageOcId:metadataMOVForUpload.ocId fileNameView:fileName]];
-            
-            [metadatasMOV addObject:metadataMOVForUpload];
+            while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
+                   [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
         }
     }
     
-    // Verify if file(s) exists
-    if (metadatasUploadInConflict.count > 0) {
-        
-        NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
-        conflict.serverUrl = self.serverUrl;
-        conflict.metadatasNOConflict = metadatasNOConflict;
-        conflict.metadatasMOV = metadatasMOV;
-        conflict.metadatasUploadInConflict = metadatasUploadInConflict;
-        
-        [self presentViewController:conflict animated:YES completion:nil];
-        
-    } else {
-        
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
-        [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
-        
-        [[appDelegate networkingAutoUpload] startProcess];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // Verify if file(s) exists
+        if (metadatasUploadInConflict.count > 0) {
+            
+            NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
+            conflict.serverUrl = self.serverUrl;
+            conflict.metadatasNOConflict = metadatasNOConflict;
+            conflict.metadatasMOV = metadatasMOV;
+            conflict.metadatasUploadInConflict = metadatasUploadInConflict;
+            
+            [self presentViewController:conflict animated:YES completion:nil];
+            
+        } else {
+            
+            [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
+            [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
+            
+            [[appDelegate networkingAutoUpload] startProcess];
+        }
+    });
 }
 
 

@@ -33,7 +33,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     var serverUrl: String = ""
     var titleServerUrl: String?
     var assets = NSMutableArray()
-    var urls = NSMutableArray()
     var cryptated: Bool = false
     var session: String = ""
     weak var delegate: createFormUploadAssetsDelegate?
@@ -42,7 +41,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc convenience init(serverUrl : String, assets : NSMutableArray, urls: NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
+    @objc convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
         
         self.init()
         
@@ -58,7 +57,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.serverUrl = serverUrl
         self.assets = assets
-        self.urls = urls
         self.cryptated = cryptated
         self.session = session
         self.delegate = delegate
@@ -339,7 +337,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, urls: self.urls, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }
     

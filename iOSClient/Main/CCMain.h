@@ -72,7 +72,7 @@
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
 
-- (void)uploadFileAsset:(NSMutableArray *)assets urls:(NSMutableArray *)urls serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
+- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;

@@ -433,7 +433,7 @@
                 
                 dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
                 
-                [self extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
+                [CCUtility extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
                     if (url != nil) {
                         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
                         
@@ -567,34 +567,6 @@
     return nil;
 }
 
-- (void)extractLivePhotoAsset:(PHAsset*)asset filePath:(NSString *)filePath withCompletion:(void (^)(NSURL* url))completion {
-    
-    [CCUtility removeFileAtPath:filePath];
-    NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-    PHLivePhotoRequestOptions *options = [PHLivePhotoRequestOptions new];
-    options.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-    options.networkAccessAllowed = YES;
-    
-    [[PHImageManager defaultManager] requestLivePhotoForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
-        if (livePhoto) {
-            NSArray *assetResources = [PHAssetResource assetResourcesForLivePhoto:livePhoto];
-            PHAssetResource *videoResource = nil;
-            for(PHAssetResource *resource in assetResources){
-                if (resource.type == PHAssetResourceTypePairedVideo) {
-                    videoResource = resource;
-                    break;
-                }
-            }
-            if(videoResource){
-                [[PHAssetResourceManager defaultManager] writeDataForAssetResource:videoResource toFile:fileUrl options:nil completionHandler:^(NSError * _Nullable error) {
-                    if (!error) {
-                        completion(fileUrl);
-                    } else { completion(nil); }
-                }];
-            } else { completion(nil); }
-        } else { completion(nil); }
-    }];
-}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Align Photo Library ====
 #pragma --------------------------------------------------------------------------------------------

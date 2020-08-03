@@ -37,10 +37,9 @@ class NCPhotosPickerViewController: NSObject {
         self.singleSelectedMode = singleSelectedMode
     }
     
-    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?, [URL]?) -> ()) {
+    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?) -> ()) {
         
         var selectedPhAssets: [PHAsset] = []
-        var selectedUrls: [URL] = []
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -52,6 +51,19 @@ class NCPhotosPickerViewController: NSObject {
         configure.selectedColor = NCBrandColor.sharedInstance.brandElement
         configure.singleSelectedMode = singleSelectedMode
         
+        let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
+            
+            for asset: TLPHAsset in assets {
+                if asset.phAsset != nil {
+                    selectedPhAssets.append(asset.phAsset!)
+                }
+            }
+            
+            phAssets(selectedPhAssets)
+            
+        }, didCancel: nil)
+        
+        /*
         let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
             
             for asset: TLPHAsset in assets {
@@ -72,6 +84,7 @@ class NCPhotosPickerViewController: NSObject {
             
             phAssets(nil,nil)
         }
+        */
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
             NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
