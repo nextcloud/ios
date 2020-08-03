@@ -62,111 +62,50 @@ class NCNetworkingAutoUpload: NSObject {
         if sizeUpload > k_maxSizeOperationUpload {
             return
         }
+        
         timerProcess?.invalidate()
         
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
-        // ------------------------- <selector Upload> -------------------------
-         
-        if counterUpload < maxConcurrentOperationUpload {
-            let limit = maxConcurrentOperationUpload - counterUpload
-            let predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
-            for metadata in metadatas {
-                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
-                    if UIApplication.shared.applicationState == .background { break }
-                    maxConcurrentOperationUpload = 1
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    startTimer()
-                    return
+        let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
+        for sessionSelector in sessionSelectors {
+            let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusUploadError))
+            if metadatasInError.count >= k_maxErrorAutoUploadAll {
+                NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                startTimer()
+                return
+            }
+            if counterUpload < maxConcurrentOperationUpload {
+                let limit = maxConcurrentOperationUpload - counterUpload
+                var predicate = NSPredicate()
+                if UIApplication.shared.applicationState == .background {
+                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", sessionSelector, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
                 } else {
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    sizeUpload = sizeUpload + Int(metadata.size)
-                    if sizeUpload > k_maxSizeOperationUpload {
+                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
+                }
+                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                for metadata in metadatas {
+                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
+                        if UIApplication.shared.applicationState == .background { break }
+                        maxConcurrentOperationUpload = 1
+                        counterUpload += 1
+                        NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
                         startTimer()
                         return
+                    } else {
+                        counterUpload += 1
+                        NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                        sizeUpload = sizeUpload + Int(metadata.size)
+                        if sizeUpload > k_maxSizeOperationUpload {
+                            startTimer()
+                            return
+                        }
                     }
                 }
-            }
-        }
-        if counterUpload >= maxConcurrentOperationUpload {
-            startTimer()
-            return
-        }
-        
-        // ------------------------- <selector Auto Upload> -------------------------
-          
-        if counterUpload < maxConcurrentOperationUpload {
-            let limit = maxConcurrentOperationUpload - counterUpload
-            var predicate = NSPredicate()
-            if UIApplication.shared.applicationState == .background {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadAutoUpload, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
             } else {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUpload, k_metadataStatusWaitUpload)
+                startTimer()
+                return
             }
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
-            for metadata in metadatas {
-                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
-                    if UIApplication.shared.applicationState == .background { break }
-                    maxConcurrentOperationUpload = 1
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    startTimer()
-                    return
-                } else {
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    sizeUpload = sizeUpload + Int(metadata.size)
-                    if sizeUpload > k_maxSizeOperationUpload {
-                        startTimer()
-                        return
-                    }
-                }
-            }
-        }
-        if counterUpload >= maxConcurrentOperationUpload {
-            startTimer()
-            return
-        }
-        
-        // ------------------------- <selector Auto Upload All> ----------------------
-        
-        let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusUploadError))
-        if metadatasInError.count >= k_maxErrorAutoUploadAll {
-            NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_automatic_all_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-        } else {
-            let limit = maxConcurrentOperationUpload - counterUpload
-            var predicate = NSPredicate()
-            if UIApplication.shared.applicationState == .background {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
-            } else {
-                predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadAutoUploadAll, k_metadataStatusWaitUpload)
-            }
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
-            for metadata in metadatas {
-                if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
-                    if UIApplication.shared.applicationState == .background { break }
-                    maxConcurrentOperationUpload = 1
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    startTimer()
-                    return
-                } else {
-                    counterUpload += 1
-                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                    sizeUpload = sizeUpload + Int(metadata.size)
-                    if sizeUpload > k_maxSizeOperationUpload {
-                        startTimer()
-                        return
-                    }
-                }
-            }
-        }
-        if counterUpload >= maxConcurrentOperationUpload {
-            startTimer()
-            return
         }
         
         // No upload available ? --> Retry Upload in Error
