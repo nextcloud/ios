@@ -796,9 +796,9 @@
 "_error_decode_xml_"                    = "Invalid response, error decode XML";
 "_internal_generic_error_"              = "internal error";
 "_editor_unknown_"                      = "Failed to open file: Editor is unknown";
-"_err_asset_not_found_locally_"         = "Error photo/video not found locally, removed from upload";
-"_err_asset_not_found_"                 = "Error photo/video not found, removed from upload";
-"_err_e2ee_app_version_"                = "Error, the version of app End-to-End Encryption is not compatible, please update your server";
+"_err_asset_not_found_locally_"         = "Error: Photo/video not found locally, removed from upload";
+"_err_asset_not_found_"                 = "Error: Photo/video not found, removed from upload";
+"_err_e2ee_app_version_"                = "Error: The version of app End-to-End encryption is not compatible, please update your server";
 
 // QRCode
 
