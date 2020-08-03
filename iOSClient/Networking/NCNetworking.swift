@@ -439,9 +439,11 @@ import Queuer
                 }
                 
                 #if !EXTENSION
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.networkingAutoUpload.startProcess()
-
+                let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
+                if metadatasUpload.count == 0 {
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.networkingAutoUpload.startProcess()
+                }
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                 #endif
                 
