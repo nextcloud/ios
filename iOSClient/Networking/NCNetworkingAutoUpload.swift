@@ -31,8 +31,7 @@ class NCNetworkingAutoUpload: NSObject {
     
     override init() {
         super.init()
-
-        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
+        startTimer()
     }
     
     @objc func startProcess() {
@@ -40,50 +39,66 @@ class NCNetworkingAutoUpload: NSObject {
             process()
         }
     }
+    
+    func startTimer() {
+        timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: false)
+    }
 
     @objc private func process() {
 
-        var counterUpload = 0
+        var counterUpload: Int = 0
         var sizeUpload = 0
-        var maxConcurrentOperationUpload = k_maxConcurrentOperation
+        var maxConcurrentOperationUpload = Int(k_maxConcurrentOperation)
         
         if appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode {
             return
         }
-        
-        timerProcess?.invalidate()
         
         let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
         counterUpload = metadatasUpload.count
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
-    
+        if sizeUpload > k_maxSizeOperationUpload {
+            return
+        }
+        timerProcess?.invalidate()
+        
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
         // ------------------------- <selector Upload> -------------------------
          
-        while counterUpload < maxConcurrentOperationUpload {
-            if sizeUpload > k_maxSizeOperationUpload { break }
+        if counterUpload < maxConcurrentOperationUpload {
+            let limit = maxConcurrentOperationUpload - counterUpload
             let predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", selectorUploadFile, k_metadataStatusWaitUpload)
-             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: predicate, sorted: "date", ascending: true) {
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+            for metadata in metadatas {
                 if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
                     if UIApplication.shared.applicationState == .background { break }
                     maxConcurrentOperationUpload = 1
+                    counterUpload += 1
+                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                    startTimer()
+                    return
+                } else {
+                    counterUpload += 1
+                    NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                    sizeUpload = sizeUpload + Int(metadata.size)
+                    if sizeUpload > k_maxSizeOperationUpload {
+                        startTimer()
+                        return
+                    }
                 }
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload))
-                
-                NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
-                counterUpload += 1
-                sizeUpload = sizeUpload + Int(metadata.size)
-            } else {
-                break
             }
         }
-         
+        if counterUpload >= maxConcurrentOperationUpload {
+            startTimer()
+            return
+        }
+        
         // ------------------------- <selector Auto Upload> -------------------------
-             
+          
+        /*
         while counterUpload < maxConcurrentOperationUpload {
             if sizeUpload > k_maxSizeOperationUpload { break }
             var predicate = NSPredicate()
@@ -139,7 +154,8 @@ class NCNetworkingAutoUpload: NSObject {
                 }
             }
         }
-         
+        */
+        
         // No upload available ? --> Retry Upload in Error
         if counterUpload == 0 {
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", k_metadataStatusUploadError))
@@ -151,12 +167,10 @@ class NCNetworkingAutoUpload: NSObject {
         // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
         if (counterUpload == 0 && appDelegate.passcodeViewController == nil) {
             NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload) {
-                
-                self.timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(self.process), userInfo: nil, repeats: true)
+                self.startTimer()
             }
         } else {
-            
-            timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
+            startTimer()
         }
      }
 }

@@ -1,4 +1,7 @@
 #!groovy
+
+@Library('realm-ci') _
+
 def getSourceArchive() {
   deleteDir()
   unstash 'source'
@@ -23,10 +26,11 @@ def buildDockerEnv(name, dockerfile='Dockerfile', extra_args='') {
   return docker.image(name)
 }
 
-def publishReport(String label) {
+def publishCoverageReport(String label) {
   // Unfortunately, we cannot add a title or tag to individual coverage reports.
   echo "Unstashing coverage-${label}"
   unstash("coverage-${label}")
+
   step([
     $class: 'CoberturaPublisher',
     autoUpdateHealth: false,
@@ -46,7 +50,7 @@ if (env.BRANCH_NAME == 'master') {
   env.DOCKER_PUSH = "1"
 }
 
-def doDockerBuild(String flavor, Boolean withCoverage, Boolean enableSync, String sanitizerFlags = "") {
+def doDockerBuild(String flavor, Boolean enableSync, String sanitizerFlags = "") {
   def sync = enableSync ? "sync" : ""
   def label = "${flavor}${enableSync ? '-sync' : ''}"
 
@@ -56,16 +60,8 @@ def doDockerBuild(String flavor, Boolean withCoverage, Boolean enableSync, Strin
       def image = buildDockerEnv("ci/realm-object-store:${flavor}")
       sshagent(['realm-ci-ssh']) {
         image.inside("-v /etc/passwd:/etc/passwd:ro -v ${env.HOME}:${env.HOME} -v ${env.SSH_AUTH_SOCK}:${env.SSH_AUTH_SOCK} -e HOME=${env.HOME}") {
-          if(withCoverage) {
-            sh "rm -rf coverage.build ${label}.build && ./workflow/test_coverage.sh ${sync} && mv coverage.build ${label}.build"
-          } else {
-            sh "./workflow/build.sh ${flavor} ${sync} ${sanitizerFlags}"
-          }
+          sh "./workflow/build.sh ${flavor} ${sync} ${sanitizerFlags}"
         }
-      }
-      if(withCoverage) {
-        echo "Stashing coverage-${label}"
-        stash includes: "${label}.build/coverage.xml", name: "coverage-${label}"
       }
     }
   }
@@ -166,10 +162,10 @@ stage('prepare') {
 
 stage('unit-tests') {
   parallel(
-    linux: doDockerBuild('linux', false, false),
-    linux_sync: doDockerBuild('linux', true, true),
-    linux_asan: doDockerBuild('linux', false, true, '-DSANITIZE_ADDRESS=1'),
-    linux_tsan: doDockerBuild('linux', false, true, '-DSANITIZE_THREAD=1'),
+    linux: doDockerBuild('linux', false),
+    linux_sync: doDockerBuild('linux', true),
+    linux_asan: doDockerBuild('linux', true, '-DSANITIZE_ADDRESS=1'),
+    linux_tsan: doDockerBuild('linux', true, '-DSANITIZE_THREAD=1'),
     android: doAndroidDockerBuild(),
     macos: doBuild('osx', 'macOS', false, ''),
     macos_sync: doBuild('osx', 'macOS', true, ''),
@@ -181,7 +177,11 @@ stage('unit-tests') {
 
 stage('publish') {
   node('docker') {
-    publishReport('linux-sync')
-    publishReport('macOS-sync')
+    // we need sources to allow the coverage report to display them
+    rlmCheckout(scm)
+    // coverage reports assume sources are in the parent directory
+    dir("build") {
+      publishCoverageReport('macOS-sync')
+    }
   }
 }
