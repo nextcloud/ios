@@ -176,6 +176,8 @@
 
 + (NSInteger)getTextRecognitionStatus;
 + (void)setTextRecognitionStatus:(NSInteger)value;
++ (NSString *)getDirectoryScanDocuments;
++ (void)setDirectoryScanDocuments:(NSString *)value;
 
 // ===== Varius =====
 

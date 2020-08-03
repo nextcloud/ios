@@ -115,12 +115,17 @@ class DragDropViewController: UIViewController {
         if imagesDestination.count > 0 {
             
             var images: [UIImage] = []
+            var serverUrl = appDelegate.activeMain.serverUrl!
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)
             }
             
-            let formViewController = NCCreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayImages: images)
+            if let directory = CCUtility.getDirectoryScanDocuments() {
+                serverUrl = directory
+            }
+            
+            let formViewController = NCCreateFormUploadScanDocument.init(serverUrl: serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
     }

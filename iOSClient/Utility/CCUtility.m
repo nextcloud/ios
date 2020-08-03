@@ -730,6 +730,15 @@
     [UICKeyChainStore setString:valueString forKey:@"textRecognitionStatus" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)getDirectoryScanDocuments
+{
+    return [UICKeyChainStore stringForKey:@"directoryScanDocuments" service:k_serviceShareKeyChain];
+}
+
++ (void)setDirectoryScanDocuments:(NSString *)value
+{
+    [UICKeyChainStore setString:value forKey:@"directoryScanDocuments" service:k_serviceShareKeyChain];
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====

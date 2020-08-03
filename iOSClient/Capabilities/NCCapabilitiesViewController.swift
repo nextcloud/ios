@@ -190,7 +190,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         timer?.invalidate()
         self.dismiss(animated: true) {
             let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
-            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
+            do {
+                try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
+                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
+            } catch { }
         }
     }
     
