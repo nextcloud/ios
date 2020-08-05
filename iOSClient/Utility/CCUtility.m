@@ -1546,6 +1546,7 @@
                 newMetadata.creationDate = creationDate;
                 newMetadata.date = modificationDate;
                 newMetadata.size = fileSize;
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completion(newMetadata, fileNamePath);
                 });
