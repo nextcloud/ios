@@ -65,6 +65,8 @@ import NCCommunication
                         CCUtility.setPassword(account, password: nil)
                     }
                 }
+                
+                self.checkRemoteUserInProgress = false
             }
             
         } else if CCUtility.getPassword(account) != nil {
@@ -74,6 +76,8 @@ import NCCommunication
                 NCContentPresenter.shared.messageNotification("_error_", description: description, delay: TimeInterval(k_dismissAfterSecond*2), type: NCContentPresenter.messageType.error, errorCode: 403)
                 CCUtility.setPassword(account, password: nil)
             }
+            
+            self.checkRemoteUserInProgress = false
         }
     }
 }
