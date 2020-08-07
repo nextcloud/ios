@@ -192,7 +192,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                             if download {
                                 for metadata in metadatasChanged {
                                     if metadata.directory == false {
-                                        NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
                                     }
                                 }
                             }
