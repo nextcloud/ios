@@ -149,6 +149,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func touchUpInsideButtonCopyInernalLink(_ sender: Any) {
         
         guard let metadata = self.metadata else { return }
+        
+        let internalLink = appDelegate.activeUrl + "/index.php/f/" + metadata.fileId
+        
+        NCShareCommon.sharedInstance.copyLink(link: internalLink, viewController: self, sender: sender)
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
@@ -198,7 +202,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     func tapCopy(with tableShare: tableShare?, sender: Any) {
-        NCShareCommon.sharedInstance.copyLink(tableShare: tableShare, viewController: self, sender: sender)
+        
+        if let link = tableShare?.url {
+            NCShareCommon.sharedInstance.copyLink(link: link, viewController: self, sender: sender)
+        }
     }
     
     func switchCanEdit(with tableShare: tableShare?, switch: Bool, sender: UISwitch) {

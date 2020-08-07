@@ -185,11 +185,11 @@ class NCShareCommon: NSObject {
         return(calendarView: calendar, viewWindow: viewWindow)
     }
     
-    func copyLink(tableShare: tableShare?, viewController: UIViewController, sender: Any) {
-        guard let tableShare = tableShare else { return }
+    func copyLink(link: String, viewController: UIViewController, sender: Any) {
+        //guard let tableShare = tableShare else { return }
         
-        if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
-            let objectsToShare = [name]
+        //if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
+            let objectsToShare = [link]
             
             let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             
@@ -201,7 +201,7 @@ class NCShareCommon: NSObject {
             }
             
             viewController.present(activityViewController, animated: true, completion: nil)
-        }
+        //}
     }
     
     func getImageShareType(shareType: Int) -> UIImage? {
