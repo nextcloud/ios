@@ -36,6 +36,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBOutlet weak var searchField: UITextField!
     @IBOutlet weak var shareLinkImage: UIImageView!
     @IBOutlet weak var shareLinkLabel: UILabel!
+    @IBOutlet weak var shareInternalLinkImage: UIImageView!
+    @IBOutlet weak var shareInternalLinkLabel: UILabel!
+    @IBOutlet weak var buttonInternalCopy: UIButton!
     @IBOutlet weak var buttonCopy: UIButton!
     @IBOutlet weak var buttonMenu: UIButton!
     @IBOutlet weak var tableView: UITableView!
@@ -58,9 +61,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
+        shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink")
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
-        shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar()
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+
+        shareInternalLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "shareInternalLink")
+        shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
+        buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -420,7 +427,7 @@ class NCShareLinkCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar()
+        imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink")
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
