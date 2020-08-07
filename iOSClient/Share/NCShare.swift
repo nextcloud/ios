@@ -61,13 +61,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
-        shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink")
+        shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.sharedInstance.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
-        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+        buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
 
-        shareInternalLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "shareInternalLink")
+        shareInternalLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
         shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
-        buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: UIColor.gray), for: .normal)
+        buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -144,6 +144,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
         let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
         tapCopy(with: shares.firstShareLink, sender: sender)
+    }
+    
+    @IBAction func touchUpInsideButtonCopyInernalLink(_ sender: Any) {
+        
+        guard let metadata = self.metadata else { return }
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
@@ -427,7 +432,7 @@ class NCShareLinkCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink")
+        imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.sharedInstance.brandElement)
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }

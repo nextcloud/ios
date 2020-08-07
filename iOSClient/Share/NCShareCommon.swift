@@ -41,11 +41,11 @@ class NCShareCommon: NSObject {
     let SHARE_TYPE_REMOTE_GROUP = 9
     let SHARE_TYPE_ROOM = 10
     
-    func createLinkAvatar(imageName: String) -> UIImage? {
+    func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
         
         let size: CGFloat = 200
         
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brandElement)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: colorCircle)
         let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: imageName), width: size, height: size, color: UIColor.white)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
