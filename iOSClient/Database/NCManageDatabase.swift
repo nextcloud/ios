@@ -1910,14 +1910,12 @@ class NCManageDatabase: NSObject {
     @objc func deleteMetadata(predicate: NSPredicate) {
                 
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let results = realm.objects(tableMetadata.self).filter(predicate)
-        realm.delete(results)
         
         do {
-            try realm.commitWrite()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate)
+                realm.delete(results)
+            }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return
@@ -1926,14 +1924,12 @@ class NCManageDatabase: NSObject {
     
     @objc func moveMetadata(ocId: String, serverUrlTo: String) {
         
-        var result: tableMetadata?
         let realm = try! Realm()
 
         do {
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                if result != nil {
-                    result!.serverUrl = serverUrlTo
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.serverUrl = serverUrlTo
                 }
             }
         } catch let error {
@@ -1960,15 +1956,13 @@ class NCManageDatabase: NSObject {
     
     @objc func renameMetadata(fileNameTo: String, ocId: String) {
         
-        var result: tableMetadata?
         let realm = try! Realm()
         
         do {
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                if result != nil {
-                    result!.fileName = fileNameTo
-                    result!.fileNameView = fileNameTo
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.fileName = fileNameTo
+                    result.fileNameView = fileNameTo
                 }
             }
         } catch let error {
