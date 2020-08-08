@@ -150,9 +150,15 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let metadata = self.metadata else { return }
         
-        let internalLink = appDelegate.activeUrl + "/index.php/f/" + metadata.fileId
-        
-        NCShareCommon.sharedInstance.copyLink(link: internalLink, viewController: self, sender: sender)
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { (account, metadata, errorCode, errorDescription) in
+            if errorCode == 0 && metadata != nil {
+                let internalLink = self.appDelegate.activeUrl + "/index.php/f/" + metadata!.fileId
+                NCShareCommon.sharedInstance.copyLink(link: internalLink, viewController: self, sender: sender)
+            } else {
+                NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
+        }
     }
     
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
