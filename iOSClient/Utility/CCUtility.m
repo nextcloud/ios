@@ -1474,6 +1474,7 @@
     NSDate *creationDate = asset.creationDate;
     NSDate *modificationDate = asset.modificationDate;
     NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
+    /*
     BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
     if (!isLocallayAvailable) {
         if (notification) {
@@ -1483,6 +1484,7 @@
         completion(nil, nil);
         return;
     }
+    */
     long fileSize = [[resourceArray.firstObject valueForKey:@"fileSize"] longValue];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1491,7 +1493,7 @@
         if (asset.mediaType == PHAssetMediaTypeImage) {
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = NO; // iCloud
+            options.networkAccessAllowed = YES;
             options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             options.synchronous = YES;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
@@ -1557,7 +1559,7 @@
         if (asset.mediaType == PHAssetMediaTypeVideo) {
             
             PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = NO;
+            options.networkAccessAllowed = YES;
             options.version = PHVideoRequestOptionsVersionOriginal;
             options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
                 
