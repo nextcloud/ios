@@ -429,12 +429,12 @@ import Queuer
                         metadata.deleteAssetLocalIdentifier = true;
                 }
                 
-                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 if CCUtility.getDisableLocalCacheAfterUpload() {
                     CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 } else {
                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                 }
+                NCManageDatabase.sharedInstance.addMetadata(metadata)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                 
                 #if !EXTENSION
