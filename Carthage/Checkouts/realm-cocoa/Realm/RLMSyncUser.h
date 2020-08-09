@@ -18,9 +18,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Realm/RLMRealmConfiguration.h>
-#import <Realm/RLMSyncCredentials.h>
-#import <Realm/RLMSyncPermission.h>
+#import "RLMRealmConfiguration.h"
+#import "RLMSyncCredentials.h"
+#import "RLMSyncPermission.h"
 
 @class RLMSyncUser, RLMSyncUserInfo, RLMSyncCredentials, RLMSyncPermission, RLMSyncSession, RLMRealm, RLMSyncPermissionOffer;
 

@@ -205,14 +205,7 @@ static void RLMNSStringToStdString(std::string &out, NSString *in) {
 }
 
 - (BOOL)readOnly {
-    return _config.immutable() || _config.read_only_alternative();
-}
-
-static bool isSync(realm::Realm::Config const& config) {
-#if REALM_ENABLE_SYNC
-    return !!config.sync_config;
-#endif
-    return false;
+    return _config.immutable();
 }
 
 - (void)setReadOnly:(BOOL)readOnly {
@@ -222,15 +215,10 @@ static bool isSync(realm::Realm::Config const& config) {
         } else if (self.shouldCompactOnLaunch) {
             @throw RLMException(@"Cannot set `readOnly` when `shouldCompactOnLaunch` is set.");
         }
-#if REALM_ENABLE_SYNC
-        if (_config.sync_config && _config.sync_config->is_partial) {
-            @throw RLMException(@"Read-only mode is not supported for query-based sync.");
-        }
-#endif
-        _config.schema_mode = isSync(_config) ? realm::SchemaMode::ReadOnlyAlternative : realm::SchemaMode::Immutable;
+        _config.schema_mode = realm::SchemaMode::Immutable;
     }
     else if (self.readOnly) {
-        _config.schema_mode = isSync(_config) ? realm::SchemaMode::Additive : realm::SchemaMode::Automatic;
+        _config.schema_mode = realm::SchemaMode::Automatic;
     }
 }
 
@@ -312,7 +300,7 @@ static bool isSync(realm::Realm::Config const& config) {
 
 - (void)setShouldCompactOnLaunch:(RLMShouldCompactOnLaunchBlock)shouldCompactOnLaunch {
     if (shouldCompactOnLaunch) {
-        if (_config.immutable()) {
+        if (self.readOnly) {
             @throw RLMException(@"Cannot set `shouldCompactOnLaunch` when `readOnly` is set.");
         }
         _config.should_compact_on_launch_function = [=](size_t totalBytes, size_t usedBytes) {

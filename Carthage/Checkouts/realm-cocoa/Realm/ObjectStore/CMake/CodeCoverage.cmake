@@ -20,7 +20,8 @@ find_program(LCOV_PATH lcov)
 find_program(GENHTML_PATH genhtml)
 find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/tests)
 
-set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fprofile-arcs -ftest-coverage -DCATCH_CONFIG_FAST_COMPILE")
+set(CMAKE_CXX_FLAGS_COVERAGE "-g -O0 -fprofile-arcs -ftest-coverage -DCATCH_CONFIG_FAST_COMPILE"
+    CACHE STRING "Flags used by the C++ compiler during coverage builds.")
 mark_as_advanced(CMAKE_CXX_FLAGS_COVERAGE)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
@@ -49,7 +50,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
 
     add_custom_target(${targetname}-cobertura
       COMMAND ${testrunner}
-      COMMAND ${GCOVR_PATH} -x -o coverage.xml -f 'src/.*' -f "${CMAKE_SOURCE_DIR}/src.*" --exclude-directories "${CMAKE_BINARY_DIR}/tests" --exclude-directories="${CMAKE_SOURCE_DIR}/\.tmp" --exclude ".*realm\-core.*" --exclude ".*realm\-sync.*"
+      COMMAND ${GCOVR_PATH} -x -r ${CMAKE_SOURCE_DIR}/src ./src -o coverage.xml
       COMMAND echo Code coverage report written to coverage.xml
 
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}

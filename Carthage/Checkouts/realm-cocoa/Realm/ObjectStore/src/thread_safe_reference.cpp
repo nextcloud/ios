@@ -24,8 +24,6 @@
 #include "results.hpp"
 #include "shared_realm.hpp"
 
-#include "impl/realm_coordinator.hpp"
-
 #include <realm/db.hpp>
 #include <realm/keys.hpp>
 
@@ -35,7 +33,6 @@ public:
     virtual ~Payload() = default;
     Payload(Realm& realm)
     : m_transaction(realm.is_in_read_transaction() ? realm.duplicate() : nullptr)
-    , m_coordinator(Realm::Internal::get_coordinator(realm).shared_from_this())
     , m_created_in_write_transaction(realm.is_in_transaction())
     {
     }
@@ -46,7 +43,7 @@ protected:
     const TransactionRef m_transaction;
 
 private:
-    const std::shared_ptr<_impl::RealmCoordinator> m_coordinator;
+    const VersionID m_target_version;
     const bool m_created_in_write_transaction;
 };
 
@@ -109,6 +106,19 @@ private:
     std::string m_object_schema_name;
 };
 
+template<typename T>
+struct ListType {
+    using type = Lst<std::remove_reference_t<T>>;
+};
+
+// The code path which would instantiate List<Obj> isn't reachable, but still
+// produces errors about the type not being instantiable so we instead map it
+// to an arbitrary valid type
+template<>
+struct ListType<Obj&> {
+    using type = Lst<int64_t>;
+};
+
 template<>
 class ThreadSafeReference::PayloadImpl<Results> : public ThreadSafeReference::Payload {
 public:
@@ -148,7 +158,7 @@ public:
                 // match what happens for other types of handover where the
                 // object doesn't exist.
                 switch_on_type(ObjectSchema::from_core_type(*table, m_col_key), [&](auto* t) -> void {
-                    list = std::make_unique<Lst<NonObjTypeT<decltype(*t)>>>();
+                    list = std::make_unique<typename ListType<decltype(*t)>::type>();
                 });
             }
             return Results(r, std::move(list), m_ordering);

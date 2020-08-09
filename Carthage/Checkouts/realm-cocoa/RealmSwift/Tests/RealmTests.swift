@@ -315,7 +315,7 @@ class RealmTests: TestCase {
 
     func testAddSingleObject() {
         let realm = try! Realm()
-        assertThrows(realm.add(SwiftObject()))
+        assertThrows(_ = realm.add(SwiftObject()))
         XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
         var defaultRealmObject: SwiftObject!
         try! realm.write {
@@ -329,7 +329,7 @@ class RealmTests: TestCase {
 
         let testRealm = realmWithTestPath()
         try! testRealm.write {
-            self.assertThrows(testRealm.add(defaultRealmObject))
+            self.assertThrows(_ = testRealm.add(defaultRealmObject))
         }
     }
 
@@ -348,13 +348,13 @@ class RealmTests: TestCase {
 
         let testRealm = realmWithTestPath()
         try! testRealm.write {
-            self.assertThrows(testRealm.add(defaultRealmObject, update: .all))
+            self.assertThrows(_ = testRealm.add(defaultRealmObject, update: .all))
         }
     }
 
     func testAddMultipleObjects() {
         let realm = try! Realm()
-        assertThrows(realm.add([SwiftObject(), SwiftObject()]))
+        assertThrows(_ = realm.add([SwiftObject(), SwiftObject()]))
         XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
         try! realm.write {
             let objs = [SwiftObject(), SwiftObject()]
@@ -365,7 +365,7 @@ class RealmTests: TestCase {
 
         let testRealm = realmWithTestPath()
         try! testRealm.write {
-            self.assertThrows(testRealm.add(realm.objects(SwiftObject.self)))
+            self.assertThrows(_ = testRealm.add(realm.objects(SwiftObject.self)))
         }
     }
 
@@ -381,7 +381,7 @@ class RealmTests: TestCase {
 
         let testRealm = realmWithTestPath()
         try! testRealm.write {
-            self.assertThrows(testRealm.add(realm.objects(SwiftPrimaryStringObject.self), update: .all))
+            self.assertThrows(_ = testRealm.add(realm.objects(SwiftPrimaryStringObject.self), update: .all))
         }
     }
 
@@ -390,24 +390,24 @@ class RealmTests: TestCase {
     func testDeleteSingleObject() {
         let realm = try! Realm()
         XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
-        assertThrows(realm.delete(SwiftObject()))
+        assertThrows(_ = realm.delete(SwiftObject()))
         var defaultRealmObject: SwiftObject!
         try! realm.write {
             defaultRealmObject = SwiftObject()
-            self.assertThrows(realm.delete(defaultRealmObject))
+            self.assertThrows(_ = realm.delete(defaultRealmObject))
             XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
             realm.add(defaultRealmObject)
             XCTAssertEqual(1, realm.objects(SwiftObject.self).count)
             realm.delete(defaultRealmObject)
             XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
         }
-        assertThrows(realm.delete(defaultRealmObject))
+        assertThrows(_ = realm.delete(defaultRealmObject))
         XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
 
         let testRealm = realmWithTestPath()
-        assertThrows(testRealm.delete(defaultRealmObject))
+        assertThrows(_ = testRealm.delete(defaultRealmObject))
         try! testRealm.write {
-            self.assertThrows(testRealm.delete(defaultRealmObject))
+            self.assertThrows(_ = testRealm.delete(defaultRealmObject))
         }
     }
 
@@ -425,9 +425,9 @@ class RealmTests: TestCase {
         XCTAssertEqual(0, realm.objects(SwiftObject.self).count)
 
         let testRealm = realmWithTestPath()
-        assertThrows(testRealm.delete(objs))
+        assertThrows(_ = testRealm.delete(objs))
         try! testRealm.write {
-            self.assertThrows(testRealm.delete(objs))
+            self.assertThrows(_ = testRealm.delete(objs))
         }
     }
 
