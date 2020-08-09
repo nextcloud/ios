@@ -521,19 +521,21 @@ import Queuer
                 session = NCCommunicationBackground.shared.sessionManagerTransferExtension
             }
             
-            var findTask = false
+            var taskUpload: URLSessionTask?
             
             session?.getAllTasks(completionHandler: { (tasks) in
                 for task in tasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        findTask = true
+                        taskUpload = task
                     }
                 }
                 
-                if !findTask {
+                if taskUpload == nil {
                     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, k_metadataStatusUploading)) {
                         NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
                     }
+                } else {
+                    let totalUnitCount = taskUpload?.progress.totalUnitCount
                 }
             })
         }
