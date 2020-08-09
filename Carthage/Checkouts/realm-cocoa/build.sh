@@ -557,11 +557,6 @@ case "$COMMAND" in
         ;;
 
     "catalyst")
-        if (( $(xcode_version_major) < 11 )); then
-            echo 'Building for Catalyst requires Xcode 11'
-            exit 1
-        fi
-
         xc "-scheme Realm -configuration $CONFIGURATION \
             REALM_CATALYST_FLAGS='-target x86_64-apple-ios13.0-macabi' \
             REALM_PLATFORM_SUFFIX='maccatalyst' \
@@ -570,11 +565,6 @@ case "$COMMAND" in
         ;;
 
     "catalyst-swift")
-        if (( $(xcode_version_major) < 11 )); then
-            echo 'Building for Catalyst requires Xcode 11'
-            exit 1
-        fi
-
         sh build.sh catalyst
         # FIXME: change this to just "-destination variant='Mac Catalyst'" once the CI machines are running 10.15
         xc "-scheme 'RealmSwift' -configuration $CONFIGURATION build \
@@ -590,11 +580,6 @@ case "$COMMAND" in
         ;;
 
     "xcframework")
-        if (( $(xcode_version_major) < 11 )); then
-            echo 'Building a xcframework requires Xcode 11'
-            exit 1
-        fi
-
         export REALM_EXTRA_BUILD_ARGUMENTS="$REALM_EXTRA_BUILD_ARGUMENTS BUILD_LIBRARY_FOR_DISTRIBUTION=YES REALM_OBJC_MACH_O_TYPE=staticlib"
 
         # Build all of the requested frameworks
@@ -760,10 +745,8 @@ case "$COMMAND" in
         sh build.sh test-tvos-devices || failed=1
         sh build.sh test-osx || failed=1
         sh build.sh test-osx-swift || failed=1
-        if (( $(xcode_version_major) >= 11 )); then
-            sh build.sh test-catalyst || failed=1
-            sh build.sh test-catalyst-swift || failed=1
-        fi
+        sh build.sh test-catalyst || failed=1
+        sh build.sh test-catalyst-swift || failed=1
         exit $failed
         ;;
 
@@ -902,10 +885,8 @@ case "$COMMAND" in
         sh build.sh verify-swiftlint
         sh build.sh verify-swiftpm
         sh build.sh verify-osx-object-server
-        if (( $(xcode_version_major) >= 11 )); then
-            sh build.sh verify-catalyst
-            sh build.sh verify-catalyst-swift
-        fi
+        sh build.sh verify-catalyst
+        sh build.sh verify-catalyst-swift
         ;;
 
     "verify-cocoapods")
@@ -1221,16 +1202,6 @@ case "$COMMAND" in
     # CocoaPods
     ######################################
     "cocoapods-setup")
-        if [ ! -d core ]; then
-          sh build.sh download-sync
-          rm core
-          mv sync-* core
-          mv core/librealm-ios.a core/librealmcore-ios.a
-          mv core/librealm-macosx.a core/librealmcore-macosx.a
-          mv core/librealm-tvos.a core/librealmcore-tvos.a
-          mv core/librealm-watchos.a core/librealmcore-watchos.a
-        fi
-
         if [[ "$2" != "swift" ]]; then
           if [ ! -d Realm/ObjectStore/src ]; then
             cat >&2 <<EOM
@@ -1244,6 +1215,16 @@ their entries in your Podfile.
 
 EOM
             exit 1
+          fi
+
+          if [ ! -d core ]; then
+            sh build.sh download-sync
+            rm core
+            mv sync-* core
+            mv core/librealm-ios.a core/librealmcore-ios.a
+            mv core/librealm-macosx.a core/librealmcore-macosx.a
+            mv core/librealm-tvos.a core/librealmcore-tvos.a
+            mv core/librealm-watchos.a core/librealmcore-watchos.a
           fi
 
           rm -rf include
@@ -1407,11 +1388,7 @@ EOM
 
         set_xcode_and_swift_versions
 
-        if [[ "$PLATFORM" = "catalyst" ]] && (( $(xcode_version_major) < 11 )); then
-            mkdir -p build/catalyst/swift-$REALM_XCODE_VERSION
-        else
-            sh build.sh $PLATFORM-swift
-        fi
+        sh build.sh $PLATFORM-swift
 
         cd build/$PLATFORM
         zip --symlinks -r realm-framework-$PLATFORM-$REALM_XCODE_VERSION.zip swift-$REALM_XCODE_VERSION
@@ -1567,7 +1544,7 @@ x.y.z Release notes (yyyy-MM-dd)
 * Realm Object Server: 3.21.0 or later.
 * Realm Studio: 3.11 or later.
 * APIs are backwards compatible with all previous releases in the 5.x.y series.
-* Carthage release for Swift is built with Xcode 11.5.
+* Carthage release for Swift is built with Xcode 11.6.
 
 ### Internal
 * Upgraded realm-core from ? to ?

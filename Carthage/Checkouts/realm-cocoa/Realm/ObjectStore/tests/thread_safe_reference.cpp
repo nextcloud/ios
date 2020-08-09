@@ -31,6 +31,7 @@
 #include "util/scheduler.hpp"
 
 #include "impl/object_accessor_impl.hpp"
+#include "impl/realm_coordinator.hpp"
 
 #include <realm/db.hpp>
 #include <realm/history.hpp>
@@ -858,9 +859,18 @@ TEST_CASE("thread safe reference") {
     SECTION("lifetime") {
         SECTION("retains source realm") { // else version will become unpinned
             auto ref = ThreadSafeReference(foo);
+            foo = {};
             r = nullptr;
             r = Realm::get_shared_realm(config);
             REQUIRE_NOTHROW(ref.resolve<Object>(r));
+        }
+
+        SECTION("retains source RealmCoordinator") {
+            auto ref = ThreadSafeReference(foo);
+            auto coordinator = _impl::RealmCoordinator::get_existing_coordinator(config.path).get();
+            foo = {};
+            r = nullptr;
+            REQUIRE(coordinator == _impl::RealmCoordinator::get_existing_coordinator(config.path).get());
         }
     }
 

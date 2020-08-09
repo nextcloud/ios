@@ -43,16 +43,8 @@ template <typename ValueType, typename ContextType>
 void Object::set_property_value(ContextType& ctx, StringData prop_name,
                                 ValueType value, CreatePolicy policy)
 {
-    verify_attached();
-    m_realm->verify_in_write();
     auto& property = property_for_name(prop_name);
-
-    // Modifying primary keys is allowed in migrations to make it possible to
-    // add a new primary key to a type (or change the property type), but it
-    // is otherwise considered the immutable identity of the row
-    if (property.is_primary && !m_realm->is_in_migration())
-        throw ModifyPrimaryKeyException(m_object_schema->name, property.name);
-
+    validate_property_for_setter(property);
     set_property_value_impl(ctx, property, value, policy, false);
 }
 
@@ -186,75 +178,91 @@ Object Object::create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
 }
 
 template<typename ValueType, typename ContextType>
+Mixed as_mixed(ContextType& ctx, ValueType& value, PropertyType type)
+{
+    if (!value)
+        return {};
+    return switch_on_type(type, [&](auto* t) {
+        return Mixed(ctx.template unbox<NonObjTypeT<decltype(*t)>>(*value));
+    });
+}
+
+template<typename ValueType, typename ContextType>
 Object Object::create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
                       ObjectSchema const& object_schema, ValueType value,
                       CreatePolicy policy, ObjKey current_obj, Obj* out_row)
 {
     realm->verify_in_write();
 
-    // get or create our accessor
+    // When setting each property, we normally want to skip over the primary key
+    // as that's set as part of object creation. However, during migrations the
+    // property marked as the primary key in the schema may not currently be
+    // considered a primary key by core, and so will need to be set.
+    bool skip_primary = true;
+    // If the input value is missing values for any of the properties we want to
+    // set the propery to the default value for new objects, but leave it
+    // untouched for existing objects.
     bool created = false;
 
-    // try to get existing row if updating
     Obj obj;
     auto table = realm->read_group().get_table(object_schema.table_key);
 
-    bool skip_primary = true;
+    // If there's a primary key, we need to first check if an object with the
+    // same primary key already exists. If it does, we either update that object
+    // or throw an exception if updating is disabled.
     if (auto primary_prop = object_schema.primary_key_property()) {
-        // search for existing object based on primary key type
         auto primary_value = ctx.value_for_property(value, *primary_prop,
                                                     primary_prop - &object_schema.persisted_properties[0]);
         if (!primary_value)
             primary_value = ctx.default_value_for_property(object_schema, *primary_prop);
-        if (!primary_value) {
-            if (!is_nullable(primary_prop->type))
-                throw MissingPropertyValueException(object_schema.name, primary_prop->name);
-            primary_value = ctx.null_value();
-        }
-        auto key = get_for_primary_key_impl(ctx, *table, *primary_prop, *primary_value);
-        if (key) {
-            if (policy != CreatePolicy::ForceCreate)
-                obj = table->get_object(key);
-            else if (realm->is_in_migration()) {
-                // Creating objects with duplicate primary keys is allowed in migrations
-                // as long as there are no duplicates at the end, as adding an entirely
-                // new column which is the PK will inherently result in duplicates at first
-                obj = table->create_object();
-                created = true;
+        if (!primary_value && !is_nullable(primary_prop->type))
+            throw MissingPropertyValueException(object_schema.name, primary_prop->name);
+
+        // When changing the primary key of a table, we remove the existing pk (if any), call
+        // the migration function, then add the new pk (if any). This means that we can't call
+        // create_object_with_primary_key(), and creating duplicate primary keys is allowed as
+        // long as they're unique by the end of the migration.
+        if (table->get_primary_key_column() == ColKey{}) {
+            REALM_ASSERT(realm->is_in_migration());
+            if (policy != CreatePolicy::ForceCreate) {
+                if (auto key = get_for_primary_key_impl(ctx, *table, *primary_prop, *primary_value))
+                    obj = table->get_object(key);
+            }
+            if (!obj)
                 skip_primary = false;
-            }
-            else {
-                throw std::logic_error(util::format("Attempting to create an object of type '%1' with an existing primary key value '%2'.",
-                                                    object_schema.name, ctx.print(*primary_value)));
-            }
         }
         else {
-            created = true;
-            Mixed primary_key;
-            if (primary_prop->type == PropertyType::Int) {
-                primary_key = ctx.template unbox<util::Optional<int64_t>>(*primary_value);
+            obj = table->create_object_with_primary_key(as_mixed(ctx, primary_value, primary_prop->type), &created);
+            if (!created && policy == CreatePolicy::ForceCreate) {
+                if (!realm->is_in_migration()) {
+                    throw std::logic_error(util::format("Attempting to create an object of type '%1' with an existing primary key value '%2'.",
+                                                        object_schema.name, ctx.print(*primary_value)));
+                }
+                table->set_primary_key_column(ColKey{});
+                skip_primary = false;
+                obj = {};
             }
-            else if (primary_prop->type == PropertyType::String) {
-                primary_key = ctx.template unbox<StringData>(*primary_value);
-            }
-            else {
-                REALM_TERMINATE("Unsupported primary key type.");
-            }
-            obj = table->create_object_with_primary_key(primary_key);
         }
     }
-    else {
+
+    // No primary key (possibly temporarily due to migrations). If we're
+    // currently performing a recursive update on an existing object tree then
+    // an object key was passed in that we need to look up, and otherwise we
+    // need to create the new object.
+    if (!obj) {
         if (policy == CreatePolicy::UpdateModified && current_obj) {
             obj = table->get_object(current_obj);
         }
         else {
-        obj = table->create_object();
+            obj = table->create_object();
             created = true;
         }
     }
 
-    // populate
     Object object(realm, object_schema, obj);
+    // KVO in Cocoa requires that the obj ivar on the wrapper object be set
+    // *before* we start setting the properties, so it passes in a pointer to
+    // that.
     if (out_row)
         *out_row = obj;
     for (size_t i = 0; i < object_schema.persisted_properties.size(); ++i) {
@@ -271,6 +279,9 @@ Object Object::create(ContextType& ctx, std::shared_ptr<Realm> const& realm,
             v = ctx.default_value_for_property(object_schema, prop);
             is_default = true;
         }
+        // We consider null or a missing value to be equivalent to an empty
+        // array for historical reasons; the original implementation did this
+        // accidentally and it's not worth changing.
         if ((!v || ctx.is_null(*v)) && !is_nullable(prop.type) && !is_array(prop.type)) {
             if (prop.is_primary || !ctx.allow_missing(value))
                 throw MissingPropertyValueException(object_schema.name, prop.name);

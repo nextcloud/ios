@@ -124,6 +124,23 @@ Property const& Object::property_for_name(StringData prop_name) const
     return *prop;
 }
 
+void Object::validate_property_for_setter(Property const& property) const
+{
+    verify_attached();
+    m_realm->verify_in_write();
+
+    // Modifying primary keys is allowed in migrations to make it possible to
+    // add a new primary key to a type (or change the property type), but it
+    // is otherwise considered the immutable identity of the row
+    if (property.is_primary) {
+        if (!m_realm->is_in_migration())
+            throw ModifyPrimaryKeyException(m_object_schema->name, property.name);
+        // Modifying the PK property while it's the PK will corrupt the table,
+        // so remove it and then restore it at the end of the migration (which will rebuild the table)
+        m_obj.get_table()->set_primary_key_column({});
+    }
+}
+
 #if REALM_ENABLE_SYNC
 void Object::ensure_user_in_everyone_role()
 {

@@ -142,7 +142,7 @@ struct SyncTestFile : TestFile {
 };
 
 struct TestSyncManager {
-    TestSyncManager(std::string const& base_path="", realm::SyncManager::MetadataMode = realm::SyncManager::MetadataMode::NoEncryption);
+    TestSyncManager(std::string const& base_path="", realm::SyncManager::MetadataMode = realm::SyncManager::MetadataMode::NoMetadata);
     ~TestSyncManager();
     static void configure(std::string const& base_path, realm::SyncManager::MetadataMode);
 };
