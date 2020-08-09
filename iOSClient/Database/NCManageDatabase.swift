@@ -1588,11 +1588,12 @@ class NCManageDatabase: NSObject {
     @objc func addLocalFile(metadata: tableMetadata) {
         
         let realm = try! Realm()
-        let addObject = tableLocalFile()
-
+        
         do {
             try realm.write {
             
+                let addObject = tableLocalFile()
+                
                 addObject.account = metadata.account
                 addObject.date = metadata.date
                 addObject.etag = metadata.etag
