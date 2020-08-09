@@ -184,26 +184,24 @@ class NCOperationSynchronization: ConcurrentOperation {
             }
             
             NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                DispatchQueue.global().async {
-                    if errorCode == 0 {
-                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                            if metadatas.count > 0 {
-                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
-                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
-                                if download {
-                                    for metadata in metadatasChanged {
-                                        if metadata.directory == false {
-                                            NCNetworking.shared.download(metadata: metadata, selector: selectorDownloadSynchronize) { (_) in }
-                                        }
+                if errorCode == 0 {
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                        if metadatas.count > 0 {
+                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
+                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
+                            if download {
+                                for metadata in metadatasChanged {
+                                    if metadata.directory == false {
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
                                     }
                                 }
                             }
                         }
-                    } else if errorCode == 404 && self.metadata.directory {
-                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
-                    self.finish()
+                } else if errorCode == 404 && self.metadata.directory {
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                 }
+                self.finish()
             }
         }
     }

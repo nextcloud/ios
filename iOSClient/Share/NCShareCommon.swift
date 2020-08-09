@@ -41,12 +41,12 @@ class NCShareCommon: NSObject {
     let SHARE_TYPE_REMOTE_GROUP = 9
     let SHARE_TYPE_ROOM = 10
     
-    func createLinkAvatar() -> UIImage? {
+    func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
         
         let size: CGFloat = 200
         
-        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: NCBrandColor.sharedInstance.brandElement)
-        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: size, height: size, color: UIColor.white)
+        let bottomImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "circle"), width: size, height: size, color: colorCircle)
+        let topImage = CCGraphics.changeThemingColorImage(UIImage.init(named: imageName), width: size, height: size, color: UIColor.white)
         UIGraphicsBeginImageContextWithOptions(CGSize(width: size, height: size), false, UIScreen.main.scale)
         bottomImage?.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size, height: size)))
         topImage?.draw(in: CGRect(origin:  CGPoint(x: size/4, y: size/4), size: CGSize(width: size/2, height: size/2)))
@@ -185,11 +185,11 @@ class NCShareCommon: NSObject {
         return(calendarView: calendar, viewWindow: viewWindow)
     }
     
-    func copyLink(tableShare: tableShare?, viewController: UIViewController, sender: Any) {
-        guard let tableShare = tableShare else { return }
+    func copyLink(link: String, viewController: UIViewController, sender: Any) {
+        //guard let tableShare = tableShare else { return }
         
-        if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
-            let objectsToShare = [name]
+        //if let name = URL(string: tableShare.url), !name.absoluteString.isEmpty {
+            let objectsToShare = [link]
             
             let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
             
@@ -201,7 +201,7 @@ class NCShareCommon: NSObject {
             }
             
             viewController.present(activityViewController, animated: true, completion: nil)
-        }
+        //}
     }
     
     func getImageShareType(shareType: Int) -> UIImage? {

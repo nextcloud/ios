@@ -1910,14 +1910,12 @@ class NCManageDatabase: NSObject {
     @objc func deleteMetadata(predicate: NSPredicate) {
                 
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        let results = realm.objects(tableMetadata.self).filter(predicate)
-        realm.delete(results)
         
         do {
-            try realm.commitWrite()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(predicate)
+                realm.delete(results)
+            }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return
@@ -1926,14 +1924,12 @@ class NCManageDatabase: NSObject {
     
     @objc func moveMetadata(ocId: String, serverUrlTo: String) {
         
-        var result: tableMetadata?
         let realm = try! Realm()
 
         do {
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                if result != nil {
-                    result!.serverUrl = serverUrlTo
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.serverUrl = serverUrlTo
                 }
             }
         } catch let error {
@@ -1960,15 +1956,13 @@ class NCManageDatabase: NSObject {
     
     @objc func renameMetadata(fileNameTo: String, ocId: String) {
         
-        var result: tableMetadata?
         let realm = try! Realm()
         
         do {
             try realm.write {
-                result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                if result != nil {
-                    result!.fileName = fileNameTo
-                    result!.fileNameView = fileNameTo
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.fileName = fileNameTo
+                    result.fileNameView = fileNameTo
                 }
             }
         } catch let error {
@@ -2031,35 +2025,37 @@ class NCManageDatabase: NSObject {
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
         
-        let realm = try! Realm()
-        do {
-            try realm.write {
-                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    if let session = session {
-                        result.session = session
-                    }
-                    if let sessionError = sessionError {
-                        result.sessionError = sessionError
-                    }
-                    if let sessionSelector = sessionSelector {
-                        result.sessionSelector = sessionSelector
-                    }
-                    if let sessionTaskIdentifier = sessionTaskIdentifier {
-                        result.sessionTaskIdentifier = sessionTaskIdentifier
-                    }
-                    if let status = status {
-                        result.status = status
-                    }
-                    if let etag = etag {
-                        result.etag = etag
-                    }
-                    if setFavorite {
-                        result.favorite = true
+        DispatchQueue.main.async {
+            let realm = try! Realm()
+            do {
+                try realm.write {
+                    if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                        if let session = session {
+                            result.session = session
+                        }
+                        if let sessionError = sessionError {
+                            result.sessionError = sessionError
+                        }
+                        if let sessionSelector = sessionSelector {
+                            result.sessionSelector = sessionSelector
+                        }
+                        if let sessionTaskIdentifier = sessionTaskIdentifier {
+                            result.sessionTaskIdentifier = sessionTaskIdentifier
+                        }
+                        if let status = status {
+                            result.status = status
+                        }
+                        if let etag = etag {
+                            result.etag = etag
+                        }
+                        if setFavorite {
+                            result.favorite = true
+                        }
                     }
                 }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
             }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
         }
     }
     
