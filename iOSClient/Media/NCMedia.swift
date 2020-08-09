@@ -52,6 +52,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
+    private var limit: Int = 100
     
     struct cacheImages {
         static var cellPlayImage = UIImage()
@@ -698,7 +699,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
@@ -715,7 +716,7 @@ extension NCMedia {
                         
                         let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         
-                        if metadatasChanged.count < 100 {
+                        if metadatasChanged.count < self.limit {
                             
                             if value == -30 {
                                 self.searchOldPhotoVideo(value: -90)
@@ -769,7 +770,7 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/" ,showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: self.limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
