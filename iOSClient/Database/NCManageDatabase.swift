@@ -2371,30 +2371,10 @@ class NCManageDatabase: NSObject {
         
                 let realm = try! Realm()
                 realm.refresh()
-                var metadatas = [tableMetadata]()
                 
                 let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties)
-                if (results.count > 0) {
-                    
-                    // For Live Photo
-                    var fileNameImages = [String]()
-                    let filtered = results.filter{ $0.typeFile.contains(k_metadataTypeFile_image) }
-                    filtered.forEach {
-                        let fileName = ($0.fileNameView as NSString).deletingPathExtension
-                        fileNameImages.append(fileName)
-                    }
-                    
-                    for result in results {
-                        let ext = (result.fileNameView as NSString).pathExtension.uppercased()
-                        let fileName = (result.fileNameView as NSString).deletingPathExtension
-                        if !(ext == "MOV" && fileNameImages.contains(fileName)) {
-                            metadatas.append(result.freeze())
-                        }
-                    }
-                }
-                
-                completion(metadatas)
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties).freeze()
+                completion(Array(results))
             }
         }
     }
