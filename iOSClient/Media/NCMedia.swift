@@ -35,6 +35,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     public var metadatas: [tableMetadata] = []
     private var metadataPush: tableMetadata?
+    private var account: String = ""
+
     private var predicateDefault: NSPredicate?
     private var predicate: NSPredicate?
 
@@ -111,6 +113,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         mediaCommandView?.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         mediaCommandView?.heightAnchor.constraint(equalToConstant: 150).isActive = true
         self.updateMediaControlVisibility()
+        
+        collectionView.prefetchDataSource = self
         
         changeTheming()
     }
@@ -524,6 +528,12 @@ extension NCMedia: UICollectionViewDelegate {
     }
 }
 
+extension NCMedia: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        print("[LOG] n. " + String(indexPaths.count))
+    }
+}
+
 extension NCMedia: UICollectionViewDataSource {
     
     func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
@@ -632,7 +642,13 @@ extension NCMedia {
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) { return }
-         
+        
+        if account != appDelegate.activeAccount {
+            self.metadatas = []
+            account = appDelegate.activeAccount
+            collectionView?.reloadData()
+        }
+        
         if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
