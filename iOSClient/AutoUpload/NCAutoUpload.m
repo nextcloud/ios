@@ -383,11 +383,17 @@
     
     for (PHAsset *asset in newAssetToUpload) {
         
+        BOOL livePhoto = false;
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType keyFileNameOriginal:k_keyFileNameOriginalAutoUpload];
 
+        // Detect LivePhoto Upload
+        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
+            livePhoto = true;
+        }
+        
         // Select type of session
         
         if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
@@ -414,6 +420,7 @@
             tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
             
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+            metadataForUpload.livePhoto = livePhoto;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
@@ -425,7 +432,7 @@
             }
 
             // Add Medtadata MOV LIVE PHOTO for upload
-            if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
+            if (livePhoto) {
                 
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
                 NSString *ocId = [[NSUUID UUID] UUIDString];
@@ -439,6 +446,7 @@
                         
                         tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
                         
+                        metadataMOVForUpload.livePhoto = livePhoto;
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;

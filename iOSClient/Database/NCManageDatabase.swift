@@ -113,7 +113,7 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableExternalSites.className())
                     }
                     
-                    if oldSchemaVersion < 135 {
+                    if oldSchemaVersion < 139 {
                         migration.deleteData(forType: tableMetadata.className())
                     }
                     
@@ -1734,9 +1734,9 @@ class NCManageDatabase: NSObject {
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
         metadata.fileNameWithoutExt = file.fileNameWithoutExt
-        metadata.hasMOVlinked = file.hasMOVlinked
         metadata.hasPreview = file.hasPreview
         metadata.iconName = file.iconName
+        metadata.livePhoto = file.livePhoto
         metadata.mountType = file.mountType
         metadata.ocId = file.ocId
         metadata.ownerId = file.ownerId
@@ -1889,9 +1889,9 @@ class NCManageDatabase: NSObject {
                     metadata.fileName = file.fileName
                     metadata.fileNameView = file.fileName
                     metadata.fileNameWithoutExt = file.fileNameWithoutExt
-                    metadata.hasMOVlinked = file.hasMOVlinked
                     metadata.hasPreview = file.hasPreview
                     metadata.iconName = file.iconName
+                    metadata.livePhoto = file.livePhoto
                     metadata.mountType = file.mountType
                     metadata.ocId = file.ocId
                     metadata.ownerId = file.ownerId

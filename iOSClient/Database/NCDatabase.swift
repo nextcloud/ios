@@ -314,9 +314,9 @@ class tableMetadata: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var fileNameWithoutExt = ""
-    @objc dynamic var hasMOVlinked: Bool = false
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
+    @objc dynamic var livePhoto: Bool = false
     @objc dynamic var mountType = ""
     @objc dynamic var ocId = ""
     @objc dynamic var ownerId = ""

@@ -1003,10 +1003,15 @@
 
     for (PHAsset *asset in assets) {
         
+        BOOL livePhoto = false;
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
-        
         NSDate *assetDate = asset.creationDate;
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        
+        // Detect LivePhoto Upload
+        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
+            livePhoto = true;
+        }
         
         // Create serverUrl if use sub folder
         if (useSubFolder) {
@@ -1029,6 +1034,7 @@
         tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
         
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+        metadataForUpload.livePhoto = livePhoto;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
@@ -1041,7 +1047,7 @@
         }
         
         // Add Medtadata MOV LIVE PHOTO for upload
-        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
+        if (livePhoto) {
                 
             NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
             NSString *ocId = [[NSUUID UUID] UUIDString];
@@ -1055,6 +1061,7 @@
                     
                     tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@""];
                     
+                    metadataMOVForUpload.livePhoto = livePhoto;
                     metadataMOVForUpload.session = session;
                     metadataMOVForUpload.sessionSelector = selectorUploadFile;
                     metadataMOVForUpload.size = fileSize;
