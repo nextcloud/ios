@@ -90,18 +90,9 @@
     */
     
     if ([CCUtility getLivePhoto] && filterLivePhoto) {
-        arraySoprtedMetadatas = [arrayMetadatas sortedArrayUsingComparator:^NSComparisonResult(tableMetadata *obj1, tableMetadata *obj2) {
-            return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
-        }];
-        NSString *prevFileNameImage;
-        for (tableMetadata *metadata in arraySoprtedMetadatas) {
-            if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image]) {
-                prevFileNameImage = metadata.fileNameView.stringByDeletingPathExtension;
-            }
-            if ([metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
-                if ([metadata.fileNameView.stringByDeletingPathExtension isEqualToString:prevFileNameImage]) {
-                    [filterocId addObject:metadata.ocId];
-                }
+        for (tableMetadata *metadata in arrayMetadatas) {
+            if ([metadata.ext isEqualToString:@"mov"] && metadata.livePhoto) {
+                [filterocId addObject:metadata.ocId];
             }
         }
     }
