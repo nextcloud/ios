@@ -57,6 +57,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var limit: Int = 100
     
     struct cacheImages {
+        static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
         static var cellFavouriteImage = UIImage()
     }
@@ -357,6 +358,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
         
+        cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
         
@@ -587,6 +589,8 @@ extension NCMedia: UICollectionViewDataSource {
         // image status
         if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             cell.imageStatus.image = cacheImages.cellPlayImage
+        } else if metadata.hasMOVlinked {
+            cell.imageStatus.image = cacheImages.cellLivePhotoImage
         }
         
         // image Local
