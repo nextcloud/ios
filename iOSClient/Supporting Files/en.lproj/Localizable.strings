@@ -672,7 +672,8 @@
 "_e2e_error_create_encrypted_"      = "Could not create encrypted file";
 "_e2e_error_update_metadata_"       = "Update metadata error";
 "_e2e_error_store_metadata_"        = "Could not save metadata";
-"_e2e_error_send_metadata_"         = "Could not send metadata";"_e2e_error_delete_metadata_"       = "Could not delete metadata";
+"_e2e_error_send_metadata_"         = "Could not send metadata";
+"_e2e_error_delete_metadata_"       = "Could not delete metadata";
 "_e2e_error_get_metadata_"          = "Could not fetch metadata";
 "_e2e_error_not_enabled_"           = "Serious internal error. End-to-end encryption not enabled";
 "_e2e_error_record_not_found_"      = "Serious internal error. Records not found";
