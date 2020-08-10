@@ -103,7 +103,6 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableE2eEncryptionLock.className())
                         migration.deleteData(forType: tableCapabilities.className())
                         migration.deleteData(forType: tableComments.className())
-                        migration.deleteData(forType: tableMetadata.className())
                         migration.deleteData(forType: tableDirectory.className())
                     }
                     
@@ -112,6 +111,10 @@ class NCManageDatabase: NSObject {
                         migration.deleteData(forType: tableDirectEditingCreators.className())
                         migration.deleteData(forType: tableDirectEditingEditors.className())
                         migration.deleteData(forType: tableExternalSites.className())
+                    }
+                    
+                    if oldSchemaVersion < 135 {
+                        migration.deleteData(forType: tableMetadata.className())
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -1725,10 +1728,13 @@ class NCManageDatabase: NSObject {
         metadata.directory = file.directory
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
+        metadata.ext = file.ext
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
         metadata.fileNameView = file.fileName
+        metadata.fileNameWithoutExt = file.fileNameWithoutExt
+        metadata.hasMOVlinked = file.hasMOVlinked
         metadata.hasPreview = file.hasPreview
         metadata.iconName = file.iconName
         metadata.mountType = file.mountType
@@ -1811,9 +1817,11 @@ class NCManageDatabase: NSObject {
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
         metadata.iconName = results.iconName
-        metadata.ocId = ocId
+        metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
         metadata.fileNameView = fileName
+        metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
+        metadata.ocId = ocId
         metadata.serverUrl = serverUrl
         metadata.typeFile = results.typeFile
         metadata.uploadDate = Date() as NSDate
@@ -1875,10 +1883,13 @@ class NCManageDatabase: NSObject {
                     metadata.directory = file.directory
                     metadata.e2eEncrypted = file.e2eEncrypted
                     metadata.etag = file.etag
+                    metadata.ext = file.ext
                     metadata.favorite = file.favorite
                     metadata.fileId = file.fileId
                     metadata.fileName = file.fileName
                     metadata.fileNameView = file.fileName
+                    metadata.fileNameWithoutExt = file.fileNameWithoutExt
+                    metadata.hasMOVlinked = file.hasMOVlinked
                     metadata.hasPreview = file.hasPreview
                     metadata.iconName = file.iconName
                     metadata.mountType = file.mountType
