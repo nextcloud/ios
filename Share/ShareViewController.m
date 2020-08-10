@@ -282,7 +282,7 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.activeUrl url:@"" contentType:@""];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.activeUrl url:@"" contentType:@"" livePhoto:false];
                                
                 metadata.date = date;
                 metadata.etag = etag;

@@ -170,7 +170,7 @@
 {
     NSString *fileName = [[NCUtility sharedInstance] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.activeAccount];
     
-    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.activeUrl url:@"" contentType:@""];
+    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.activeUrl url:@"" contentType:@"" livePhoto:false];
     
     metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
     metadataForUpload.sessionSelector = selectorUploadFile;

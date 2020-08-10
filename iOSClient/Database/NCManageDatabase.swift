@@ -1806,7 +1806,7 @@ class NCManageDatabase: NSObject {
         completion(metadataFolder, metadataFolders, metadatas)
     }
     
-    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String) -> tableMetadata {
+    @objc func createMetadata(account: String, fileName: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, livePhoto: Bool) -> tableMetadata {
         
         let metadata = tableMetadata()
         let results = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: contentType, directory: false)
@@ -1821,6 +1821,7 @@ class NCManageDatabase: NSObject {
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
+        metadata.livePhoto = livePhoto
         metadata.ocId = ocId
         metadata.serverUrl = serverUrl
         metadata.typeFile = results.typeFile
