@@ -2351,19 +2351,14 @@ class NCManageDatabase: NSObject {
         return result.freeze()
     }
     
-    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false, completion: @escaping (_ metadatas: [tableMetadata])->()) {
-                
-        DispatchQueue.global().async {
-            autoreleasepool {
+    func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
         
-                let realm = try! Realm()
-                realm.refresh()
-                
-                let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
-                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties).freeze()
-                completion(Array(results))
-            }
-        }
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties).freeze()
+        return Array(results)
     }
     
     //MARK: -
