@@ -31,6 +31,7 @@
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
+#define IV_DELIMITER_ENCODED_OLD    @"fA=="
 #define IV_DELIMITER_ENCODED        @"|"
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
