@@ -351,7 +351,13 @@
     
     // Split
     NSArray *privateKeyCipherArray = [privateKeyCipher componentsSeparatedByString:IV_DELIMITER_ENCODED];
-
+    if (privateKeyCipherArray.count != 3) {
+        privateKeyCipherArray = [privateKeyCipher componentsSeparatedByString:IV_DELIMITER_ENCODED_OLD];
+        if (privateKeyCipherArray.count != 3) {
+            return nil;
+        }
+    }
+    
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherArray[0] options:0];
     NSString *tagBase64 = [privateKeyCipher substringWithRange:NSMakeRange([(NSString *)privateKeyCipherArray[0] length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
     NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tagBase64 options:0];
@@ -431,6 +437,12 @@
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
+    if (range.location == NSNotFound) {
+        range = [encrypted rangeOfString:IV_DELIMITER_ENCODED_OLD];
+        if (range.location == NSNotFound) {
+            return nil;
+        }
+    }
     
     // Cipher
     NSString *cipher = [encrypted substringToIndex:(range.location)];
