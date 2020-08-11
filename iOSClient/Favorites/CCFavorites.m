@@ -38,6 +38,8 @@
     
     // Datasource
     CCSectionDataSourceMetadata *sectionDataSource;
+    
+    BOOL livePhoto;
 }
 @end
 
@@ -372,6 +374,9 @@
     NSString *sorted = [CCUtility getOrderSettings];
     if ([sorted isEqualToString:@"fileName"]) sorted = @"fileName";
     
+    // live photo
+    livePhoto =  [CCUtility getLivePhoto];
+    
     // get auto upload folder
     autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
@@ -428,7 +433,7 @@
         }
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory tableShare:shareCell];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory tableShare:shareCell livePhoto:livePhoto];
     
     // NORMAL - > MAIN
 

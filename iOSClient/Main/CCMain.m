@@ -72,6 +72,8 @@
     NSMutableArray *arrayMoveServerUrlTo;
     NSMutableArray *arrayCopyMetadata;
     NSMutableArray *arrayCopyServerUrlTo;
+    
+    BOOL livePhoto;
 }
 @end
 
@@ -1976,6 +1978,9 @@
     if ([serverUrl isEqualToString:self.serverUrl] == NO || self.serverUrl == nil)
         return;
     
+    // live photo
+    livePhoto = [CCUtility getLivePhoto];
+    
     // load share
     appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount];
     
@@ -2296,7 +2301,7 @@
         }
     }
 
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory tableShare:shareCell];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory tableShare:shareCell livePhoto:livePhoto];
     
     // NORMAL - > MAIN
     

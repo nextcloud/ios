@@ -454,7 +454,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         }
     }
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, tableShare: tableShare?) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, tableShare: tableShare?, livePhoto: Bool) -> UITableViewCell {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
         // Create File System
@@ -557,7 +557,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 }
                 
                 // Live Photo
-                if metadata.livePhoto && CCUtility.getLivePhoto() {
+                if metadata.livePhoto && livePhoto {
                     cell.status.image = NCMainCommonImages.cellLivePhotoImage
                 }
             }
