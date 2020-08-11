@@ -55,6 +55,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var limit: Int = 100
+    private var livePhoto: Bool = false
     
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -589,7 +590,7 @@ extension NCMedia: UICollectionViewDataSource {
         // image status
         if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             cell.imageStatus.image = cacheImages.cellPlayImage
-        } else if metadata.livePhoto && CCUtility.getLivePhoto() {
+        } else if metadata.livePhoto && livePhoto {
             cell.imageStatus.image = cacheImages.cellLivePhotoImage
         }
         
@@ -653,6 +654,8 @@ extension NCMedia {
             collectionView?.reloadData()
         }
         
+        livePhoto = CCUtility.getLivePhoto()
+        
         if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
@@ -668,7 +671,7 @@ extension NCMedia {
             predicate = predicateDefault
         }
         
-        if CCUtility.getLivePhoto() {
+        if livePhoto {
             let predicateLivePhoto = NSPredicate(format: "!(ext == 'mov' AND livePhoto == true)")
             predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate!, predicateLivePhoto])
         }
