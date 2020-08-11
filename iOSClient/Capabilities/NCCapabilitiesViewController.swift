@@ -219,9 +219,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         let isE2EEEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
-        let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
+        //let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
         
-        if isE2EEEnabled && versionE2EE == k_E2EE_API {
+        if isE2EEEnabled {
             statusEndToEndEncryption.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusEndToEndEncryption.text = NSLocalizedString("_not_available_", comment: "")
