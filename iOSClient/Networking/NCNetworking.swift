@@ -794,20 +794,14 @@ import Queuer
             
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
-                    // remove
-                    let metadatasFavorite = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", account))
-                    for metadata in metadatasFavorite {
-                        if metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) == nil {
-                            NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: false)
-                        }
-                    }
+                    let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", account))
+                    let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: true)
                     #if !EXTENSION
-                    for metadata in metadatas {
-                        NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: true)
-                        if CCUtility.getFavoriteOffline() {
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
-                        } else {
-                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorSynchronize)
+                    if CCUtility.getFavoriteOffline() {
+                        for metadata in metadatasChanged {
+                            if !metadata.directory {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
+                            }
                         }
                     }
                     #endif
