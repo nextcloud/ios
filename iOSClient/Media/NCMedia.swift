@@ -43,8 +43,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var isEditMode = false
     private var selectocId: [String] = []
     
-    private var filterTypeFileImage = false;
-    private var filterTypeFileVideo = false;
+    private var filterTypeFileImage = false
+    private var filterTypeFileVideo = false
             
     private let kMaxImageGrid: CGFloat = 5
     private var cellHeigth: CGFloat = 0
@@ -56,6 +56,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     private var mediaPath = ""
     private var limit: Int = 100
     private var livePhoto: Bool = false
+    
+    private var listOcIdReadFileForMedia: [String] = []
     
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -555,7 +557,10 @@ extension NCMedia: UICollectionViewDataSource {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
-            NCOperationQueue.shared.readFileForMedia(metadata: metadata)
+            if !listOcIdReadFileForMedia.contains(metadata.ocId) {
+                NCOperationQueue.shared.readFileForMedia(metadata: metadata)
+                listOcIdReadFileForMedia.append(metadata.ocId)
+            }
         }
     }
     
