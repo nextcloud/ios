@@ -153,20 +153,22 @@ class NCOperationSynchronization: ConcurrentOperation {
    
     private var metadata: tableMetadata
     private var selector: String
+    private var download: Bool
     
     init(metadata: tableMetadata, selector: String) {
         self.metadata = metadata
         self.selector = selector
+        if selector == selectorDownloadSynchronize {
+            self.download = true
+        } else {
+            self.download = false
+        }
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
-            var download = false
-            if selector == selectorDownloadSynchronize {
-                download = true
-            }
             if metadata.directory {
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "infinity", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
@@ -174,8 +176,8 @@ class NCOperationSynchronization: ConcurrentOperation {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             if metadatas.count > 0 {
                                 let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
-                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
-                                if download {
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
+                                if self.download {
                                     for metadata in metadatasChanged {
                                         if metadata.directory == false {
                                             NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
@@ -190,7 +192,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                     self.finish()
                 }
             } else {
-                if download {
+                if self.download {
                     NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
                 }
                 self.finish()
