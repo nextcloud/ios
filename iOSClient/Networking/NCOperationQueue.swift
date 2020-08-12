@@ -163,43 +163,35 @@ class NCOperationSynchronization: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            var depth: String = ""
-            var serverUrlFileName: String = ""
-            var predicate = NSPredicate()
             var download = false
-            var useMetadataFolder = false
-            if metadata.directory {
-                depth = "infinity"
-                useMetadataFolder = true
-                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", metadata.account, serverUrlFileName, k_metadataStatusNormal)
-            } else {
-                depth = "0"
-                useMetadataFolder = false
-                serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.serverUrl, metadata.fileName, k_metadataStatusNormal)
-            }
             if selector == selectorDownloadSynchronize {
                 download = true
             }
-            
-            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: useMetadataFolder, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                        if metadatas.count > 0 {
-                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
-                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
-                            if download {
-                                for metadata in metadatasChanged {
-                                    if metadata.directory == false {
-                                        NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
+            if metadata.directory {
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "infinity", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                   if errorCode == 0 {
+                        NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                            if metadatas.count > 0 {
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: download)
+                                if download {
+                                    for metadata in metadatasChanged {
+                                        if metadata.directory == false {
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
+                                        }
                                     }
                                 }
                             }
                         }
+                    } else if errorCode == 404 && self.metadata.directory {
+                        NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
-                } else if errorCode == 404 && self.metadata.directory {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
+                    self.finish()
+                }
+            } else {
+                if download {
+                    NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
                 }
                 self.finish()
             }
