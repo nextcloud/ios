@@ -671,13 +671,15 @@ extension NCMedia {
             predicate = predicateDefault
         }
         
+        guard var predicateForGetMetadatasMedia = predicate else { return }
+        
         if livePhoto {
             let predicateLivePhoto = NSPredicate(format: "!(ext == 'mov' AND livePhoto == true)")
-            predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate!, predicateLivePhoto])
+            predicateForGetMetadatasMedia = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateForGetMetadatasMedia, predicateLivePhoto])
         }
               
         DispatchQueue.global().async {
-            self.metadatas = NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: self.predicate!, sort: CCUtility.getMediaSortDate())
+            self.metadatas = NCManageDatabase.sharedInstance.getMetadatasMedia(predicate: predicateForGetMetadatasMedia, sort: CCUtility.getMediaSortDate())
             DispatchQueue.main.sync {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
