@@ -734,13 +734,11 @@ extension NCMedia {
 
             if errorCode == 0 && account == self.appDelegate.activeAccount {
                 if files.count > 0 {
-                    
-                    let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    let predicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
-                    let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate)
-                    
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.activeAccount) { (_, _, metadatas) in
                         
+                        let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
+                        let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
+                        let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                         
                         if metadatasChanged.count < self.limit {
@@ -802,23 +800,12 @@ extension NCMedia {
                 self.newInProgress = false
                 
                 if errorCode == 0 && account == self.appDelegate.activeAccount && files.count > 0 {
-                   DispatchQueue.global().async {
-                    
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                        let newPredicate = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
-                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: newPredicate)
-                        if metadatas.count > 0 {
-                            let etagsMetadatas = Array(metadatas.map { $0.etag })
-                            let etagsFiles = Array(files.map { $0.etag })
-                            for etag in etagsFiles {
-                                if !etagsMetadatas.contains(etag) {
-                                    NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
-                                    self.reloadDataSource()
-                                    break;
-                                }
-                            }
-                        } else {
-                            NCManageDatabase.sharedInstance.addMetadatas(files: files, account: self.appDelegate.activeAccount)
+                        let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
+                        let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
+                        let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        if updateMetadatas.count > 0 {
                             self.reloadDataSource()
                         }
                     }
