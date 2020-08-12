@@ -539,17 +539,13 @@
         if (self.searchController.isActive) {
             [self readFolder:self.serverUrl];
         } 
-        
-        if (metadata.directory && favorite) {
+        if (favorite) {
             if ([CCUtility getFavoriteOffline]) {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
             } else {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
             }
-        } else if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
-            [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:true completion:^(NSInteger errorCode) { }];
         }
-        
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
