@@ -400,7 +400,7 @@
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [[NCCommunicationCommon shared] setupWithAccount:activeAccount user:activeUser userId:activeUserID password:activePassword url:activeUrl];
+    [[NCCommunicationCommon shared] setupWithAccount:activeAccount user:activeUser userId:activeUserID password:activePassword urlBase:activeUrl];
     [self settingSetupCommunicationCapabilities:activeAccount];
 }
 
