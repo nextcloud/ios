@@ -54,7 +54,11 @@ import Alamofire
                                
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCCommunication.shared.markE2EEFolder(fileId: ocId!, delete: false) { (account, errorCode, errorDescription) in
+                        guard let fileId = NCUtility.sharedInstance.ocIdToFileId(ocId: ocId) else {
+                            self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": k_CCErrorInternalError], errorDescription: "Error convert ocId", completion: completion)
+                            return
+                        }
+                        NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
                                                                          
                                 let object = tableE2eEncryption()

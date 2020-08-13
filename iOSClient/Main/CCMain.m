@@ -442,7 +442,7 @@
     
     if (![serverUrl isEqualToString:self.serverUrl]) { return; }
     if (errorCode == 0) {
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.activeAccount];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.activeAccount urlBase: appDelegate.activeUrl];
         if (isFolderEncrypted) {
             [self readFolder:serverUrl];
         }
@@ -1128,7 +1128,7 @@
         if (errorCode == 0 ) {
             
             _metadataFolder = metadataFolder;
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount];
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount urlBase:_metadataFolder.urlBase];
             [self setTitle];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -1386,7 +1386,7 @@
 {
     if (serverUrl != nil) {
         // E2EE DENIED
-        if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
+        if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase:appDelegate.activeUrl]) {
             
             [[NCContentPresenter shared] messageNotification:@"_move_" description:@"_e2e_error_not_move_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorE2EENotMove forced:true];
             return;
@@ -1533,7 +1533,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase: appDelegate.activeUrl]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:1];
     }
 }
@@ -1545,7 +1545,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount]) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase:appDelegate.activeUrl]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }

@@ -1785,7 +1785,7 @@ class NCManageDatabase: NSObject {
             if let key = listServerUrl[file.serverUrl] {
                 isEncrypted = key
             } else {
-                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account)
+                isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted: file.e2eEncrypted, account: account, urlBase: file.urlBase)
                 listServerUrl[file.serverUrl] = isEncrypted
             }
             

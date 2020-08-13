@@ -85,7 +85,7 @@ class NCNetworkingAutoUpload: NSObject {
                 }
                 let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                 for metadata in metadatas {
-                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
+                    if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
                         if UIApplication.shared.applicationState == .background { break }
                         maxConcurrentOperationUpload = 1
                         counterUpload += 1

@@ -278,7 +278,7 @@ import Queuer
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                    
-        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account) {
+        if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
             e2eEncrypted = true
         }
         
@@ -588,7 +588,7 @@ import Queuer
             if errorCode == 0 {
                 if files.count == 1 {
                     let file = files[0]
-                    let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account)
+                    let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account, urlBase: file.urlBase)
                     let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
                     completion(account, metadata, errorCode, "")
                 } else {
@@ -604,7 +604,7 @@ import Queuer
 
     @objc func createFolder(fileName: String, serverUrl: String, account: String, url: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: url)
                
         if isDirectoryEncrypted {
             #if !EXTENSION
@@ -690,7 +690,7 @@ import Queuer
 
     @objc func deleteMetadata(_ metadata: tableMetadata, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: url)
         let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         
         if isDirectoryEncrypted {
@@ -817,7 +817,7 @@ import Queuer
 
     @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: url)
         let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 

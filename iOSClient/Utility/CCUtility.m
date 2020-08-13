@@ -1656,9 +1656,16 @@
     return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
 }
 
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase
 {
-    if (e2eEncrypted) {
+    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
+    NSString *home = [urlBase stringByAppendingFormat:@"/%@", webDavRoot];
+        
+    if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
+        
+        return false;
+        
+    } else if (e2eEncrypted) {
         
         return true;
         

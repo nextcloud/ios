@@ -235,7 +235,7 @@ extension CCMain {
         if (metadata.directory) {
             
             var isOffline = false
-            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
+            let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
 
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
                 isOffline = directory.offline
@@ -385,7 +385,7 @@ extension CCMain {
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
             }
-            let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account)
+            let isEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
 
             actions.append(
                 NCMenuAction(
