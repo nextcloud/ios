@@ -148,7 +148,7 @@ class NCService: NSObject {
                 NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
             
                 // Setup communication
-                self.appDelegate.settingSetupCommunicationCapabilities(account)
+                self.appDelegate.settingSetupCommunication(account)
             
                 // Theming
                 self.appDelegate.settingThemingColorBrand()

@@ -121,7 +121,7 @@
 // Setting Account & Communication
 - (void)settingAccount:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user userID:(NSString *)userID password:(NSString *)password;
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
-- (void)settingSetupCommunicationCapabilities:(NSString *)account;
+- (void)settingSetupCommunication:(NSString *)account;
 
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;

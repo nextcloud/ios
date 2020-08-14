@@ -401,7 +401,7 @@
     (void)[NCNetworkingNotificationCenter shared];
 
     [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
-    [self settingSetupCommunicationCapabilities:account];
+    [self settingSetupCommunication:account];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -438,17 +438,15 @@
     }
 }
 
-- (void)settingSetupCommunicationCapabilities:(NSString *)account
+- (void)settingSetupCommunication:(NSString *)account
 {
     NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
         [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
      }
     
-    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
-    if (webDavRoot != nil) {
-        [[NCCommunicationCommon shared] setupWithWebDavRoot:webDavRoot];
-    }
+    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
 }
 
 #pragma --------------------------------------------------------------------------------------------
