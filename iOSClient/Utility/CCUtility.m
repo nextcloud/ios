@@ -1607,8 +1607,7 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl e2eEncrypted:(BOOL)e2eEncrypted account:(NSString *)account urlBase:(NSString *)urlBase
 {
-    NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
-    NSString *home = [urlBase stringByAppendingFormat:@"/%@", webDavRoot];
+    NSString *home = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
         
     if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
         
