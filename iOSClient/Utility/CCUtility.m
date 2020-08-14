@@ -1403,6 +1403,10 @@
 
 + (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
 {
+    if (metadata == nil) {
+        completion(nil, nil);
+        return;
+    }
     if ([[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]] == nil) {
         completion(nil, nil);
         return;
