@@ -69,7 +69,7 @@
     
     if (![_serverUrl length]) {
                 
-        _serverUrl = [[NCUtility shared] getHomeServer:urlBase];
+        _serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
         
         [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
         self.title = @"Home";
@@ -92,7 +92,7 @@
 
     // get auto upload folder
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:urlBase];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectoryWithUrlBase:urlBase account:account];
     
     [self readFolder];
 }

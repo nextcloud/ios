@@ -1313,20 +1313,21 @@
     return fileName;
 }
 
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
-    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[urlBase stringByAppendingString:@"/remote.php/webdav"] withString:@""];
-    
+    NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""];
     return path;
 }
                                        
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
     if (metadataFileName == nil || serverUrl == nil || urlBase == nil) {
         return @"";
     }
     
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[[NCUtility shared] getHomeServer:urlBase] withString:@""], metadataFileName];
+    NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:homeServer withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     

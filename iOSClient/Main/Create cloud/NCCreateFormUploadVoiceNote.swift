@@ -45,7 +45,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
     
-        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -201,7 +201,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+            if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent

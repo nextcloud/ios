@@ -44,7 +44,7 @@
 
     self.title = NSLocalizedString(@"_upload_", nil);
     
-    serverUrlLocal= [[NCUtility shared] getHomeServer:appDelegate.urlBase];
+    serverUrlLocal= [[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // changeTheming

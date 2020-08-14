@@ -348,7 +348,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         if serverUrl != nil {
-            let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase) ?? ""
+            let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.account)
             reloadDataSourceWithCompletion {
                 self.searchNewPhotoVideo()
@@ -664,7 +664,7 @@ extension NCMedia {
         if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
-        let startServerUrl = NCUtility.shared.getHomeServer(appDelegate.urlBase) + mediaPath
+        let startServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + mediaPath
         
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         

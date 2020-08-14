@@ -35,16 +35,13 @@ class NCUtility: NSObject {
     
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
-    @objc func getWebDAV() -> String {
-        return "/remote.php/webdav"
+    @objc func getWebDAV(account: String) -> String {
+        let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
+        return webDavRoot
     }
     
-    @objc func getDAV() -> String {
-        return "/remote.php/dav"
-    }
-    
-    @objc func getHomeServer(_ urlBase: String) -> String {
-        return urlBase + self.getWebDAV()
+    @objc func getHomeServer(urlBase: String, account: String) -> String {
+        return urlBase + "/" + self.getWebDAV(account: account)
     }
     
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {

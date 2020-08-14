@@ -657,9 +657,9 @@ import Queuer
     
     @objc func createFoloder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
         
-        let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase)
+        let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
         let fileName =  NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase)
+        let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: urlBase, account: account)
         var error = false
         
         error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
@@ -774,7 +774,7 @@ import Queuer
     
     @objc func favoriteMetadataPlain(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase)!
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let favorite = !metadata.favorite
         
         NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { (account, errorCode, errorDescription) in

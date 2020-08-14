@@ -56,7 +56,7 @@ import NCCommunication
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -218,7 +218,7 @@ import NCCommunication
         }
         
         self.serverUrl = serverUrl
-        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -287,7 +287,7 @@ import NCCommunication
                 
             } else {
                                 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
                 createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
             }
         }
@@ -304,7 +304,7 @@ import NCCommunication
         } else {
             
             let fileName = metadatas![0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
             
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         }

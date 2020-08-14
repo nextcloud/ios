@@ -84,7 +84,7 @@
             
             [CCUtility setAccountExt:self.account];
 
-            _serverUrl  = [[NCUtility shared] getHomeServer:tableAccount.urlBase];
+            _serverUrl  = [[NCUtility shared] getHomeServerWithUrlBase:tableAccount.urlBase account:tableAccount.account];
             [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];

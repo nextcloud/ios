@@ -239,7 +239,7 @@
 
     // Check server URL "/"
     if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
-        self.serverUrl = [[NCUtility shared] getHomeServer:appDelegate.urlBase];
+        self.serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     }
     
     // RichWorkspace
@@ -378,7 +378,7 @@
         // This is Root home main add list
         appDelegate.homeMain = self;
         _isRoot = YES;
-        _serverUrl = [[NCUtility shared] getHomeServer:appDelegate.urlBase];
+        _serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account];
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];
         
         // go Home
@@ -981,7 +981,7 @@
     // if request create the folder for Auto Upload & the subfolders
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.urlBase];
+        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
         if ([autoUploadPath isEqualToString:serverUrl]) {
             if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
                 [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
@@ -1438,7 +1438,7 @@
     NSString *message;
     UIAlertController *alertController;
     
-    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServer:appDelegate.urlBase]]) {
+    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
         message = @"/";
     } else {
         message = [serverUrl lastPathComponent];
@@ -2015,13 +2015,13 @@
     }
     
     // Get MetadataFolder
-    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServer:appDelegate.urlBase]])
+    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]])
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, k_serverUrl_root]];
     else
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl]];
     
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.urlBase];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectoryWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 

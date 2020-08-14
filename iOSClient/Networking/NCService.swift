@@ -160,7 +160,7 @@ class NCService: NSObject {
                         if errorCode == 0 {
                             NCManageDatabase.sharedInstance.deleteTableShare(account: account)
                             if shares != nil {
-                                NCManageDatabase.sharedInstance.addShare(account: account, urlBase: self.appDelegate.urlBase, shares: shares!)
+                                NCManageDatabase.sharedInstance.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                             }
                             self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
                         } else {

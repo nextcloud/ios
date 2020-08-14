@@ -393,7 +393,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAccountAutoUploadDirectory(_ urlBase : String) -> String {
+    @objc func getAccountAutoUploadDirectory(urlBase : String, account: String) -> String {
         
         let realm = try! Realm()
         realm.refresh()
@@ -405,14 +405,14 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return NCUtility.shared.getHomeServer(urlBase)
+            return NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
         }
     }
 
-    @objc func getAccountAutoUploadPath(_ urlBase : String) -> String {
+    @objc func getAccountAutoUploadPath(urlBase : String, account: String) -> String {
         
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
         
@@ -512,7 +512,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String) {
+    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, account: String) {
         
         let realm = try! Realm()
 
@@ -527,7 +527,7 @@ class NCManageDatabase: NSObject {
                         
                     } else {
                         
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
                     }
                 }
             }
@@ -2448,7 +2448,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, urlBase: String, shares: [NCCommunicationShare]) {
+    @objc func addShare(urlBase: String, account: String, shares: [NCCommunicationShare]) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -2456,7 +2456,7 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = NCUtility.shared.getHomeServer(urlBase) + share.path
+            let fullPath = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
             let serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: fullPath)!
             let fileName = NSString(string: fullPath).lastPathComponent
                         

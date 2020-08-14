@@ -82,7 +82,7 @@ class fileProviderData: NSObject {
             accountUserID = tableAccount.userID
             accountPassword = CCUtility.getPassword(tableAccount.account)
             accountUrlBase = tableAccount.urlBase
-            homeServerUrl = NCUtility.shared.getHomeServer(tableAccount.urlBase)
+            homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                         
             NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
@@ -108,7 +108,7 @@ class fileProviderData: NSObject {
                 guard let password = CCUtility.getPassword(tableAccount.account) else { return false }
                 accountPassword = password
                 accountUrlBase = tableAccount.urlBase
-                homeServerUrl = NCUtility.shared.getHomeServer(tableAccount.urlBase)
+                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                 
                 NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
@@ -140,7 +140,7 @@ class fileProviderData: NSObject {
                 accountUserID = tableAccount.userID
                 accountPassword = CCUtility.getPassword(tableAccount.account)
                 accountUrlBase = tableAccount.urlBase
-                homeServerUrl = NCUtility.shared.getHomeServer(tableAccount.urlBase)
+                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                 
                 NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDavRoot: webDavRoot, davRoot: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate

@@ -39,7 +39,7 @@ import NCCommunication
         
         NCUtility.shared.startActivityIndicator(view: viewController.view)
         
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
         NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
             
             NCUtility.shared.stopActivityIndicator()
@@ -74,7 +74,7 @@ import NCCommunication
                 
                 NCUtility.shared.startActivityIndicator(view: viewController.view)
                 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)!
                 NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
                     
                     NCUtility.shared.stopActivityIndicator()

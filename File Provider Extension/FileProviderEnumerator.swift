@@ -257,7 +257,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func getPagination(endpoint:String, serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         
         let offset = (page - 1) * limit
-        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase)!
+        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, account: fileProviderData.sharedInstance.account)!
         if fileNamePath == "" {
             fileNamePath = "/"
         }

@@ -49,7 +49,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         self.init()
         
-        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -378,7 +378,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             CCUtility.setDirectoryScanDocuments(serverUrl!)
             self.serverUrl = serverUrl!
             
-            if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
+            if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent

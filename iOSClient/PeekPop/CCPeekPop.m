@@ -101,7 +101,7 @@
 
 - (void)downloadThumbnail
 {
-    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl urlBase:appDelegate.urlBase];
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:self.metadata.fileName serverUrl:self.metadata.serverUrl urlBase:appDelegate.urlBase account:appDelegate.account];
     NSString *fileNamePreviewLocalPath = [CCUtility getDirectoryProviderStoragePreviewOcId:self.metadata.ocId etag:self.metadata.etag];
     NSString *fileNameIconLocalPath = [CCUtility getDirectoryProviderStorageIconOcId:self.metadata.ocId etag:self.metadata.etag];
     

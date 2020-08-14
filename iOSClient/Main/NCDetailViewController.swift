@@ -491,7 +491,7 @@ class NCDetailViewController: UIViewController {
                     if metadata.url == "" {
                         
                         var customUserAgent: String?
-                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
+                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         
                         if editor == k_editor_onlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
@@ -720,7 +720,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
         } else if metadata.hasPreview {
                 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     

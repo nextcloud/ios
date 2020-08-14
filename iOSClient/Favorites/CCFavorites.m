@@ -378,7 +378,7 @@
     
     // get auto upload folder
     autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.urlBase];
+    autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectoryWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     
     if (!_serverUrl) {
         

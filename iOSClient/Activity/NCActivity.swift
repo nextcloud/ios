@@ -393,7 +393,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + NCUtility.shared.getWebDAV() + serverUrlFileName + "/" + activitySubjectRich.name
+            serverUrlFileName = appDelegate.urlBase + "/" + NCUtility.shared.getWebDAV(account: activityPreview.account) + serverUrlFileName + "/" + activitySubjectRich.name
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             

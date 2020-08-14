@@ -307,10 +307,10 @@
     
     cell.labelTitle.text = table.fileName;
     
-    if ([table.serverUrl isEqualToString:[[NCUtility shared] getHomeServer:appDelegate.urlBase]])
+    if ([table.serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]])
         cell.labelInfoFile.text = @"/";
     else
-        cell.labelInfoFile.text = [table.serverUrl stringByReplacingOccurrencesOfString:[[NCUtility shared] getHomeServer:appDelegate.urlBase] withString:@""];
+        cell.labelInfoFile.text = [table.serverUrl stringByReplacingOccurrencesOfString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account] withString:@""];
     
     return cell;
 }

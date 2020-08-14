@@ -209,7 +209,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         if serverUrl != nil && metadata != nil {
             
-            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase)!
+            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
             
             NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
                 if errorCode == 0 && account == self.appDelegate.account {
@@ -226,7 +226,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase)!
+        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, account: metadata!.account)!
         
         NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {

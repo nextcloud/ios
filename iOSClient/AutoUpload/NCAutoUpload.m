@@ -343,7 +343,7 @@
     }
     
     NSMutableArray *metadataFull = [NSMutableArray new];
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.urlBase];
+    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     NSString *serverUrl;
     
     // Check Asset : NEW or FULL

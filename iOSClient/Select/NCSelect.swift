@@ -178,7 +178,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.urlBase)
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -660,7 +660,7 @@ extension NCSelect {
         
         if serverUrl == "" {
             
-            serverUrl = NCUtility.shared.getHomeServer(appDelegate.urlBase)
+            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         }
         
         if includeDirectoryE2EEncryption {

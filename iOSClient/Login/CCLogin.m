@@ -330,8 +330,8 @@
             self.login.enabled = NO;
             [self.activity startAnimating];
             
-            NSString *webDAV = [[NCUtility shared] getWebDAV];
-            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", url, webDAV];
+            NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:appDelegate.account];
+            NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", url, webDAV];
             
             [[NCCommunication shared] checkServerWithServerUrl:serverUrl completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 

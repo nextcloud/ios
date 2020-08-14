@@ -113,7 +113,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.urlBase)
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
