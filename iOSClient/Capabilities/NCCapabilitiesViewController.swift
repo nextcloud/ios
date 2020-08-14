@@ -58,11 +58,17 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var imageOnlyOffice: UIImageView!
     @IBOutlet weak var statusOnlyOffice: UILabel!
     
+    @IBOutlet weak var homeImage: UIImageView!
+    @IBOutlet weak var homeServer: UILabel!
+   
+    @IBOutlet weak var davImage: UIImageView!
+    @IBOutlet weak var davFiles: UILabel!
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
     private var capabilitiesText = ""
-    private var timer: Timer?
+    //private var timer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -150,6 +156,12 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                 self.dismiss(animated: true, completion: nil)
             }
         }
+        
+        homeImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "home"), width: 100, height: 100, color: .gray)
+        homeServer.text = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) + "/"
+        
+        davImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "dav"), width: 100, height: 100, color: .gray)
+        davFiles.text = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/files/" + appDelegate.user + "/"
     }
 
     @objc func updateCapabilities() {
@@ -167,12 +179,12 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                             self.readCapabilities()
                         }
                         if self.view.window != nil {
-                            self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
+                            //self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
                         }
                     }
                 } else {
                     if self.view.window != nil {
-                        self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
+                        //self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.updateCapabilities), userInfo: nil, repeats: false)
                     }
                 }
                 
@@ -187,7 +199,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     }
     
     @objc func share() {
-        timer?.invalidate()
+        //timer?.invalidate()
         self.dismiss(animated: true) {
             let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
             do {
@@ -198,7 +210,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     }
     
     @objc func close() {
-        timer?.invalidate()
+        //timer?.invalidate()
         self.dismiss(animated: true, completion: nil)
     }
     
