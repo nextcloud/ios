@@ -461,7 +461,7 @@
     if (arrayDeleteMetadata.count > 0) {
         tableMetadata *metadata = arrayDeleteMetadata.firstObject;
         [arrayDeleteMetadata removeObjectAtIndex:0];
-        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account url:metadata.url completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 
     if (errorCode == 0 ) {
@@ -983,7 +983,7 @@
         
         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.urlBase];
         if ([autoUploadPath isEqualToString:serverUrl]) {
-            if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account url:appDelegate.urlBase]) {
+            if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
                 [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
                 return;
             }
@@ -1148,7 +1148,7 @@
                        
                         if (errorCode == 0 && e2eMetadata != nil) {
                             
-                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.urlBase];
+                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account urlBase:appDelegate.urlBase];
                             
                             if (result == false) {
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorDecodeMetadata forced:true];
@@ -1331,7 +1331,7 @@
         [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
@@ -1460,7 +1460,7 @@
         
         UITextField *fileName = alertController.textFields.firstObject;
         
-        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account url:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account urlBase:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }];
     
     okAction.enabled = NO;
@@ -1896,7 +1896,7 @@
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
-        [[NCNetworking shared] favoriteMetadata:self.metadata url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] favoriteMetadata:self.metadata urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
     
     return YES;

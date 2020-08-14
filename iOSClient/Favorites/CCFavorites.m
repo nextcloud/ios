@@ -314,7 +314,7 @@
     if (direction == MGSwipeDirectionLeftToRight) {
         
         tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
-        [[NCNetworking shared] favoriteMetadata:metadata url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] favoriteMetadata:metadata urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
     
     return YES;
@@ -326,7 +326,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [[NCNetworking shared] deleteMetadata:metadata account:appDelegate.account url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] deleteMetadata:metadata account:appDelegate.account urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }]];
     
    

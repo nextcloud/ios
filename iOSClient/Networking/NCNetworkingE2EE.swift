@@ -33,7 +33,7 @@ import Alamofire
     
     //MARK: - WebDav Create Folder
     
-    func createFolder(fileName: String, serverUrl: String, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         var fileNameFolderUrl = ""
@@ -86,7 +86,7 @@ import Alamofire
                                
                                 let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                 
-                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
+                                self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
                                     self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                 }
                                 
@@ -107,7 +107,7 @@ import Alamofire
     
     //MARK: - WebDav Delete
     
-    func deleteMetadata(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    func deleteMetadata(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                         
         self.lock(account:metadata.account, serverUrl: metadata.serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
@@ -115,10 +115,10 @@ import Alamofire
                 NCNetworking.shared.deleteMetadataPlain(metadata, addCustomHeaders: ["e2e-token" :e2eToken!]) { (errorCode, errorDescription) in
                     
                     let webDavRoot = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
-                    let home = url + "/" + webDavRoot
+                    let home = urlBase + "/" + webDavRoot
      
                     if metadata.serverUrl != home {
-                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, url: url) { (e2eToken, errorCode, errorDescription) in
+                        self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
                             self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                         }
                     } else {
@@ -133,7 +133,7 @@ import Alamofire
     
     //MARK: - WebDav Rename
     
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -142,7 +142,7 @@ import Alamofire
 
         } else {
             
-            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, url: url) { (e2eToken, errorCode, errorDescription) in
+            self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: metadata.fileName, fileNameNewRename: fileNameNew, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
                 
                 if errorCode == 0 {
                     NCManageDatabase.sharedInstance.setMetadataFileNameView(serverUrl: metadata.serverUrl, fileName: metadata.fileName, newFileNameView: fileNameNew, account: metadata.account)
@@ -219,7 +219,7 @@ import Alamofire
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
-        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, url: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
+        NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in
             
             if errorCode == 0 && e2eToken != nil {
                                 
@@ -357,7 +357,7 @@ import Alamofire
         }
     }
     
-    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, url: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func sendE2EMetadata(account: String, serverUrl: String, fileNameRename: String?, fileNameNewRename: String?, deleteE2eEncryption : NSPredicate?, urlBase: String, upload: Bool = false, completion: @escaping (_ e2eToken: String?, _ errorCode: Int, _ errorDescription: String?)->()) {
             
         self.lock(account: account, serverUrl: serverUrl) { (directory, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil && directory != nil {
@@ -367,7 +367,7 @@ import Alamofire
                     var e2eMetadataNew: String?
                     
                     if errorCode == 0 && e2eMetadata != nil {
-                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, url: url) {
+                        if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase) {
                             completion(e2eToken, Int(k_CCErrorInternalError), NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
                             return
                         }
@@ -376,7 +376,7 @@ import Alamofire
     
                     // Rename
                     if (fileNameRename != nil && fileNameNewRename != nil) {
-                        NCManageDatabase.sharedInstance.renameFileE2eEncryption(serverUrl: serverUrl, fileNameIdentifier: fileNameRename!, newFileName: fileNameNewRename!, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNewRename!, serverUrl: serverUrl, urlBase: url))
+                        NCManageDatabase.sharedInstance.renameFileE2eEncryption(serverUrl: serverUrl, fileNameIdentifier: fileNameRename!, newFileName: fileNameNewRename!, newFileNamePath: CCUtility.returnFileNamePath(fromFileName: fileNameNewRename!, serverUrl: serverUrl, urlBase: urlBase))
                     }
                     
                     // Delete

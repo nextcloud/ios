@@ -602,20 +602,20 @@ import Queuer
     
     //MARK: - WebDav Create Folder
 
-    @objc func createFolder(fileName: String, serverUrl: String, account: String, url: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: url)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: false, account: account, urlBase: urlBase)
                
         if isDirectoryEncrypted {
             #if !EXTENSION
-            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, completion: completion)
+            NCNetworkingE2EE.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, completion: completion)
             #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, url: url, overwrite: overwrite, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, completion: completion)
         }
     }
     
-    @objc func createFolderPlain(fileName: String, serverUrl: String, account: String, url: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func createFolderPlain(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         var fileNameFolder = CCUtility.removeForbiddenCharactersServer(fileName)!
         
@@ -655,19 +655,19 @@ import Queuer
         }
     }
     
-    @objc func createFoloder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, url: String) -> Bool {
+    @objc func createFoloder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
         
-        let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(url)
+        let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase)
         let fileName =  NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(url)
+        let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase)
         var error = false
         
-        error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, url: url)
+        error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
         if useSubFolder && !error {
             for dateSubFolder in CCUtility.createNameSubFolder(assets) {
                 let fileName = (dateSubFolder as! NSString).lastPathComponent
                 let serverUrl = ((autoUploadPath + "/" + (dateSubFolder as! String)) as NSString).deletingLastPathComponent
-                error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, url: url)
+                error = createFolderWithSemaphore(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase)
                 if error { break }
             }
         }
@@ -675,10 +675,10 @@ import Queuer
         return error
     }
     
-    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, url: String) -> Bool {
+    private func createFolderWithSemaphore(fileName: String, serverUrl: String, account: String, urlBase: String) -> Bool {
         var error = false
         let semaphore = Semaphore()
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, url: url, overwrite: true) { (errorCode, errorDescription) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: true) { (errorCode, errorDescription) in
             if errorCode != 0 { error = true }
             semaphore.continue()
         }
@@ -688,19 +688,19 @@ import Queuer
     
     //MARK: - WebDav Delete
 
-    @objc func deleteMetadata(_ metadata: tableMetadata, account: String, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func deleteMetadata(_ metadata: tableMetadata, account: String, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: url)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: urlBase)
         let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.shared.deleteMetadata(metadata, url: url, completion: completion)
+                NCNetworkingE2EE.shared.deleteMetadata(metadata, urlBase: urlBase, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!, url: url) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.deleteMetadata(metadataLive!, urlBase: urlBase) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.shared.deleteMetadata(metadata, url: url, completion: completion)
+                        NCNetworkingE2EE.shared.deleteMetadata(metadata, urlBase: urlBase, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }
@@ -757,24 +757,24 @@ import Queuer
     
     //MARK: - WebDav Favorite
 
-    @objc func favoriteMetadata(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func favoriteMetadata(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
-            favoriteMetadataPlain(metadataLive, url: url) { (errorCode, errorDescription) in
+            favoriteMetadataPlain(metadataLive, urlBase: urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
-                    self.favoriteMetadataPlain(metadata, url: url, completion: completion)
+                    self.favoriteMetadataPlain(metadata, urlBase: urlBase, completion: completion)
                 } else {
                     completion(errorCode, errorDescription)
                 }
             }
         } else {
-            favoriteMetadataPlain(metadata, url: url, completion: completion)
+            favoriteMetadataPlain(metadata, urlBase: urlBase, completion: completion)
         }
     }
     
-    @objc func favoriteMetadataPlain(_ metadata: tableMetadata, url: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func favoriteMetadataPlain(_ metadata: tableMetadata, urlBase: String, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: url)!
+        let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase)!
         let favorite = !metadata.favorite
         
         NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { (account, errorCode, errorDescription) in
@@ -815,20 +815,20 @@ import Queuer
     
     //MARK: - WebDav Rename
 
-    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, url: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
+    @objc func renameMetadata(_ metadata: tableMetadata, fileNameNew: String, urlBase: String, viewController: UIViewController?, completion: @escaping (_ errorCode: Int, _ errorDescription: String?)->()) {
         
-        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: url)
+        let isDirectoryEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: urlBase)
         let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
         if isDirectoryEncrypted {
             #if !EXTENSION
             if metadataLive == nil {
-                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+                NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: urlBase, completion: completion)
             } else {
-                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, url: url) { (errorCode, errorDescription) in
+                NCNetworkingE2EE.shared.renameMetadata(metadataLive!, fileNameNew: fileNameNewLive, urlBase: urlBase) { (errorCode, errorDescription) in
                     if errorCode == 0 {
-                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, url: url, completion: completion)
+                        NCNetworkingE2EE.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: urlBase, completion: completion)
                     } else {
                         completion(errorCode, errorDescription)
                     }

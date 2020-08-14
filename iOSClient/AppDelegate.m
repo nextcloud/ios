@@ -408,7 +408,7 @@
 {
     // Push Notification
     tableAccount *accountPN = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", account]];
-    [self unsubscribingNextcloudServerPushNotification:accountPN.account url:accountPN.urlBase user:accountPN.user withSubscribing:false];
+    [self unsubscribingNextcloudServerPushNotification:accountPN.account urlBase:accountPN.urlBase user:accountPN.user withSubscribing:false];
 
     [self settingAccount:nil urlBase:nil user:nil userID:nil password:nil];
     
@@ -468,15 +468,15 @@
         if (![token isEqualToString:self.pushKitToken]) {
             if (token != nil) {
                 // unsubscribing + subscribing
-                [self unsubscribingNextcloudServerPushNotification:result.account url:result.urlBase user:result.user withSubscribing:true];
+                [self unsubscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user withSubscribing:true];
             } else {
-                [self subscribingNextcloudServerPushNotification:result.account url:result.urlBase user:result.user];
+                [self subscribingNextcloudServerPushNotification:result.account urlBase:result.urlBase user:result.user];
             }
         }
     }
 }
 
-- (void)subscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url user:(NSString *)user
+- (void)subscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user
 {
     // test
     if (self.account.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
@@ -489,7 +489,7 @@
     NSString *pushDevicePublicKey = [[NSString alloc] initWithData:pushPublicKey encoding:NSUTF8StringEncoding];
     NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
     
-    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:url account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] subscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] pushTokenHash:pushTokenHash devicePublicKey:pushDevicePublicKey proxyServerUrl:proxyServerPath customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSString *deviceIdentifier, NSString *signature, NSString *publicKey, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
@@ -507,7 +507,7 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url user:(NSString *)user withSubscribing:(BOOL)subscribing
+- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user withSubscribing:(BOOL)subscribing
 {
     // test
     if (self.account.length == 0 || self.maintenanceMode)
@@ -517,7 +517,7 @@
     NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
     NSString *publicKey = [CCUtility getPushNotificationSubscribingPublicKey:account];
 
-    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:url account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] unsubscribingPushNotificationWithServerUrl:urlBase account:account user:user password:[CCUtility getPassword:account] customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0) {
             NSString *userAgent = [NSString stringWithFormat:@"%@  (Strict VoIP)", [CCUtility getUserAgent]];
             NSString *proxyServerPath = [NCBrandOptions sharedInstance].pushNotificationServerProxy;
@@ -534,7 +534,7 @@
                     [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:nil];
                     
                     if (self.pushKitToken != nil && subscribing) {
-                        [self subscribingNextcloudServerPushNotification:account url:url user:user];
+                        [self subscribingNextcloudServerPushNotification:account urlBase:urlBase user:user];
                     }
                 }
             }];

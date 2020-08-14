@@ -140,7 +140,7 @@ class NCEndToEndMetadata : NSObject  {
     }
     
     @discardableResult
-    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, url: String) -> Bool {
+    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, urlBase: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
@@ -199,7 +199,7 @@ class NCEndToEndMetadata : NSObject  {
                         object.authenticationTag = filesCodable.authenticationTag ?? ""
                         object.fileName = encryptedFileAttributes.filename
                         object.fileNameIdentifier = fileNameIdentifier
-                        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, urlBase: url)
+                        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, urlBase: urlBase)
                         object.key = encryptedFileAttributes.key
                         object.initializationVector = filesCodable.initializationVector
                         object.metadataKey = metadataKey!

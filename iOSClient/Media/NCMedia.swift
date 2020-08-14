@@ -326,7 +326,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         self.isEditMode = false
                         for ocId in self.selectocId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, url: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
+                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
                             }
                         }
                     }
