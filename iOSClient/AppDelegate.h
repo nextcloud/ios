@@ -51,7 +51,7 @@
 // For LMMediaPlayerView
 @property (strong, nonatomic) UIWindow *window;
 
-// Paramente account
+// Parameter account
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *urlBase;
 @property (nonatomic, strong) NSString *user;
@@ -133,7 +133,6 @@
 
 // Push Notification
 - (void)pushNotification;
-//- (void)unsubscribingNextcloudServerPushNotification:(NSString *)account url:(NSString *)url withSubscribing:(BOOL)subscribing;
 
 // Theming Color
 - (void)settingThemingColorBrand;

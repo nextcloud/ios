@@ -84,7 +84,7 @@
             
             [CCUtility setAccountExt:self.account];
 
-            _serverUrl  = [CCUtility getHomeServer:tableAccount.urlBase];
+            _serverUrl  = [[NCUtility shared] getHomeServer:tableAccount.urlBase];
             [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
@@ -269,7 +269,7 @@
         
         // <--
         
-        NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.account];
+        NSString *fileNameForUpload = [[NCUtility shared] createFileName:fileName serverUrl:self.serverUrl account:self.account];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         
         [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil progressHandler:^(NSProgress * progress) {
@@ -406,7 +406,7 @@
     else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         image = [UIImage imageWithContentsOfFile:[NSTemporaryDirectory() stringByAppendingString:fileName]];
         if (image) {
-            image = [NCUtility.sharedInstance resizeImageWithImage:image toHeight:cell.frame.size.width];
+            image = [NCUtility.shared resizeImageWithImage:image toHeight:cell.frame.size.width];
         } else {
             image = [UIImage imageNamed:@"file_photo"];
         }

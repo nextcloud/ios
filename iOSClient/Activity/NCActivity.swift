@@ -393,11 +393,11 @@ extension activityTableViewCell: UICollectionViewDelegate {
             var pathComponents = activityPreview.link.components(separatedBy: "?")
             pathComponents = pathComponents[1].components(separatedBy: "&")
             var serverUrlFileName = pathComponents[0].replacingOccurrences(of: "dir=", with: "").removingPercentEncoding!
-            serverUrlFileName = appDelegate.urlBase + k_webDAV + serverUrlFileName + "/" + activitySubjectRich.name
+            serverUrlFileName = appDelegate.urlBase + NCUtility.shared.getWebDAV() + serverUrlFileName + "/" + activitySubjectRich.name
             
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(activitySubjectRich.id, fileNameView: activitySubjectRich.name)!
             
-            NCUtility.sharedInstance.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
+            NCUtility.shared.startActivityIndicator(view: (appDelegate.window.rootViewController?.view)!)
             
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                 
@@ -413,7 +413,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     
                     NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: activityPreview.account) { (account, metadata, errorCode, errorDescription) in
                         
-                        NCUtility.sharedInstance.stopActivityIndicator()
+                        NCUtility.shared.stopActivityIndicator()
                         
                         if account == self.appDelegate.account && errorCode == 0  {
                             
@@ -430,7 +430,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                     
                 } else {
                     
-                    NCUtility.sharedInstance.stopActivityIndicator()
+                    NCUtility.shared.stopActivityIndicator()
                 }
             }
         }
@@ -461,7 +461,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                 
                 let source = activityPreview.source
                 
-                NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
+                NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
                     if imageNamePath != nil {
                         if let image = UIImage(contentsOfFile: imageNamePath!) {
                             cell.imageView.image = image
@@ -477,7 +477,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                     
                     let source = activityPreview.source
                     
-                    NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
+                    NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
                         if imageNamePath != nil {
                             if let image = UIImage(contentsOfFile: imageNamePath!) {
                                 cell.imageView.image = image
@@ -583,7 +583,7 @@ extension NCActivity {
         canFetchActivity = false
         
         if idActivity > 0 {
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: 50)
+            NCUtility.shared.startActivityIndicator(view: self.view, bottom: 50)
         }
         
         NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
@@ -592,7 +592,7 @@ extension NCActivity {
                 NCManageDatabase.sharedInstance.addActivity(activities , account: account)
             }
             
-            NCUtility.sharedInstance.stopActivityIndicator()
+            NCUtility.shared.stopActivityIndicator()
             
             if errorCode == 304 {
                 self.canFetchActivity = false

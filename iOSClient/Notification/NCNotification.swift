@@ -297,7 +297,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     
     func getNetwokingNotification() {
     
-        NCUtility.sharedInstance.startActivityIndicator(view: self.navigationController?.view)
+        NCUtility.shared.startActivityIndicator(view: self.navigationController?.view)
 
         NCCommunication.shared.getNotifications() { (account, notifications, errorCode, errorDescription) in
          
@@ -308,7 +308,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
                     
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as! NCCommunicationNotifications).icon {
-                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { (imageNamePath) in })
+                        NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { (imageNamePath) in })
                     }                    
                     self.notifications.append(notification as! NCCommunicationNotifications)
                 }
@@ -316,7 +316,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
                 self.reloadDatasource()
             }
             
-            NCUtility.sharedInstance.stopActivityIndicator()
+            NCUtility.shared.stopActivityIndicator()
         }
     }
 }

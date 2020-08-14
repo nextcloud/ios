@@ -232,9 +232,9 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
+        [NCUtility.shared startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
-        [NCUtility.sharedInstance stopActivityIndicator];
+        [NCUtility.shared stopActivityIndicator];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -269,7 +269,7 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = false;
-        viewController.showOpenQuickLook = [[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:metadata];
+        viewController.showOpenQuickLook = [[NCUtility shared] isQuickLookDisplayableWithMetadata:metadata];
        
         return viewController;
     }
@@ -536,7 +536,7 @@
                         
                     [self shouldPerformSegue:self.metadata selector:@""];
                 
-                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditingWithAccount:self.metadata.account contentType:self.metadata.contentType] != nil) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility shared] isDirectEditingWithAccount:self.metadata.account contentType:self.metadata.contentType] != nil) {
                         
                         if (NCCommunication.shared.isNetworkReachable) {
                             [self shouldPerformSegue:self.metadata selector:@""];
@@ -544,7 +544,7 @@
                             [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
                         }
                         
-                    } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
+                    } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility shared] isRichDocument:self.metadata]) {
                         
                         if (NCCommunication.shared.isNetworkReachable) {
                             [self shouldPerformSegue:self.metadata selector:@""];

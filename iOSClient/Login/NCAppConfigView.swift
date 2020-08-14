@@ -79,7 +79,7 @@ class NCAppConfigView: UIViewController {
                     let account: String = "\(username) \(serverUrl)"
                     
                     // NO account found, clear
-                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
+                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
                     
                     // Add new account
                     NCManageDatabase.sharedInstance.deleteAccount(account)

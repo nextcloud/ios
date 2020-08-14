@@ -664,7 +664,7 @@ extension NCMedia {
         if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
-        let startServerUrl = CCUtility.getHomeServer(appDelegate.urlBase) + mediaPath
+        let startServerUrl = NCUtility.shared.getHomeServer(appDelegate.urlBase) + mediaPath
         
         predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         
@@ -731,12 +731,12 @@ extension NCMedia {
         }
         
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
+        NCUtility.shared.startActivityIndicator(view: self.view, bottom: height + 50)
 
         NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
-            NCUtility.sharedInstance.stopActivityIndicator()
+            NCUtility.shared.stopActivityIndicator()
             self.collectionView.reloadData()
 
             if errorCode == 0 && account == self.appDelegate.account {

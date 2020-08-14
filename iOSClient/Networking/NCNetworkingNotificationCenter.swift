@@ -78,7 +78,7 @@ import Foundation
                     // open View File
                     if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite) && UIApplication.shared.applicationState == UIApplication.State.active {
                     
-                        if metadata.contentType.contains("opendocument") && !NCUtility.sharedInstance.isRichDocument(metadata) {
+                        if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                             metadata.typeFile = k_metadataTypeFile_unknown
                         }
                         

@@ -49,7 +49,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         self.init()
         
-        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -378,7 +378,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             CCUtility.setDirectoryScanDocuments(serverUrl!)
             self.serverUrl = serverUrl!
             
-            if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+            if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
@@ -417,7 +417,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
-        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         
             guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
             conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -429,7 +429,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
         } else {
                      
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view)
+            NCUtility.shared.startActivityIndicator(view: self.view)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismissAndUpload(metadataForUpload)
@@ -441,7 +441,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         if metadatas != nil && metadatas!.count > 0 {
                  
-            NCUtility.sharedInstance.startActivityIndicator(view: self.view)
+            NCUtility.shared.startActivityIndicator(view: self.view)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.dismissAndUpload(metadatas![0])
@@ -452,7 +452,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func dismissAndUpload(_ metadata: tableMetadata) {
         
         guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else {
-            NCUtility.sharedInstance.stopActivityIndicator()
+            NCUtility.shared.stopActivityIndicator()
             NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
             return
         }
@@ -469,7 +469,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                     
                     let request = VNRecognizeTextRequest { (request, error) in
                         guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                            NCUtility.sharedInstance.stopActivityIndicator()
+                            NCUtility.shared.stopActivityIndicator()
                             return
                         }
                         for observation in observations {
@@ -491,7 +491,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             do {
                 try textFile.write(to: NSURL(fileURLWithPath: fileNameGenerateExport) as URL  , atomically: true, encoding: .utf8)
             } catch {
-                NCUtility.sharedInstance.stopActivityIndicator()
+                NCUtility.shared.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
@@ -528,7 +528,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                         
                         let request = VNRecognizeTextRequest { (request, error) in
                             guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                                NCUtility.sharedInstance.stopActivityIndicator()
+                                NCUtility.shared.stopActivityIndicator()
                                 return
                             }
                             for observation in observations {
@@ -580,7 +580,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             let image =  changeImageFromQuality(self.arrayImages[0], dpiQuality: dpiQuality)
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
-                NCUtility.sharedInstance.stopActivityIndicator()
+                NCUtility.shared.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
@@ -588,13 +588,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             do {
                 try data.write(to: NSURL.fileURL(withPath: fileNameGenerateExport), options: .atomic)
             } catch {
-                NCUtility.sharedInstance.stopActivityIndicator()
+                NCUtility.shared.stopActivityIndicator()
                 NCContentPresenter.shared.messageNotification("_error_", description: "_error_creation_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCreationFile), forced: true)
                 return
             }
         }
         
-        NCUtility.sharedInstance.stopActivityIndicator()
+        NCUtility.shared.stopActivityIndicator()
 
         NCManageDatabase.sharedInstance.addMetadata(metadata)
         

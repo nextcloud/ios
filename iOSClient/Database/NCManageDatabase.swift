@@ -405,7 +405,7 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return CCUtility.getHomeServer(urlBase)
+            return NCUtility.shared.getHomeServer(urlBase)
         }
     }
 
@@ -422,23 +422,17 @@ class NCManageDatabase: NSObject {
     @objc func setAccountActive(_ account: String) -> tableAccount? {
         
         let realm = try! Realm()
-
-        var tAccount = tableAccount()
+        var accountReturn = tableAccount()
         
         do {
             try realm.write {
             
                 let results = realm.objects(tableAccount.self)
-
                 for result in results {
-                
                     if result.account == account {
-                    
                         result.active = true
-                        tAccount = result
-                    
+                        accountReturn = result
                     } else {
-                    
                         result.active = false
                     }
                 }
@@ -448,7 +442,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableAccount.init(value: tAccount)
+        return tableAccount.init(value: accountReturn)
     }
     
     @objc func removePasswordAccount(_ account: String) {
@@ -2462,7 +2456,7 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = CCUtility.getHomeServer(urlBase) + share.path
+            let fullPath = NCUtility.shared.getHomeServer(urlBase) + share.path
             let serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: fullPath)!
             let fileName = NSString(string: fullPath).lastPathComponent
                         

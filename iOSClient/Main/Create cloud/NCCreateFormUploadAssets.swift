@@ -45,7 +45,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.init()
         
-        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
             titleServerUrl = "/"
         } else {
             if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
@@ -306,7 +306,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+            if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
                 self.titleServerUrl = "/"
             } else {
                 if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account

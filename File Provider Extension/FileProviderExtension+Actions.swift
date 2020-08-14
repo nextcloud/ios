@@ -33,7 +33,7 @@ extension FileProviderExtension {
             return
         }
         
-        let directoryName = NCUtility.sharedInstance.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
+        let directoryName = NCUtility.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
         NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in

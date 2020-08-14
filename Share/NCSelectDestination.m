@@ -69,7 +69,7 @@
     
     if (![_serverUrl length]) {
                 
-        _serverUrl = [CCUtility getHomeServer:urlBase];
+        _serverUrl = [[NCUtility shared] getHomeServer:urlBase];
         
         [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
         self.title = @"Home";

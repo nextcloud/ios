@@ -56,7 +56,7 @@ import NCCommunication
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -218,7 +218,7 @@ import NCCommunication
         }
         
         self.serverUrl = serverUrl
-        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -268,11 +268,11 @@ import NCCommunication
         } else {
             
             let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameForm as! String, contentType: "", directory: false)
-            if NCUtility.sharedInstance.isDirectEditing(account: appDelegate.account, contentType: result.contentType) == nil {
+            if NCUtility.shared.isDirectEditing(account: appDelegate.account, contentType: result.contentType) == nil {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
             
-            if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+            if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
                 let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
@@ -317,7 +317,7 @@ import NCCommunication
             var customUserAgent: String?
             
             if self.editorId == k_editor_onlyoffice {
-                customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             
             NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
@@ -384,7 +384,7 @@ import NCCommunication
             var customUserAgent: String?
                        
             if self.editorId == k_editor_onlyoffice {
-                customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+                customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
             
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in

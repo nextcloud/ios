@@ -481,12 +481,12 @@ class NCDetailViewController: UIViewController {
             }
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
-            if NCUtility.sharedInstance.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
+            if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
                 
-                guard let editor = NCUtility.sharedInstance.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
+                guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
                     
-                    NCUtility.sharedInstance.startActivityIndicator(view: backgroundView)
+                    NCUtility.shared.startActivityIndicator(view: backgroundView)
 
                     if metadata.url == "" {
                         
@@ -494,7 +494,7 @@ class NCDetailViewController: UIViewController {
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
                         
                         if editor == k_editor_onlyoffice {
-                            customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
+                            customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
                             self.navigationController?.navigationBar.topItem?.title = ""
                         }
                         
@@ -536,9 +536,9 @@ class NCDetailViewController: UIViewController {
             }
             
             // RichDocument: Collabora
-            if NCUtility.sharedInstance.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
+            if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
                 
-                NCUtility.sharedInstance.startActivityIndicator(view: backgroundView)
+                NCUtility.shared.startActivityIndicator(view: backgroundView)
                 
                 if metadata.url == "" {
                     

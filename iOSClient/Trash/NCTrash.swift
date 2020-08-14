@@ -88,7 +88,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_trash)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
 
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -152,7 +152,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     func reloadSortOrder(){
-        NCUtility.sharedInstance.setLayoutForView(
+        NCUtility.shared.setLayoutForView(
             key: k_layout_view_trash,
             layout: self.typeLayout,
             sort: self.datasourceSorted,
@@ -176,7 +176,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -187,7 +187,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -569,7 +569,7 @@ extension NCTrash: UICollectionViewDataSource {
                 
                 if selectocId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
+                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = nil
@@ -603,7 +603,7 @@ extension NCTrash: UICollectionViewDataSource {
                 cell.imageSelect.isHidden = false
                 if selectocId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.sharedInstance.cellBlurEffect(with: cell.bounds)
+                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
                     cell.backgroundView = nil
@@ -651,7 +651,7 @@ extension NCTrash {
                         self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             self.blinkocId = nil
-                            NCUtility.sharedInstance.blink(cell: self.collectionView.cellForItem(at: indexPath))
+                            NCUtility.shared.blink(cell: self.collectionView.cellForItem(at: indexPath))
                         }
                     }
                 }

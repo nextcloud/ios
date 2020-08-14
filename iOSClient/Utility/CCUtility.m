@@ -1060,14 +1060,6 @@
     return path;
 }
 
-+ (NSString *)getHomeServer:(NSString *)urlBase
-{
-    if (urlBase == nil)
-        return @"";
-    
-    return [urlBase stringByAppendingString:k_webDAV];
-}
-
 + (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase
 {
     NSString *baseUrl = [urlBase lowercaseString];
@@ -1299,7 +1291,7 @@
     NSString *firstPath = serverUrl;
 
     NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    NSURL *urlBaseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [urlBase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], k_webDAV]];
+    NSURL *urlBaseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [urlBase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], @"/remote.php/webdav"]];
     
     while ([[serverUrlURL absoluteString] isEqualToString:[urlBaseURL absoluteString]] == false) {
         firstPath = [serverUrlURL absoluteString];
@@ -1323,7 +1315,7 @@
 
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
-    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[urlBase stringByAppendingString:k_webDAV] withString:@""];
+    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[urlBase stringByAppendingString:@"/remote.php/webdav"] withString:@""];
     
     return path;
 }
@@ -1334,7 +1326,7 @@
         return @"";
     }
     
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServer:urlBase] withString:@""], metadataFileName];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[[NCUtility shared] getHomeServer:urlBase] withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     

@@ -44,7 +44,7 @@
 
     self.title = NSLocalizedString(@"_upload_", nil);
     
-    serverUrlLocal= [CCUtility getHomeServer:appDelegate.urlBase];
+    serverUrlLocal= [[NCUtility shared] getHomeServer:appDelegate.urlBase];
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // changeTheming
@@ -168,7 +168,7 @@
 
 -(void)upload
 {
-    NSString *fileName = [[NCUtility sharedInstance] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.account];
+    NSString *fileName = [[NCUtility shared] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.account];
     
     tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
     

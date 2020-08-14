@@ -142,7 +142,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + filename
                     
                         if type == "print" {
-                            NCUtility.sharedInstance.startActivityIndicator(view: self)
+                            NCUtility.shared.startActivityIndicator(view: self)
                         }
                         
                         NCCommunication.shared.download(serverUrlFileName: urlString, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
@@ -153,7 +153,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                             
                             if errorCode == 0 && account == self.metadata.account {
                                 if type == "print" {
-                                    NCUtility.sharedInstance.stopActivityIndicator()
+                                    NCUtility.shared.stopActivityIndicator()
                                     let pic = UIPrintInteractionController.shared
                                     let printInfo = UIPrintInfo.printInfo()
                                     printInfo.outputType = UIPrintInfo.OutputType.general
@@ -259,6 +259,6 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCUtility.sharedInstance.stopActivityIndicator()
+        NCUtility.shared.stopActivityIndicator()
     }
 }

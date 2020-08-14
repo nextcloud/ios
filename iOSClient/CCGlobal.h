@@ -60,10 +60,6 @@
 // Server Status
 #define k_serverStatus                                  @"/status.php"
 
-// webDAV & DAV
-#define k_webDAV                                        @"/remote.php/webdav"
-#define k_dav                                           @"/remote.php/dav"
-
 // Login Flow
 #define k_flowEndpoint                                  @"/index.php/login/flow"
 

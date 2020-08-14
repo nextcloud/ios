@@ -239,7 +239,7 @@
 
     // Check server URL "/"
     if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
-        self.serverUrl = [CCUtility getHomeServer:appDelegate.urlBase];
+        self.serverUrl = [[NCUtility shared] getHomeServer:appDelegate.urlBase];
     }
     
     // RichWorkspace
@@ -378,7 +378,7 @@
         // This is Root home main add list
         appDelegate.homeMain = self;
         _isRoot = YES;
-        _serverUrl = [CCUtility getHomeServer:appDelegate.urlBase];
+        _serverUrl = [[NCUtility shared] getHomeServer:appDelegate.urlBase];
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];
         
         // go Home
@@ -778,7 +778,7 @@
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
+                    if ([[NCUtility shared] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
                        
                         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
                         conflict.serverUrl = self.serverUrl;
@@ -939,7 +939,7 @@
         viewController.imageFile = cell.file.image;
         viewController.showOpenIn = true;
         viewController.showShare = true;
-        viewController.showOpenQuickLook = [[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:metadata];
+        viewController.showOpenQuickLook = [[NCUtility shared] isQuickLookDisplayableWithMetadata:metadata];
         
         return viewController;
     }
@@ -1037,7 +1037,7 @@
         metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
                         
-        if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
+        if ([[NCUtility shared] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
             [metadatasUploadInConflict addObject:metadataForUpload];
         } else {
             [metadatasNOConflict addObject:metadataForUpload];
@@ -1438,7 +1438,7 @@
     NSString *message;
     UIAlertController *alertController;
     
-    if ([serverUrl isEqualToString:[CCUtility getHomeServer:appDelegate.urlBase]]) {
+    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServer:appDelegate.urlBase]]) {
         message = @"/";
     } else {
         message = [serverUrl lastPathComponent];
@@ -1506,9 +1506,9 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [NCUtility.sharedInstance startActivityIndicatorWithView:self.view bottom:0];
+        [NCUtility.shared startActivityIndicatorWithView:self.view bottom:0];
         [[NCMainCommon sharedInstance] cancelAllTransfer];
-        [NCUtility.sharedInstance stopActivityIndicator];
+        [NCUtility.shared stopActivityIndicator];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -1623,7 +1623,7 @@
         if ([NCBrandOptions sharedInstance].disable_openin_file == false) {
             [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinTouchFile:)]];
         }
-        if ([[NCUtility sharedInstance] isQuickLookDisplayableWithMetadata:self.metadata]) {
+        if ([[NCUtility shared] isQuickLookDisplayableWithMetadata:self.metadata]) {
             [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_quicklook_", nil) action:@selector(openQuickLookTouch:)]];
         }
         [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteTouchFile:)]];
@@ -1835,7 +1835,7 @@
             
             if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                 
-                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.account];
+                NSString *fileName = [[NCUtility shared] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.account];
                 NSString *ocId = [[NSUUID UUID] UUIDString];
                 
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
@@ -2015,7 +2015,7 @@
     }
     
     // Get MetadataFolder
-    if ([serverUrl isEqualToString:[CCUtility getHomeServer:appDelegate.urlBase]])
+    if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServer:appDelegate.urlBase]])
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, k_serverUrl_root]];
     else
         _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl]];
@@ -2051,7 +2051,7 @@
                                 CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
                                 if (cell) {
                                     self.blinkFileNamePath = nil;
-                                    [[NCUtility sharedInstance] blinkWithCell:cell];
+                                    [[NCUtility shared] blinkWithCell:cell];
                                 }
                             });
                         }
@@ -2483,7 +2483,7 @@
                     
                     [self shouldPerformSegue:self.metadata selector:@""];
                     
-                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isDirectEditingWithAccount:self.metadata.account contentType:self.metadata.contentType] != nil) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility shared] isDirectEditingWithAccount:self.metadata.account contentType:self.metadata.contentType] != nil) {
                     
                     if (NCCommunication.shared.isNetworkReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];
@@ -2491,7 +2491,7 @@
                         [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_go_online_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorOffline forced:true];
                     }
                     
-                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility sharedInstance] isRichDocument:self.metadata]) {
+                } else if ([self.metadata.typeFile isEqualToString: k_metadataTypeFile_document] && [[NCUtility shared] isRichDocument:self.metadata]) {
                     
                     if (NCCommunication.shared.isNetworkReachable) {
                         [self shouldPerformSegue:self.metadata selector:@""];

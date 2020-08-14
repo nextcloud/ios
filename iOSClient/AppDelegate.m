@@ -45,7 +45,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    if ([[NCUtility sharedInstance] isSimulatorOrTestFlight]) {
+    if ([[NCUtility shared] isSimulatorOrTestFlight]) {
         NCBrandOptions.sharedInstance.disable_crash_service = false;
     }
     if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
@@ -119,7 +119,7 @@
     [self startTimerErrorNetworking];
 
     // Store review
-    if ([[NCUtility sharedInstance] isSimulatorOrTestFlight] == false) {
+    if ([[NCUtility shared] isSimulatorOrTestFlight] == false) {
         NCStoreReview *review = [NCStoreReview new];
         [review incrementAppRuns];
         [review showStoreReview];
@@ -849,7 +849,7 @@
 
 - (NSString *)getTabBarControllerActiveServerUrl
 {
-    NSString *serverUrl = [CCUtility getHomeServer:self.urlBase];
+    NSString *serverUrl = [[NCUtility shared] getHomeServer:self.urlBase];
 
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
@@ -1112,20 +1112,21 @@
                                             
                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                                 
-                                                NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.urlBase, k_webDAV, path];
+                                                NSString *webDAV = [[NCUtility shared] getWebDAV];
+                                                NSString *fileNamePath = [NSString stringWithFormat:@"%@%@/%@", matchedAccount.urlBase, webDAV, path];
                                                 
                                                 if ([path containsString:@"/"]) {
                                                     
                                                     // Push
                                                     NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.urlBase, k_webDAV, [path stringByDeletingLastPathComponent]]];
+                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
                                                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase: @"" url:@"" contentType:@"" livePhoto:false];
                                                     [self.activeMain performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {
                                                     
                                                     // Reload folder
-                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.urlBase, k_webDAV];
+                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.urlBase, webDAV];
                                                     
                                                     self.activeMain.blinkFileNamePath = fileNamePath;
                                                     [self.activeMain readFolder:serverUrl];

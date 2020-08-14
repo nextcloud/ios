@@ -174,7 +174,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
             buttonCreateFolder.isHidden = true
         }
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: layoutViewSelect)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -301,7 +301,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -312,7 +312,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -453,7 +453,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                     default: ()
                     }
             
-            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
             
             loadDatasource(withLoadFolder: false)
         }
@@ -660,7 +660,7 @@ extension NCSelect {
         
         if serverUrl == "" {
             
-            serverUrl = CCUtility.getHomeServer(appDelegate.urlBase)
+            serverUrl = NCUtility.shared.getHomeServer(appDelegate.urlBase)
         }
         
         if includeDirectoryE2EEncryption {

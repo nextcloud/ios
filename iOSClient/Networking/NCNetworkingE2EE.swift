@@ -41,7 +41,7 @@ import Alamofire
         var key: NSString?
         var initializationVector: NSString?
         
-        fileNameFolder = NCUtility.sharedInstance.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
+        fileNameFolder = NCUtility.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
@@ -54,7 +54,7 @@ import Alamofire
                                
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
-                        guard let fileId = NCUtility.sharedInstance.ocIdToFileId(ocId: ocId) else {
+                        guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
                             self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": k_CCErrorInternalError], errorDescription: "Error convert ocId", completion: completion)
                             return
                         }

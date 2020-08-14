@@ -37,12 +37,12 @@ import NCCommunication
         
         guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
         
-        NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
+        NCUtility.shared.startActivityIndicator(view: viewController.view)
         
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
         NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
             
-            NCUtility.sharedInstance.stopActivityIndicator()
+            NCUtility.shared.stopActivityIndicator()
             
             if errorCode == 0 && account == self.appDelegate.account {
                 
@@ -72,12 +72,12 @@ import NCCommunication
             
             if metadata.url == "" {
                 
-                NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
+                NCUtility.shared.startActivityIndicator(view: viewController.view)
                 
                 let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
                 NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
                     
-                    NCUtility.sharedInstance.stopActivityIndicator()
+                    NCUtility.shared.stopActivityIndicator()
                     
                     if errorCode == 0 && account == self.appDelegate.account {
                         

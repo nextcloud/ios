@@ -45,7 +45,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
     
-        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+        if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -201,7 +201,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
+            if serverUrl == NCUtility.shared.getHomeServer(appDelegate.urlBase) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
@@ -235,7 +235,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
-        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         
             guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
             conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -302,8 +302,8 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     //MARK: Player - Timer
 
     func updateTimerUI() {
-        labelTimer.text = NCUtility.sharedInstance.formatSecondsToString(counterSecondPlayer)
-        labelDuration.text = NCUtility.sharedInstance.formatSecondsToString(durationPlayer)
+        labelTimer.text = NCUtility.shared.formatSecondsToString(counterSecondPlayer)
+        labelDuration.text = NCUtility.shared.formatSecondsToString(durationPlayer)
         progressView.progress = Float(counterSecondPlayer / durationPlayer)
     }
     

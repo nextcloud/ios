@@ -330,7 +330,8 @@
             self.login.enabled = NO;
             [self.activity startAnimating];
             
-            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", url, k_webDAV];
+            NSString *webDAV = [[NCUtility shared] getWebDAV];
+            NSString *serverUrl = [NSString stringWithFormat:@"%@%@", url, webDAV];
             
             [[NCCommunication shared] checkServerWithServerUrl:serverUrl completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 
@@ -390,7 +391,7 @@
         NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
         
         // NO account found, clear
-        if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
+        if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.shared removeAllSettings]; }
         
         [[NCManageDatabase sharedInstance] deleteAccount:account];
         [[NCManageDatabase sharedInstance] addAccount:account urlBase:url user:user password:token];

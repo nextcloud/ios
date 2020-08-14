@@ -208,29 +208,29 @@ extension NCLoginWeb: WKNavigationDelegate {
 
     func createAccount(server: String, username: String, password: String) {
         
-        var serverUrl = server
+        var urlBase = server
         
         // NO account found, clear all
-        if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.sharedInstance.removeAllSettings() }
+        if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
             
         // Normalized
-        if (serverUrl.last == "/") {
-            serverUrl = String(serverUrl.dropLast())
+        if (urlBase.last == "/") {
+            urlBase = String(urlBase.dropLast())
         }
         
         // Create account
-        let account: String = "\(username) \(serverUrl)"
+        let account: String = "\(username) \(urlBase)"
 
         // Add new account
         NCManageDatabase.sharedInstance.deleteAccount(account)
-        NCManageDatabase.sharedInstance.addAccount(account, urlBase: serverUrl, user: username, password: password)
+        NCManageDatabase.sharedInstance.addAccount(account, urlBase: urlBase, user: username, password: password)
             
         guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
             self.dismiss(animated: true, completion: nil)
             return
         }
             
-        appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userID: tableAccount.userID, password: password)
+        appDelegate.settingAccount(account, urlBase: urlBase, user: username, userID: tableAccount.userID, password: password)
             
         if (CCUtility.getIntro()) {
             

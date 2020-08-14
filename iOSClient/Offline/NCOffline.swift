@@ -109,7 +109,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
 
         self.navigationItem.title = titleCurrentFolder
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_offline)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.shared.getLayoutForView(key: k_layout_view_offline)
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -186,7 +186,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -197,7 +197,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -420,7 +420,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     default: ()
                     }
             
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_offline, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
 
             loadDatasource()
         }
@@ -481,7 +481,7 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
         }
         
         viewController.showOpenIn = true
-        viewController.showOpenQuickLook = NCUtility.sharedInstance.isQuickLookDisplayable(metadata: metadata)
+        viewController.showOpenQuickLook = NCUtility.shared.isQuickLookDisplayable(metadata: metadata)
         viewController.showShare = false
         
         return viewController
