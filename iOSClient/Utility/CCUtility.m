@@ -1286,22 +1286,6 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
-+ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
-{
-    NSString *firstPath = serverUrl;
-
-    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    NSURL *urlBaseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [urlBase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], @"/remote.php/webdav"]];
-    
-    while ([[serverUrlURL absoluteString] isEqualToString:[urlBaseURL absoluteString]] == false) {
-        firstPath = [serverUrlURL absoluteString];
-        serverUrlURL = [serverUrlURL URLByDeletingLastPathComponent];
-    }
-    
-    if ([firstPath hasSuffix:@"/"]) firstPath = [firstPath substringToIndex:[firstPath length] - 1];
-    return firstPath;
-}
-
 + (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
     if ([serverUrl isEqualToString:urlBase])

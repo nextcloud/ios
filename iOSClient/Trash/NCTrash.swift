@@ -100,7 +100,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         if path == "" {
             guard let userID = (appDelegate.userID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return }
-            path = appDelegate.urlBase + "/remote.php/dav/trashbin/" + userID + "/trash/"
+            path = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/trashbin/" + userID + "/trash/"
         }
         
         if (datasource.count == 0) {
@@ -691,7 +691,7 @@ extension NCTrash {
         }
         
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.urlBase + "/remote.php/dav/trashbin/" + appDelegate.userID + "/restore/" + tableTrash.fileName
+        let fileNameTo = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/trashbin/" + appDelegate.userID + "/restore/" + tableTrash.fileName
         
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
@@ -707,7 +707,7 @@ extension NCTrash {
     
     func emptyTrash() {
         
-        let serverUrlFileName = appDelegate.urlBase + "/remote.php/dav/trashbin/" + appDelegate.userID + "/trash"
+        let serverUrlFileName = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/trashbin/" + appDelegate.userID + "/trash"
 
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
