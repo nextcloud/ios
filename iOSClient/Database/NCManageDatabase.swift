@@ -68,19 +68,15 @@ class NCManageDatabase: NSObject {
                     }
                     
                     if oldSchemaVersion < 74 {
-                        
                         migration.enumerateObjects(ofType: tableLocalFile.className()) { oldObject, newObject in
                             newObject!["ocId"] = oldObject!["fileID"]
                         }
-                        
                         migration.enumerateObjects(ofType: tableTrash.className()) { oldObject, newObject in
                             newObject!["fileId"] = oldObject!["fileID"]
                         }
-                        
                         migration.enumerateObjects(ofType: tableTag.className()) { oldObject, newObject in
                             newObject!["ocId"] = oldObject!["fileID"]
                         }
-                        
                         migration.enumerateObjects(ofType: tableE2eEncryptionLock.className()) { oldObject, newObject in
                             newObject!["ocId"] = oldObject!["fileID"]
                         }
@@ -115,6 +111,12 @@ class NCManageDatabase: NSObject {
                     
                     if oldSchemaVersion < 139 {
                         migration.deleteData(forType: tableMetadata.className())
+                    }
+                    
+                    if oldSchemaVersion < 141 {
+                        migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                            newObject!["urlBase"] = oldObject!["url"]
+                        }
                     }
                     
                 }, shouldCompactOnLaunch: { totalBytes, usedBytes in
@@ -263,7 +265,7 @@ class NCManageDatabase: NSObject {
         return tableAccount.init(value: account)
     }
     
-    @objc func addAccount(_ account: String, url: String, user: String, password: String) {
+    @objc func addAccount(_ account: String, urlBase: String, user: String, password: String) {
 
         let realm = try! Realm()
 
@@ -285,7 +287,7 @@ class NCManageDatabase: NSObject {
         
         CCUtility.setPassword(account, password: password)
     
-        addObject.url = url
+        addObject.urlBase = urlBase
         addObject.user = user
         addObject.userID = user
         
@@ -391,7 +393,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAccountAutoUploadDirectory(_ activeUrl : String) -> String {
+    @objc func getAccountAutoUploadDirectory(_ urlBase : String) -> String {
         
         let realm = try! Realm()
         realm.refresh()
@@ -403,14 +405,14 @@ class NCManageDatabase: NSObject {
         if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
-            return CCUtility.getHomeServerUrlActiveUrl(activeUrl)
+            return CCUtility.getHomeServer(urlBase)
         }
     }
 
-    @objc func getAccountAutoUploadPath(_ activeUrl : String) -> String {
+    @objc func getAccountAutoUploadPath(_ urlBase : String) -> String {
         
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(activeUrl)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase)
      
         let folderPhotos = CCUtility.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)!
         
@@ -421,7 +423,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
 
-        var activeAccount = tableAccount()
+        var tAccount = tableAccount()
         
         do {
             try realm.write {
@@ -433,7 +435,7 @@ class NCManageDatabase: NSObject {
                     if result.account == account {
                     
                         result.active = true
-                        activeAccount = result
+                        tAccount = result
                     
                     } else {
                     
@@ -446,7 +448,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableAccount.init(value: activeAccount)
+        return tableAccount.init(value: tAccount)
     }
     
     @objc func removePasswordAccount(_ account: String) {
@@ -516,7 +518,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, activeUrl: String) {
+    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String) {
         
         let realm = try! Realm()
 
@@ -531,7 +533,7 @@ class NCManageDatabase: NSObject {
                         
                     } else {
                         
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(activeUrl)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase)
                     }
                 }
             }
@@ -547,13 +549,13 @@ class NCManageDatabase: NSObject {
         var returnAccount = tableAccount()
 
         do {
-            guard let activeAccount = self.getAccountActive() else {
+            guard let account = self.getAccountActive() else {
                 return nil
             }
             
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
                     return
                 }
                 
@@ -596,13 +598,13 @@ class NCManageDatabase: NSObject {
         var returnAccount = tableAccount()
 
         do {
-            guard let activeAccount = self.getAccountActive() else {
+            guard let account = self.getAccountActive() else {
                 return nil
             }
             
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
                     return
                 }
                 
@@ -632,13 +634,13 @@ class NCManageDatabase: NSObject {
         var returnAccount = tableAccount()
 
         do {
-            guard let activeAccount = self.getAccountActive() else {
+            guard let account = self.getAccountActive() else {
                 return nil
             }
             
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account == %@", activeAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account == %@", account.account).first else {
                     return
                 }
                 
@@ -2452,7 +2454,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Share
     
-    @objc func addShare(account: String, activeUrl: String, shares: [NCCommunicationShare]) {
+    @objc func addShare(account: String, urlBase: String, shares: [NCCommunicationShare]) {
         
         let realm = try! Realm()
         realm.beginWrite()
@@ -2460,7 +2462,7 @@ class NCManageDatabase: NSObject {
         for share in shares {
             
             let addObject = tableShare()
-            let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + share.path
+            let fullPath = CCUtility.getHomeServer(urlBase) + share.path
             let serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: fullPath)!
             let fileName = NSString(string: fullPath).lastPathComponent
                         

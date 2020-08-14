@@ -134,7 +134,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         if let parameter = notification.subjectRichParameters as?  Dictionary<String, Any> {
             if let user = parameter["user"] as? Dictionary<String, Any> {
                 if let name = user["id"] as? String {
-                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + name + ".png"
+                    let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + name + ".png"
                     if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             cell.avatar.isHidden = false
@@ -143,8 +143,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
                         }
                     } else {
                         DispatchQueue.global().async {
-                            NCCommunication.shared.downloadAvatar(userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.activeAccount) { (account, data, errorCode, errorMessage) in
-                                if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                            NCCommunication.shared.downloadAvatar(userID: name, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size), customUserAgent: nil, addCustomHeaders: nil, account: self.appDelegate.account) { (account, data, errorCode, errorMessage) in
+                                if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                     if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                         cell.avatar.isHidden = false
                                         cell.avatarLeadingMargin.constant = 50
@@ -246,7 +246,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     func tapRemove(with notification: NCCommunicationNotifications?) {
            
         NCCommunication.shared.setNotification(serverUrl:nil, idNotification: notification!.idNotification , method: "DELETE") { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                                 
                 if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
                     self.notifications.remove(at: index)
@@ -273,7 +273,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
                             
                         NCCommunication.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method) { (account, errorCode, errorDescription) in
                             
-                            if errorCode == 0 && account == self.appDelegate.activeAccount {
+                            if errorCode == 0 && account == self.appDelegate.account {
                                                         
                                 if let index = self.notifications.firstIndex(where: {$0.idNotification == notification!.idNotification})  {
                                     self.notifications.remove(at: index)
@@ -301,14 +301,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
 
         NCCommunication.shared.getNotifications() { (account, notifications, errorCode, errorDescription) in
          
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                     
                 self.notifications.removeAll()
                 let sortedListOfNotifications = (notifications! as NSArray).sortedArray(using: [NSSortDescriptor(key: "date", ascending: false)])
                     
                 for notification in sortedListOfNotifications {
                     if let icon = (notification as! NCCommunicationNotifications).icon {
-                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.activeAccount, closure: { (imageNamePath) in })
+                        NCUtility.sharedInstance.convertSVGtoPNGWriteToUserData(svgUrlString: icon, fileName: nil, width: 25, rewrite: false, account: self.appDelegate.account, closure: { (imageNamePath) in })
                     }                    
                     self.notifications.append(notification as! NCCommunicationNotifications)
                 }

@@ -393,12 +393,12 @@
         if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.sharedInstance removeAllSettings]; }
         
         [[NCManageDatabase sharedInstance] deleteAccount:account];
-        [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:token];
+        [[NCManageDatabase sharedInstance] addAccount:account urlBase:url user:user password:token];
         
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
         
         // Setting appDelegate active account
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+        [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
         
         if ([CCUtility getIntro]) {
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];

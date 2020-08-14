@@ -491,7 +491,7 @@ class NCDetailViewController: UIViewController {
                     if metadata.url == "" {
                         
                         var customUserAgent: String?
-                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
                         
                         if editor == k_editor_onlyoffice {
                             customUserAgent = NCUtility.sharedInstance.getCustomUserAgentOnlyOffice()
@@ -500,7 +500,7 @@ class NCDetailViewController: UIViewController {
                         
                         NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
                             
-                            if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
+                            if errorCode == 0 && account == self.appDelegate.account && url != nil {
                                 
                                 let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                                 let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
@@ -544,7 +544,7 @@ class NCDetailViewController: UIViewController {
                     
                     NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
                         
-                        if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
+                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
                             
                             let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
                             let richDocument = NCViewerRichdocument.init(frame: frame, configuration: WKWebViewConfiguration())
@@ -720,7 +720,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
     
         } else if metadata.hasPreview {
                 
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     

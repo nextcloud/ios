@@ -53,10 +53,10 @@ class FileProviderDomain: NSObject {
             
             // Check account->domain & (add)
             for tableAccount in tableAccounts {
-                guard let url = NSURL(string: tableAccount.url) else {
+                guard let urlBase = NSURL(string: tableAccount.urlBase) else {
                     continue
                 }
-                guard let host = url.host else {
+                guard let host = urlBase.host else {
                     continue
                 }
                 let accountDomain =  tableAccount.userID + " (" + host + ")"

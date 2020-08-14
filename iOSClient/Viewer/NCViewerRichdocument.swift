@@ -209,10 +209,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
         
         if serverUrl != nil && metadata != nil {
             
-            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+            let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase)!
             
             NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if errorCode == 0 && account == self.appDelegate.account {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata!.fileNameView)', '\(url!)')"
                     self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
                 } else if errorCode != 0 {
@@ -226,10 +226,10 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
-        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, activeUrl: appDelegate.activeUrl)!
+        let path = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase)!
         
         NCCommunication.shared.createAssetRichdocuments(path: path) { (account, url, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
                 self.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
             } else if errorCode != 0 {

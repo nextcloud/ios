@@ -69,12 +69,12 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in  downloadThumbnailQueue.operations {
                 if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId { return }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, activeUrl: activeUrl, view: view, indexPath: indexPath))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath))
         }
     }
     
@@ -206,13 +206,13 @@ class NCOperationSynchronization: ConcurrentOperation {
 class NCOperationDownloadThumbnail: ConcurrentOperation {
    
     var metadata: tableMetadata
-    var activeUrl: String
+    var urlBase: String
     var view: Any
     var indexPath: IndexPath
     
-    init(metadata: tableMetadata, activeUrl: String, view: Any, indexPath: IndexPath) {
+    init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
         self.metadata = metadata
-        self.activeUrl = activeUrl
+        self.urlBase = urlBase
         self.view = view
         self.indexPath = indexPath
     }
@@ -222,7 +222,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: activeUrl)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase)!
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
 

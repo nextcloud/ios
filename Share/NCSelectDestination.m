@@ -26,8 +26,8 @@
 
 @interface NCSelectDestination ()
 {    
-    NSString *activeAccount;
-    NSString *activeUrl;
+    NSString *account;
+    NSString *urlBase;
   
     BOOL _loadingFolder;
     
@@ -51,8 +51,8 @@
     
     if (tableAccount) {
         
-        activeAccount = tableAccount.account;
-        activeUrl = tableAccount.url;
+        account = tableAccount.account;
+        urlBase = tableAccount.urlBase;
                 
     } else {
         
@@ -69,7 +69,7 @@
     
     if (![_serverUrl length]) {
                 
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
+        _serverUrl = [CCUtility getHomeServer:urlBase];
         
         [self.navigationController.navigationBar.topItem setTitleView:[[UIImageView alloc] initWithImage: [UIImage imageNamed:@"themingLogo"]]];
         self.title = @"Home";
@@ -92,7 +92,7 @@
 
     // get auto upload folder
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:urlBase];
     
     [self readFolder];
 }
@@ -165,7 +165,7 @@
 
 - (void)readFolder
 {
-    [[NCNetworking shared] readFolderWithServerUrl:_serverUrl account:activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] readFolderWithServerUrl:_serverUrl account:account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             self.move.enabled = true;
@@ -211,17 +211,17 @@
     if (self.includeDirectoryE2EEncryption) {
         
         if (self.includeImages) {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", activeAccount, _serverUrl];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", account, _serverUrl];
         } else {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND directory == true", activeAccount, _serverUrl];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND directory == true", account, _serverUrl];
         }
         
     } else {
         
         if (self.includeImages) {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", activeAccount, _serverUrl];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", account, _serverUrl];
         } else {
-            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", activeAccount, _serverUrl];
+            predicateDataSource = [NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", account, _serverUrl];
         }
     }
     

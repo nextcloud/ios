@@ -223,14 +223,14 @@ extension NCLoginWeb: WKNavigationDelegate {
 
         // Add new account
         NCManageDatabase.sharedInstance.deleteAccount(account)
-        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
+        NCManageDatabase.sharedInstance.addAccount(account, urlBase: serverUrl, user: username, password: password)
             
         guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
             self.dismiss(animated: true, completion: nil)
             return
         }
             
-        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+        appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userID: tableAccount.userID, password: password)
             
         if (CCUtility.getIntro()) {
             

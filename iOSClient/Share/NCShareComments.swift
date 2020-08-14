@@ -67,7 +67,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
             labelUser.text = tabAccount.displayName
         }
         
-        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
+        let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
         if FileManager.default.fileExists(atPath: fileNameLocalPath) {
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 imageItem.image = image
@@ -247,7 +247,7 @@ extension NCShareComments: UITableViewDataSource {
             cell.sizeToFit()
             
             // Image
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableComments.actorId + ".png"
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableComments.actorId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
@@ -258,7 +258,7 @@ extension NCShareComments: UITableViewDataSource {
                         }
                     }
                     /*
-                    let url = self.appDelegate.activeUrl + k_avatar + tableComments.actorId + "/" + k_avatar_size
+                    let url = self.appDelegate.urlBase + k_avatar + tableComments.actorId + "/" + k_avatar_size
                     let encodedString = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
                     OCNetworking.sharedManager()?.downloadContents(ofUrl: encodedString, completion: { (data, message, errorCode) in
                         if errorCode == 0 && UIImage(data: data!) != nil {
@@ -283,7 +283,7 @@ extension NCShareComments: UITableViewDataSource {
             cell.labelMessage.text = tableComments.message
             cell.labelMessage.textColor = NCBrandColor.sharedInstance.textView
             // Button Menu
-            if tableComments.actorId == appDelegate.activeUserID {
+            if tableComments.actorId == appDelegate.userID {
                 cell.buttonMenu.isHidden = false
             } else {
                 cell.buttonMenu.isHidden = true

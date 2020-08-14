@@ -74,11 +74,11 @@ class FileProviderExtension: NSFileProviderExtension {
                 if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                 } else if self.domain?.identifier.rawValue != nil {
-                    if fileProviderData.sharedInstance.setupActiveAccount(domain: self.domain?.identifier.rawValue, providerExtension: self) == false {
+                    if fileProviderData.sharedInstance.setupAccount(domain: self.domain?.identifier.rawValue, providerExtension: self) == false {
                         throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                     }
                 } else {
-                    if fileProviderData.sharedInstance.setupActiveAccount(itemIdentifier: containerItemIdentifier, providerExtension: self) == false {
+                    if fileProviderData.sharedInstance.setupAccount(itemIdentifier: containerItemIdentifier, providerExtension: self) == false {
                         throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                     }
                 }
@@ -87,7 +87,7 @@ class FileProviderExtension: NSFileProviderExtension {
         } else {
             
             if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-                if fileProviderData.sharedInstance.setupActiveAccount(domain: nil, providerExtension: self) == false {
+                if fileProviderData.sharedInstance.setupAccount(domain: nil, providerExtension: self) == false {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
                 }
             }
@@ -366,7 +366,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrl, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCCommunicationCommon.shared.sessionIdentifierExtension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)

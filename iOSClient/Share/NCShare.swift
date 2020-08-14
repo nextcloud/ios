@@ -79,18 +79,18 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataNCShare), object: nil)
         
         // Shared with you by ...
-        if metadata!.ownerId != self.appDelegate.activeUserID {
+        if metadata!.ownerId != self.appDelegate.userID {
             
             searchFieldTopConstraint.constant = 65
             sharedWithYouByView.isHidden = false
             sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata!.ownerDisplayName
             
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + metadata!.ownerId + ".png"
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata!.ownerId + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { sharedWithYouByImage.image = image }
             } else {
                 NCCommunication.shared.downloadAvatar(userID: metadata!.ownerId, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                    if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                    if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                             self.sharedWithYouByImage.image = image
                         }
@@ -103,7 +103,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         reloadData()
         
-        networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl, view: self.view, delegate: self)
+        networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
         networking?.readShare()
         
         // changeTheming
@@ -153,7 +153,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { (account, metadata, errorCode, errorDescription) in
             if errorCode == 0 && metadata != nil {
-                let internalLink = self.appDelegate.activeUrl + "/index.php/f/" + metadata!.fileId
+                let internalLink = self.appDelegate.urlBase + "/index.php/f/" + metadata!.fileId
                 NCShareCommon.sharedInstance.copyLink(link: internalLink, viewController: self, sender: sender)
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -303,13 +303,13 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             let sharee = sharees[index]
             cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
 
-            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-" + sharee.label + ".png"
+            let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.user, urlBase: self.appDelegate.urlBase) + "-" + sharee.label + ".png"
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
             } else {
                 DispatchQueue.global().async {
                     NCCommunication.shared.downloadAvatar(userID: sharee.shareWith, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                        if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                 DispatchQueue.main.async {
                                     cell.imageItem.image = image
@@ -391,13 +391,13 @@ extension NCShare: UITableViewDataSource {
                 cell.buttonMenu.isHidden = false
                 cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: tableShare.shareType)
                 
-                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + tableShare.shareWith + ".png"
+                let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
                 } else {
                     DispatchQueue.global().async {
                         NCCommunication.shared.downloadAvatar(userID: tableShare.shareWith, fileNameLocalPath: fileNameLocalPath, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                            if errorCode == 0 && account == self.appDelegate.activeAccount && UIImage(data: data!) != nil {
+                            if errorCode == 0 && account == self.appDelegate.account && UIImage(data: data!) != nil {
                                 if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                                     cell.imageItem.image = image
                                 }
@@ -413,7 +413,7 @@ extension NCShare: UITableViewDataSource {
                 }
                 
                 // If the initiator or the recipient is not the current user, show the list of sharees without any options to edit it.
-                if tableShare.uidOwner != self.appDelegate.activeUserID && tableShare.uidFileOwner != self.appDelegate.activeUserID {
+                if tableShare.uidOwner != self.appDelegate.userID && tableShare.uidFileOwner != self.appDelegate.userID {
                     cell.isUserInteractionEnabled = false
                     cell.switchCanEdit.isHidden = true
                     cell.labelCanEdit.isHidden = true

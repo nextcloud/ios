@@ -45,7 +45,7 @@
 
 @interface CCSectionMetadata : NSObject
 
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount;
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending account:(NSString *)account;
 
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource;
 
@@ -62,6 +62,6 @@
 
 @interface CCSectionActivity : NSObject
 
-+ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records activeAccount:(NSString *)activeAccount;
++ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records account:(NSString *)account;
 
 @end

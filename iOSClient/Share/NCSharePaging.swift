@@ -269,7 +269,7 @@ class NCShareHeaderView: UIView {
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-            NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+            NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     if !metadata.favorite {
                         self.favorite.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 40, height: 40, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)

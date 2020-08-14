@@ -113,7 +113,7 @@ class NCShareUserMenuView: UIView, UIGestureRecognizerDelegate, NCShareNetworkin
             shareViewController?.reloadData()
         } else {
             // UIView appear
-            networking = NCShareNetworking.init(metadata: metadata!, activeUrl: appDelegate.activeUrl,  view: self, delegate: self)
+            networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase,  view: self, delegate: self)
         }
     }
     

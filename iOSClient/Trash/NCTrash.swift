@@ -99,8 +99,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         // Datasource & serverUrl
         
         if path == "" {
-            guard let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return }
-            path = appDelegate.activeUrl + "/remote.php/dav/trashbin/" + userID + "/trash/"
+            guard let userID = (appDelegate.userID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return }
+            path = appDelegate.urlBase + "/remote.php/dav/trashbin/" + userID + "/trash/"
         }
         
         if (datasource.count == 0) {
@@ -336,7 +336,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
             var actions: [NCMenuAction] = []
 
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.account) else {
                 return
             }
 
@@ -391,7 +391,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
             var actions: [NCMenuAction] = []
 
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.activeAccount) else {
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: objectId, account: appDelegate.account) else {
                 return
             }
 
@@ -636,7 +636,7 @@ extension NCTrash {
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.activeAccount) else {
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account) else {
             return
         }
         
@@ -664,8 +664,8 @@ extension NCTrash {
         NCCommunication.shared.listingTrash(showHiddenFiles: false) { (account, items, errorCode, errorDescription) in
             self.refreshControl.endRefreshing()
          
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.activeAccount)
+            if errorCode == 0 && account == self.appDelegate.account {
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.account)
                 NCManageDatabase.sharedInstance.addTrash(account: account, items: items)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -686,15 +686,15 @@ extension NCTrash {
     
     func restoreItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.account) else {
             return
         }
         
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.activeUrl + "/remote.php/dav/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
+        let fileNameTo = appDelegate.urlBase + "/remote.php/dav/trashbin/" + appDelegate.userID + "/restore/" + tableTrash.fileName
         
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
             }  else if errorCode != 0 {
@@ -707,11 +707,11 @@ extension NCTrash {
     
     func emptyTrash() {
         
-        let serverUrlFileName = appDelegate.activeUrl + "/remote.php/dav/trashbin/" + appDelegate.activeUserID + "/trash"
+        let serverUrlFileName = appDelegate.urlBase + "/remote.php/dav/trashbin/" + appDelegate.userID + "/trash"
 
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
-                NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.activeAccount)
+            if errorCode == 0 && account == self.appDelegate.account {
+                NCManageDatabase.sharedInstance.deleteTrash(fileId: nil, account: self.appDelegate.account)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
@@ -723,14 +723,14 @@ extension NCTrash {
     
     func deleteItem(with fileId: String) {
         
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.activeAccount) else {
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileId: fileId, account: appDelegate.account) else {
             return
         }
         
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
         
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
                 self.loadDatasource()
             } else if errorCode != 0 {
@@ -748,7 +748,7 @@ extension NCTrash {
         
         NCCommunication.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon), endpointTrashbin: true) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
             
-            if errorCode == 0 && imageIcon != nil && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && imageIcon != nil && account == self.appDelegate.account {
                 if let cell = self.collectionView.cellForItem(at: indexPath) {
                     if cell is NCTrashListCell {
                         (cell as! NCTrashListCell).imageItem.image = imageIcon

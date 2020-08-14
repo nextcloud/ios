@@ -73,7 +73,7 @@ extension CCFavorites {
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.urlBase) { (errorCode, errorDescription) in }
                     }
                 )
             )

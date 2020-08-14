@@ -31,8 +31,8 @@
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, MBProgressHUDDelegate, NCSelectDestinationDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong) NSString *activeAccount;
-@property (nonatomic, strong) NSString *activeUrl;
+@property (nonatomic, strong) NSString *account;
+@property (nonatomic, strong) NSString *urlBase;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, retain) NSMutableArray *filesName;
 

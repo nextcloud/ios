@@ -124,7 +124,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.activeAccount, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= Int(k_trash_version_available) {
 
             item = NCCommunicationExternalSite()
@@ -136,7 +136,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.activeAccount) {
+            if let externalSites = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
                     if (externalSite.type == "link" && externalSite.name != "" && externalSite.url != "") {
                         item = NCCommunicationExternalSite()
@@ -266,7 +266,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
         if (indexPath.section == 0) {
-            let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-" + appDelegate.activeUser + ".png"
+            let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
 
             if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
                 cell.imageIcon?.image = themingAvatarFile
@@ -366,7 +366,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action: UIAlertAction) in
 
                 let manageAccount = CCManageAccount()
-                manageAccount.delete(self.appDelegate.activeAccount)
+                manageAccount.delete(self.appDelegate.account)
 
                 self.appDelegate.openLoginView(self, selector: Int(k_intro_login), openLoginWeb: false)
             }

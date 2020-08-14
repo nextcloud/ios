@@ -65,12 +65,12 @@
         NSString *webDavRoot = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesWebDavRoot];
         
         // Networking
-        [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.url userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
+        [[NCCommunicationCommon shared] setupWithAccount:tableAccount.account user:tableAccount.user userId:tableAccount.userID password:[CCUtility getPassword:tableAccount.account] urlBase:tableAccount.urlBase userAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups webDavRoot:webDavRoot davRoot:nil nextcloudVersion:serverVersionMajor delegate:[NCNetworking shared]];
        
-        _activeAccount = tableAccount.account;
-        _activeUrl = tableAccount.url;
+        _account = tableAccount.account;
+        _urlBase = tableAccount.urlBase;
         
-        if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
+        if ([_account isEqualToString:[CCUtility getAccountExt]]) {
             
             // load
             
@@ -82,9 +82,9 @@
             
             // Default settings
             
-            [CCUtility setActiveAccountExt:self.activeAccount];
+            [CCUtility setAccountExt:self.account];
 
-            _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:tableAccount.url];
+            _serverUrl  = [CCUtility getHomeServer:tableAccount.urlBase];
             [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
@@ -177,9 +177,9 @@
 {
     // Theming
     if ([NCBrandOptions sharedInstance].use_themingColor) {
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColor];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingColorText];
+        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
         [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
@@ -206,7 +206,7 @@
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     // DENIED e2e
-    if ([CCUtility isFolderEncrypted:serverUrlTo e2eEncrypted:false account:self.activeAccount urlBase:self.activeUrl]) {
+    if ([CCUtility isFolderEncrypted:serverUrlTo e2eEncrypted:false account:self.account urlBase:self.urlBase]) {
         return;
     }
     
@@ -221,7 +221,7 @@
         [CCUtility setTitleServerUrlExt:NSLocalizedString(@"_home_", nil)];
     }
     
-    [CCUtility setActiveAccountExt:self.activeAccount];
+    [CCUtility setAccountExt:self.account];
     [CCUtility setServerUrlExt:_serverUrl];
 }
 
@@ -269,7 +269,7 @@
         
         // <--
         
-        NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.activeAccount];
+        NSString *fileNameForUpload = [[NCUtility sharedInstance] createFileName:fileName serverUrl:self.serverUrl account:self.account];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         
         [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil progressHandler:^(NSProgress * progress) {
@@ -282,7 +282,7 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.activeAccount fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.activeUrl url:@"" contentType:@"" livePhoto:false];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.account fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.urlBase url:@"" contentType:@"" livePhoto:false];
                                
                 metadata.date = date;
                 metadata.etag = etag;

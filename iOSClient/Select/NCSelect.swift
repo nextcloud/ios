@@ -178,7 +178,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.urlBase)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -188,7 +188,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         loadDatasource(withLoadFolder: true)
 
-        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.activeAccount, serverUrl: serverUrl)
+        shares = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.account, serverUrl: serverUrl)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -660,28 +660,28 @@ extension NCSelect {
         
         if serverUrl == "" {
             
-            serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
+            serverUrl = CCUtility.getHomeServer(appDelegate.urlBase)
         }
         
         if includeDirectoryE2EEncryption {
             
             if includeImages {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR typeFile == 'image')", appDelegate.account, serverUrl)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", appDelegate.activeAccount, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", appDelegate.account, serverUrl)
             }
             
         } else {
             
             if includeImages {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", appDelegate.activeAccount, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", appDelegate.account, serverUrl)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", appDelegate.activeAccount, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", appDelegate.account, serverUrl)
             }
         }
         
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
-        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account)
         
         if withLoadFolder {
             loadFolder()
@@ -694,7 +694,7 @@ extension NCSelect {
     
     func createFolder(with fileName: String) {
         
-        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) { (errorCode, errorDescription) in
+        NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: appDelegate.account, url: appDelegate.urlBase) { (errorCode, errorDescription) in
             
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
@@ -709,7 +709,7 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.activeAccount) { (account, metadataFolder, metadatas, metadatasChanged, errorCode, errorDescription) in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasChanged, errorCode, errorDescription) in
             
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)

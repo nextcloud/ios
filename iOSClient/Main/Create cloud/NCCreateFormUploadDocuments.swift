@@ -56,7 +56,7 @@ import NCCommunication
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -218,7 +218,7 @@ import NCCommunication
         }
         
         self.serverUrl = serverUrl
-        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
             fileNameFolder = "/"
         } else {
             fileNameFolder = (serverUrl as NSString).lastPathComponent
@@ -268,13 +268,13 @@ import NCCommunication
         } else {
             
             let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileNameForm as! String, contentType: "", directory: false)
-            if NCUtility.sharedInstance.isDirectEditing(account: appDelegate.activeAccount, contentType: result.contentType) == nil {
+            if NCUtility.sharedInstance.isDirectEditing(account: appDelegate.account, contentType: result.contentType) == nil {
                 fileNameForm = (fileNameForm as! NSString).deletingPathExtension + "." + fileNameExtension
             }
             
-            if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
+            if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: String(describing: fileNameForm)) != nil {
                 
-                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.activeAccount, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.activeUrl, url: "", contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: String(describing: fileNameForm), ocId: "", serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
                 conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")
@@ -287,7 +287,7 @@ import NCCommunication
                 
             } else {
                                 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: String(describing: fileNameForm), serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
                 createDocument(fileNamePath: fileNamePath, fileName: String(describing: fileNameForm))
             }
         }
@@ -304,7 +304,7 @@ import NCCommunication
         } else {
             
             let fileName = metadatas![0].fileName
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
             
             createDocument(fileNamePath: fileNamePath, fileName: fileName)
         }
@@ -322,13 +322,13 @@ import NCCommunication
             
             NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateIdentifier, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if errorCode == 0 && account == self.appDelegate.account {
                     
                     if url != nil && url!.count > 0 {
                         let result = NCCommunicationCommon.shared.getInternalContenType(fileName: fileName, contentType: "", directory: false)
                         
                         self.dismiss(animated: true, completion: {
-                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.activeUrl, url: url ?? "", contentType: result.contentType, livePhoto: false)
+                            let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
                             self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
@@ -347,11 +347,11 @@ import NCCommunication
             
             NCCommunication.shared.createRichdocuments(path: fileNamePath, templateId: templateIdentifier) { (account, url, errorCode, errorDescription) in
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount && url != nil {
+                if errorCode == 0 && account == self.appDelegate.account && url != nil {
                    
                     self.dismiss(animated: true, completion: {
                     
-                        let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.activeUrl, url: url!, contentType: "", livePhoto: false)
+                        let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
                        self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                    })
@@ -391,7 +391,7 @@ import NCCommunication
                 
                 self.indicator.stopAnimating()
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if errorCode == 0 && account == self.appDelegate.account {
                     
                     for template in templates {
                         
@@ -453,7 +453,7 @@ import NCCommunication
                 
                 self.indicator.stopAnimating()
 
-                if errorCode == 0 && account == self.appDelegate.activeAccount {
+                if errorCode == 0 && account == self.appDelegate.account {
                     
                     for template in templates! {
                         
@@ -496,7 +496,7 @@ import NCCommunication
             
         }) { (account, etag, date, lenght, error, errorCode, errorDescription) in
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 self.collectionView.reloadItems(at: [indexPath])
             } else if errorCode != 0 {
                 print("\(errorCode)")

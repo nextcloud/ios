@@ -83,7 +83,7 @@ class NCAppConfigView: UIViewController {
                     
                     // Add new account
                     NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: token!)
+                    NCManageDatabase.sharedInstance.addAccount(account, urlBase: serverUrl, user: username, password: token!)
                     
                     guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
                         NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
@@ -91,7 +91,7 @@ class NCAppConfigView: UIViewController {
                         return
                     }
                     
-                    self.appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: token!)
+                    self.appDelegate.settingAccount(account, urlBase: serverUrl, user: username, userID: tableAccount.userID, password: token!)
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
                     
                     self.dismiss(animated: true) {}

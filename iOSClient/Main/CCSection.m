@@ -76,7 +76,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending account:(NSString *)account
 {
     id dataSection;
     
@@ -314,7 +314,7 @@
 
 @implementation CCSectionActivity
 
-+ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceActivity *)creataDataSourseSectionActivity:(NSArray *)records account:(NSString *)account
 {
     CCSectionDataSourceActivity *sectionDataSource = [CCSectionDataSourceActivity new];
     NSDate *oldDate = [NSDate date];

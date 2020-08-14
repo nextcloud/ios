@@ -67,8 +67,8 @@
 
 + (NSString *)getIncrementalNumber;
 
-+ (NSString *)getActiveAccountExt;
-+ (void)setActiveAccountExt:(NSString *)activeAccount;
++ (NSString *)getAccountExt;
++ (void)setAccountExt:(NSString *)account;
 
 + (NSString *)getServerUrlExt;
 + (void)setServerUrlExt:(NSString *)serverUrl;
@@ -201,9 +201,8 @@
 + (void)createDirectoryStandard;
 
 + (NSURL *)getDirectoryGroup;
-+ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
-+ (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
-+ (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
++ (NSString *)getHomeServer:(NSString *)urlBase;
++ (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;
@@ -233,10 +232,10 @@
 + (void)createDirectoryAtPath:(NSString *)atPath;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
-+ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
-+ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
++ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase;
++ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase;
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase;
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase;
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 

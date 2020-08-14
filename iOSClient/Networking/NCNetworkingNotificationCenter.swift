@@ -53,7 +53,7 @@ import Foundation
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let selector = userInfo["selector"] as? String, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
         
-                if metadata.account != appDelegate.activeAccount { return }
+                if metadata.account != appDelegate.account { return }
                 
                 if errorCode == 0 {
                     
@@ -181,7 +181,7 @@ import Foundation
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                                                 
-                if metadata.account == appDelegate.activeAccount {
+                if metadata.account == appDelegate.account {
                     if errorCode == 0 {
                         //appDelegate.startLoadAutoUpload()
                     } else {

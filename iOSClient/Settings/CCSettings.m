@@ -49,7 +49,7 @@
     XLFormDescriptor *form = [XLFormDescriptor formDescriptor];
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    //NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    //NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     
     form.rowNavigationOptions = XLFormRowNavigationOptionNone;
     
@@ -457,9 +457,9 @@
         break;
         case 5: {
                                 
-            NSString *versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionString];
-            NSString *themingName = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingName];
-            NSString *themingSlogan = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
+            NSString *versionServer = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionString];
+            NSString *themingName = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingName];
+            NSString *themingSlogan = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesThemingSlogan];
 
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             

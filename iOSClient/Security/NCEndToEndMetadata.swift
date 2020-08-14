@@ -199,7 +199,7 @@ class NCEndToEndMetadata : NSObject  {
                         object.authenticationTag = filesCodable.authenticationTag ?? ""
                         object.fileName = encryptedFileAttributes.filename
                         object.fileNameIdentifier = fileNameIdentifier
-                        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, activeUrl: url)
+                        object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, urlBase: url)
                         object.key = encryptedFileAttributes.key
                         object.initializationVector = filesCodable.initializationVector
                         object.metadataKey = metadataKey!

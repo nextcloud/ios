@@ -50,7 +50,7 @@ class NCNetworkingAutoUpload: NSObject {
         var sizeUpload = 0
         var maxConcurrentOperationUpload = Int(k_maxConcurrentOperation)
         
-        if appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode {
+        if appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode {
             return
         }
         
@@ -118,7 +118,7 @@ class NCNetworkingAutoUpload: NSObject {
          
         // verify delete Asset Local Identifiers in auto upload (DELETE Photos album)
         if (counterUpload == 0 && appDelegate.passcodeViewController == nil) {
-            NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.activeAccount, sessionSelector: selectorUploadAutoUpload) {
+            NCUtility.sharedInstance.deleteAssetLocalIdentifiers(account: appDelegate.account, sessionSelector: selectorUploadAutoUpload) {
                 self.startTimer()
             }
         } else {

@@ -55,7 +55,7 @@ class NCViewerVideo: NSObject {
             self.videoURL = URL(string: stringURL)
             videoURLProxy = KTVHTTPCache.proxyURL(withOriginalURL: self.videoURL)
             
-            guard let authData = (appDelegate.activeUser + ":" + appDelegate.activePassword).data(using: .utf8) else {
+            guard let authData = (appDelegate.user + ":" + appDelegate.password).data(using: .utf8) else {
                 return
             }
             

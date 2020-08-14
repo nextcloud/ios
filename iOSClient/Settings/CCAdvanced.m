@@ -260,7 +260,7 @@
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
     [KTVHTTPCache cacheDeleteAllCaches];
     
-    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.activeAccount removeAccount:false];
+    [[NCManageDatabase sharedInstance] clearDatabaseWithAccount:appDelegate.account removeAccount:false];
     
     [CCUtility removeGroupDirectoryProviderStorage];
     [CCUtility removeGroupLibraryDirectory];

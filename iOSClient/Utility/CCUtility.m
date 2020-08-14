@@ -194,14 +194,14 @@
     return [NSString stringWithFormat:@"%04ld", number];
 }
 
-+ (NSString *)getActiveAccountExt
++ (NSString *)getAccountExt
 {
-    return [UICKeyChainStore stringForKey:@"activeAccountExt" service:k_serviceShareKeyChain];
+    return [UICKeyChainStore stringForKey:@"accountExt" service:k_serviceShareKeyChain];
 }
 
-+ (void)setActiveAccountExt:(NSString *)activeAccount
++ (void)setAccountExt:(NSString *)account
 {
-    [UICKeyChainStore setString:activeAccount forKey:@"activeAccountExt" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:account forKey:@"accountExt" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getServerUrlExt
@@ -1060,40 +1060,19 @@
     return path;
 }
 
-+ (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl
++ (NSString *)getHomeServer:(NSString *)urlBase
 {
-    if (activeUrl == nil)
+    if (urlBase == nil)
         return @"";
     
-    return [activeUrl stringByAppendingString:k_webDAV];
+    return [urlBase stringByAppendingString:k_webDAV];
 }
 
-+ (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
++ (NSString *)getStringUser:(NSString *)user urlBase:(NSString *)urlBase
 {
-    NSString *baseUrl = [activeUrl lowercaseString];
+    NSString *baseUrl = [urlBase lowercaseString];
     NSString *dirUserBaseUrl = @"";
 
-    if ([activeUser length] && [baseUrl length]) {
-        
-        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
-        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
-        
-        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", activeUser, baseUrl];
-        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
-    }
-    
-    return dirUserBaseUrl;
-}
-
-// Return path of User
-+ (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
-{
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *user = activeUser;
-    NSString *baseUrl = [activeUrl lowercaseString];
-    NSString *dirUserBaseUrl = nil;
-    NSString *dirApplicationUserGroup = nil;
-    
     if ([user length] && [baseUrl length]) {
         
         if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
@@ -1101,15 +1080,8 @@
         
         dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", user, baseUrl];
         dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
-    } else return @"";
-    
-    dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
-    dirUserBaseUrl = [NSString stringWithFormat:@"%@/%@", dirApplicationUserGroup, dirUserBaseUrl];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dirUserBaseUrl]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:dirUserBaseUrl withIntermediateDirectories:YES attributes:nil error:nil];
     }
-        
+    
     return dirUserBaseUrl;
 }
 
@@ -1322,14 +1294,14 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
-+ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
++ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
     NSString *firstPath = serverUrl;
 
     NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    NSURL *activeUrlURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [activeUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], k_webDAV]];
+    NSURL *urlBaseURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", [urlBase stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]], k_webDAV]];
     
-    while ([[serverUrlURL absoluteString] isEqualToString:[activeUrlURL absoluteString]] == false) {
+    while ([[serverUrlURL absoluteString] isEqualToString:[urlBaseURL absoluteString]] == false) {
         firstPath = [serverUrlURL absoluteString];
         serverUrlURL = [serverUrlURL URLByDeletingLastPathComponent];
     }
@@ -1338,9 +1310,9 @@
     return firstPath;
 }
 
-+ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
++ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
-    if ([serverUrl isEqualToString:activeUrl])
+    if ([serverUrl isEqualToString:urlBase])
         return @"";
     
     NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
@@ -1349,20 +1321,20 @@
     return fileName;
 }
 
-+ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
++ (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
-    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[activeUrl stringByAppendingString:k_webDAV] withString:@""];
+    NSString *path = [serverUrl stringByReplacingOccurrencesOfString:[urlBase stringByAppendingString:k_webDAV] withString:@""];
     
     return path;
 }
                                        
-+ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
++ (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
 {
-    if (metadataFileName == nil || serverUrl == nil || activeUrl == nil) {
+    if (metadataFileName == nil || serverUrl == nil || urlBase == nil) {
         return @"";
     }
     
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl] withString:@""], metadataFileName];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServer:urlBase] withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     

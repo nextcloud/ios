@@ -55,7 +55,7 @@
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:account.account rowType:XLFormRowDescriptorTypeBooleanCheck title:account.account];
         // Avatar
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:account.user activeUrl:account.url], account.user];
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-%@.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:account.user urlBase:account.urlBase], account.user];
         UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
             
@@ -409,7 +409,7 @@
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
     if (tableAccount) {
         
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:[CCUtility getPassword:tableAccount.account]];
+        [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
  
         // Init home
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];

@@ -35,16 +35,16 @@ import NCCommunication
             return;
         }
         
-        guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.activeAccount))?.first else { return }
+        guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
         
         NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
         
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)!
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: k_fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase)!
         NCCommunication.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier ,templateId: "") { (account, url, errorCode, errorMessage) in
             
             NCUtility.sharedInstance.stopActivityIndicator()
             
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 
                 if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                     
@@ -68,18 +68,18 @@ import NCCommunication
             return;
         }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, serverUrl, k_fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, k_fileNameRichWorkspace.lowercased())) {
             
             if metadata.url == "" {
                 
                 NCUtility.sharedInstance.startActivityIndicator(view: viewController.view)
                 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, activeUrl: appDelegate.activeUrl)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase)!
                 NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { (account, url, errorCode, errorMessage) in
                     
                     NCUtility.sharedInstance.stopActivityIndicator()
                     
-                    if errorCode == 0 && account == self.appDelegate.activeAccount {
+                    if errorCode == 0 && account == self.appDelegate.account {
                         
                         if let viewerRichWorkspaceWebView = UIStoryboard.init(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
                             

@@ -129,7 +129,7 @@
     CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, table.serverUrl, table.fileName]];
     
     NCSharesCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     
@@ -164,7 +164,7 @@
 {
     [[NCCommunication shared] deleteShareWithIdShare:tableShare.idShare customUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
             
             [[NCManageDatabase sharedInstance] deleteTableShareWithAccount:account idShare:tableShare.idShare];
             [self reloadDatasource];
@@ -199,7 +199,7 @@
     if (indexPath.row+1 <= _dataSource.count) {
     
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName = %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName = %@", appDelegate.account, table.serverUrl, table.fileName]];
     }
         
     if (metadata) return YES;
@@ -212,7 +212,7 @@
         
         tableShare *table = [_dataSource objectAtIndex:indexPath.row];
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, table.serverUrl, table.fileName]];
         
         [self removeShares:metadata tableShare:table];
     }
@@ -229,7 +229,7 @@
 
 - (void)reloadDatasource
 {
-    _dataSource = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount];
+    _dataSource = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.account];
     
     [self.tableView reloadData];
 }
@@ -270,7 +270,7 @@
     
     tableShare *table = [_dataSource objectAtIndex:indexPath.row];
     
-    metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
+    metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, table.serverUrl, table.fileName]];
     
     if (metadata) {
         
@@ -286,7 +286,7 @@
                 
                 cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
                 
-                [[NCOperationQueue shared] downloadThumbnailWithMetadata:metadata activeUrl:appDelegate.activeUrl view:tableView indexPath:indexPath];
+                [[NCOperationQueue shared] downloadThumbnailWithMetadata:metadata urlBase:appDelegate.urlBase view:tableView indexPath:indexPath];
             }
         }
         
@@ -296,9 +296,9 @@
         
         NSString *serverUrlFileName = [NSString stringWithFormat:@"%@/%@", table.serverUrl, table.fileName];
                
-        [[NCNetworking shared] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+        [[NCNetworking shared] readFileWithServerUrlFileName:serverUrlFileName account:appDelegate.account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
             
-            if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+            if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
                 [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [self reloadDatasource];
             }
@@ -307,10 +307,10 @@
     
     cell.labelTitle.text = table.fileName;
     
-    if ([table.serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
+    if ([table.serverUrl isEqualToString:[CCUtility getHomeServer:appDelegate.urlBase]])
         cell.labelInfoFile.text = @"/";
     else
-        cell.labelInfoFile.text = [table.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
+        cell.labelInfoFile.text = [table.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServer:appDelegate.urlBase] withString:@""];
     
     return cell;
 }
@@ -325,7 +325,7 @@
 
     if (table.serverUrl) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.activeAccount, table.serverUrl, table.fileName]];
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, table.serverUrl, table.fileName]];
         if (metadata) {
             [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
         }

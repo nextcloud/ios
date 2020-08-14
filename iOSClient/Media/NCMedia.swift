@@ -326,7 +326,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
                         self.isEditMode = false
                         for ocId in self.selectocId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                                NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, url: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
                             }
                         }
                     }
@@ -348,8 +348,8 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool) {
         if serverUrl != nil {
-            let path = CCUtility.returnPathfromServerUrl(serverUrl, activeUrl: appDelegate.activeUrl) ?? ""
-            NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.activeAccount)
+            let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase) ?? ""
+            NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.account)
             reloadDataSourceWithCompletion {
                 self.searchNewPhotoVideo()
             }
@@ -373,7 +373,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account == appDelegate.activeAccount {
+                if metadata.account == appDelegate.account {
                     
                     let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
                     let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
@@ -402,7 +402,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account == appDelegate.activeAccount {
+                if metadata.account == appDelegate.account {
                     self.reloadDataSourceWithCompletion() {
 
                         if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
@@ -420,7 +420,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account == appDelegate.activeAccount {
+                if metadata.account == appDelegate.account {
                     self.reloadDataSourceWithCompletion() {
 
                         if errorCode == 0 && (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
@@ -556,7 +556,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
             if !listOcIdReadFileForMedia.contains(metadata.ocId) {
                 NCOperationQueue.shared.readFileForMedia(metadata: metadata)
                 listOcIdReadFileForMedia.append(metadata.ocId)
@@ -651,11 +651,11 @@ extension NCMedia {
     
     private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) { return }
+        if (appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode == true) { return }
         
-        if account != appDelegate.activeAccount {
+        if account != appDelegate.account {
             self.metadatas = []
-            account = appDelegate.activeAccount
+            account = appDelegate.account
             collectionView?.reloadData()
         }
         
@@ -664,14 +664,14 @@ extension NCMedia {
         if let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() {
             self.mediaPath = tableAccount.mediaPath
         }
-        let startServerUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) + mediaPath
+        let startServerUrl = CCUtility.getHomeServer(appDelegate.urlBase) + mediaPath
         
-        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
+        predicateDefault = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND (typeFile == %@ OR typeFile == %@) AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image, k_metadataTypeFile_video)
         
         if filterTypeFileImage {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_video)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_video)
         } else if filterTypeFileVideo {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.activeAccount, startServerUrl, k_metadataTypeFile_image)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND typeFile == %@ AND NOT (session CONTAINS[c] 'upload')", appDelegate.account, startServerUrl, k_metadataTypeFile_image)
         } else {
             predicate = predicateDefault
         }
@@ -733,15 +733,15 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.sharedInstance.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.sharedInstance.stopActivityIndicator()
             self.collectionView.reloadData()
 
-            if errorCode == 0 && account == self.appDelegate.activeAccount {
+            if errorCode == 0 && account == self.appDelegate.account {
                 if files.count > 0 {
-                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.activeAccount) { (_, _, metadatas) in
+                    NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: self.appDelegate.account) { (_, _, metadatas) in
                         
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
@@ -802,11 +802,11 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.activeUser) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.user) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
-                if errorCode == 0 && account == self.appDelegate.activeAccount && files.count > 0 {
+                if errorCode == 0 && account == self.appDelegate.account && files.count > 0 {
                     NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
@@ -828,7 +828,7 @@ extension NCMedia {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for indexPath in collectionView.indexPathsForVisibleItems {
                 let metadata = self.metadatas[indexPath.row]
-                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, activeUrl: self.appDelegate.activeUrl, view: self.collectionView as Any, indexPath: indexPath)
+                NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
             }
         }
     }

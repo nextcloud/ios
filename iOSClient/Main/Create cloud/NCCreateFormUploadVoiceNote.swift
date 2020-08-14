@@ -45,7 +45,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     public func setup(serverUrl: String, fileNamePath: String, fileName: String) {
     
-        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+        if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
             titleServerUrl = "/"
         } else {
             titleServerUrl = (serverUrl as NSString).lastPathComponent
@@ -201,7 +201,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             self.serverUrl = serverUrl!
             
-            if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            if serverUrl == CCUtility.getHomeServer(appDelegate.urlBase) {
                 self.titleServerUrl = "/"
             } else {
                 self.titleServerUrl = (serverUrl! as NSString).lastPathComponent
@@ -229,13 +229,13 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             fileNameSave = (name as! NSString).deletingPathExtension + ".m4a"
         }
         
-        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.activeAccount, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.activeUrl ,url: "", contentType: "", livePhoto: false)
+        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileNameSave, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase ,url: "", contentType: "", livePhoto: false)
         
         metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
         
-        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.activeAccount, serverUrl: serverUrl, fileName: fileNameSave) != nil {
+        if NCUtility.sharedInstance.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         
             guard let conflictViewController = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict else { return }
             conflictViewController.textLabelDetailNewFile = NSLocalizedString("_now_", comment: "")

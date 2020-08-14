@@ -195,7 +195,7 @@
     }
 
     // if this is not Main (the Main uses inizializeMain)
-    if (_isRoot == NO && appDelegate.activeAccount.length > 0) {
+    if (_isRoot == NO && appDelegate.account.length > 0) {
         // Read (File) Folder
         [self readFileReloadFolder];
     }
@@ -225,7 +225,7 @@
         [self.navigationController.navigationBar sizeToFit];
     }
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.account.length == 0)
         return;
     
     if (_isSelectedMode)
@@ -239,11 +239,11 @@
 
     // Check server URL "/"
     if (self.navigationController.viewControllers.firstObject == self && self.serverUrl == nil) {
-        self.serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+        self.serverUrl = [CCUtility getHomeServer:appDelegate.urlBase];
     }
     
     // RichWorkspace
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, self.serverUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, self.serverUrl]];
     if (![self.richWorkspaceText isEqualToString:directory.richWorkspace]) {
         self.richWorkspaceText = directory.richWorkspace;
         [self setTableViewHeader];
@@ -271,7 +271,7 @@
         
     } else {
         
-        if (appDelegate.activeAccount.length > 0 && [_selectedocIdsMetadatas count] == 0) {
+        if (appDelegate.account.length > 0 && [_selectedocIdsMetadatas count] == 0) {
             // Read (file) Folder
             [self readFileReloadFolder];
         }
@@ -370,7 +370,7 @@
 - (void)initializeMain:(NSNotification *)notification
 {    
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.account.length == 0)
         return;
     
     if ([appDelegate.listMainVC count] == 0 || _isRoot) {
@@ -378,7 +378,7 @@
         // This is Root home main add list
         appDelegate.homeMain = self;
         _isRoot = YES;
-        _serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+        _serverUrl = [CCUtility getHomeServer:appDelegate.urlBase];
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];
         
         // go Home
@@ -388,7 +388,7 @@
         [self cancelSearchBar];
         
         // Clear error certificate
-        [CCUtility setCertificateError:appDelegate.activeAccount error:NO];
+        [CCUtility setCertificateError:appDelegate.account error:NO];
         
         // Setting Theming
         [appDelegate settingThemingColorBrand];
@@ -401,7 +401,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
                         
         // Not Photos Video in library ? then align and Init Auto Upload
-        NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", appDelegate.activeAccount]];
+        NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", appDelegate.account]];
         if ([recordsPhotoLibrary count] == 0) {
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         }
@@ -442,7 +442,7 @@
     
     if (![serverUrl isEqualToString:self.serverUrl]) { return; }
     if (errorCode == 0) {
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.activeAccount urlBase: appDelegate.activeUrl];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.account urlBase: appDelegate.urlBase];
         if (isFolderEncrypted) {
             [self readFolder:serverUrl];
         }
@@ -771,14 +771,14 @@
                 
                 if ([data writeToFile:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
-                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@"" livePhoto:false];
+                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
                     
                     metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+                    if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
                        
                         NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
                         conflict.serverUrl = self.serverUrl;
@@ -981,9 +981,9 @@
     // if request create the folder for Auto Upload & the subfolders
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
+        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.urlBase];
         if ([autoUploadPath isEqualToString:serverUrl]) {
-            if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.activeAccount url:appDelegate.activeUrl]) {
+            if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account url:appDelegate.urlBase]) {
                 [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
                 return;
             }
@@ -1024,12 +1024,12 @@
         }
         
         // Check if is in upload
-        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", appDelegate.activeAccount, serverUrl, fileName] page:0 limit:0 sorted:@"fileName" ascending:NO];
+        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", appDelegate.account, serverUrl, fileName] page:0 limit:0 sorted:@"fileName" ascending:NO];
         if ([isRecordInSessions count] > 0)
             continue;
         
         // Prepare record metadata
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@"" livePhoto:livePhoto];
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
         
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
         metadataForUpload.session = session;
@@ -1037,7 +1037,7 @@
         metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
                         
-        if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.activeAccount serverUrl:serverUrl fileName:fileName] != nil) {
+        if ([[NCUtility sharedInstance] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
             [metadatasUploadInConflict addObject:metadataForUpload];
         } else {
             [metadatasNOConflict addObject:metadataForUpload];
@@ -1056,7 +1056,7 @@
                 if (url != nil) {
                     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
                     
-                    tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@"" livePhoto:livePhoto];
+                    tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
                     
                     metadataMOVForUpload.session = session;
                     metadataMOVForUpload.sessionSelector = selectorUploadFile;
@@ -1105,7 +1105,7 @@
 - (void)readFolder:(NSString *)serverUrl
 {
     // init control
-    if (!serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode) {
+    if (!serverUrl || !appDelegate.account || appDelegate.maintenanceMode) {
         [refreshControl endRefreshing];
         return;
     }
@@ -1123,12 +1123,12 @@
     [refreshControl endRefreshing];
     [self tableViewReloadData];
     
-    [[NCNetworking shared] readFolderWithServerUrl:serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] readFolderWithServerUrl:serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 ) {
             
             _metadataFolder = metadataFolder;
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.activeAccount urlBase:_metadataFolder.urlBase];
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.account urlBase:_metadataFolder.urlBase];
             [self setTitle];
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -1148,7 +1148,7 @@
                        
                         if (errorCode == 0 && e2eMetadata != nil) {
                             
-                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.activeUrl];
+                            BOOL result = [[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:self.serverUrl account:account url:appDelegate.urlBase];
                             
                             if (result == false) {
                                 [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorDecodeMetadata forced:true];
@@ -1179,13 +1179,13 @@
 
 - (void)readFileReloadFolder
 {
-    if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
+    if (!_serverUrl || !appDelegate.account || appDelegate.maintenanceMode)
         return;
     
-    [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.activeAccount completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
-        if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount]) {
+    [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
+        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
             // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithRichWorkspace:metadata.richWorkspace serverUrl:self.serverUrl account:appDelegate.activeAccount]; 
+            [[NCManageDatabase sharedInstance] setDirectoryWithRichWorkspace:metadata.richWorkspace serverUrl:self.serverUrl account:appDelegate.account];
             if (![self.richWorkspaceText isEqualToString:metadata.richWorkspace]) {
                 self.richWorkspaceText = metadata.richWorkspace;
             }
@@ -1215,9 +1215,9 @@
         return;
     }
         
-    [[NCCommunication shared] searchLiteralWithServerUrl:appDelegate.activeUrl depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil user:appDelegate.activeUser  completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] searchLiteralWithServerUrl:appDelegate.urlBase depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil user:appDelegate.user  completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
-         if (errorCode == 0 && [account isEqualToString:appDelegate.activeAccount] && files != nil) {
+         if (errorCode == 0 && [account isEqualToString:appDelegate.account] && files != nil) {
              
              [[NCManageDatabase sharedInstance] convertNCCommunicationFilesToMetadatas:files useMetadataFolder:false account:account completion:^(tableMetadata *metadataFolder, NSArray<tableMetadata *> *metadatasFolder, NSArray<tableMetadata *> *metadatas) {
                  
@@ -1265,7 +1265,7 @@
             
             // First : filter
                 
-            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@", appDelegate.activeAccount, _serverUrl, fileName] page:0 limit:0 sorted:@"fileName" ascending:NO];
+            NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView CONTAINS[cd] %@", appDelegate.account, _serverUrl, fileName] page:0 limit:0 sorted:@"fileName" ascending:NO];
                 
             [_searchResultMetadatas removeAllObjects];
             for (tableMetadata *record in records) {
@@ -1273,7 +1273,7 @@
             }
             
             // Version >= 12
-            NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+            NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
             if (serverVersionMajor >= 12) {
                 
                 [_timerWaitInput invalidate];
@@ -1331,7 +1331,7 @@
         [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.activeAccount url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
@@ -1386,7 +1386,7 @@
 {
     if (serverUrl != nil) {
         // E2EE DENIED
-        if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase:appDelegate.activeUrl]) {
+        if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase:appDelegate.urlBase]) {
             
             [[NCContentPresenter shared] messageNotification:@"_move_" description:@"_e2e_error_not_move_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorE2EENotMove forced:true];
             return;
@@ -1438,7 +1438,7 @@
     NSString *message;
     UIAlertController *alertController;
     
-    if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
+    if ([serverUrl isEqualToString:[CCUtility getHomeServer:appDelegate.urlBase]]) {
         message = @"/";
     } else {
         message = [serverUrl lastPathComponent];
@@ -1460,7 +1460,7 @@
         
         UITextField *fileName = alertController.textFields.firstObject;
         
-        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account url:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }];
     
     okAction.enabled = NO;
@@ -1533,7 +1533,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase: appDelegate.activeUrl]) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase: appDelegate.urlBase]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:1];
     }
 }
@@ -1545,7 +1545,7 @@
     
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.activeAccount urlBase:appDelegate.activeUrl]) {
+    if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase:appDelegate.urlBase]) {
         [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }
@@ -1580,7 +1580,7 @@
 - (void)createRichWorkspace
 {
     NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.activeAccount, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
     
     if (metadata) {
         [richWorkspaceCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
@@ -1835,13 +1835,13 @@
             
             if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                 
-                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.activeAccount];
+                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView serverUrl:self.serverUrl account:appDelegate.account];
                 NSString *ocId = [[NSUUID UUID] UUIDString];
                 
                 [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileName]];
                     
                 // Prepare record metadata
-                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.activeAccount fileName:fileName ocId:ocId serverUrl:self.serverUrl urlBase:appDelegate.activeUrl url:@"" contentType:@"" livePhoto:false];
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:ocId serverUrl:self.serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
             
                 metadataForUpload.session = NCCommunicationCommon.shared.sessionIdentifierBackground;
                 metadataForUpload.sessionSelector = selectorUploadFile;
@@ -1868,7 +1868,7 @@
         return NO;
     
     // E2EE
-    if (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
+    if (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.account] == NO)
         return NO;
     
     return YES;
@@ -1896,7 +1896,7 @@
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
-        [[NCNetworking shared] favoriteMetadata:self.metadata url:appDelegate.activeUrl completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] favoriteMetadata:self.metadata url:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
     
     return YES;
@@ -1967,7 +1967,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil) // || self.view.window == nil)
+    if (appDelegate.account.length == 0 || serverUrl.length == 0 || serverUrl == nil) // || self.view.window == nil)
         return;
     
     // Se non siamo nella dir appropriata esci
@@ -1978,7 +1978,7 @@
     livePhoto = [CCUtility getLivePhoto];
     
     // load share
-    appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.activeAccount];
+    appDelegate.shares = [[NCManageDatabase sharedInstance] getTableSharesWithAccount:appDelegate.account];
     
     // Search Mode
     if (self.searchController.isActive) {
@@ -1993,7 +1993,7 @@
         }
         
         // [CCUtility getGroupBySettings]
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:@"fileName" ascending:NO activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:@"fileName" ascending:NO account:appDelegate.account];
 
         [self tableViewReloadData];
         
@@ -2015,20 +2015,20 @@
     }
     
     // Get MetadataFolder
-    if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, k_serverUrl_root]];
+    if ([serverUrl isEqualToString:[CCUtility getHomeServer:appDelegate.urlBase]])
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, k_serverUrl_root]];
     else
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl]];
     
     _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.urlBase];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO];
+        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO];
         
         // [CCUtility getGroupBySettings]
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] activeAccount:appDelegate.activeAccount];
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] account:appDelegate.account];
             
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
@@ -2367,7 +2367,7 @@
 
 - (void)setTableViewHeader
 {
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.activeAccount elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
 
     NSString *trimmedRichWorkspaceText = [self.richWorkspaceText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
@@ -2473,7 +2473,7 @@
                         
         } else {
             
-            if (_metadataFolder.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
+            if (_metadataFolder.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.account]) {
                 
                 [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorE2EENotEnabled forced:true];
                 
@@ -2622,7 +2622,7 @@
     if (self.tableView.editing == NO) {
         
         // E2EE Check enable
-        if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
+        if (metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.account] == NO) {
             
             [[NCContentPresenter shared] messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorE2EENotEnabled forced:true];
             return;

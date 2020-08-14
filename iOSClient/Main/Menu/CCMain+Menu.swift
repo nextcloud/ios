@@ -237,7 +237,7 @@ extension CCMain {
             var isOffline = false
             let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
 
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
                 isOffline = directory.offline
             }
 
@@ -254,7 +254,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.urlBase) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -290,7 +290,7 @@ extension CCMain {
 
                             let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                                 let fileNameNew = alertController.textFields![0].text
-                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in }
                             })
                             okAction.isEnabled = false
                             alertController.addAction(cancelAction)
@@ -321,7 +321,7 @@ extension CCMain {
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
                             let serverUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: !isOffline, account: appDelegate.activeAccount)
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: !isOffline, account: appDelegate.account)
                             if (!isOffline) {
                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
                             }
@@ -331,7 +331,7 @@ extension CCMain {
                 )
             }
 
-            if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
+            if (!metadata.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account)) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -340,7 +340,7 @@ extension CCMain {
                             NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                                 if errorCode == 0 {
                                     let serverUrl = self.serverUrl + "/" + metadata.fileName
-                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl))
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
                                     NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                     NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
                                     
@@ -354,7 +354,7 @@ extension CCMain {
                 )
             }
         
-            if (metadata.e2eEncrypted && !metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.activeAccount)) {
+            if (metadata.e2eEncrypted && !metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: appDelegate.account)) {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
@@ -363,7 +363,7 @@ extension CCMain {
                             NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                                 if errorCode == 0 {
                                     let serverUrl = self.serverUrl + "/" + metadata.fileName
-                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
+                                    NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, "\(self.serverUrl ?? "")/\(metadata.fileName)"))
                                     NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                     NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
                                     
@@ -400,7 +400,7 @@ extension CCMain {
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
-                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.favoriteMetadata(metadata, url: appDelegate.urlBase) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -447,7 +447,7 @@ extension CCMain {
 
                         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                             let fileNameNew = alertController.textFields![0].text
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.activeUrl, viewController: self) { (errorCode, errorDescription) in }
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, url: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in }
                         })
                         okAction.isEnabled = false
                         alertController.addAction(cancelAction)

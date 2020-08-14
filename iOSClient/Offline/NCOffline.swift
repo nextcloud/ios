@@ -113,7 +113,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.activeUrl)
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(appDelegate.urlBase)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -321,7 +321,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         if metadata.directory {
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.activeAccount)
+                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
                         } else {
                             NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
                         }
@@ -345,7 +345,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
-                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.activeAccount, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in } 
+                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, url: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
                     }
                 )
             )
@@ -665,24 +665,24 @@ extension NCOffline {
         
         if serverUrl == "" {
             
-            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
+            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
                     ocIds.append(directory.ocId)
                 }
             }
             
-            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "fileName", ascending: true)
             for file: tableLocalFile in files {
                 ocIds.append(file.ocId)
             }
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.activeAccount, ocIds))
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account)
             
         } else {
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl)) 
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, activeAccount: appDelegate.activeAccount)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account)
             
         }
         
@@ -701,7 +701,7 @@ extension NCOffline {
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
-                    NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) { (errorCode, errorDescription) in }
+                    NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.user, userID: self.appDelegate.userID, password: self.appDelegate.password, url: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
                 }
             )
         )
