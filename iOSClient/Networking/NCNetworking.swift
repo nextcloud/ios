@@ -296,7 +296,7 @@ import Queuer
             }
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
                
-            if metadata.size > Double(k_max_filesize_E2EE) {
+            if e2eEncrypted && metadata.size > Double(k_max_filesize_E2EE) {
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
                 completion(Int(k_CCErrorInternalError), "E2E Error file too big")
                 return
