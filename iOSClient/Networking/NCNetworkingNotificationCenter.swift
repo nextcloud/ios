@@ -57,90 +57,63 @@ import Foundation
                 
                 if errorCode == 0 {
                     
-                    // Quick Look
-                    if selector == selectorLoadFileQuickLook {
-                                                
+                    switch selector {
+                    case selectorLoadFileQuickLook:
+                        
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
                         viewerQuickLook = NCViewerQuickLook.init()
                         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
-                        return
-                    }
-                    
-                    // open View File
-                    if (selector == selectorLoadFileView || selector == selectorLoadFileViewFavorite) && UIApplication.shared.applicationState == UIApplication.State.active {
-                    
-                        if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
-                            metadata.typeFile = k_metadataTypeFile_unknown
-                        }
                         
-                        #if HC
-                        if metadata.typeFile == k_metadataTypeFile_imagemeter {
-                            
-                            if !IMUtility.shared.IMUnzip(metadata: metadata) {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "Bundle imagemeter error. 🤷‍♂️", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                                return
-                            }
-                            
-                            let storyboard = UIStoryboard(name: "IMImagemeter", bundle: nil)
-                            let imagemeterViewer = storyboard.instantiateInitialViewController() as! IMImagemeterViewer
-                            imagemeterViewer.metadata = metadata
-                            imagemeterViewer.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                            imagemeterViewer.imagemeterViewerDelegate = self
-                            
-                            self.appDelegate.window.rootViewController?.present(imagemeterViewer, animated: true, completion: nil)
-                            
-                            return
-                        }
-                        #else
-                        if metadata.typeFile == k_metadataTypeFile_imagemeter {
-                            
-                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
-                            return
-                        }
-                        #endif
+                    case selectorLoadFileView, selectorLoadFileViewFavorite:
                         
-                        if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+                        if UIApplication.shared.applicationState == UIApplication.State.active {
+                            if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
+                                metadata.typeFile = k_metadataTypeFile_unknown
+                            } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
-                            
-                        } else {
-                            
-                            if appDelegate.activeMain.view.window != nil {
-                                appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
-                            } else if appDelegate.activeFavorites.view.window != nil {
-                                appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
+                                let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                
+                            } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
+                                
+                                let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                
+                            } else {
+                                
+                                if appDelegate.activeMain.view.window != nil {
+                                    appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
+                                } else if appDelegate.activeFavorites.view.window != nil {
+                                    appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
+                                }
                             }
                         }
-                    }
-                    
-                    // Open in...
-                    if (selector == selectorOpenIn || selector == selectorOpenInDetail) && UIApplication.shared.applicationState == UIApplication.State.active {
-
-                        let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                        NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
-                    }
-                    
-                    // Save to Photo Album
-                    if selector == selectorSaveAlbum {
+                        
+                    case selectorOpenIn, selectorOpenInDetail:
+                        
+                        if UIApplication.shared.applicationState == UIApplication.State.active {
+                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                        }
+                        
+                    case selectorSaveAlbum:
+                        
                         appDelegate.activeMain.save(toPhotoAlbum: metadata)
-                    }
-                    
-                    // Copy File
-                    if selector == selectorLoadCopy {
+                        
+                    case selectorLoadCopy:
+                        
                         appDelegate.activeMain.copyFile(toPasteboard: metadata)
-                    }
-                    
-                    // Set as available offline
-                    if selector == selectorLoadOffline {
+                        
+                    case selectorLoadOffline:
                         
                         NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
+                        
+                    default:
+                        break
                     }
-                                         
+                            
                 } else {
                     
                     // File do not exists on server, remove in local
