@@ -541,9 +541,9 @@
         } 
         if (favorite) {
             if ([CCUtility getFavoriteOffline]) {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
+                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadFile];
             } else {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorSynchronize];
+                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorReadFile];
             }
         }
     } else {
@@ -966,7 +966,7 @@
     NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
         
     for (tableMetadata *metadata in selectedMetadatas) {
-        [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadSynchronize];
+        [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadFile];
     }
     
     [self tableViewSelect:false];
@@ -1135,7 +1135,7 @@
                 for (tableMetadata *metadata in metadatasChanged) {
                     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
                     if (localFile != nil) {
-                        [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadSynchronize setFavorite:false completion:^(NSInteger errorCode) { }];
+                        [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadFile setFavorite:false completion:^(NSInteger errorCode) { }];
                     }
                 }
             });
