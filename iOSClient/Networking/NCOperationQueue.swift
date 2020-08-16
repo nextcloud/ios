@@ -50,7 +50,7 @@ import NCCommunication
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
-            if operation.metadata.ocId == metadata.ocId && operation.selector == selector {
+            if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
@@ -67,7 +67,7 @@ import NCCommunication
     
     @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
         for operation in synchronizationQueue.operations as! [NCOperationSynchronization] {
-            if operation.metadata.ocId == metadata.ocId && operation.selector == selector {
+            if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
