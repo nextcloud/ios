@@ -61,6 +61,11 @@ import NCCommunication
     // Synchronization
     
     @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
+        for operation in synchronizationQueue.operations {
+            if (operation as! NCOperationSynchronization).metadata.ocId == metadata.ocId {
+                return
+            }
+        }
         synchronizationQueue.addOperation(NCOperationSynchronization.init(metadata: metadata, selector: selector))
     }
     @objc func synchronizationCancelAll() {
@@ -71,8 +76,10 @@ import NCCommunication
     
     @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-            for operation in  downloadThumbnailQueue.operations {
-                if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId { return }
+            for operation in downloadThumbnailQueue.operations {
+                if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
+                    return
+                }
             }
             downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath))
         }
@@ -94,7 +101,9 @@ import NCCommunication
     
     @objc func readFileForMedia(metadata: tableMetadata) {
         for operation in readFileForMediaQueue.operations {
-            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId { return }
+            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId {
+                return
+            }
         }
         readFileForMediaQueue.addOperation(NCOperationReadFileForMediaQueue.init(metadata: metadata))
     }
@@ -126,9 +135,9 @@ import NCCommunication
 
 class NCOperationDownload: ConcurrentOperation {
    
-    private var metadata: tableMetadata
-    private var selector: String
-    private var setFavorite: Bool
+    var metadata: tableMetadata
+    var selector: String
+    var setFavorite: Bool
     
     init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
         self.metadata = metadata
@@ -151,9 +160,9 @@ class NCOperationDownload: ConcurrentOperation {
 
 class NCOperationSynchronization: ConcurrentOperation {
    
-    private var metadata: tableMetadata
-    private var selector: String
-    private var download: Bool
+    var metadata: tableMetadata
+    var selector: String
+    var download: Bool
     
     init(metadata: tableMetadata, selector: String) {
         self.metadata = metadata
