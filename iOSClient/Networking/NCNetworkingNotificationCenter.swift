@@ -58,7 +58,7 @@ import Foundation
                 if errorCode == 0 {
                     
                     // Synchronized
-                    if selector == selectorDownloadSynchronize {
+                    if selector == selectorDownloadFile {
                         return
                     }
                     
@@ -132,7 +132,7 @@ import Foundation
                     }
                     
                     // Save to Photo Album
-                    if selector == selectorSave {
+                    if selector == selectorSaveAlbum {
                         appDelegate.activeMain.save(toPhotoAlbum: metadata)
                     }
                     

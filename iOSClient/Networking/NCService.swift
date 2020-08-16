@@ -79,7 +79,7 @@ class NCService: NSObject {
                         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", directory.ocId)) else {
                             continue
                         }
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
                     }
                 }
                 
@@ -88,7 +88,7 @@ class NCService: NSObject {
                     guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
                         continue
                     }
-                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
+                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
                 }
                                         
                 let avatarUrl = "\(self.appDelegate.urlBase!)/index.php/avatar/\(self.appDelegate.user!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!

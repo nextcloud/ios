@@ -158,7 +158,7 @@ class NCOperationSynchronization: ConcurrentOperation {
     init(metadata: tableMetadata, selector: String) {
         self.metadata = metadata
         self.selector = selector
-        if selector == selectorDownloadSynchronize {
+        if selector == selectorDownloadFile {
             self.download = true
         } else {
             self.download = false
@@ -180,7 +180,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 if self.download {
                                     for metadata in metadatasChanged {
                                         if metadata.directory == false {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                                         }
                                     }
                                 }
@@ -193,7 +193,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 }
             } else {
                 if self.download {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: selectorSave, setFavorite: false)
+                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                 }
                 self.finish()
             }

@@ -168,8 +168,7 @@
 #define k_minCharsSearch                                2
 
 // Selector
-#define selectorSynchronize                             @"synchronize"
-#define selectorDownloadSynchronize                     @"downloadSynchronize"
+#define selectorDownloadFile                            @"downloadFile"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
 #define selectorLoadFileQuickLook                       @"loadFileQuickLook"
@@ -177,7 +176,7 @@
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenInDetail                            @"openInDetail"
-#define selectorSave                                    @"save"
+#define selectorSaveAlbum                               @"saveAlbum"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
