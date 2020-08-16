@@ -49,6 +49,11 @@ import NCCommunication
     // Download file
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+        for operation in downloadQueue.operations as! [NCOperationDownload]  {
+            if operation.metadata.ocId == metadata.ocId && operation.selector == selector {
+                return
+            }
+        }
         downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
     }
     @objc func downloadCancelAll() {
@@ -61,8 +66,8 @@ import NCCommunication
     // Synchronization
     
     @objc func synchronizationMetadata(_ metadata: tableMetadata, selector: String) {
-        for operation in synchronizationQueue.operations {
-            if (operation as! NCOperationSynchronization).metadata.ocId == metadata.ocId {
+        for operation in synchronizationQueue.operations as! [NCOperationSynchronization] {
+            if operation.metadata.ocId == metadata.ocId && operation.selector == selector {
                 return
             }
         }
@@ -76,8 +81,8 @@ import NCCommunication
     
     @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
         if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
-            for operation in downloadThumbnailQueue.operations {
-                if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
+            for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
+                if operation.metadata.ocId == metadata.ocId {
                     return
                 }
             }
@@ -86,9 +91,9 @@ import NCCommunication
     }
     
     func cancelDownloadThumbnail(metadata: tableMetadata) {
-        for operation in  downloadThumbnailQueue.operations {
-            if (operation as! NCOperationDownloadThumbnail).metadata.ocId == metadata.ocId {
-                (operation as! NCOperationDownloadThumbnail).cancel()
+        for operation in  downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
+            if operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
             }
         }
     }
@@ -100,8 +105,8 @@ import NCCommunication
     // Get file information
     
     @objc func readFileForMedia(metadata: tableMetadata) {
-        for operation in readFileForMediaQueue.operations {
-            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId {
+        for operation in readFileForMediaQueue.operations as! [NCOperationReadFileForMediaQueue] {
+            if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
@@ -109,9 +114,9 @@ import NCCommunication
     }
     
     func cancelReadFileForMedia(metadata: tableMetadata) {
-        for operation in  readFileForMediaQueue.operations {
-            if (operation as! NCOperationReadFileForMediaQueue).metadata.ocId == metadata.ocId {
-                (operation as! NCOperationReadFileForMediaQueue).cancel()
+        for operation in  readFileForMediaQueue.operations as! [NCOperationReadFileForMediaQueue] {
+            if operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
             }
         }
     }
