@@ -57,15 +57,9 @@ import Foundation
                 
                 if errorCode == 0 {
                     
-                    // Synchronized
-                    if selector == selectorDownloadFile {
-                        return
-                    }
-                    
                     // Quick Look
                     if selector == selectorLoadFileQuickLook {
-                        
-                        
+                                                
                         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
 
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)

@@ -799,9 +799,9 @@ import Queuer
                     #if !EXTENSION
                     for metadata in metadatasChanged {
                        if CCUtility.getFavoriteOffline() {
-                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadSynchronize)
+                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
                        } else {
-                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorSynchronize)
+                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
                        }
                     }
                     #endif

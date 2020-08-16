@@ -169,6 +169,7 @@
 
 // Selector
 #define selectorDownloadFile                            @"downloadFile"
+#define selectorReadFile                                @"readFile"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
 #define selectorLoadFileQuickLook                       @"loadFileQuickLook"
