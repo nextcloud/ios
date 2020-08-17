@@ -132,7 +132,7 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
     
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"diagnostics" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_diagnostics_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"capabilities" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_capabilities_", nil)];
     row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
@@ -142,8 +142,8 @@
                 
         [self deselectFormRow:sender];
         
-        NCDiagnosticViewController *diagnostic = [[UIStoryboard storyboardWithName:@"NCDiagnosticViewController" bundle:nil] instantiateInitialViewController];
-        [self presentViewController:diagnostic animated:YES completion:nil];
+        NCCapabilitiesViewController *capabilities = [[UIStoryboard storyboardWithName:@"NCCapabilitiesViewController" bundle:nil] instantiateInitialViewController];        
+        [self presentViewController:capabilities animated:YES completion:nil];
     };
     [section addFormRow:row];
 

@@ -1,5 +1,5 @@
 //
-//  NCDiagnosticViewController.swift
+//  NCCapabilitiesViewController.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 28/07/2020.
@@ -24,7 +24,7 @@
 import UIKit
 import NCCommunication
 
-class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControllerDelegate {
+class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionControllerDelegate {
 
     @IBOutlet weak var textView: UITextView!
     
@@ -64,9 +64,6 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
     @IBOutlet weak var davImage: UIImageView!
     @IBOutlet weak var davFiles: UILabel!
     
-    @IBOutlet weak var titleCapabilities: UILabel!
-    @IBOutlet weak var buttonShareCapabilities: UIButton!
-    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
@@ -76,8 +73,10 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = NSLocalizedString("_diagnostics_", comment: "")
+        self.title = NSLocalizedString("_capabilities_", comment: "")
                
+        let shareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareFill"), width: 50, height: 50, color: .gray)
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
         textView.layer.cornerRadius = 15
@@ -163,8 +162,6 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
         
         davImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "dav"), width: 100, height: 100, color: .gray)
         davFiles.text = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/files/" + appDelegate.user + "/"
-        
-        titleCapabilities.text = NSLocalizedString("_capabilities_", comment: "")
     }
 
     @objc func updateCapabilities() {
@@ -202,7 +199,14 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
     }
     
     @objc func share() {
-       
+        //timer?.invalidate()
+        self.dismiss(animated: true) {
+            let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
+            do {
+                try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
+                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
+            } catch { }
+        }
     }
     
     @objc func close() {
@@ -295,16 +299,5 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
         }
         
         print("end.")
-    }
-    
-    @IBAction func actionShareCapabilities() {
-        //timer?.invalidate()
-        self.dismiss(animated: true) {
-            let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
-            do {
-                try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
-                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
-            } catch { }
-        }
     }
 }
