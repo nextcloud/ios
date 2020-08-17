@@ -1,5 +1,5 @@
 //
-//  NCCapabilitiesViewController.swift
+//  NCDiagnosticViewController.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 28/07/2020.
@@ -24,7 +24,7 @@
 import UIKit
 import NCCommunication
 
-class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionControllerDelegate {
+class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControllerDelegate {
 
     @IBOutlet weak var textView: UITextView!
     
@@ -64,6 +64,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var davImage: UIImageView!
     @IBOutlet weak var davFiles: UILabel!
     
+    @IBOutlet weak var titleCapabilities: UILabel!
+
+    
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
     private var account: String = ""
@@ -73,7 +76,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = NSLocalizedString("_capabilities_", comment: "")
+        self.title = NSLocalizedString("_diagnostics_", comment: "")
                
         let shareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareFill"), width: 50, height: 50, color: .gray)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
@@ -162,6 +165,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         davImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "dav"), width: 100, height: 100, color: .gray)
         davFiles.text = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/files/" + appDelegate.user + "/"
+        
+        titleCapabilities.text = NSLocalizedString("_capabilities_", comment: "")
     }
 
     @objc func updateCapabilities() {

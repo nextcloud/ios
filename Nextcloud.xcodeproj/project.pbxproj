@@ -47,8 +47,8 @@
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
-		F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */; };
-		F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */; };
+		F70A58BE24D0349500DED00D /* NCDiagnosticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A58BD24D0349500DED00D /* NCDiagnosticViewController.swift */; };
+		F70A58C024D0545100DED00D /* NCDiagnosticViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70A58BF24D0545100DED00D /* NCDiagnosticViewController.storyboard */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -390,8 +390,8 @@
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCapabilitiesViewController.swift; sourceTree = "<group>"; };
-		F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCapabilitiesViewController.storyboard; sourceTree = "<group>"; };
+		F70A58BD24D0349500DED00D /* NCDiagnosticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDiagnosticViewController.swift; sourceTree = "<group>"; };
+		F70A58BF24D0545100DED00D /* NCDiagnosticViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCDiagnosticViewController.storyboard; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
@@ -955,13 +955,13 @@
 			path = Offline;
 			sourceTree = "<group>";
 		};
-		F73FAEE224D2CA830090692E /* Capabilities */ = {
+		F73FAEE224D2CA830090692E /* Diagnostics */ = {
 			isa = PBXGroup;
 			children = (
-				F70A58BF24D0545100DED00D /* NCCapabilitiesViewController.storyboard */,
-				F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */,
+				F70A58BF24D0545100DED00D /* NCDiagnosticViewController.storyboard */,
+				F70A58BD24D0349500DED00D /* NCDiagnosticViewController.swift */,
 			);
-			path = Capabilities;
+			path = Diagnostics;
 			sourceTree = "<group>";
 		};
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
@@ -1427,8 +1427,8 @@
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
-				F73FAEE224D2CA830090692E /* Capabilities */,
 				F7BAAD951ED5A63D00B7EAD4 /* Database */,
+				F73FAEE224D2CA830090692E /* Diagnostics */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
@@ -1809,7 +1809,7 @@
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
-				F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */,
+				F70A58C024D0545100DED00D /* NCDiagnosticViewController.storyboard in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
@@ -1984,7 +1984,7 @@
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
-				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
+				F70A58BE24D0349500DED00D /* NCDiagnosticViewController.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,
