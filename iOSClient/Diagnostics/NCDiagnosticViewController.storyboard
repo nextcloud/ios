@@ -493,36 +493,49 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OO4-N7-9vp" userLabel="View JSON">
-                                        <rect key="frame" x="0.0" y="595" width="414" height="68"/>
+                                        <rect key="frame" x="0.0" y="600" width="414" height="78"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RIO-6X-GG1">
-                                                <rect key="frame" x="5" y="30" width="404" height="33"/>
+                                                <rect key="frame" x="5" y="40" width="404" height="33"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hqP-sH-lSo">
-                                                <rect key="frame" x="5" y="0.0" width="404" height="18"/>
+                                                <rect key="frame" x="5" y="10" width="404" height="18"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9Xe-Ey-1EV">
+                                                <rect key="frame" x="379" y="0.0" width="30" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="Acu-l4-ixu"/>
+                                                    <constraint firstAttribute="width" constant="30" id="ZKn-V1-T2h"/>
+                                                </constraints>
+                                                <state key="normal" image="shareFill"/>
+                                                <connections>
+                                                    <action selector="actionShareCapabilities" destination="7oH-vf-YqN" eventType="touchUpInside" id="AyD-b9-7OZ"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
                                             <constraint firstItem="RIO-6X-GG1" firstAttribute="leading" secondItem="OO4-N7-9vp" secondAttribute="leading" constant="5" id="63w-yC-mGi"/>
-                                            <constraint firstItem="hqP-sH-lSo" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" id="7tR-gf-nae"/>
+                                            <constraint firstItem="hqP-sH-lSo" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" constant="10" id="7tR-gf-nae"/>
                                             <constraint firstAttribute="trailing" secondItem="RIO-6X-GG1" secondAttribute="trailing" constant="5" id="9cj-M6-K3f"/>
                                             <constraint firstItem="hqP-sH-lSo" firstAttribute="leading" secondItem="OO4-N7-9vp" secondAttribute="leading" constant="5" id="HXp-td-pyQ"/>
-                                            <constraint firstItem="RIO-6X-GG1" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" constant="30" id="ODH-TK-qMG"/>
+                                            <constraint firstItem="RIO-6X-GG1" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" constant="40" id="ODH-TK-qMG"/>
+                                            <constraint firstAttribute="trailing" secondItem="9Xe-Ey-1EV" secondAttribute="trailing" constant="5" id="aCV-00-QrL"/>
                                             <constraint firstAttribute="bottom" secondItem="RIO-6X-GG1" secondAttribute="bottom" constant="5" id="ajP-yK-idK"/>
                                             <constraint firstAttribute="trailing" secondItem="hqP-sH-lSo" secondAttribute="trailing" constant="5" id="fLN-ek-dgd"/>
+                                            <constraint firstItem="9Xe-Ey-1EV" firstAttribute="top" secondItem="OO4-N7-9vp" secondAttribute="top" id="rMZ-jb-ncC"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="ogC-ph-Xdr" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="505" id="9yP-Qs-EjJ"/>
-                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="595" id="A9O-TK-Vz6" userLabel="View JSON.top = top + 550"/>
+                                    <constraint firstItem="OO4-N7-9vp" firstAttribute="top" secondItem="hTE-ys-qsF" secondAttribute="top" constant="600" id="A9O-TK-Vz6" userLabel="View JSON.top = top + 550"/>
                                     <constraint firstAttribute="trailing" secondItem="ogC-ph-Xdr" secondAttribute="trailing" constant="5" id="JLe-vC-Oyq"/>
                                     <constraint firstAttribute="bottom" secondItem="OO4-N7-9vp" secondAttribute="bottom" id="MpX-OZ-MDh"/>
                                     <constraint firstItem="OO4-N7-9vp" firstAttribute="width" secondItem="hTE-ys-qsF" secondAttribute="width" id="PWW-C3-Qcw"/>
@@ -546,6 +559,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="fnR-ht-Muv"/>
                     <connections>
+                        <outlet property="buttonShareCapabilities" destination="9Xe-Ey-1EV" id="BMQ-eI-ipD"/>
                         <outlet property="davFiles" destination="q89-9y-xvK" id="eHD-Ph-7x2"/>
                         <outlet property="davImage" destination="Tlp-7L-xxK" id="K25-ye-TED"/>
                         <outlet property="homeImage" destination="pyf-iS-YYP" id="gAh-bM-f5J"/>
@@ -609,6 +623,7 @@
         <image name="notification" width="512" height="512"/>
         <image name="onlyoffice" width="425" height="425"/>
         <image name="share" width="512" height="512"/>
+        <image name="shareFill" width="512" height="512"/>
         <image name="text" width="425" height="425"/>
     </resources>
 </document>

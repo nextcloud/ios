@@ -65,7 +65,7 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
     @IBOutlet weak var davFiles: UILabel!
     
     @IBOutlet weak var titleCapabilities: UILabel!
-
+    @IBOutlet weak var buttonShareCapabilities: UIButton!
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var documentController: UIDocumentInteractionController?
@@ -78,8 +78,6 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
         
         self.title = NSLocalizedString("_diagnostics_", comment: "")
                
-        let shareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "shareFill"), width: 50, height: 50, color: .gray)
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: shareImage, style: UIBarButtonItem.Style.plain, target: self, action: #selector(share))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
         textView.layer.cornerRadius = 15
@@ -204,14 +202,7 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
     }
     
     @objc func share() {
-        //timer?.invalidate()
-        self.dismiss(animated: true) {
-            let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
-            do {
-                try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
-                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
-            } catch { }
-        }
+       
     }
     
     @objc func close() {
@@ -304,5 +295,16 @@ class NCDiagnosticViewController: UIViewController, UIDocumentInteractionControl
         }
         
         print("end.")
+    }
+    
+    @IBAction func actionShareCapabilities() {
+        //timer?.invalidate()
+        self.dismiss(animated: true) {
+            let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
+            do {
+                try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
+                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
+            } catch { }
+        }
     }
 }
