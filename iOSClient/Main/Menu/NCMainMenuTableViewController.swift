@@ -77,6 +77,13 @@ class NCMainMenuTableViewController: UITableViewController {
         return cell
     }
 
+    // MARK: - Accessibility
+    
+    open override func accessibilityPerformEscape() -> Bool {
+        dismiss(animated: true)
+        return true
+    }
+
 }
 extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 
@@ -87,7 +94,7 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
     func floatingPanel(_ vc: FloatingPanelController, behaviorFor newCollection: UITraitCollection) -> FloatingPanelBehavior? {
         return NCMainMenuFloatingPanelBehavior()
     }
-    
+
     func floatingPanelDidEndDecelerating(_ vc: FloatingPanelController) {
         if vc.position == .hidden {
             vc.dismiss(animated: false, completion: nil)
@@ -98,7 +105,7 @@ extension NCMainMenuTableViewController: FloatingPanelControllerDelegate {
 class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
 
     let height: CGFloat
-    
+
     init(height: Int) {
         self.height = CGFloat(height)
     }
@@ -118,7 +125,7 @@ class NCMainMenuFloatingPanelLayout: FloatingPanelLayout {
             return nil
         }
     }
-    
+
     var positionReference: FloatingPanelLayoutReference {
         return .fromSuperview
     }

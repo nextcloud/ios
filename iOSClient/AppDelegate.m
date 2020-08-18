@@ -785,6 +785,7 @@
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
+    buttonPlus.accessibilityLabel = NSLocalizedString(@"_accessibility_add_upload_", nil);
     [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
     buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brandElement;
     buttonPlus.layer.cornerRadius = buttonSize / 2;
