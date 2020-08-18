@@ -67,7 +67,8 @@
     // Networking
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    [[NCCommunicationCommon shared] setFileLogWithLevel:1];
+    NSInteger logLevel = [CCUtility getLogLevel];
+    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
     [[NCCommunicationCommon shared] writeLog:@"[LOG] Start session"];
     
     // Set account, if no exists clear all

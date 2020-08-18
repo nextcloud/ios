@@ -166,8 +166,9 @@
         };
         [section addFormRow:row];
         
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"levelLog" rowType:XLFormRowDescriptorTypeSlider title:@"_level_log_"];
-        row.value = @(1);
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"logLevel" rowType:XLFormRowDescriptorTypeSlider title:NSLocalizedString(@"_level_log_", nil)];
+        NSInteger logLevel = [CCUtility getLogLevel];
+        row.value = @(logLevel);
         [row.cellConfigAtConfigure setObject:@(2) forKey:@"slider.maximumValue"];
         [row.cellConfigAtConfigure setObject:@(0) forKey:@"slider.minimumValue"];
         [row.cellConfigAtConfigure setObject:@(2) forKey:@"steps"];
@@ -283,6 +284,13 @@
         
         [alertController addAction:okAction];
         [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"logLevel"]) {
+        
+        NSInteger logLevel = [[rowDescriptor.value valueData] intValue];
+        [CCUtility setLogLevel:logLevel];
+        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
     }
 }
 

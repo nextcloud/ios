@@ -179,6 +179,9 @@
 + (NSString *)getDirectoryScanDocuments;
 + (void)setDirectoryScanDocuments:(NSString *)value;
 
++ (NSInteger)getLogLevel;
++ (void)setLogLevel:(NSInteger)value;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
