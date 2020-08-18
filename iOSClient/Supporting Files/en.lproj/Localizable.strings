@@ -298,7 +298,7 @@
 "_diagnostics_"                 = "Diagnostics";
 "_view_log_"                    = "View Log file";
 "_clear_log_"                   = "Clear Log file";
-"_level_log_"                   = "Set Log level (disabled, standard, maximum)"
+"_level_log_"                   = "Set Log level (disabled, standard, maximum)";
 
 // Login
 
