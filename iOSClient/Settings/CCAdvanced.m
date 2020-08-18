@@ -166,6 +166,12 @@
         };
         [section addFormRow:row];
         
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"levelLog" rowType:XLFormRowDescriptorTypeSlider title:@"_level_log_"];
+        row.value = @(1);
+        [row.cellConfigAtConfigure setObject:@(2) forKey:@"slider.maximumValue"];
+        [row.cellConfigAtConfigure setObject:@(0) forKey:@"slider.minimumValue"];
+        [row.cellConfigAtConfigure setObject:@(2) forKey:@"steps"];
+        [section addFormRow:row];
     }
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"capabilities" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_capabilities_", nil)];
