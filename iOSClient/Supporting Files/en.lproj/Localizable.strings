@@ -296,6 +296,8 @@
 "_capabilities_"                = "Capabilities";
 "_no_capabilities_found_"       = "Capabilities not found";
 "_diagnostics_"                 = "Diagnostics";
+"_view_log_"                    = "View Log file";
+"_clear_log_"                   = "Clear Log file";
 
 // Login
 
