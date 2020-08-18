@@ -69,7 +69,7 @@
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSInteger logLevel = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
-    [[NCCommunicationCommon shared] writeLog:@"[LOG] Start session"];
+    [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu", @"[LOG] Start session with level", (unsigned long)logLevel]];
     
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];

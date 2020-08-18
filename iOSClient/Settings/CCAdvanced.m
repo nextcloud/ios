@@ -162,7 +162,8 @@
             [self deselectFormRow:sender];
 
             [[NCCommunicationCommon shared] clearFileLog];
-            [[NCCommunicationCommon shared] writeLog:@"[LOG] Start session"];
+            NSInteger logLevel = [CCUtility getLogLevel];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu", @"[LOG] Start session with level", (unsigned long)logLevel]];
         };
         [section addFormRow:row];
         
