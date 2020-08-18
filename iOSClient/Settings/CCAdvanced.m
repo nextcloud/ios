@@ -132,10 +132,9 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_diagnostics_", nil)];
     [form addFormSection:section];
     
-    NSString *documentPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
-    NSString *logFile = [documentPath stringByAppendingPathComponent:@"communication.log"];
+    NSString *fileNameLog = [[NCCommunicationCommon shared] getFileNameLog];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:logFile]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameLog]) {
         
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"log" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_view_log_", nil)];
         row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
@@ -148,7 +147,7 @@
             [self deselectFormRow:sender];
             
             NCViewerQuickLook *viewerQuickLook = [NCViewerQuickLook new];
-            [viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:logFile] viewController:self];
+            [viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:fileNameLog] viewController:self];
         };
         [section addFormRow:row];
         
