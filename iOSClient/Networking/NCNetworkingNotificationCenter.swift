@@ -57,6 +57,8 @@ import Foundation
                 
                 if errorCode == 0 {
                     
+                    let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    
                     switch selector {
                     case selectorLoadFileQuickLook:
                         
@@ -69,9 +71,7 @@ import Foundation
                     case selectorLoadFileView, selectorLoadFileViewFavorite:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
-                            
-                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                            
+                                                        
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
                                 NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
@@ -97,7 +97,7 @@ import Foundation
                     case selectorOpenIn, selectorOpenInDetail:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
-                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            
                             NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                         }
                         
