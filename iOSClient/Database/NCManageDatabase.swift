@@ -332,7 +332,6 @@ class NCManageDatabase: NSObject {
     @objc func getAccountActive() -> tableAccount? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return nil
@@ -344,7 +343,6 @@ class NCManageDatabase: NSObject {
     @objc func getAccounts() -> [String]? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
         
@@ -358,7 +356,6 @@ class NCManageDatabase: NSObject {
     @objc func getAccount(predicate: NSPredicate) -> tableAccount? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         if let result = realm.objects(tableAccount.self).filter(predicate).first {
             return tableAccount.init(value: result)
@@ -370,7 +367,6 @@ class NCManageDatabase: NSObject {
     @objc func getAllAccount() -> [tableAccount] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableAccount.self)
         
@@ -380,7 +376,6 @@ class NCManageDatabase: NSObject {
     @objc func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return ""
@@ -396,7 +391,6 @@ class NCManageDatabase: NSObject {
     @objc func getAccountAutoUploadDirectory(urlBase : String, account: String) -> String {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableAccount.self).filter("active == true").first else {
             return ""
@@ -779,7 +773,6 @@ class NCManageDatabase: NSObject {
     func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
         let allActivity = Array(results.map { tableActivity.init(value:$0) })
@@ -803,7 +796,6 @@ class NCManageDatabase: NSObject {
     @objc func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && key == %@", account, idActivity, key).first
         
@@ -813,7 +805,6 @@ class NCManageDatabase: NSObject {
     @objc func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id).first
         
@@ -823,7 +814,6 @@ class NCManageDatabase: NSObject {
     @objc func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         var results: [tableActivityPreview] = []
         
@@ -839,7 +829,6 @@ class NCManageDatabase: NSObject {
     @objc func getActivityLastIdActivity(account: String) -> Int {
         
         let realm = try! Realm()
-        realm.refresh()
         
         if let entities = realm.objects(tableActivity.self).filter("account == %@", account).max(by: { $0.idActivity < $1.idActivity }) {
             return entities.idActivity
@@ -874,7 +863,6 @@ class NCManageDatabase: NSObject {
     @objc func getCapabilities(account: String) -> String? {
                            
         let realm = try! Realm()
-        realm.refresh()
                
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return nil
@@ -891,7 +879,6 @@ class NCManageDatabase: NSObject {
     @objc func getCapabilitiesServerString(account: String, elements: Array<String>) -> String? {
 
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return nil
@@ -907,7 +894,6 @@ class NCManageDatabase: NSObject {
     @objc func getCapabilitiesServerInt(account: String, elements: Array<String>) -> Int {
 
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return 0
@@ -923,7 +909,6 @@ class NCManageDatabase: NSObject {
     @objc func getCapabilitiesServerBool(account: String, elements: Array<String>, exists: Bool) -> Bool {
 
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return false
@@ -944,7 +929,6 @@ class NCManageDatabase: NSObject {
 
         let realm = try! Realm()
         var resultArray: [String] = []
-        realm.refresh()
         
         guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else {
             return nil
@@ -1006,7 +990,6 @@ class NCManageDatabase: NSObject {
     @objc func getComments(account: String, objectId: String) -> [tableComments] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
         
@@ -1155,7 +1138,6 @@ class NCManageDatabase: NSObject {
     @objc func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
         
@@ -1218,7 +1200,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         
         let realm = try! Realm()
-        realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
             return nil
@@ -1230,7 +1211,6 @@ class NCManageDatabase: NSObject {
     @objc func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
         
         let realm = try! Realm()
-        realm.refresh()
 
         let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
@@ -1346,7 +1326,6 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else {
             return nil
@@ -1362,7 +1341,6 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results : Results<tableE2eEncryption>
         
@@ -1419,7 +1397,6 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        realm.refresh()
             
         guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", tableAccount.account, serverUrl).first else {
             return nil
@@ -1522,7 +1499,6 @@ class NCManageDatabase: NSObject {
     @objc func getAllExternalSites(account: String) -> [tableExternalSites]? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true).freeze()
         
@@ -1568,7 +1544,6 @@ class NCManageDatabase: NSObject {
     @objc func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableGPS.self).filter("latitude == %@ AND longitude == %@", latitude, longitude).first else {
             return nil
@@ -1664,7 +1639,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
             return nil
@@ -1676,7 +1650,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         return Array(results.map { $0.freeze() })
@@ -2134,7 +2107,6 @@ class NCManageDatabase: NSObject {
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
             return nil
@@ -2146,7 +2118,6 @@ class NCManageDatabase: NSObject {
     @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first else {
             return nil
@@ -2158,7 +2129,6 @@ class NCManageDatabase: NSObject {
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results: Results<tableMetadata>
         var finals: [tableMetadata] = []
@@ -2197,7 +2167,6 @@ class NCManageDatabase: NSObject {
     @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
-        realm.refresh()
         var metadatas: [tableMetadata] = []
         
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -2224,8 +2193,6 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
         
         let realm = try! Realm()
-        realm.refresh()
-        
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
@@ -2238,8 +2205,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int) -> tableMetadata? {
         
         let realm = try! Realm()
-        realm.refresh()
-        
+
         guard let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@ AND session != '' AND sessionTaskIdentifier == %d", serverUrl, fileName, taskIdentifier).first else {
             return nil
         }
@@ -2250,10 +2216,7 @@ class NCManageDatabase: NSObject {
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
         
         var listIdentifierRank: [String: NSNumber] = [:]
-
         let realm = try! Realm()
-        realm.refresh()
-        
         var counter = 10 as Int64
         
         let results = realm.objects(tableMetadata.self).filter("account == %@ AND directory == true AND favorite == true", account).sorted(byKeyPath: "fileNameView", ascending: true)
@@ -2302,7 +2265,6 @@ class NCManageDatabase: NSObject {
     @objc func getAssetLocalIdentifiersUploaded(account: String, sessionSelector: String) -> [String] {
         
         let realm = try! Realm()
-        realm.refresh()
         var assetLocalIdentifiers: [String] = []
         
         let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true AND sessionSelector == %@", account, sessionSelector)
@@ -2350,7 +2312,6 @@ class NCManageDatabase: NSObject {
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties).freeze()
@@ -2412,8 +2373,6 @@ class NCManageDatabase: NSObject {
     @objc func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
         
         let realm = try! Realm()
-        realm.refresh()
-        
         var predicate = NSPredicate()
         
         if (image && video) {
@@ -2509,7 +2468,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableShares(account: String) -> [tableShare] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@", account).sorted(by: sortProperties)
@@ -2520,7 +2478,6 @@ class NCManageDatabase: NSObject {
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?,  share: [tableShare]?) {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         
@@ -2537,7 +2494,6 @@ class NCManageDatabase: NSObject {
     func getTableShare(account: String, idShare: Int) -> tableShare? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableShare.self).filter("account = %@ AND idShare = %d", account, idShare).first else {
             return nil
@@ -2549,7 +2505,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableShares(account: String, serverUrl: String) -> [tableShare] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).sorted(by: sortProperties)
@@ -2560,7 +2515,6 @@ class NCManageDatabase: NSObject {
     @objc func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: "shareType", ascending: false), SortDescriptor(keyPath: "idShare", ascending: false)]
         let results = realm.objects(tableShare.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).sorted(by: sortProperties)
@@ -2643,7 +2597,6 @@ class NCManageDatabase: NSObject {
     @objc func getTags(predicate: NSPredicate) -> [tableTag] {
         
         let realm = try! Realm()
-        realm.refresh()
 
         let results = realm.objects(tableTag.self).filter(predicate)
         
@@ -2653,7 +2606,6 @@ class NCManageDatabase: NSObject {
     @objc func getTag(predicate: NSPredicate) -> tableTag? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableTag.self).filter(predicate).first else {
             return nil
@@ -2747,7 +2699,6 @@ class NCManageDatabase: NSObject {
     @objc func getTrash(filePath: String, sorted: String, ascending: Bool, account: String) -> [tableTrash]? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sorted, ascending: ascending)
 
@@ -2757,7 +2708,6 @@ class NCManageDatabase: NSObject {
     @objc func getTrashItem(fileId: String, account: String) -> tableTrash? {
         
         let realm = try! Realm()
-        realm.refresh()
         
         guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else {
             return nil
