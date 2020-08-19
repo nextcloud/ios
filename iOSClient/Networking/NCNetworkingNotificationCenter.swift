@@ -69,16 +69,19 @@ import Foundation
                     case selectorLoadFileView, selectorLoadFileViewFavorite:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
+                            
+                            let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                            
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
-                                metadata.typeFile = k_metadataTypeFile_unknown
+                                
+                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                                let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                                 NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
-                                let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                                 NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
                                 
                             } else {
