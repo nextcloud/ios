@@ -114,6 +114,7 @@ import Foundation
                         NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
                         
                     default:
+                        
                         break
                     }
                             
@@ -130,6 +131,7 @@ import Foundation
                         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         
                     } else {
+                        
                         NCContentPresenter.shared.messageNotification("_download_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
