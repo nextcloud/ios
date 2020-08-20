@@ -145,7 +145,7 @@ class NCOperationDownload: ConcurrentOperation {
     var setFavorite: Bool
     
     init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
-        self.metadata = metadata
+        self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
         self.setFavorite = setFavorite
     }
@@ -170,7 +170,7 @@ class NCOperationSynchronization: ConcurrentOperation {
     var download: Bool
     
     init(metadata: tableMetadata, selector: String) {
-        self.metadata = metadata
+        self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
         if selector == selectorDownloadFile {
             self.download = true
@@ -185,11 +185,14 @@ class NCOperationSynchronization: ConcurrentOperation {
         } else {
             if metadata.directory {
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "infinity", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                    if errorCode == 0 {
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                            for metadata in metadatasFolder {
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                            }
                             if metadatas.count > 0 {
-                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
                                 let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
                                 if self.download {
                                     for metadata in metadatasChanged {
@@ -225,7 +228,7 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
     var indexPath: IndexPath
     
     init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
-        self.metadata = metadata
+        self.metadata = tableMetadata.init(value: metadata)
         self.urlBase = urlBase
         self.view = view
         self.indexPath = indexPath
@@ -280,7 +283,7 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
     var metadata: tableMetadata
     
     init(metadata: tableMetadata) {
-        self.metadata = metadata
+        self.metadata = tableMetadata.init(value: metadata)
     }
     
     override func start() {
