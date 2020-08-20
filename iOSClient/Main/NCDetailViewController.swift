@@ -236,7 +236,7 @@ class NCDetailViewController: UIViewController {
                 if errorCode == 0 {
                     
                     // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                         
                         deleteFile(notification)
                     }
@@ -274,7 +274,7 @@ class NCDetailViewController: UIViewController {
                 if errorCode == 0 {
                     
                     // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
                         if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
                             var index = viewerImageViewController!.index - 1
@@ -309,7 +309,7 @@ class NCDetailViewController: UIViewController {
                         self.metadata = metadata
                         
                         // IMAGE
-                        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !mediaFilterImage {
+                        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                             
                             viewImage()
                         }
