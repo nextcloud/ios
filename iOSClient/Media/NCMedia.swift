@@ -126,7 +126,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        reloadDataSourceWithCompletion {
+        self.reloadDataSourceWithCompletion { (_) in
             self.searchNewPhotoVideo()
         }
     }
@@ -350,7 +350,7 @@ class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZ
         if serverUrl != nil {
             let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.account)
-            reloadDataSourceWithCompletion {
+            reloadDataSourceWithCompletion { (_) in
                 self.searchNewPhotoVideo()
             }
         }
@@ -629,10 +629,10 @@ extension NCMedia: UICollectionViewDelegateFlowLayout {
 extension NCMedia {
 
     @objc func reloadDataSource() {
-        self.reloadDataSourceWithCompletion { }
+        self.reloadDataSourceWithCompletion { (_) in }
     }
     
-    @objc func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
+    @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
         
         if (appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode == true) { return }
         
@@ -672,7 +672,7 @@ extension NCMedia {
                 self.reloadDataThenPerform {
                     self.updateMediaControlVisibility()
                     self.mediaCommandTitle()
-                    completion()
+                    completion(self.metadatas)
                 }
             }
         }

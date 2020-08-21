@@ -196,35 +196,6 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func synchronizationMedia(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let type = userInfo["type"] as? String {
-                
-                if (self.metadata?.typeFile == k_metadataTypeFile_image || self.metadata?.typeFile == k_metadataTypeFile_video || self.metadata?.typeFile == k_metadataTypeFile_audio) && self.mediaFilterImage {
-                                        
-                    self.metadatas = appDelegate.activeMedia.metadatas
-                    
-                    if type == "delete" {
-                        if metadatas.count > 0 {
-                            var index = viewerImageViewController!.index - 1
-                            if index < 0 { index = 0}
-                            self.metadata = metadatas[index]
-                            viewImage()
-                        } else {
-                            viewUnload()
-                        }
-                    }
-                    
-                    if type == "rename" || type == "move"   {
-                        viewerImageViewController?.reloadContentViews()
-                    }
-                }
-            }
-        }
-    }
-    
     @objc func moveFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -237,7 +208,7 @@ class NCDetailViewController: UIViewController {
                     // IMAGE
                     if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                         
-                        deleteFile(notification)
+                        viewImage()
                     }
                     
                     // OTHER
@@ -307,20 +278,24 @@ class NCDetailViewController: UIViewController {
                 if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
                 
                 if errorCode == 0 {
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                        self.metadata = metadata
+                    
+                    // IMAGE
+                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                         
-                        // IMAGE
-                        if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                            
-                            viewImage()
-                        }
+                        viewImage()
+                    }
+                    
+                    // OTHER
+                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                         
-                        // OTHER
-                        if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                            self.metadata = metadata
                             self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+                        } else {
+                            viewUnload()
                         }
                     }
+                    
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
@@ -596,33 +571,33 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         closeAllSubView()
         
-        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
-                            
+        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) { (metadatas) in
+            
+            guard let metadatas = metadatas else {
+                self.viewUnload()
+                return
+            }
             var index = 0
+            
             if let indexFound = metadatas.firstIndex(where: { $0.ocId == self.metadata?.ocId }) { index = indexFound }
             // Video -> is a Live Photo ?
-            if metadata?.typeFile == k_metadataTypeFile_video && metadata != nil {
-                let filename = (metadata!.fileNameView as NSString).deletingPathExtension.lowercased()
+            if self.metadata?.typeFile == k_metadataTypeFile_video {
+                let filename = (self.metadata!.fileNameView as NSString).deletingPathExtension.lowercased()
                 if let indexFound = metadatas.firstIndex(where: { (($0.fileNameView as NSString).deletingPathExtension.lowercased() as String) == filename && $0.typeFile == k_metadataTypeFile_image }) { index = indexFound }
             }
             self.metadatas = metadatas
-            
-            viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
-            if viewerImageViewController != nil {
+
+            self.viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
+            if self.viewerImageViewController != nil {
                            
                 self.backgroundView.image = nil
-
-                viewerImageViewController!.view.isHidden = true
-                
-                viewerImageViewController!.enableInteractiveDismissal = true
-                
-                addChild(viewerImageViewController!)
-                view.addSubview(viewerImageViewController!.view)
-                
-                viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
-                viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                
-                viewerImageViewController!.didMove(toParent: self)
+                self.viewerImageViewController!.view.isHidden = true
+                self.viewerImageViewController!.enableInteractiveDismissal = true
+                self.addChild(self.viewerImageViewController!)
+                self.view.addSubview(self.viewerImageViewController!.view)
+                self.viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+                self.viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                self.viewerImageViewController!.didMove(toParent: self)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
                     self.viewerImageViewController!.changeInViewSize(to: self.backgroundView.frame.size)

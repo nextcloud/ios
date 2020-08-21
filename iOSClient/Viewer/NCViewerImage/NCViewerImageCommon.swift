@@ -30,6 +30,8 @@ class NCViewerImageCommon: NSObject {
         return instance
     }()
     
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     static var offOutlineAudio: UIImage?
     static var offOutlineVideo: UIImage?
     static var offOutlineImage: UIImage?
@@ -40,16 +42,18 @@ class NCViewerImageCommon: NSObject {
         NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
     }
     
-    func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata], favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool) -> [tableMetadata]? {
-        guard let metadata = metadata else { return nil }
+    func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata], favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+        guard let metadata = metadata else {
+            completion(nil)
+            return
+        }
         if favoriteDatasorce {
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings()) {
-                return metadatas
-            } else {
-                return [metadata]
-            }
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            completion(metadatas)
         } else if mediaDatasorce {
-            return metadatas
+            appDelegate.activeMedia.reloadDataSourceWithCompletion { (metadatas) in
+                completion(metadatas)
+            }
         } else if offLineDatasource {
             var datasourceSorted = ""
             var datasourceAscending = true
@@ -59,9 +63,11 @@ class NCViewerImageCommon: NSObject {
             for file: tableLocalFile in files {
                 ocIds.append(file.ocId)
             }
-            return NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, ocIds, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: datasourceSorted, ascending: datasourceAscending)
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, ocIds, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: datasourceSorted, ascending: datasourceAscending)
+            completion(metadatas)
         } else {
-            return NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
+            completion(metadatas)
         }
     }
     
