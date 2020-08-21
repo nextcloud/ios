@@ -649,7 +649,7 @@ extension NCMedia {
         self.reloadDataSourceWithCompletion { }
     }
     
-    private func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
+    @objc func reloadDataSourceWithCompletion(_ completion: @escaping () -> Void) {
         
         if (appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode == true) { return }
         
