@@ -248,9 +248,11 @@ class NCDetailViewController: UIViewController {
                     
                         let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }                        
                         if metadatas.count > 0 {
-                            var index = viewerImageViewController!.index - 1
-                            if index < 0 { index = 0}
-                            self.metadata = metadatas[index]
+                            if self.metadata?.ocId == metadata.ocId {
+                                var index = viewerImageViewController!.index - 1
+                                if index < 0 { index = 0}
+                                self.metadata = metadatas[index]
+                            }
                             viewImage()
                         } else {
                             viewUnload()
