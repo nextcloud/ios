@@ -74,8 +74,6 @@
 
 #define k_daysOfActivity                                7
 
-#define k_maxErrorAutoUploadAll                         100
-
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
 

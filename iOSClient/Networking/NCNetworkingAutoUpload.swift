@@ -69,14 +69,6 @@ class NCNetworkingAutoUpload: NSObject {
     
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
         for sessionSelector in sessionSelectors {
-            /*
-            let metadatasInError = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusUploadError))
-            if metadatasInError.count >= k_maxErrorAutoUploadAll {
-                NCContentPresenter.shared.messageNotification("_error_", description: "_too_errors_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                startTimer()
-                return
-            }
-            */
             if counterUpload < maxConcurrentOperationUpload {
                 let limit = maxConcurrentOperationUpload - counterUpload
                 var predicate = NSPredicate()
