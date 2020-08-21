@@ -246,9 +246,7 @@ class NCDetailViewController: UIViewController {
                     // IMAGE
                     if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                        self.metadatas = metadatas
-                        
+                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }                        
                         if metadatas.count > 0 {
                             var index = viewerImageViewController!.index - 1
                             if index < 0 { index = 0}
