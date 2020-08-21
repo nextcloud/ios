@@ -72,10 +72,9 @@ class NCService: NSObject {
                 // Synchronize favorite ---
                 NCNetworking.shared.listingFavoritescompletion { (_, _, _, _) in }
                 
-                // Synchronize Offline ---
-                let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true)
-                if (directories != nil) {
-                    for directory: tableDirectory in directories! {
+                // Synchronize Offline Directory ---
+                if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
+                    for directory: tableDirectory in directories {
                         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", directory.ocId)) else {
                             continue
                         }
@@ -83,6 +82,7 @@ class NCService: NSObject {
                     }
                 }
                 
+                // Synchronize Offline Files ---
                 let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
                 for file: tableLocalFile in files {
                     guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {

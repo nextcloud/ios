@@ -199,14 +199,12 @@ class NCOperationSynchronization: ConcurrentOperation {
                             }
                             
                             // Files
-                            if metadatas.count > 0 {
-                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
-                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
-                                if self.download {
-                                    for metadata in metadatasChanged {
-                                        if metadata.directory == false {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
-                                        }
+                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
+                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
+                            if self.download {
+                                for metadata in metadatasChanged {
+                                    if metadata.directory == false {
+                                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                                     }
                                 }
                             }
