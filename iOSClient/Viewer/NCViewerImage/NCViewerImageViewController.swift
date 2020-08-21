@@ -53,7 +53,6 @@ extension NCViewerImageViewControllerDelegate {
 
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, didChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {}
     func viewerImageViewController(_ viewerImageViewController: NCViewerImageViewController, willChangeFocusTo index: Int, view: NCViewerImageContentView, metadata: tableMetadata) {}
-
 }
 
 public class NCViewerImageViewController: UIViewController {
