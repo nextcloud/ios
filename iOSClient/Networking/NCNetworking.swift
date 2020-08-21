@@ -419,6 +419,10 @@ import Queuer
                 metadata.etag = etag ?? ""
                 metadata.ocId = ocId!
                 
+                if let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
+                }
+                
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = 0
