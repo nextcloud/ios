@@ -187,10 +187,18 @@ class NCOperationSynchronization: ConcurrentOperation {
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                    if errorCode == 0 {
+                    
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                            
+                            // Directory
                             for metadata in metadatasFolder {
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "ocId == %@ ", metadata.ocId))
+                                if tableDirectory?.etag != metadata.etag {
+                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                }
                             }
+                            
+                            // Files
                             if metadatas.count > 0 {
                                 let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
                                 let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
@@ -202,7 +210,11 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     }
                                 }
                             }
+                            
+                            // Update etag directory
+                            NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: metadataFolder.serverUrl, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
                         }
+                    
                     } else if errorCode == 404 && self.metadata.directory {
                         NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
