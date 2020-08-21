@@ -571,7 +571,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         closeAllSubView()
         
-        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) { (metadatas) in
+        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) { (metadatas) in
             
             guard let metadatas = metadatas else {
                 self.viewUnload()

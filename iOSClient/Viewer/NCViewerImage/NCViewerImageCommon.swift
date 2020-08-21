@@ -42,7 +42,7 @@ class NCViewerImageCommon: NSObject {
         NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
     }
     
-    func getMetadatasDatasource(metadata: tableMetadata?, metadatas: [tableMetadata], favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+    func getMetadatasDatasource(metadata: tableMetadata?, favoriteDatasorce: Bool, mediaDatasorce: Bool, offLineDatasource: Bool, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         guard let metadata = metadata else {
             completion(nil)
             return
