@@ -794,10 +794,8 @@ import Queuer
             
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
-                    let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", account))
-                    let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: CCUtility.getFavoriteOffline())
                     #if !EXTENSION
-                    for metadata in metadatasChanged {
+                    for metadata in metadatas {
                        if CCUtility.getFavoriteOffline() {
                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
                        } else {
