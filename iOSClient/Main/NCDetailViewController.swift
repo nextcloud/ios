@@ -276,7 +276,10 @@ class NCDetailViewController: UIViewController {
                     // IMAGE
                     if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                        if let metadatas = NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, metadatas: self.metadatas, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) {
+                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                        self.metadatas = metadatas
+                        
+                        if metadatas.count > 0 {
                             var index = viewerImageViewController!.index - 1
                             if index < 0 { index = 0}
                             self.metadata = metadatas[index]
