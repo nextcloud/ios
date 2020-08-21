@@ -198,7 +198,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 }
                             }
                             
-                            // Files
+                            // File
                             let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
                             let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
                             if self.download {
