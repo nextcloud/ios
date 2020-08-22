@@ -1424,11 +1424,7 @@
         completion(nil, nil);
         return;
     }
-    if ([[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]] == nil) {
-        completion(nil, nil);
-        return;
-    }
-    NSString *ocId = metadata.ocId;
+    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
@@ -1481,12 +1477,6 @@
             };
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                
-                tableMetadata *newMetadata = metadata;
-                tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-                if (metadataTmp != nil) {
-                    newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
-                }
                 
                 NSError *error = nil;
                 NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
@@ -1547,12 +1537,6 @@
             [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
-                    
-                    tableMetadata *newMetadata = metadata;
-                    tableMetadata *metadataTmp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
-                    if (metadataTmp != nil) {
-                        newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataTmp];
-                    }
                     
                     NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:newMetadata.fileNameView];
                     NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
