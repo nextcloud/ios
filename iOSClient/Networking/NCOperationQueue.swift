@@ -189,7 +189,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
                     
-                   if errorCode == 0 {
+                    if errorCode == 0 {
                     
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             
