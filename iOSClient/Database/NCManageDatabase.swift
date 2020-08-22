@@ -1995,6 +1995,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
+                    // Local
                     if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) {
                         let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
@@ -2004,8 +2005,6 @@ class NCManageDatabase: NSObject {
                             ocIdsLocalUdate.append(metadata.ocId)
                         }
                     }
-                    
-                    
                 }
             }
         } catch let error {
