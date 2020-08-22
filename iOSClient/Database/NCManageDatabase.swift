@@ -1986,7 +1986,7 @@ class NCManageDatabase: NSObject {
                         realm.add(metadata, update: .all)
                     }
                     
-                    if (addExistsInLocal || addCompareEtagLocal) && !ocIdsUdated.contains(metadata.ocId) {
+                    if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) && !ocIdsUdated.contains(metadata.ocId) {
                         let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
                             ocIdsUdated.append(metadata.ocId)
