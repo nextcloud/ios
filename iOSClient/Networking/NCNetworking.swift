@@ -563,8 +563,11 @@ import Queuer
                     }
                     
                     DispatchQueue.global().async {
+                        
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, k_metadataStatusNormal))
-                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: true)
+                        
                         if metadatasChanged.count > 0 {
                             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrl])
                         }

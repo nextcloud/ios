@@ -193,22 +193,19 @@ class NCOperationSynchronization: ConcurrentOperation {
                     
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             
-                            // Directory
-                            for metadata in metadatasFolder {
-                                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "ocId == %@ ", metadata.ocId))
-                                if tableDirectory?.etag != metadata.etag {
-                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                }
-                            }
-                            
-                            // File
                             let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
-                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, withVerifyLocal: self.download)
-                            if self.download {
-                                for metadata in metadatasChanged {
-                                    if metadata.directory == false {
-                                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
-                                    }
+                            
+                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
+                            
+                            for metadata in metadatasChanged {
+                                
+                                if metadata.directory {
+                                    
+                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                    
+                                } else {
+                                    
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                                 }
                             }
                             

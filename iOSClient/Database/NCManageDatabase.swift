@@ -1953,7 +1953,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata] ,withVerifyLocal local: Bool = false) -> [tableMetadata] {
+    @objc func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool, addCompareEtagLocal: Bool) -> [tableMetadata] {
         
         let realm = try! Realm()
         var ocIdsUdated : [String] = []
@@ -1961,6 +1961,7 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
+                
                 // DELETE
                 for metadataResult in metadatasResult {
                     if metadatas.firstIndex(where: { $0.ocId == metadataResult.ocId }) == nil {
@@ -1969,35 +1970,38 @@ class NCManageDatabase: NSObject {
                         }
                     }
                 }
+                
                 // UPDATE/NEW
                 for metadata in metadatas {
-                    var updated = false
+                    
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
                             ocIdsUdated.append(metadata.ocId)
                             realm.add(metadata, update: .all)
-                            updated = true
                         }
                     } else {
                         // new
                         ocIdsUdated.append(metadata.ocId)
                         realm.add(metadata, update: .all)
-                        updated = true
                     }
-                    if local && !updated {
-                        if realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first == nil {
-                           ocIdsUdated.append(metadata.ocId)
+                    
+                    if (addExistsInLocal || addCompareEtagLocal) && !ocIdsUdated.contains(metadata.ocId) {
+                        let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
+                        if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
+                            ocIdsUdated.append(metadata.ocId)
+                        }
+                        if addExistsInLocal && (localFile == nil || localFile?.etag != metadata.etag) && !ocIdsUdated.contains(metadata.ocId) {
+                            ocIdsUdated.append(metadata.ocId)
                         }
                     }
-                    /*
-                    if metadata.directory && !updated {
+                    
+                    if metadata.directory && !ocIdsUdated.contains(metadata.ocId) {
                         let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if table?.etag != metadata.etag {
                             ocIdsUdated.append(metadata.ocId)
                         }
                     }
-                    */
                 }
             }
         } catch let error {

@@ -729,7 +729,7 @@ extension NCMedia {
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
                         
                         if metadatasChanged.count < self.limit {
                             
@@ -794,7 +794,7 @@ extension NCMedia {
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+                        let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
                         if updateMetadatas.count > 0 {
                             self.reloadDataSource()
                         }
