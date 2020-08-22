@@ -165,7 +165,7 @@
 
 - (void)readFolder
 {
-    [[NCNetworking shared] readFolderWithServerUrl:_serverUrl account:account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] readFolderWithServerUrl:_serverUrl account:account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasUpdate, NSArray *metadatasLocalUpdate, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0) {
             self.move.enabled = true;

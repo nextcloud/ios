@@ -1953,11 +1953,13 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    @objc func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool, addCompareEtagLocal: Bool) -> [tableMetadata] {
+    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool, addCompareEtagLocal: Bool) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
         
         let realm = try! Realm()
-        var ocIdsUdated : [String] = []
-        var metadatasUdated : [tableMetadata] = []
+        var ocIdsUdate : [String] = []
+        var ocIdsLocalUdate : [String] = []
+        var metadatasUpdate : [tableMetadata] = []
+        var metadatasLocalUpdate : [tableMetadata] = []
         
         do {
             try realm.write {
@@ -1977,44 +1979,52 @@ class NCManageDatabase: NSObject {
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
                         if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
-                            ocIdsUdated.append(metadata.ocId)
+                            ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         }
                     } else {
                         // new
-                        ocIdsUdated.append(metadata.ocId)
+                        ocIdsUdate.append(metadata.ocId)
                         realm.add(metadata, update: .all)
                     }
                     
-                    if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) && !ocIdsUdated.contains(metadata.ocId) {
-                        let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
-                            ocIdsUdated.append(metadata.ocId)
-                        }
-                        if addExistsInLocal && (localFile == nil || localFile?.etag != metadata.etag) && !ocIdsUdated.contains(metadata.ocId) {
-                            ocIdsUdated.append(metadata.ocId)
+                    if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
+                        let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
+                        if table?.etag != metadata.etag {
+                            ocIdsUdate.append(metadata.ocId)
                         }
                     }
                     
-                    if metadata.directory && !ocIdsUdated.contains(metadata.ocId) {
-                        let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
-                        if table?.etag != metadata.etag {
-                            ocIdsUdated.append(metadata.ocId)
+                    if !metadata.directory && (addExistsInLocal || addCompareEtagLocal) {
+                        let localFile = realm.objects(tableLocalFile.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
+                        if addCompareEtagLocal && localFile != nil && localFile?.etag != metadata.etag {
+                            ocIdsLocalUdate.append(metadata.ocId)
+                        }
+                        if addExistsInLocal && (localFile == nil || localFile?.etag != metadata.etag) && !ocIdsLocalUdate.contains(metadata.ocId) {
+                            ocIdsLocalUdate.append(metadata.ocId)
                         }
                     }
+                    
+                    
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
         
-        for ocId in ocIdsUdated {
+        for ocId in ocIdsUdate {
             if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
-                metadatasUdated.append(result.freeze())
+                metadatasUpdate.append(result.freeze())
             }
         }
         
-        return metadatasUdated
+        for ocId in ocIdsLocalUdate {
+            if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
+                metadatasLocalUpdate.append(result.freeze())
+            }
+        }
+        
+        return (metadatasUpdate, metadatasLocalUpdate)
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {

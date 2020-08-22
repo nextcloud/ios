@@ -731,7 +731,7 @@ extension NCMedia {
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
                         
-                        if metadatasChanged.count < self.limit {
+                        if metadatasChanged.metadatasUpdate.count < self.limit {
                             
                             if value == -30 {
                                 self.searchOldPhotoVideo(value: -90)
@@ -795,7 +795,7 @@ extension NCMedia {
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
                         let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
-                        if updateMetadatas.count > 0 {
+                        if updateMetadatas.metadatasUpdate.count > 0 {
                             self.reloadDataSource()
                         }
                     }

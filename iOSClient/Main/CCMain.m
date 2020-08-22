@@ -1123,7 +1123,7 @@
     [refreshControl endRefreshing];
     [self tableViewReloadData];
     
-    [[NCNetworking shared] readFolderWithServerUrl:serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasChanged, NSInteger errorCode, NSString *errorDescription) {
+    [[NCNetworking shared] readFolderWithServerUrl:serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasUpdate, NSArray *metadatasLocalUpdate, NSInteger errorCode, NSString *errorDescription) {
         
         if (errorCode == 0 ) {
             
@@ -1131,7 +1131,7 @@
             BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:_metadataFolder.e2eEncrypted account:appDelegate.account urlBase:_metadataFolder.urlBase];
             [self setTitle];
             
-            for (tableMetadata *metadata in metadatasChanged) {
+            for (tableMetadata *metadata in metadatasLocalUpdate) {
                 if (!metadata.directory) {
                     [[NCNetworking shared] downloadWithMetadata:metadata selector:selectorDownloadFile setFavorite:false completion:^(NSInteger errorCode) { }];
                 }

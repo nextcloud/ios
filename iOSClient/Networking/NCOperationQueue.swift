@@ -197,16 +197,18 @@ class NCOperationSynchronization: ConcurrentOperation {
                             
                             let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
                             
-                            for metadata in metadatasChanged {
+                            for metadata in metadatasChanged.metadatasUpdate {
                                 
                                 if metadata.directory {
                                     
                                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
                                     
-                                } else {
-                                    
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
-                                }
+                                } 
+                            }
+                            
+                            for metadata in metadatasChanged.metadatasLocalUpdate {
+                                
+                                NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
                             }
                             
                             // Update etag directory
