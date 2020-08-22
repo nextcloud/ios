@@ -1990,6 +1990,14 @@ class NCManageDatabase: NSObject {
                            ocIdsUdated.append(metadata.ocId)
                         }
                     }
+                    /*
+                    if metadata.directory && !updated {
+                        let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
+                        if table?.etag != metadata.etag {
+                            ocIdsUdated.append(metadata.ocId)
+                        }
+                    }
+                    */
                 }
             }
         } catch let error {

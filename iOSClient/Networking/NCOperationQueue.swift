@@ -184,8 +184,11 @@ class NCOperationSynchronization: ConcurrentOperation {
             self.finish()
         } else {
             if metadata.directory {
+                
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                
                 NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "1", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
+                    
                    if errorCode == 0 {
                     
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
