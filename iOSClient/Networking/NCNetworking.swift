@@ -270,6 +270,7 @@ import Queuer
            
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            
             completion(Int(k_CCErrorInternalError), "Internal error")
             return
         }
@@ -296,13 +297,6 @@ import Queuer
             }
             metadata.size = NCUtilityFileSystem.shared.getFileSize(filePath: fileNameLocalPath)
                
-            if e2eEncrypted && metadata.size > Double(k_max_filesize_E2EE) {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                completion(Int(k_CCErrorInternalError), "E2E Error file too big")
-                return
-            }
-               
             NCManageDatabase.sharedInstance.addMetadata(metadata)
            
             if e2eEncrypted {
@@ -321,6 +315,7 @@ import Queuer
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    
                     completion(Int(k_CCErrorInternalError), "Internal error")
                     return
                 }
@@ -328,12 +323,6 @@ import Queuer
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
                 CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
 
-                if e2eEncrypted && (extractMetadata.size > Double(k_max_filesize_E2EE)) {
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
-                    completion(Int(k_CCErrorInternalError), "E2E Error file too big")
-                    return
-                }
-                       
                 NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
                
                 if e2eEncrypted {
@@ -381,6 +370,7 @@ import Queuer
             completion(0, "")
         } else {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            
             completion(Int(k_CCErrorInternalError), "task null")
         }
     }
