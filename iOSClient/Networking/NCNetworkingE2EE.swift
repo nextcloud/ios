@@ -172,7 +172,6 @@ import Alamofire
         let metadataUpdate = tableMetadata.init(value: metadata)
         metadataUpdate.fileName = CCUtility.generateRandomIdentifier()!
         metadataUpdate.e2eEncrypted = true
-        metadataUpdate.status = Int(k_metadataStatusInUpload)
         metadataUpdate.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         metadataUpdate.sessionError = ""
         NCManageDatabase.sharedInstance.addMetadata(metadataUpdate)

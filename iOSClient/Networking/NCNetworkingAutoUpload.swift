@@ -83,12 +83,16 @@ class NCNetworkingAutoUpload: NSObject {
                         if UIApplication.shared.applicationState == .background { break }
                         maxConcurrentOperationUpload = 1
                         counterUpload += 1
-                        NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                        if let metadata = NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload)) {
+                            NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                        }
                         startTimer()
                         return
                     } else {
                         counterUpload += 1
-                        NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                        if let metadata = NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusInUpload)) {
+                            NCNetworking.shared.upload(metadata: metadata, background: true) { (_, _) in }
+                        }
                         sizeUpload = sizeUpload + Int(metadata.size)
                         if sizeUpload > k_maxSizeOperationUpload {
                             startTimer()

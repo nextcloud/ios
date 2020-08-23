@@ -2062,6 +2062,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.status = status
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+        
+        if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
+            return result.freeze()
+        } else {
+            return nil
+        }
+    }
+    
     @objc func setMetadataFavorite(ocId: String, favorite: Bool) {
         
         let realm = try! Realm()
