@@ -168,7 +168,7 @@ import Alamofire
         let ocIdTemp = metadata.ocId
         let serverUrl = metadata.serverUrl
         
-        // Verify dim
+        // Verify max size
         if metadata.size > Double(k_max_filesize_E2EE) {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
