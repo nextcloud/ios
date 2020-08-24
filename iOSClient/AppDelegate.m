@@ -1121,14 +1121,14 @@
                                                     
                                                     // Push
                                                     NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
+                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
                                                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase: @"" url:@"" contentType:@"" livePhoto:false];
                                                     [self.activeMain performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {
                                                     
                                                     // Reload folder
-                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@%@", matchedAccount.urlBase, webDAV];
+                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
                                                     
                                                     self.activeMain.blinkFileNamePath = fileNamePath;
                                                     [self.activeMain readFolder:serverUrl];
