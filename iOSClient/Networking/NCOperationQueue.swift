@@ -193,8 +193,12 @@ class NCOperationSynchronization: ConcurrentOperation {
                     
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             
+                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
+                            
                             if self.selector == selectorDownloadAllFile {
                                 
+                                NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
+
                                 for metadata in metadatas {
                                     if metadata.directory {
                                         NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
@@ -208,9 +212,8 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 
                             } else {
                             
-                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
                                 let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
-                                
+
                                 for metadata in metadatasChanged.metadatasUpdate {
                                     if metadata.directory {
                                         NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)

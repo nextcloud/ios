@@ -1933,7 +1933,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool, addCompareEtagLocal: Bool) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
+    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
         
         let realm = try! Realm()
         var ocIdsUdate : [String] = []
