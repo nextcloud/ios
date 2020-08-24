@@ -163,7 +163,10 @@
 
             [[NCCommunicationCommon shared] clearFileLog];
             NSInteger logLevel = [CCUtility getLogLevel];
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu", @"[LOG] Start session with level", (unsigned long)logLevel]];
+            
+            NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+            NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
+            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu %@", @"[LOG] Clear log with level", (unsigned long)logLevel, versionNextcloudiOS]];
         };
         [section addFormRow:row];
         
