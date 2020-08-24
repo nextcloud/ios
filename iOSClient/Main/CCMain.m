@@ -739,12 +739,10 @@
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
 {
-    NSLog(@"[LOG] Cancelled");
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
-    NSLog(@"[LOG] Cancelled");
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
@@ -895,8 +893,6 @@
 {
     if (_isSelectedMode && [_selectedocIdsMetadatas count] == 0)
         return;
-
-    NSLog(@"[LOG] Start download selected files ...");
     
     [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
     
@@ -1449,9 +1445,7 @@
         textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     }];
     
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        NSLog(@"[LOG] Cancel action");
-    }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }];
     
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         

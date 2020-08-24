@@ -190,22 +190,22 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
     
-    NSLog(@"[LOG] Request Passcode");
+    // Request Passcode
     [self passcodeWithAutomaticallyPromptForBiometricValidation:true];
     
-    NSLog(@"[LOG] Request Service Server Nextcloud");
+    // Request Service Server Nextcloud
     [[NCService shared] startRequestServicesServer];
     
-    NSLog(@"[LOG] Initialize Auto upload");
+    // Initialize Auto upload
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
-    NSLog(@"[LOG] Read active directory");
+    // Read active directory
     [self.activeMain readFileReloadFolder];
     
-    NSLog(@"[LOG] Required unsubscribing / subscribing");
+    // Required unsubscribing / subscribing
     [self pushNotification];
     
-    NSLog(@"[LOG] RichDocument");
+    // RichDocument
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
 }
 
