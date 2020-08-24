@@ -137,13 +137,13 @@
     
     if ([CLLocationManager locationServicesEnabled]) {
         
-        NSLog(@"[LOG] checkIfLocationIsEnabled : authorizationStatus: %d", [CLLocationManager authorizationStatus]);
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] checkIfLocationIsEnabled : authorizationStatus: %d", [CLLocationManager authorizationStatus]]];
         
         if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorizedAlways) {
             
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
-                NSLog(@"[LOG] checkIfLocationIsEnabled : Location services not determined");
+                [[NCCommunicationCommon shared] writeLog:@"[LOG] checkIfLocationIsEnabled : Location services not determined"];
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
@@ -295,8 +295,7 @@
             //check location
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
                 
-                NSLog(@"[LOG] Changed Location call uploadNewAssets");
-                
+                [[NCCommunicationCommon shared] writeLog:@"[LOG] Changed Location call uploadNewAssets"];
                 [self uploadNewAssets];
             }
             
@@ -352,12 +351,12 @@
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if (newAssetToUpload == nil || [newAssetToUpload count] == 0) {
         
-        NSLog(@"[LOG] Auto upload, no new asset found");
+        [[NCCommunicationCommon shared] writeLog:@"[LOG] Auto upload, no new asset found"];
         return;
         
     } else {
         
-        NSLog(@"[LOG] Auto upload, new %lu asset found", (unsigned long)[newAssetToUpload count]);
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Auto upload, new %lu asset found", (unsigned long)[newAssetToUpload count]]];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -587,7 +586,7 @@
     if (assets != nil) {
         (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets account:account.account];
 
-        NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]]];
     }
 }
 

@@ -22,11 +22,9 @@
 //
 
 #import "CCManageLocation.h"
-
 #import "AppDelegate.h"
 
 @implementation CCManageLocation
-
 
 + (CCManageLocation *)sharedInstance
 {

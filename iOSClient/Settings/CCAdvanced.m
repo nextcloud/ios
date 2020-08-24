@@ -291,7 +291,7 @@
         
         NSInteger logLevel = [[rowDescriptor.value valueData] intValue];
         [CCUtility setLogLevel:logLevel];
-        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
+        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     }
 }
 

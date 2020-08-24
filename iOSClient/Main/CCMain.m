@@ -407,7 +407,7 @@
         }
         [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
-        NSLog(@"[LOG] Request Service Server Nextcloud");
+        [[NCCommunicationCommon shared] writeLog:@"[LOG] Request Service Server Nextcloud"];
         [[NCService shared] startRequestServicesServer];
                 
         // Read this folder

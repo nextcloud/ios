@@ -68,7 +68,7 @@
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSInteger logLevel = [CCUtility getLogLevel];
-    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
+    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu", @"[LOG] Start session with level", (unsigned long)logLevel]];
     
     // Set account, if no exists clear all
@@ -248,7 +248,7 @@
 //
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
-    NSLog(@"[LOG] bye bye, Nextcloud !");
+    [[NCCommunicationCommon shared] writeLog:@"[LOG] bye bye"];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -496,8 +496,8 @@
             [[NCCommunication shared] subscribingPushProxyWithProxyServerUrl:proxyServerPath pushToken:self.pushKitToken deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 if (errorCode == 0) {
                     
-                    NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
-                        
+                    [[NCCommunicationCommon shared] writeLog:@"[LOG] Subscribed to Push Notification server & proxy successfully"];
+
                     [CCUtility setPushNotificationToken:account token:self.pushKitToken];
                     [CCUtility setPushNotificationDeviceIdentifier:account deviceIdentifier:deviceIdentifier];
                     [CCUtility setPushNotificationDeviceIdentifierSignature:account deviceIdentifierSignature:signature];
@@ -525,7 +525,7 @@
             [[NCCommunication shared] unsubscribingPushProxyWithProxyServerUrl:proxyServerPath deviceIdentifier:deviceIdentifier signature:signature publicKey:publicKey userAgent:userAgent completionHandler:^(NSInteger errorCode, NSString *errorDescription) {
                 if (errorCode == 0) {
                 
-                    NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+                    [[NCCommunicationCommon shared] writeLog:@"[LOG] Unsubscribed to Push Notification server & proxy successfully."];
                     
                     [CCUtility setPushNotificationPublicKey:account data:nil];
                     [CCUtility setPushNotificationSubscribingPublicKey:account publicKey:nil];
@@ -982,7 +982,7 @@
         return;
     }
     
-    NSLog(@"[LOG] Start perform Fetch With Completion Handler");
+    [[NCCommunicationCommon shared] writeLog:@"[LOG] Start perform Fetch With Completion Handler"];
     
     // Verify new photo
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
@@ -998,7 +998,7 @@
             completionHandler(UIBackgroundFetchResultNoData);
         }
         
-        NSLog(@"[LOG] End 20 sec. perform Fetch With Completion Handler");
+        [[NCCommunicationCommon shared] writeLog:@"[LOG] End 20 sec. perform Fetch With Completion Handler"];
     });
 }
 
@@ -1011,7 +1011,7 @@
 //
 - (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
-    NSLog(@"[LOG] Start handle Events For Background URLSession: %@", identifier);
+    [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start handle Events For Background URLSession: %@", identifier]];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         self.backgroundSessionCompletionHandler = completionHandler;
