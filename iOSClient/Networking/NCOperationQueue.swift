@@ -193,24 +193,34 @@ class NCOperationSynchronization: ConcurrentOperation {
                     
                         NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: true, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                             
-                            let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
-                            
-                            let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
-                            
-                            for metadata in metadatasChanged.metadatasUpdate {
+                            if self.selector == selectorDownloadAllFile {
                                 
-                                if metadata.directory {
-                                    
-                                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
-                                    
-                                } 
-                            }
-                            
-                            for metadata in metadatasChanged.metadatasLocalUpdate {
+                                for metadata in metadatas {
+                                    if metadata.directory {
+                                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                    } else {
+                                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                        if localFile == nil || localFile?.etag != metadata.etag {
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                        }
+                                    }
+                                }
                                 
-                                NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
-                            }
+                            } else {
                             
+                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrlFileName, k_metadataStatusNormal))
+                                let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: self.download, addCompareEtagLocal: true)
+                                
+                                for metadata in metadatasChanged.metadatasUpdate {
+                                    if metadata.directory {
+                                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: self.selector)
+                                    }
+                                }
+                                
+                                for metadata in metadatasChanged.metadatasLocalUpdate {
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                }
+                            }
                             // Update etag directory
                             NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrlFileName, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
                         }

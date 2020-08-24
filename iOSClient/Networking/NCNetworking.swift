@@ -788,18 +788,14 @@ import Queuer
         }
     }
     
-    @objc func listingFavoritescompletion(completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
                     #if !EXTENSION
                     for metadata in metadatas {
-                       if CCUtility.getFavoriteOffline() {
-                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
-                       } else {
-                           NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
-                       }
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
                     }
                     #endif
                     completion(account, metadatas, errorCode, errorDescription)

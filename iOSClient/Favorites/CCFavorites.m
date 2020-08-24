@@ -113,8 +113,13 @@
     appDelegate.activeFavorites = self;
 
     if (self.serverUrl == nil && appDelegate.account.length > 0) {
-        [[NCNetworking shared] listingFavoritescompletionWithCompletion:^(NSString *account, NSArray* metadatas, NSInteger errorCode, NSString *errorDescription) {
-             [self reloadDatasource];
+        
+        NSString *selector = selectorReadFile;
+        if (CCUtility.getFavoriteOffline){
+            selector = selectorDownloadFile;
+        }
+        [[NCNetworking shared] listingFavoritescompletionWithSelector:(selector) completion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
+            [self reloadDatasource];
         }];
     }
 }
