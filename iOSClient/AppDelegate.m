@@ -45,7 +45,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    if ([[NCUtility shared] isSimulatorOrTestFlight]) {
+    BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
+    
+    if (isSimulatorOrTestFlight) {
         NCBrandOptions.sharedInstance.disable_crash_service = false;
     }
     if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
@@ -71,7 +73,11 @@
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
-    [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu %@", @"[LOG] Start session with level", (unsigned long)logLevel, versionNextcloudiOS]];
+    if (isSimulatorOrTestFlight) {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start session with level %lu %@ (Simulator TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+    } else {
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+    }
     
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];

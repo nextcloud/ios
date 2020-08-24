@@ -162,11 +162,17 @@
             [self deselectFormRow:sender];
 
             [[NCCommunicationCommon shared] clearFileLog];
-            NSInteger logLevel = [CCUtility getLogLevel];
             
+            NSInteger logLevel = [CCUtility getLogLevel];
+            BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
             NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
-            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"%@ %lu %@", @"[LOG] Clear log with level", (unsigned long)logLevel, versionNextcloudiOS]];
+            
+            if (isSimulatorOrTestFlight) {
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Clear log with level %lu %@ (Simulator TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+            } else {
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Clear log with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
+            }
         };
         [section addFormRow:row];
         
