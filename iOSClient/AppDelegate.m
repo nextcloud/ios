@@ -74,7 +74,7 @@
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start session with level %lu %@ (Simulator TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start session with level %lu %@ (Simulator / TestFlight)", (unsigned long)logLevel, versionNextcloudiOS]];
     } else {
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
