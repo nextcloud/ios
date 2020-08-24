@@ -1280,31 +1280,21 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table e2e Encryption
     
-    @objc func addE2eEncryption(_ e2e: tableE2eEncryption) -> Bool {
+    @objc func addE2eEncryption(_ e2e: tableE2eEncryption) {
 
-        guard self.getAccountActive() != nil else {
-            return false
-        }
-        
         let realm = try! Realm()
 
         do {
             try realm.safeWrite {
+                
                 realm.add(e2e, update: .all)
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
-            return false
         }
-        
-        return true
     }
     
     @objc func deleteE2eEncryption(predicate: NSPredicate) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
         
         let realm = try! Realm()
 
@@ -1320,10 +1310,6 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
-        
-        guard self.getAccountActive() != nil else {
-            return nil
-        }
         
         let realm = try! Realm()
         

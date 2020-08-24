@@ -170,7 +170,7 @@ import Alamofire
         
         // Verify max size
         if metadata.size > Double(k_max_filesize_E2EE) {
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
             
@@ -191,6 +191,7 @@ import Alamofire
         let serverUrlFileName = serverUrl + "/" + metadata.fileName
         
         if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
             
@@ -218,11 +219,7 @@ import Alamofire
         objectE2eEncryption.serverUrl = serverUrl
         objectE2eEncryption.version = 1
         
-        if NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption) == false {
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
-            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
-            return
-        }
+        NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption)
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
@@ -258,7 +255,6 @@ import Alamofire
                         
                         guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
                         let metadata = tableMetadata.init(value: metadataTemp)
-                       
                         
                         CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                             

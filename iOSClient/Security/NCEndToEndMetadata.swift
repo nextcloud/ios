@@ -213,9 +213,7 @@ class NCEndToEndMetadata : NSObject  {
                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
                         
                         // Write file parameter for decrypted on DB
-                        if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
-                            return false
-                        }
+                        NCManageDatabase.sharedInstance.addE2eEncryption(object)
                         
                         // Update metadata on tableMetadata
                         metadata.fileNameView = encryptedFileAttributes.filename
