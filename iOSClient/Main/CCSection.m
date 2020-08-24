@@ -113,8 +113,8 @@
             if (ascending) return (obj1.size < obj2.size);
             else return (obj1.size > obj2.size);
         } else {
-            if (ascending) return [obj1.fileName compare:obj2.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileName length]) locale:[NSLocale currentLocale]];
-            else return [obj2.fileName compare:obj1.fileName options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj2.fileName length]) locale:[NSLocale currentLocale]];
+            if (ascending) return [obj1.fileNameView compare:obj2.fileNameView options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj1.fileNameView length]) locale:[NSLocale currentLocale]];
+            else return [obj2.fileNameView compare:obj1.fileNameView options:NSCaseInsensitiveSearch range:NSMakeRange(0,[obj2.fileNameView length]) locale:[NSLocale currentLocale]];
         }
     }];
     
