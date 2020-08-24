@@ -541,7 +541,7 @@
         } 
         if (favorite) {
             if ([CCUtility getFavoriteOffline]) {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadFile];
+                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadAllFile];
             } else {
                 [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorReadFile];
             }
