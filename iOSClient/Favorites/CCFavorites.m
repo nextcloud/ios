@@ -621,7 +621,6 @@
     
     detailViewController.metadata = self.metadataForPushDetail;
     detailViewController.selector = self.selectorForPushDetail;
-    detailViewController.favoriteFilterImage = true;
     
     [detailViewController setTitle:self.metadata.fileNameView];
 }

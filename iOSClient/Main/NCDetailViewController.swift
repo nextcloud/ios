@@ -34,9 +34,7 @@ class NCDetailViewController: UIViewController {
     @objc var isNavigationBarHidden = false
     @objc var metadata: tableMetadata?
     @objc var selector: String?
-    @objc var favoriteFilterImage: Bool = false
     @objc var mediaFilterImage: Bool = false
-    @objc var offlineFilterImage: Bool = false
     
     @objc var viewerImageViewController: NCViewerImageViewController?
     @objc var metadatas: [tableMetadata] = []
@@ -571,7 +569,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         closeAllSubView()
         
-        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, favoriteDatasorce: favoriteFilterImage, mediaDatasorce: mediaFilterImage, offLineDatasource: offlineFilterImage) { (metadatas) in
+        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage) { (metadatas) in
             
             guard let metadatas = metadatas else {
                 self.viewUnload()
