@@ -87,6 +87,15 @@
         // remove all the App group key
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
     } else {
+        // FIX 3.0.5 lost urlbase
+        if (tableAccount.urlBase.length == 0) {
+            NSString *user = [tableAccount.user stringByAppendingString:@" "];
+            NSString *urlBase = [tableAccount.account stringByReplacingOccurrencesOfString:user withString:@""];
+            tableAccount.urlBase = urlBase;
+            [[NCManageDatabase sharedInstance] updateAccount:tableAccount];
+            
+            tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        }
         [self settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];
     }
     
