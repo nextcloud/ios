@@ -790,14 +790,15 @@ import Queuer
     
     @objc func listingFavoritescompletion(selector: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
-            
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
-                    #if !EXTENSION
-                    for metadata in metadatas {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
+                    if selector != selectorListingFavorite {
+                        #if !EXTENSION
+                        for metadata in metadatas {
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selector)
+                        }
+                        #endif
                     }
-                    #endif
                     completion(account, metadatas, errorCode, errorDescription)
                 }
             } else {

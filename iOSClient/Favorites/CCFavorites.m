@@ -112,14 +112,36 @@
     // Active Main
     appDelegate.activeFavorites = self;
 
-    if (self.serverUrl == nil && appDelegate.account.length > 0) {
-        
-        NSString *selector = selectorReadFile;
-        if (CCUtility.getFavoriteOffline){
-            selector = selectorDownloadFile;
-        }
-        [[NCNetworking shared] listingFavoritescompletionWithSelector:(selector) completion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
+    // test
+    if (appDelegate.account.length == 0) {
+        return;
+    }
+    
+    if (self.serverUrl == nil) {
+        [[NCNetworking shared] listingFavoritescompletionWithSelector:(selectorListingFavorite) completion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) {
+            for (tableMetadata *metadata in metadatas) {
+                if (!metadata.directory && CCUtility.getFavoriteOffline) {
+                    tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                    if (localFile == nil || ![localFile.etag isEqualToString:metadata.etag]) {
+                        [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadFile setFavorite:false];
+                    }
+                }
+            }
             [self reloadDatasource];
+        }];
+    } else {
+        [[NCNetworking shared] readFolderWithServerUrl:self.serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadataFolder, NSArray *metadatas, NSArray *metadatasUpdate, NSArray *metadatasLocalUpdate, NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode == 0) {
+                for (tableMetadata *metadata in metadatas) {
+                    if (!metadata.directory && CCUtility.getFavoriteOffline) {
+                        tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
+                        if (localFile == nil || ![localFile.etag isEqualToString:metadata.etag]) {
+                            [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorDownloadFile setFavorite:false];
+                        }
+                    }
+                }
+                [self reloadDatasource];
+            }
         }];
     }
 }
