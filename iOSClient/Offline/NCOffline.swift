@@ -315,21 +315,23 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 )
             )
 
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_remove_available_offline_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        if metadata.directory {
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
-                        } else {
-                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+            if self.serverUrl == "" {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        action: { menuAction in
+                            if metadata.directory {
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
+                            } else {
+                                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                            }
+                            self.loadDatasource()
                         }
-                        self.loadDatasource()
-                    }
+                    )
                 )
-            )
-
+            }
+            
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
