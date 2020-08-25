@@ -124,6 +124,14 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         loadDatasource()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if serverUrl != "" {
+            readFolder()
+        }
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -685,7 +693,6 @@ extension NCOffline {
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account)
-            
         }
         
         self.refreshControl.endRefreshing()
@@ -693,36 +700,17 @@ extension NCOffline {
         collectionView.reloadData()
     }
     
-    /*
-    func deleteItem(with metadata: tableMetadata, sender: Any) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-
-        var actions = [NCMenuAction]()
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_delete_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
-                action: { menuAction in
-                    NCNetworking.sharedInstance.deleteMetadata(metadata, user: self.appDelegate.user, userID: self.appDelegate.userID, password: self.appDelegate.password, url: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
+    private func readFolder() {
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+            for metadata in metadatas ?? [] {
+                if !metadata.directory {
+                    let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    if localFile == nil || localFile?.etag != metadata.etag {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                    }
                 }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_cancel_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in }
-            )
-        )
-
-        mainMenuViewController.actions = actions
-
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+            }
+            self.loadDatasource()
+        }
     }
-    */
 }
