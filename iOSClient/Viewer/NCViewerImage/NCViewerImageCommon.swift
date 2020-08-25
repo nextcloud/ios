@@ -47,10 +47,7 @@ class NCViewerImageCommon: NSObject {
             completion(nil)
             return
         }
-        if metadata.favorite {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND favorite == 1 AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())
-            completion(metadatas)
-        } else if mediaDatasorce {
+        if mediaDatasorce {
             appDelegate.activeMedia.reloadDataSourceWithCompletion { (metadatas) in
                 completion(metadatas)
             }
