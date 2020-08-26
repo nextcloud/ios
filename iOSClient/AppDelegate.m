@@ -1247,22 +1247,16 @@
             }
         }
     
-        [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:nil];
-    }
+        [self.window.rootViewController presentViewController:self.passcodeViewController animated:YES completion:^{
+            [self enableTouchFaceID:automaticallyPromptForBiometricValidation];
+        }];
+        
+    } else {
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (CCUtility.getEnableTouchFaceID && automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
-            [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
-                if (success) {
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                        [self.passcodeViewController dismissViewControllerAnimated:YES completion:^{
-                            self.passcodeViewController = nil;
-                        }];
-                    });
-                }
-            }];
-        }
-    });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            [self enableTouchFaceID:automaticallyPromptForBiometricValidation];
+        });
+    }
 }
 
 - (void)didInputCorrectPasscodeInPasscodeViewController:(TOPasscodeViewController *)passcodeViewController
@@ -1288,6 +1282,21 @@
             });
         }
     }];
+}
+
+- (void)enableTouchFaceID:(BOOL)automaticallyPromptForBiometricValidation
+{
+    if (CCUtility.getEnableTouchFaceID && automaticallyPromptForBiometricValidation && self.passcodeViewController.view.window) {
+        [[LAContext new] evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:[[NCBrandOptions sharedInstance] brand] reply:^(BOOL success, NSError * _Nullable error) {
+            if (success) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    [self.passcodeViewController dismissViewControllerAnimated:YES completion:^{
+                        self.passcodeViewController = nil;
+                    }];
+                });
+            }
+        }];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
