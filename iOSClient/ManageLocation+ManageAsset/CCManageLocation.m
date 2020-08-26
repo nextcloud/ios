@@ -23,6 +23,7 @@
 
 #import "CCManageLocation.h"
 #import "AppDelegate.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCManageLocation
 
@@ -64,7 +65,7 @@
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     CLLocation* location = [locations lastObject];
     
-    NSLog(@"[LOG] update locationManager : latitude %+.6f, longitude %+.6f",location.coordinate.latitude, location.coordinate.longitude);
+    [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] update location manager: latitude %+.6f, longitude %+.6f", location.coordinate.latitude, location.coordinate.longitude]];
     
     appDelegate.currentLatitude = location.coordinate.latitude;
     appDelegate.currentLongitude = location.coordinate.longitude;
@@ -79,7 +80,7 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"[LOG] locationManager didFailWithError: Unable to start location manager. Error:%@", [error description]);
+    [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Location manager didFailWithError: Unable to start location manager, %@", [error description]]];
     
     [self.delegate statusAuthorizationLocationChanged];
 }

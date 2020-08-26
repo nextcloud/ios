@@ -137,13 +137,13 @@
     
     if ([CLLocationManager locationServicesEnabled]) {
         
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] checkIfLocationIsEnabled : authorizationStatus: %d", [CLLocationManager authorizationStatus]]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Check if location is enabled: authorizationStatus: %d", [CLLocationManager authorizationStatus]]];
         
         if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorizedAlways) {
             
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined ) {
                 
-                [[NCCommunicationCommon shared] writeLog:@"[LOG] checkIfLocationIsEnabled : Location services not determined"];
+                [[NCCommunicationCommon shared] writeLog:@"[LOG] Check if location is enabled: Location services not determined"];
                 [[CCManageLocation sharedInstance] startSignificantChangeUpdates];
                 
             } else {
@@ -295,7 +295,7 @@
             //check location
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
                 
-                [[NCCommunicationCommon shared] writeLog:@"[LOG] Changed Location call uploadNewAssets"];
+                [[NCCommunicationCommon shared] writeLog:@"[LOG] Changed Location call upload new assets"];
                 [self uploadNewAssets];
             }
             
@@ -351,12 +351,12 @@
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if (newAssetToUpload == nil || [newAssetToUpload count] == 0) {
         
-        [[NCCommunicationCommon shared] writeLog:@"[LOG] Auto upload, no new asset found"];
+        [[NCCommunicationCommon shared] writeLog:@"[LOG] Auto upload, no new assets found"];
         return;
         
     } else {
         
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Auto upload, new %lu asset found", (unsigned long)[newAssetToUpload count]]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"[LOG] Auto upload, new %lu assets found", (unsigned long)[newAssetToUpload count]]];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
