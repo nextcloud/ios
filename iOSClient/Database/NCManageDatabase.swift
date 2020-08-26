@@ -1958,7 +1958,7 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == k_metadataStatusNormal && result.etag != metadata.etag {
+                        if result.status == k_metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView) {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         }
