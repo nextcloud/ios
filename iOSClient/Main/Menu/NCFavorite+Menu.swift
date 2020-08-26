@@ -1,5 +1,5 @@
 //
-//  CCFavorites+Menu.swift
+//  NCFavorite+Menu.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 24.01.20.
@@ -25,14 +25,14 @@
 
 import FloatingPanel
 
-extension CCFavorites {
+extension NCFavorite {
 
-    @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata) {
+    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata)
+            mainMenuViewController.actions = self.initMoreMenu(metadata: metadata)
 
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = viewController
@@ -44,7 +44,7 @@ extension CCFavorites {
         }
     }
     
-    private func initMoreMenu(indexPath: IndexPath, metadata: tableMetadata) -> [NCMenuAction] {
+    private func initMoreMenu(metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -52,7 +52,7 @@ extension CCFavorites {
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             iconHeader = icon
         } else {
-            if(metadata.directory) {
+            if metadata.directory {
                 iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
@@ -67,7 +67,7 @@ extension CCFavorites {
             )
         )
 
-        if(self.serverUrl == nil) {
+        if self.serverUrl == "" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
@@ -89,13 +89,12 @@ extension CCFavorites {
             )
         )
 
-        if(!metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file) {
+        if !metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        self.tableView.setEditing(false, animated: true)
                         NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenIn)
                     }
                 )
@@ -107,7 +106,12 @@ extension CCFavorites {
                 title: NSLocalizedString("_delete_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
-                    self.actionDelete(indexPath)
+                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase) { (errorCode, errorDescription) in }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
+                    self.present(alertController, animated: true, completion:nil)
                 }
             )
         )

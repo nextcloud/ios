@@ -88,8 +88,8 @@ import Foundation
                                 
                                 if appDelegate.activeMain.view.window != nil {
                                     appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
-                                } else if appDelegate.activeFavorites.view.window != nil {
-                                    appDelegate.activeFavorites.shouldPerformSegue(metadata, selector: selector)
+                                } else if appDelegate.activeFavorite.view.window != nil {
+                                    //appDelegate.activeFavorite.shouldPerformSegue(metadata, selector: selector)
                                 }
                             }
                         }

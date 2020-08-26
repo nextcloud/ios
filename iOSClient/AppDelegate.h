@@ -31,12 +31,12 @@
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCSettings.h"
-#import "CCFavorites.h"
 #import "CCTransfers.h"
 
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
+@class NCFavorite;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 @class NCDetailViewController;
@@ -86,7 +86,7 @@
 
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
-@property (nonatomic, strong) CCFavorites *activeFavorites;
+@property (nonatomic, strong) NCFavorite *activeFavorite;
 @property (nonatomic, strong) NCMedia *activeMedia;
 @property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) CCTransfers *activeTransfers;

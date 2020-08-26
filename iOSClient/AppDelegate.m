@@ -884,8 +884,8 @@
                 if (index == k_tabBarApplicationIndexFile) {
                     serverUrl = self.activeMain.serverUrl;
                 } else if (index == k_tabBarApplicationIndexFavorite) {
-                    if (self.activeFavorites.serverUrl)
-                        serverUrl = self.activeFavorites.serverUrl;
+                    if (self.activeFavorite.serverUrl)
+                        serverUrl = self.activeFavorite.serverUrl;
                 } else if (index == k_tabBarApplicationIndexMedia) {
                     serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:self.urlBase account:self.account];
                 }
