@@ -179,6 +179,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
+        gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
             collectionView.collectionViewLayout = listLayout

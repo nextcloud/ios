@@ -114,7 +114,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_offline)
-
+        gridLayout.itemForLine = CGFloat(itemForLine)
+        
         if layout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {

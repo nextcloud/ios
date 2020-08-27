@@ -68,8 +68,8 @@ class NCGridLayout: UICollectionViewFlowLayout {
     var heightLabelPlusButton: CGFloat = 45
     var preferenceWidth: CGFloat = 110
     var marginLeftRight: CGFloat = 1
-    var numItems: Int = 0
-    
+    var itemForLine: CGFloat = 3
+
     override init() {
         super.init()
         
@@ -90,9 +90,9 @@ class NCGridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                self.numItems = Int(collectionView.frame.width / preferenceWidth)
-                let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
+                
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             
@@ -112,9 +112,8 @@ class NCGridLayout: UICollectionViewFlowLayout {
 class NCGridMediaLayout: UICollectionViewFlowLayout {
     
     var increasing = true
-    var itemPerLine: CGFloat = 3
+    var itemForLine: CGFloat = 3
     var marginLeftRight: CGFloat = 6
-    var numItems: Int = 0
     
     override init() {
         super.init()
@@ -136,7 +135,7 @@ class NCGridMediaLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemPerLine - 1)) / itemPerLine
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
                 let itemHeight: CGFloat = itemWidth
                 
                 return CGSize(width: itemWidth, height: itemHeight)

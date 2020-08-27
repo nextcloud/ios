@@ -85,7 +85,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         collectionView.contentInset = UIEdgeInsets(top: 75, left: 0, bottom: 50, right: 0);
                 
         gridLayout = NCGridMediaLayout()
-        gridLayout.itemPerLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
+        gridLayout.itemForLine = CGFloat(min(CCUtility.getMediaWidthImage(), 5))
         gridLayout.sectionHeadersPinToVisibleBounds = true
 
         collectionView.collectionViewLayout = gridLayout
@@ -108,8 +108,8 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         mediaCommandView = Bundle.main.loadNibNamed("NCMediaCommandView", owner: self, options: nil)?.first as? NCMediaCommandView
         self.view.addSubview(mediaCommandView!)
         mediaCommandView?.mediaView = self
-        mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemPerLine == 1)
-        mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1)
+        mediaCommandView?.zoomInButton.isEnabled = !(self.gridLayout.itemForLine == 1)
+        mediaCommandView?.zoomOutButton.isEnabled = !(self.gridLayout.itemForLine == self.kMaxImageGrid - 1)
         mediaCommandView?.collapseControlButtonView(true)
         mediaCommandView?.translatesAutoresizingMaskIntoConstraints = false
         mediaCommandView?.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
@@ -172,31 +172,31 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     
     @objc func zoomOutGrid() {
         UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemPerLine + 1 < self.kMaxImageGrid) {
-                self.gridLayout.itemPerLine += 1
+            if(self.gridLayout.itemForLine + 1 < self.kMaxImageGrid) {
+                self.gridLayout.itemForLine += 1
                 self.mediaCommandView?.zoomInButton.isEnabled = true
             }
-            if(self.gridLayout.itemPerLine == self.kMaxImageGrid - 1) {
+            if(self.gridLayout.itemForLine == self.kMaxImageGrid - 1) {
                 self.mediaCommandView?.zoomOutButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
+            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
         })
     }
 
     @objc func zoomInGrid() {
         UIView.animate(withDuration: 0.0, animations: {
-            if(self.gridLayout.itemPerLine - 1 > 0) {
-                self.gridLayout.itemPerLine -= 1
+            if(self.gridLayout.itemForLine - 1 > 0) {
+                self.gridLayout.itemForLine -= 1
                 self.mediaCommandView?.zoomOutButton.isEnabled = true
             }
-            if(self.gridLayout.itemPerLine == 1) {
+            if(self.gridLayout.itemForLine == 1) {
                 self.mediaCommandView?.zoomInButton.isEnabled = false
             }
 
             self.collectionView.collectionViewLayout.invalidateLayout()
-            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemPerLine))
+            CCUtility.setMediaWidthImage(Int(self.gridLayout.itemForLine))
         })
     }
     
