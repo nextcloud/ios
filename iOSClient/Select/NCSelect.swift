@@ -559,7 +559,7 @@ extension NCSelect {
         }
         
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
-        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
         
         if withLoadFolder {
             loadFolder()

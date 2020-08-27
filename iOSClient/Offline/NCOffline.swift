@@ -558,12 +558,12 @@ extension NCOffline {
             }
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
             
         } else {
             
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
         }
         
         self.refreshControl.endRefreshing()

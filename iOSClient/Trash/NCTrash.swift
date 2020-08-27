@@ -562,7 +562,7 @@ extension NCTrash {
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: sort, ascending: ascending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sort: sort, ascending: ascending, account: appDelegate.account) else {
             return
         }
         

@@ -1986,7 +1986,7 @@
         }
         
         // [CCUtility getGroupBySettings]
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:@"fileName" ascending:NO directoryOnTop:NO account:appDelegate.account];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupBy:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sort:@"fileName" ascending:NO directoryOnTop:NO account:appDelegate.account];
 
         [self tableViewReloadData];
         
@@ -2021,11 +2021,11 @@
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO];
         
         // [CCUtility getGroupBySettings]
-        NSString *sorted = [[NCUtility shared] getSortedForViewWithKey:k_layout_view_main];
+        NSString *sort = [[NCUtility shared] getSortedForViewWithKey:k_layout_view_main];
         BOOL ascending = [[NCUtility shared] getAscendingForViewWithKey:k_layout_view_main];
         BOOL directoryOnTop = [[NCUtility shared] getDirectoryOnTopForViewWithKey:k_layout_view_main];
 
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:sorted ascending:ascending directoryOnTop:directoryOnTop account:appDelegate.account];
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupBy:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sort:sort ascending:ascending directoryOnTop:directoryOnTop account:appDelegate.account];
             
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
