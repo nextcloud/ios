@@ -147,83 +147,87 @@ class NCUtility: NSObject {
         return blurEffectView
     }
     
-    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String) {
+    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
-        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton
+        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton + "|" + "\(itemForLine)"
         
         UICKeyChainStore.setString(string, forKey: key, service: k_serviceShareKeyChain)
     }
     
     func setLayoutForView(key: String, layout: String) {
         
-        var datasourceSorted = ""
-        var datasourceAscending = true
-        var datasourceGroupBy = ""
-        var datasourceDirectoryOnTop = false
-        var datasourceTitleButton = ""
+        var datasourceSorted: String
+        var datasourceAscending: Bool
+        var datasourceGroupBy: String
+        var datasourceDirectoryOnTop: Bool
+        var datasourceTitleButton: String
+        var itemForLine: Int
 
-        (_, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+        (_, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
 
-        setLayoutForView(key: key, layout: layout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop, titleButton: datasourceTitleButton)
+        setLayoutForView(key: key, layout: layout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop, titleButton: datasourceTitleButton, itemForLine: itemForLine)
     }
     
     @objc func getLayoutForView(key: String) -> (String) {
         
         var typeLayout = ""
-        (typeLayout, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (typeLayout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
         return typeLayout
     }
     
     @objc func getSortedForView(key: String) -> (String) {
         
         var sorted = ""
-        (_, sorted, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, sorted, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
         return sorted
     }
     
     @objc func getAscendingForView(key: String) -> (Bool) {
         
         var ascending: Bool
-        (_, _, ascending, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, _, ascending, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
         return ascending
     }
     
     @objc func getGroupByForView(key: String) -> (String) {
         
         var groupBy: String
-        (_, _, _, groupBy, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, _, _, groupBy, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
         return groupBy
     }
     
     @objc func getDirectoryOnTopForView(key: String) -> (Bool) {
         
         var directoryOnTop: Bool
-        (_, _, _, _, directoryOnTop, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, _, _, _, directoryOnTop, _, _) = NCUtility.shared.getLayoutForView(key: key)
         return directoryOnTop
     }
     
     @objc func getTitleButtonForView(key: String) -> (String) {
         
         var title: String
-        (_, _, _, _, _, title) = NCUtility.shared.getLayoutForView(key: key)
+        (_, _, _, _, _, title, _) = NCUtility.shared.getLayoutForView(key: key)
         return title
     }
     
-    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool, String) {
+    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool, String, Int) {
         
         guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
-            return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_")
+            setLayoutForView(key: key, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+            return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
         }
 
         let array = string.components(separatedBy: "|")
-        if array.count == 6 {
+        if array.count == 7 {
             let sort = NSString(string: array[2])
             let directoryOnTop = NSString(string: array[4])
+            let itemForLine = NSString(string: array[6])
 
-            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5])
+            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue))
         }
         
-        return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_")
+        setLayoutForView(key: key, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
     }
         
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {

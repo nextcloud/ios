@@ -78,6 +78,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var typeLayout = ""
     private var datasourceGroupBy = ""
     private var datasourceTitleButton = ""
+    private var datasourceItemForLine = 0
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -177,7 +178,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
+        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -533,7 +534,7 @@ extension NCSelect {
         var datasourceDirectoryOnTop: Bool
         
         sectionDatasource = CCSectionDataSourceMetadata()
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
         
         if serverUrl == "" {
             

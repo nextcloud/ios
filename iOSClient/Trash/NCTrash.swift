@@ -42,6 +42,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     private var typeLayout = ""
     private var datasourceGroupBy = "none"
     private var datasourceTitleButton = ""
+    private var datasourceItemForLine = 0
 
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
@@ -87,7 +88,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
 
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -557,7 +558,7 @@ extension NCTrash {
         var datasourceSorted: String
         var datasourceAscending: Bool
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
         
         datasource.removeAll()
         

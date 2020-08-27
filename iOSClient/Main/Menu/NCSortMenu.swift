@@ -37,7 +37,8 @@ class NCSortMenu: NSObject {
     private var datasourceGroupBy = ""
     private var datasourceDirectoryOnTop = false
     private var datasourceTitleButton = ""
-    
+    private var datasourceItemForLine: Int = 0
+
     @objc func toggleMenu(viewController: UIViewController, layout: String, sortButton: UIButton?, serverUrl: String?, hideDirectoryOnTop: Bool = false) {
         
         self.layout = layout
@@ -45,7 +46,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: layout)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layout)
 
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
@@ -74,7 +75,7 @@ class NCSortMenu: NSObject {
         
         self.sortButton?.setTitle(NSLocalizedString(self.datasourceTitleButton, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: self.layout, layout: self.typeLayout, sort: self.datasourceSorted, ascending: self.datasourceAscending, groupBy: self.datasourceGroupBy, directoryOnTop: self.datasourceDirectoryOnTop, titleButton: self.datasourceTitleButton)
+        NCUtility.shared.setLayoutForView(key: self.layout, layout: self.typeLayout, sort: self.datasourceSorted, ascending: self.datasourceAscending, groupBy: self.datasourceGroupBy, directoryOnTop: self.datasourceDirectoryOnTop, titleButton: self.datasourceTitleButton, itemForLine: self.datasourceItemForLine)
         
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
     }
