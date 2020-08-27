@@ -53,12 +53,6 @@
 + (BOOL)getEnableTouchFaceID;
 + (void)setEnableTouchFaceID:(BOOL)set;
 
-+ (NSString *)getOrderSettings;
-+ (void)setOrderSettings:(NSString *)order;
-
-+ (BOOL)getAscendingSettings;
-+ (void)setAscendingSettings:(BOOL)ascendente;
-
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;
 
@@ -84,9 +78,6 @@
 
 + (NSString *)getHint;
 + (void)setHint:(NSString *)hint;
-
-+ (BOOL)getDirectoryOnTop;
-+ (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
 + (BOOL)getOriginalFileName:(NSString *)key;
 + (void)setOriginalFileName:(BOOL)value key:(NSString *)key;

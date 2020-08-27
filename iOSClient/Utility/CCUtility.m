@@ -100,43 +100,6 @@
     [UICKeyChainStore setString:sSet forKey:@"enableTouchFaceID" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getOrderSettings
-{
-    NSString *order = [UICKeyChainStore stringForKey:@"order" service:k_serviceShareKeyChain];
-    
-    if (order == nil) {
-        
-        [self setOrderSettings:@"fileName"];
-        return @"fileName";
-    }
-    
-    return order;
-}
-
-+ (void)setOrderSettings:(NSString *)order
-{
-    [UICKeyChainStore setString:order forKey:@"order" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getAscendingSettings
-{
-    NSString *ascending = [UICKeyChainStore stringForKey:@"ascending" service:k_serviceShareKeyChain];
-    
-    if (ascending == nil) {
-        
-        [self setAscendingSettings:YES];
-        return YES;
-    }
-    
-    return [ascending boolValue];
-}
-
-+ (void)setAscendingSettings:(BOOL)ascendente
-{
-    NSString *sAscendente = (ascendente) ? @"true" : @"false";
-    [UICKeyChainStore setString:sAscendente forKey:@"ascending" service:k_serviceShareKeyChain];
-}
-
 + (NSString *)getGroupBySettings
 {
     NSString *groupby = [UICKeyChainStore stringForKey:@"groupby" service:k_serviceShareKeyChain];
@@ -252,25 +215,6 @@
 + (void)setHint:(NSString *)hint
 {
     [UICKeyChainStore setString:hint forKey:@"hint" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getDirectoryOnTop
-{
-    NSString *valueString = [UICKeyChainStore stringForKey:@"directoryOnTop" service:k_serviceShareKeyChain];
-    
-    // Default TRUE
-    if (valueString == nil) {
-        [self setDirectoryOnTop:YES];
-        return true;
-    }
-    
-    return [valueString boolValue];
-}
-
-+ (void)setDirectoryOnTop:(BOOL)directoryOnTop
-{
-    NSString *sDirectoryOnTop = (directoryOnTop) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getOriginalFileName:(NSString *)key

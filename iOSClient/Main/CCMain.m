@@ -706,7 +706,7 @@
         }
     }
     
-    //[self SetSortButtonText];
+    [self.sortButton setTitle:[[NCUtility shared] getTitleButtonForViewWithKey:k_layout_view_main] forState:UIControlStateNormal];
 }
 
 - (void)setUINavigationBarDefault
@@ -2021,7 +2021,11 @@
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.account, serverUrl] page:0 limit:0 sorted:@"fileName" ascending:NO];
         
         // [CCUtility getGroupBySettings]
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings] directoryOnTop:[CCUtility getDirectoryOnTop] account:appDelegate.account];
+        NSString *sorted = [[NCUtility shared] getSortedForViewWithKey:k_layout_view_main];
+        BOOL ascending = [[NCUtility shared] getAscendingForViewWithKey:k_layout_view_main];
+        BOOL directoryOnTop = [[NCUtility shared] getDirectoryOnTopForViewWithKey:k_layout_view_main];
+
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:YES sorted:sorted ascending:ascending directoryOnTop:directoryOnTop account:appDelegate.account];
             
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;
