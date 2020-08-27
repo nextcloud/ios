@@ -25,6 +25,8 @@ import Foundation
 import WebKit
 import NCCommunication
 
+import CollaboraOnlineWebViewKeyboardManager
+
 class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -32,9 +34,12 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     var documentInteractionController: UIDocumentInteractionController!
     var view: UIView!
     var viewController: UIViewController!
+    var keyboardManager: CollaboraOnlineWebViewKeyboardManager!
    
     override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         super.init(frame: frame, configuration: configuration)
+
+        keyboardManager = CollaboraOnlineWebViewKeyboardManager(for: self)
 
         let contentController = configuration.userContentController
         contentController.add(self, name: "RichDocumentsMobileInterface")

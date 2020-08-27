@@ -26,6 +26,8 @@
 		37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */; };
 		37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C83A0E24532BA600618A3B /* CCMain+Swift.swift */; };
 		37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */; };
+		BE2FB2A124F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE2FB2A024F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework */; };
+		BE2FB2A224F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BE2FB2A024F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F70006FA24164F8D00F214A5 /* NCViewerImageVideo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70006F924164F8D00F214A5 /* NCViewerImageVideo.storyboard */; };
 		F70006FC2416500B00F214A5 /* NCViewerImageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */; };
 		F700222C1EC479840080073F /* Custom.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F700222B1EC479840080073F /* Custom.xcassets */; };
@@ -328,6 +330,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		BE2FB2A324F79D12006E18B1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BE2FB2A224F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F77B0F981D118A16002130FE /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -365,6 +378,7 @@
 		37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Swift.swift"; sourceTree = "<group>"; };
 		37C83A0E24532BA600618A3B /* CCMain+Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CCMain+Swift.swift"; sourceTree = "<group>"; };
 		37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenuAction.swift; sourceTree = "<group>"; };
+		BE2FB2A024F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CollaboraOnlineWebViewKeyboardManager.framework; path = Carthage/Build/iOS/CollaboraOnlineWebViewKeyboardManager.framework; sourceTree = "<group>"; };
 		F70006F924164F8D00F214A5 /* NCViewerImageVideo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImageVideo.storyboard; sourceTree = "<group>"; };
 		F70006FB2416500B00F214A5 /* NCViewerImageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageVideo.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
@@ -777,6 +791,7 @@
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
 				F700510322DF6897003A3356 /* Parchment.framework in Frameworks */,
+				BE2FB2A124F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework in Frameworks */,
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
@@ -1474,6 +1489,7 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BE2FB2A024F79D12006E18B1 /* CollaboraOnlineWebViewKeyboardManager.framework */,
 				F76FDEAA24859C3D0095B6C2 /* Queuer.framework */,
 				F710C5EF2471A6D1009AD8B7 /* Sentry.framework */,
 				F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */,
@@ -1622,6 +1638,7 @@
 				F77B0F981D118A16002130FE /* Embed App Extensions */,
 				F73B02C01DC0F1C900EC2C33 /* ShellScript */,
 				F75A40001EBCB82B00B213E8 /* ShellScript */,
+				BE2FB2A324F79D12006E18B1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

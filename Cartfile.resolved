@@ -1,6 +1,7 @@
 github "Alamofire/Alamofire" "5.2.2"
 github "AssistoLab/DropDown" "v2.3.13"
 github "CocoaLumberjack/CocoaLumberjack" "3.6.2"
+github "CollaboraOnline/SampleCode" "e3eab232013f54f63e4d82ced6bf598c2a1eb579"
 github "FabrizioBrancati/Queuer" "2.1.1"
 github "MortimerGoro/MGSwipeTableCell" "1.6.8"
 github "SVGKit/SVGKit" "9240977515c04053f8c96c9dfdb764dc7b98b9ba"
