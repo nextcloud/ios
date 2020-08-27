@@ -706,7 +706,8 @@
         }
     }
     
-    [self.sortButton setTitle:[[NCUtility shared] getTitleButtonForViewWithKey:k_layout_view_main] forState:UIControlStateNormal];
+    NSString *titleButtonMenuSort = [[NCUtility shared] getTitleButtonForViewWithKey:k_layout_view_main];
+    [self.sortButton setTitle:NSLocalizedString(titleButtonMenuSort, nil) forState:UIControlStateNormal];
 }
 
 - (void)setUINavigationBarDefault
