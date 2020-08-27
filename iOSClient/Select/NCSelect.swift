@@ -75,10 +75,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var overwrite = false
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
-    private var typeLayout = ""
-    private var datasourceGroupBy = ""
-    private var datasourceTitleButton = ""
-    private var datasourceItemForLine = 0
+    private var layout = ""
+    private var groupBy = ""
+    private var titleButton = ""
+    private var itemForLine = 0
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -178,9 +178,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
         
-        if typeLayout == k_layout_list {
+        if layout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -300,8 +300,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: keyLayout, layout: typeLayout)
+            layout = k_layout_list
+            NCUtility.shared.setLayoutForView(key: keyLayout, layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -311,8 +311,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: keyLayout, layout: typeLayout)
+            layout = k_layout_grid
+            NCUtility.shared.setLayoutForView(key: keyLayout, layout: layout)
         }
     }
     
@@ -409,9 +409,9 @@ extension NCSelect: UICollectionViewDataSource {
                 header.delegate = self
                 
                 header.setStatusButton(count: sectionDatasource.allOcId.count)
-                header.setTitleSorted(datasourceTitleButton: self.datasourceTitleButton)
+                header.setTitleSorted(datasourceTitleButton: titleButton)
                 
-                if datasourceGroupBy == "none" {
+                if groupBy == "none" {
                     header.labelSection.isHidden = true
                     header.labelSectionHeightConstraint.constant = 0
                 } else {
@@ -471,7 +471,7 @@ extension NCSelect: UICollectionViewDataSource {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        if typeLayout == k_layout_grid {
+        if layout == k_layout_grid {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
         } else {
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
@@ -479,7 +479,7 @@ extension NCSelect: UICollectionViewDataSource {
         
         NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory ,hideButtonMore: true, downloadThumbnail: true, shares: shares, source: self)
         
-        if typeLayout == k_layout_grid {
+        if layout == k_layout_grid {
             let cell = cell as! NCGridCell
             cell.buttonMore.isHidden = true
             
@@ -498,7 +498,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         if section == 0 {
-            if datasourceGroupBy == "none" {
+            if groupBy == "none" {
                 return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
             } else {
                 return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
@@ -529,12 +529,12 @@ extension NCSelect {
     @objc func loadDatasource(withLoadFolder: Bool) {
         
         var predicate: NSPredicate?
-        var datasourceSorted: String
-        var datasourceAscending: Bool
-        var datasourceDirectoryOnTop: Bool
+        var sort: String
+        var ascending: Bool
+        var directoryOnTop: Bool
         
         sectionDatasource = CCSectionDataSourceMetadata()
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
         
         if serverUrl == "" {
             
@@ -559,7 +559,7 @@ extension NCSelect {
         }
         
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
-        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: datasourceSorted, ascending: datasourceAscending, directoryOnTop:datasourceDirectoryOnTop, account: appDelegate.account)
+        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sorted: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
         
         if withLoadFolder {
             loadFolder()

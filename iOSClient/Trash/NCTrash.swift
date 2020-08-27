@@ -39,10 +39,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     private var datasource: [tableTrash] = []
     
-    private var typeLayout = ""
-    private var datasourceGroupBy = "none"
-    private var datasourceTitleButton = ""
-    private var datasourceItemForLine = 0
+    private var layout = ""
+    private var groupBy = "none"
+    private var titleButton = ""
+    private var itemForLine = 0
 
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
@@ -88,9 +88,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
 
-        if typeLayout == k_layout_list {
+        if layout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -164,8 +164,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout)
+            layout = k_layout_list
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -175,8 +175,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            typeLayout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout)
+            layout = k_layout_grid
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
         }
     }
     
@@ -423,7 +423,7 @@ extension NCTrash: UICollectionViewDataSource {
             trashHeader.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             trashHeader.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleSorted(datasourceTitleButton: self.datasourceTitleButton)
+            trashHeader.setTitleSorted(datasourceTitleButton: titleButton)
             
             return trashHeader
             
@@ -555,14 +555,14 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        var datasourceSorted: String
-        var datasourceAscending: Bool
+        var sort: String
+        var ascending: Bool
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, sort, ascending, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: sort, ascending: ascending, account: appDelegate.account) else {
             return
         }
         
