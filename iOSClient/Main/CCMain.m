@@ -1416,7 +1416,7 @@
     viewController.titleButtonDone1 = NSLocalizedString(@"_copy_", nil);
     viewController.isButtonDone1Hide = false;
     viewController.isOverwriteHide = false;
-    viewController.layoutViewSelect = k_layout_view_move;
+    viewController.keyLayout = k_layout_view_move;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -1584,8 +1584,7 @@
 - (void)toggleSortMenu
 {
     NCSortMenu *sortMenu = [NCSortMenu new];
-    [sortMenu toggleMenuWithViewController:self layout:k_layout_view_main sortButton:self.sortButton serverUrl:self.serverUrl hideDirectoryOnTop:false];
-    //[self toggleMenuWithViewController:self.navigationController];
+    [sortMenu toggleMenuWithViewController:self key:k_layout_view_main sortButton:self.sortButton serverUrl:self.serverUrl hideDirectoryOnTop:false];
 }
 
 - (void)toggleSelectMenu

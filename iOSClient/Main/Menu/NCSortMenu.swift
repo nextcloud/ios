@@ -30,23 +30,23 @@ class NCSortMenu: NSObject {
     private var serverUrl: String?
     private var hideDirectoryOnTop: Bool?
     
+    private var key = ""
     private var layout = ""
-    private var typeLayout = ""
-    private var datasourceSorted = ""
-    private var datasourceAscending = true
-    private var datasourceGroupBy = ""
-    private var datasourceDirectoryOnTop = false
-    private var datasourceTitleButton = ""
-    private var datasourceItemForLine: Int = 0
+    private var sort = ""
+    private var ascending = true
+    private var groupBy = ""
+    private var directoryOnTop = false
+    private var titleButton = ""
+    private var itemForLine: Int = 0
 
-    @objc func toggleMenu(viewController: UIViewController, layout: String, sortButton: UIButton?, serverUrl: String?, hideDirectoryOnTop: Bool = false) {
+    @objc func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String?, hideDirectoryOnTop: Bool = false) {
         
-        self.layout = layout
+        self.key = key
         self.sortButton = sortButton
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layout)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key)
 
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
@@ -62,20 +62,20 @@ class NCSortMenu: NSObject {
     
     @objc func actionMenu() {
                 
-        switch datasourceSorted {
+        switch sort {
         case "fileName":
-            self.datasourceTitleButton = datasourceAscending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
+            titleButton = ascending ? "_sorted_by_name_a_z_" : "_sorted_by_name_z_a_"
         case "date":
-            self.datasourceTitleButton = datasourceAscending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
+            titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
         case "size":
-            self.datasourceTitleButton = datasourceAscending ? "_sorted_by_size_largest_" : "_sorted_by_size_smallest_"
+            titleButton = ascending ? "_sorted_by_size_largest_" : "_sorted_by_size_smallest_"
         default:
             break
         }
         
-        self.sortButton?.setTitle(NSLocalizedString(self.datasourceTitleButton, comment: ""), for: .normal)
+        self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: self.layout, layout: self.typeLayout, sort: self.datasourceSorted, ascending: self.datasourceAscending, groupBy: self.datasourceGroupBy, directoryOnTop: self.datasourceDirectoryOnTop, titleButton: self.datasourceTitleButton, itemForLine: self.datasourceItemForLine)
+        NCUtility.shared.setLayoutForView(key: key, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
         
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
     }
@@ -89,13 +89,13 @@ class NCSortMenu: NSObject {
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameAZ"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
                 onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameZA"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: self.datasourceSorted == "fileName",
-                on: self.datasourceSorted == "fileName",
+                selected: self.sort == "fileName",
+                on: self.sort == "fileName",
                 action: { menuAction in
-                    if self.datasourceSorted == "fileName" {
-                        self.datasourceAscending = !self.datasourceAscending
+                    if self.sort == "fileName" {
+                        self.ascending = !self.ascending
                     } else {
-                        self.datasourceSorted = "fileName"
+                        self.sort = "fileName"
                     }
                     self.actionMenu()
                 }
@@ -108,13 +108,13 @@ class NCSortMenu: NSObject {
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateMoreRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
                 onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateLessRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: self.datasourceSorted == "date",
-                on: self.datasourceSorted == "date",
+                selected: self.sort == "date",
+                on: self.sort == "date",
                 action: { menuAction in
-                    if self.datasourceSorted == "date" {
-                        self.datasourceAscending = !self.datasourceAscending
+                    if self.sort == "date" {
+                        self.ascending = !self.ascending
                     } else {
-                        self.datasourceSorted = "date"
+                        self.sort = "date"
                     }
                     self.actionMenu()
                 }
@@ -127,13 +127,13 @@ class NCSortMenu: NSObject {
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortSmallest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
                 onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortLargest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: self.datasourceSorted == "size",
-                on: self.datasourceSorted == "size",
+                selected: self.sort == "size",
+                on: self.sort == "size",
                 action: { menuAction in
-                    if self.datasourceSorted == "size" {
-                        self.datasourceAscending = !self.datasourceAscending
+                    if self.sort == "size" {
+                        self.ascending = !self.ascending
                     } else {
-                        self.datasourceSorted = "size"
+                        self.sort = "size"
                     }
                     self.actionMenu()
                 }
@@ -145,10 +145,10 @@ class NCSortMenu: NSObject {
                 NCMenuAction(
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "foldersOnTop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    selected: self.datasourceDirectoryOnTop,
-                    on: self.datasourceDirectoryOnTop,
+                    selected: self.directoryOnTop,
+                    on: self.directoryOnTop,
                     action: { menuAction in
-                        self.datasourceDirectoryOnTop = !self.datasourceDirectoryOnTop
+                        self.directoryOnTop = !self.directoryOnTop
                         self.actionMenu()
                     }
                 )

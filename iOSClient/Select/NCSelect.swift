@@ -56,7 +56,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
     @objc var isButtonDone1Hide = true
     @objc var isOverwriteHide = true
-    @objc var layoutViewSelect = k_layout_view_move
+    @objc var keyLayout = k_layout_view_move
     @objc var heightToolBarTop: CGFloat = 100
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -178,7 +178,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
+        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
         
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -301,7 +301,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: layoutViewSelect, layout: typeLayout)
+            NCUtility.shared.setLayoutForView(key: keyLayout, layout: typeLayout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -312,14 +312,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: layoutViewSelect, layout: typeLayout)
+            NCUtility.shared.setLayoutForView(key: keyLayout, layout: typeLayout)
         }
     }
     
     func tapOrderHeader(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, layout: layoutViewSelect, sortButton: sender as? UIButton, serverUrl: serverUrl)
+        sortMenu.toggleMenu(viewController: self, key: keyLayout, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
     
     func tapMoreHeader(sender: Any) {
@@ -371,7 +371,7 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.type = type
             visualController.titleButtonDone = titleButtonDone
             visualController.titleButtonDone1 = titleButtonDone1
-            visualController.layoutViewSelect = layoutViewSelect
+            visualController.keyLayout = keyLayout
             visualController.isButtonDone1Hide = isButtonDone1Hide
             visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
@@ -534,7 +534,7 @@ extension NCSelect {
         var datasourceDirectoryOnTop: Bool
         
         sectionDatasource = CCSectionDataSourceMetadata()
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: layoutViewSelect)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, datasourceItemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
         
         if serverUrl == "" {
             

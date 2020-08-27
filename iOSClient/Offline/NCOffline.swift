@@ -212,7 +212,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     func tapOrderHeader(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, layout: k_layout_view_offline, sortButton: sender as? UIButton, serverUrl: serverUrl)
+        sortMenu.toggleMenu(viewController: self, key: k_layout_view_offline, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
     
     func tapMoreHeader(sender: Any) {

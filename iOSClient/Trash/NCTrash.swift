@@ -183,7 +183,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     func tapOrderHeaderMenu(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, layout: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: nil, hideDirectoryOnTop: true)
+        sortMenu.toggleMenu(viewController: self, key: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: nil, hideDirectoryOnTop: true)
     }
     
     func tapMoreHeaderMenu(sender: Any) {

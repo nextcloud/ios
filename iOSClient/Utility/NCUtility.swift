@@ -156,30 +156,30 @@ class NCUtility: NSObject {
     
     func setLayoutForView(key: String, layout: String) {
         
-        var datasourceSorted: String
-        var datasourceAscending: Bool
-        var datasourceGroupBy: String
-        var datasourceDirectoryOnTop: Bool
-        var datasourceTitleButton: String
+        var sort: String
+        var ascending: Bool
+        var groupBy: String
+        var directoryOnTop: Bool
+        var titleButton: String
         var itemForLine: Int
 
-        (_, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+        (_, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
 
-        setLayoutForView(key: key, layout: layout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop, titleButton: datasourceTitleButton, itemForLine: itemForLine)
+        setLayoutForView(key: key, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
     }
     
     @objc func getLayoutForView(key: String) -> (String) {
         
-        var typeLayout = ""
-        (typeLayout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
-        return typeLayout
+        var layout: String
+        (layout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        return layout
     }
     
     @objc func getSortedForView(key: String) -> (String) {
         
-        var sorted = ""
-        (_, sorted, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
-        return sorted
+        var sort: String
+        (_, sort, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        return sort
     }
     
     @objc func getAscendingForView(key: String) -> (Bool) {
@@ -205,12 +205,12 @@ class NCUtility: NSObject {
     
     @objc func getTitleButtonForView(key: String) -> (String) {
         
-        var title: String
-        (_, _, _, _, _, title, _) = NCUtility.shared.getLayoutForView(key: key)
-        return title
+        var titleButton: String
+        (_, _, _, _, _, titleButton, _) = NCUtility.shared.getLayoutForView(key: key)
+        return titleButton
     }
     
-    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool, String, Int) {
+    func getLayoutForView(key: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
             setLayoutForView(key: key, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)

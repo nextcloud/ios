@@ -509,7 +509,7 @@
      viewController.includeImages = false;
      viewController.type = @"";
      viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
-     viewController.layoutViewSelect = k_layout_view_move;
+     viewController.keyLayout = k_layout_view_move;
      viewController.heightToolBarTop = 50;
      
      [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
