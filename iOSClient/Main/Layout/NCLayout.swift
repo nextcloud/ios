@@ -66,8 +66,7 @@ class NCListLayout: UICollectionViewFlowLayout {
 class NCGridLayout: UICollectionViewFlowLayout {
     
     var heightLabelPlusButton: CGFloat = 45
-    var preferenceWidth: CGFloat = 110
-    var marginLeftRight: CGFloat = 1
+    var marginLeftRight: CGFloat = 6
     var itemForLine: CGFloat = 3
 
     override init() {
@@ -76,7 +75,7 @@ class NCGridLayout: UICollectionViewFlowLayout {
         sectionHeadersPinToVisibleBounds = false
         
         minimumInteritemSpacing = 1
-        minimumLineSpacing = 1
+        minimumLineSpacing = marginLeftRight
         
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
@@ -111,9 +110,8 @@ class NCGridLayout: UICollectionViewFlowLayout {
 
 class NCGridMediaLayout: UICollectionViewFlowLayout {
     
-    var increasing = true
-    var itemForLine: CGFloat = 3
     var marginLeftRight: CGFloat = 6
+    var itemForLine: CGFloat = 3
     
     override init() {
         super.init()
