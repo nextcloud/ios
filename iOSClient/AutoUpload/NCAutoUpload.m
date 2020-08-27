@@ -482,7 +482,9 @@
         }
         // end loadingcand reload
         [_hud hideHud];
-    });    
+        // START
+        [[appDelegate networkingAutoUpload] startProcess];
+    });
 }
 
 - (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
