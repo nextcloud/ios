@@ -64,10 +64,6 @@
 		F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */; };
 		F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
-		F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CCFF246AC9B10009B204 /* DropdownItem.swift */; };
-		F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD00246AC9B10009B204 /* DropUpMenu.swift */; };
-		F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD02246AC9B10009B204 /* DropdownMenu.swift */; };
-		F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F711CD03246AC9B10009B204 /* SectionHeader.swift */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C0F46F1C8880540059EC54 /* ShareViewController.m */; };
@@ -277,6 +273,7 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
+		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
 		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
@@ -408,11 +405,6 @@
 		F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
 		F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCDetailNavigationController+Menu.swift"; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
-		F711CCFF246AC9B10009B204 /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
-		F711CD00246AC9B10009B204 /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
-		F711CD01246AC9B10009B204 /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
-		F711CD02246AC9B10009B204 /* DropdownMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownMenu.swift; sourceTree = "<group>"; };
-		F711CD03246AC9B10009B204 /* SectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -678,6 +670,7 @@
 		F7CA1ECD20E7E3FE002CC65E /* PKCircleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCircleView.h; sourceTree = "<group>"; };
 		F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+PKDownloadButton.m"; sourceTree = "<group>"; };
 		F7CA1ECF20E7E3FE002CC65E /* PKPendingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKPendingView.h; sourceTree = "<group>"; };
+		F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSortMenu.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -802,6 +795,7 @@
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				3781B9B323DB2BC9006B4B1D /* NCFavorite+Menu.swift */,
 				3781B9B123DB2B9F006B4B1D /* CCMain+Menu.swift */,
+				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
 				F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */,
 				371B5A2D23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
@@ -861,7 +855,6 @@
 		F70F02A81C889183008DAB36 /* Libraries external */ = {
 			isa = PBXGroup;
 			children = (
-				F711CCFE246AC9B10009B204 /* DropdownMenu */,
 				F704FA5A232A341800BBA952 /* Imagemeter */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
 				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
@@ -889,18 +882,6 @@
 				F749C10823C4A5330027D966 /* NCIntroViewController.swift */,
 			);
 			path = Intro;
-			sourceTree = "<group>";
-		};
-		F711CCFE246AC9B10009B204 /* DropdownMenu */ = {
-			isa = PBXGroup;
-			children = (
-				F711CCFF246AC9B10009B204 /* DropdownItem.swift */,
-				F711CD00246AC9B10009B204 /* DropUpMenu.swift */,
-				F711CD01246AC9B10009B204 /* DropdownMenu.h */,
-				F711CD02246AC9B10009B204 /* DropdownMenu.swift */,
-				F711CD03246AC9B10009B204 /* SectionHeader.swift */,
-			);
-			path = DropdownMenu;
 			sourceTree = "<group>";
 		};
 		F7169A161EE590930086BD69 /* Shares */ = {
@@ -2044,7 +2025,6 @@
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */,
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
-				F711CD04246AC9B10009B204 /* DropdownItem.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
@@ -2064,10 +2044,8 @@
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
-				F711CD07246AC9B10009B204 /* SectionHeader.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
-				F711CD06246AC9B10009B204 /* DropdownMenu.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
@@ -2102,6 +2080,7 @@
 				370D26B1248A3E1A00121797 /* CCCellMain.swift in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
+				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
@@ -2116,7 +2095,6 @@
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
 				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
-				F711CD05246AC9B10009B204 /* DropUpMenu.swift in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,

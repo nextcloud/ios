@@ -273,7 +273,7 @@
         
         CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
-        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:NO sorted:@"fileName" ascending:YES account:appDelegate.account];
+        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupByField:@"session" filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:NO sorted:@"fileName" ascending:YES directoryOnTop:NO account:appDelegate.account];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             sectionDataSource = sectionDataSourceTemp;

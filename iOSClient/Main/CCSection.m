@@ -76,7 +76,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending account:(NSString *)account
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo filterLivePhoto:(BOOL)filterLivePhoto sorted:(NSString *)sorted ascending:(BOOL)ascending directoryOnTop:(BOOL)directoryOnTop account:(NSString *)account
 {
     id dataSection;
     
@@ -124,7 +124,6 @@
     
     NSInteger numDirectory = 0;
     NSInteger numDirectoryFavorite = 0;
-    BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
     for (tableMetadata *metadata in arraySoprtedMetadatas) {

@@ -271,6 +271,7 @@
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
 #define k_layout_view_favorite                          @"LayoutFavorite"
+#define k_layout_view_main                              @"LayoutMain"
 
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"

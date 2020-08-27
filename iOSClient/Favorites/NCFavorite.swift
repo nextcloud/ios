@@ -1,9 +1,9 @@
 //
-//  NCOffline.swift
+//  NCFavorite.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 24/10/2018.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 26/08/2020.
+//  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -23,12 +23,12 @@
 
 import Foundation
 
-class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-    var serverUrl = ""
+    var titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
+    @objc var serverUrl = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
@@ -51,13 +51,11 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
-
-    private let refreshControl = UIRefreshControl()    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeOffline = self
+        appDelegate.activeFavorite = self
     }
     
     override func viewDidLoad() {
@@ -78,14 +76,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
-        
-        // Refresh Control
-        collectionView.addSubview(refreshControl)
-        
-        // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
-        refreshControl.addTarget(self, action: #selector(reloadDataSource), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self
@@ -112,8 +102,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_offline)
-
+        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+        
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
         } else {
@@ -126,7 +116,9 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if serverUrl != "" {
+        if serverUrl == "" {
+            listingFavorites()
+        } else {
             readFolder()
         }
     }
@@ -166,12 +158,18 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_files_no_files_", comment: "")
+        let text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+    
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
     
@@ -193,7 +191,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_offline, layout: typeLayout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_favorite, layout: typeLayout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -204,14 +202,14 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_offline, layout: typeLayout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_favorite, layout: typeLayout)
         }
     }
     
     func tapOrderHeader(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, layout: k_layout_view_offline, sortButton: sender as? UIButton, serverUrl: serverUrl)
+        sortMenu.toggleMenu(viewController: self, layout: k_layout_view_favorite, sortButton: sender as? UIButton, serverUrl: serverUrl)
     }
     
     func tapMoreHeader(sender: Any) {
@@ -233,81 +231,10 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     
     func tapMoreGridItem(with objectId: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
-            return
-        }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else { return }
+        guard let tabBarController = self.tabBarController else { return }
         
-        if !isEditMode {
-            let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            var actions: [NCMenuAction] = []
-
-
-            var iconHeader: UIImage!
-            if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                iconHeader = icon
-            } else {
-                iconHeader = UIImage(named: metadata.iconName)
-            }
-
-            actions.append(
-                NCMenuAction(
-                    title: metadata.fileNameView,
-                    icon: iconHeader,
-                    action: nil
-                )
-            )
-
-            if self.serverUrl == "" {
-                actions.append(
-                    NCMenuAction(
-                        title: NSLocalizedString("_remove_available_offline_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                        action: { menuAction in
-                            if metadata.directory {
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
-                            } else {
-                                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
-                            }
-                            self.reloadDataSource()
-                        }
-                    )
-                )
-            }
-            
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_details_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
-                    action: { menuAction in
-                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
-                    }
-                )
-            )
-
-            mainMenuViewController.actions = actions
-            let menuPanelController = NCMenuPanelController()
-            menuPanelController.parentPresenter = self
-            menuPanelController.delegate = mainMenuViewController
-            menuPanelController.set(contentViewController: mainMenuViewController)
-            menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-            self.present(menuPanelController, animated: true, completion: nil)
-        } else {
-            
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
+        toggleMoreMenu(viewController: tabBarController, metadata: metadata)
     }
     
     // MARK: SEGUE
@@ -334,7 +261,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
 
 // MARK: - 3D Touch peek and pop
 
-extension NCOffline: UIViewControllerPreviewingDelegate {
+extension NCFavorite: UIViewControllerPreviewingDelegate {
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         
@@ -372,7 +299,7 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
 
 // MARK: - Collection View
 
-extension NCOffline: UICollectionViewDelegate {
+extension NCFavorite: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
@@ -394,12 +321,12 @@ extension NCOffline: UICollectionViewDelegate {
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
-            let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+            let ncFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
             
-            ncOffline.serverUrl = serverUrlPush
-            ncOffline.titleCurrentFolder = metadataPush!.fileNameView
+            ncFavorite.serverUrl = serverUrlPush
+            ncFavorite.titleCurrentFolder = metadataPush!.fileNameView
             
-            self.navigationController?.pushViewController(ncOffline, animated: true)
+            self.navigationController?.pushViewController(ncFavorite, animated: true)
             
         } else {
             
@@ -408,7 +335,7 @@ extension NCOffline: UICollectionViewDelegate {
     }
 }
 
-extension NCOffline: UICollectionViewDataSource {
+extension NCFavorite: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
@@ -505,7 +432,7 @@ extension NCOffline: UICollectionViewDataSource {
     }
 }
 
-extension NCOffline: UICollectionViewDelegateFlowLayout {
+extension NCFavorite: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         if section == 0 {
@@ -531,32 +458,20 @@ extension NCOffline: UICollectionViewDelegateFlowLayout {
 
 // MARK: - NC API & Algorithm
 
-extension NCOffline {
+extension NCFavorite {
 
     @objc func reloadDataSource() {
         
-        var ocIds: [String] = []
         var datasourceSorted: String
         var datasourceAscending: Bool
         var datasourceDirectoryOnTop: Bool
         
         sectionDatasource = CCSectionDataSourceMetadata()
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_offline)
-
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+        
         if serverUrl == "" {
             
-            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    ocIds.append(directory.ocId)
-                }
-            }
-            
-            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "fileName", ascending: true)
-            for file: tableLocalFile in files {
-                ocIds.append(file.ocId)
-            }
-            
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, directoryOnTop:datasourceDirectoryOnTop, account: appDelegate.account)
             
         } else {
@@ -564,8 +479,6 @@ extension NCOffline {
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sorted: datasourceSorted, ascending: datasourceAscending, directoryOnTop:datasourceDirectoryOnTop, account: appDelegate.account)
         }
-        
-        self.refreshControl.endRefreshing()
         
         collectionView.reloadData()
     }
@@ -575,6 +488,22 @@ extension NCOffline {
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
+                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        if localFile == nil || localFile?.etag != metadata.etag {
+                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                        }
+                    }
+                }
+                self.reloadDataSource()
+            }
+        }
+    }
+    
+    private func listingFavorites() {
+        NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
+            if errorCode == 0 {
+                for metadata in metadatas ?? [] {
+                    if !metadata.directory && CCUtility.getFavoriteOffline() {
                         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         if localFile == nil || localFile?.etag != metadata.etag {
                             NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)

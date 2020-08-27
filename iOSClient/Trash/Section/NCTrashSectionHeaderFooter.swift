@@ -39,7 +39,7 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
         buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
-        buttonOrder.setTitleColor(NCBrandColor.sharedInstance.icon, for: .normal)
+        buttonOrder.setTitleColor(NCBrandColor.sharedInstance.brandElement, for: .normal)
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
@@ -47,26 +47,9 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
         backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
     
-    func setTitleOrder(datasourceSorted: String, datasourceAscending: Bool) {
+    func setTitleSorted(datasourceTitleButton: String) {
         
-        // Order (∨∧▽△)
-        var title = ""
-        
-        switch datasourceSorted {
-        case "fileName":
-            if datasourceAscending == true { title = NSLocalizedString("_order_by_name_a_z_", comment: "") }
-            if datasourceAscending == false { title = NSLocalizedString("_order_by_name_z_a_", comment: "") }
-        case "date":
-            if datasourceAscending == false { title = NSLocalizedString("_order_by_date_more_recent_", comment: "") }
-            if datasourceAscending == true { title = NSLocalizedString("_order_by_date_less_recent_", comment: "") }
-        case "size":
-            if datasourceAscending == true { title = NSLocalizedString("_order_by_size_smallest_", comment: "") }
-            if datasourceAscending == false { title = NSLocalizedString("_order_by_size_largest_", comment: "") }
-        default:
-            title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
-        }
-        
-        title = title + "  ▽"
+        let title = NSLocalizedString(datasourceTitleButton, comment: "")
         let size = title.size(withAttributes:[.font: buttonOrder.titleLabel?.font as Any])
         
         buttonOrder.setTitle(title, for: .normal)

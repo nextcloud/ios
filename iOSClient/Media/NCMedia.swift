@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCMedia: UIViewController, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : UICollectionView!
     

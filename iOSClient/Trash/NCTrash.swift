@@ -40,11 +40,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     private var datasource: [tableTrash] = []
     
     private var typeLayout = ""
-    private var datasourceSorted = ""
-    private var datasourceAscending = true
     private var datasourceGroupBy = "none"
-    private var datasourceDirectoryOnTop = false
-    
+    private var datasourceTitleButton = ""
+
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
     
@@ -78,8 +76,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         self.collectionView.emptyDataSetDelegate = self;
         self.collectionView.emptyDataSetSource = self;
         
-        // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+
         changeTheming()
     }
     
@@ -88,7 +87,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (typeLayout, _, _, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
 
         if typeLayout == k_layout_list {
             collectionView.collectionViewLayout = listLayout
@@ -104,7 +103,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
         
         if (datasource.count == 0) {
-            loadDatasource()
+            reloadDataSource()
         }
         
         loadListingTrash()
@@ -151,17 +150,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         return true
     }
     
-    func reloadSortOrder(){
-        NCUtility.shared.setLayoutForView(
-            key: k_layout_view_trash,
-            layout: self.typeLayout,
-            sort: self.datasourceSorted,
-            ascending: self.datasourceAscending,
-            groupBy: self.datasourceGroupBy,
-            directoryOnTop: self.datasourceDirectoryOnTop)
-        self.loadDatasource()
-    }
-
     // MARK: TAP EVENT
     
     func tapSwitchHeaderMenu(sender: Any) {
@@ -176,7 +164,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             typeLayout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -187,81 +175,14 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             typeLayout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: typeLayout)
         }
     }
     
     func tapOrderHeaderMenu(sender: Any) {
-        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        var actions: [NCMenuAction] = []
-        
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_order_by_name_a_z_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameAZ"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameZA"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: datasourceSorted == "fileName",
-                on: datasourceAscending,
-                action: { menuAction in
-                    if(self.datasourceSorted == "fileName"){
-                        self.datasourceAscending = !self.datasourceAscending
-                    } else {
-                        self.datasourceSorted = "fileName"
-                    }
-                    self.reloadSortOrder()
-                }
-            )
-        )
-        
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_order_by_date_more_recent_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateMoreRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateLessRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: datasourceSorted == "date",
-                on: datasourceAscending,
-                action: { menuAction in
-                    if(self.datasourceSorted == "date"){
-                        self.datasourceAscending = !self.datasourceAscending
-                    } else {
-                        self.datasourceSorted = "date"
-                    }
-                    self.reloadSortOrder()
-                }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_order_by_size_smallest_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortSmallest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortLargest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                selected: datasourceSorted == "size",
-                on: datasourceAscending,
-                action: { menuAction in
-                    if(self.datasourceSorted == "size"){
-                        self.datasourceAscending = !self.datasourceAscending
-                    } else {
-                        self.datasourceSorted = "size"
-                    }
-                    self.reloadSortOrder()
-                }
-            )
-        )
-    
-        mainMenuViewController.actions = actions
-        
-        let menuPanelController = NCMenuPanelController()
-        menuPanelController.parentPresenter = self
-        menuPanelController.delegate = mainMenuViewController
-        menuPanelController.set(contentViewController: mainMenuViewController)
-        menuPanelController.track(scrollView: mainMenuViewController.tableView)
-
-        self.present(menuPanelController, animated: true, completion: nil)
+        let sortMenu = NCSortMenu()
+        sortMenu.toggleMenu(viewController: self, layout: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: nil, hideDirectoryOnTop: true)
     }
     
     func tapMoreHeaderMenu(sender: Any) {
@@ -501,8 +422,7 @@ extension NCTrash: UICollectionViewDataSource {
             trashHeader.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             trashHeader.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             trashHeader.setStatusButton(datasource: datasource)
-            trashHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
-            
+            trashHeader.setTitleSorted(datasourceTitleButton: self.datasourceTitleButton)
             
             return trashHeader
             
@@ -632,7 +552,12 @@ extension NCTrash: UICollectionViewDelegateFlowLayout {
 
 extension NCTrash {
 
-    @objc func loadDatasource() {
+    @objc func reloadDataSource() {
+        
+        var datasourceSorted: String
+        var datasourceAscending: Bool
+        
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, _, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
         
         datasource.removeAll()
         
@@ -673,7 +598,7 @@ extension NCTrash {
                 print("[LOG] It has been changed user during networking process, error.")
             }
             
-            self.loadDatasource()
+            self.reloadDataSource()
         }
     }
     
@@ -696,7 +621,7 @@ extension NCTrash {
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
-                self.loadDatasource()
+                self.reloadDataSource()
             }  else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {
@@ -717,7 +642,7 @@ extension NCTrash {
             } else {
                 print("[LOG] It has been changed user during networking process, error.")
             }
-            self.loadDatasource()
+            self.reloadDataSource()
         }
     }
     
@@ -732,7 +657,7 @@ extension NCTrash {
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             if errorCode == 0 && account == self.appDelegate.account {
                 NCManageDatabase.sharedInstance.deleteTrash(fileId: fileId, account: account)
-                self.loadDatasource()
+                self.reloadDataSource()
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             } else {

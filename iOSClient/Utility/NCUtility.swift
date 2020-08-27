@@ -147,30 +147,51 @@ class NCUtility: NSObject {
         return blurEffectView
     }
     
-    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool) {
+    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String) {
         
-        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)"
+        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton
         
         UICKeyChainStore.setString(string, forKey: key, service: k_serviceShareKeyChain)
     }
     
-    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool) {
+    func setLayoutForView(key: String, layout: String) {
+        
+        var datasourceSorted = ""
+        var datasourceAscending = true
+        var datasourceGroupBy = ""
+        var datasourceDirectoryOnTop = false
+        var datasourceTitleButton = ""
+
+        (_, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop, datasourceTitleButton) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+
+        setLayoutForView(key: key, layout: layout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop, titleButton: datasourceTitleButton)
+    }
+    
+    func getLayoutForView(key: String) -> (String) {
+        
+        var typeLayout = ""
+        
+        (typeLayout, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        
+        return typeLayout
+    }
+    
+    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool, String) {
         
         guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
-            return (k_layout_list, "fileName", true, "none", true)
+            return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_")
         }
 
         let array = string.components(separatedBy: "|")
-        if array.count == 5 {
+        if array.count == 6 {
             let sort = NSString(string: array[2])
             let directoryOnTop = NSString(string: array[4])
 
-            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue)
+            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5])
         }
         
-        return (k_layout_list, "fileName", true, "none", true)
+        return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_")
     }
-    
     
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
         

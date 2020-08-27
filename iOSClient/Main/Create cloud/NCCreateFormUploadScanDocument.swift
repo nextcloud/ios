@@ -81,8 +81,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         //        let rowCell = row.cell(forForm: self)
         //        rowCell.becomeFirstResponder()
         
-        // Theming view
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+
         changeTheming()
         
         let value = CCUtility.getTextRecognitionStatus()
