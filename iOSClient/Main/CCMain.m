@@ -706,7 +706,7 @@
         }
     }
     
-    [self SetSortButtonText];
+    //[self SetSortButtonText];
 }
 
 - (void)setUINavigationBarDefault
@@ -1582,7 +1582,9 @@
 
 - (void)toggleSortMenu
 {
-    [self toggleMenuWithViewController:self.navigationController];
+    NCSortMenu *sortMenu = [NCSortMenu new];
+    [sortMenu toggleMenuWithViewController:self layout:k_layout_view_main sortButton:self.sortButton serverUrl:self.serverUrl hideDirectoryOnTop:false];
+    //[self toggleMenuWithViewController:self.navigationController];
 }
 
 - (void)toggleSelectMenu

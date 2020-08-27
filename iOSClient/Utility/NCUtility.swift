@@ -167,13 +167,46 @@ class NCUtility: NSObject {
         setLayoutForView(key: key, layout: layout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop, titleButton: datasourceTitleButton)
     }
     
-    func getLayoutForView(key: String) -> (String) {
+    @objc func getLayoutForView(key: String) -> (String) {
         
         var typeLayout = ""
-        
         (typeLayout, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
-        
         return typeLayout
+    }
+    
+    @objc func getSortedForView(key: String) -> (String) {
+        
+        var sorted = ""
+        (_, sorted, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        return sorted
+    }
+    
+    @objc func getAscendingForView(key: String) -> (Bool) {
+        
+        var ascending: Bool
+        (_, _, ascending, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        return ascending
+    }
+    
+    @objc func getGroupByForView(key: String) -> (String) {
+        
+        var groupBy: String
+        (_, _, _, groupBy, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        return groupBy
+    }
+    
+    @objc func getDirectoryOnTopForView(key: String) -> (Bool) {
+        
+        var directoryOnTop: Bool
+        (_, _, _, _, directoryOnTop, _) = NCUtility.shared.getLayoutForView(key: key)
+        return directoryOnTop
+    }
+    
+    @objc func getTitleButtonForView(key: String) -> (String) {
+        
+        var title: String
+        (_, _, _, _, _, title) = NCUtility.shared.getLayoutForView(key: key)
+        return title
     }
     
     func getLayoutForView(key: String) -> (String, String, Bool, String, Bool, String) {
@@ -192,7 +225,7 @@ class NCUtility: NSObject {
         
         return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_")
     }
-    
+        
     func convertSVGtoPNGWriteToUserData(svgUrlString: String, fileName: String?, width: CGFloat?, rewrite: Bool, account: String, closure: @escaping (String?) -> ()) {
         
         var fileNamePNG = ""

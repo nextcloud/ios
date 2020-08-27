@@ -29,7 +29,7 @@ import NCCommunication
 extension CCMain {
 
     // MARK: - Sort Menu
-    
+    /*
     @objc func toggleMenu(viewController: UIViewController) {
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
@@ -135,7 +135,8 @@ extension CCMain {
 
         return actions
     }
-
+    */
+    
     // MARK: - Select Menu
     
     @objc func toggleSelectMenu(viewController: UIViewController) {
