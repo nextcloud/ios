@@ -56,17 +56,18 @@ class NCNetworkingAutoUpload: NSObject {
             return
         }
         
+        timerProcess?.invalidate()
+        
         let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
         counterUpload = metadatasUpload.count
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
         if sizeUpload > k_maxSizeOperationUpload {
+            startTimer()
             return
         }
-        
-        timerProcess?.invalidate()
-        
+                
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
