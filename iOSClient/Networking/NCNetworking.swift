@@ -75,8 +75,10 @@ import Queuer
     
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if NCNetworking.shared.checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+            NCCommunicationCommon.shared.writeLog("[LOG] Authentication challenge server trust")
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
+            NCCommunicationCommon.shared.writeLog("[LOG] Authentication challenge default handling")
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
