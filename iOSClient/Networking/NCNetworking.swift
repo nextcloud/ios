@@ -138,7 +138,7 @@ import Queuer
 
         BIO_free(mem)
         if x509cert == nil {
-            print("[LOG] OpenSSL couldn't parse X509 Certificate")
+            NCCommunicationCommon.shared.writeLog("[LOG] OpenSSL couldn't parse X509 Certificate")
         } else {
             if FileManager.default.fileExists(atPath: certNamePath) {
                 do {
