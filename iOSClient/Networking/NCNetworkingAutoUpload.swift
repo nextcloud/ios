@@ -40,7 +40,9 @@ class NCNetworkingAutoUpload: NSObject {
         }
     }
     
-    func startTimer() {
+    // PRIVATE
+    
+    private func startTimer() {
         timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
 
