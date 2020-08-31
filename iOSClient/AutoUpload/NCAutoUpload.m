@@ -395,10 +395,10 @@
         
         // Select type of session
         
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = NCCommunicationCommon.shared.sessionIdentifierBackground;
-        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
-        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto == NO) session = NCCommunicationBackground.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = NCCommunicationBackground.shared.sessionIdentifierBackground;
+        if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = NCCommunicationBackground.shared.sessionIdentifierBackgroundWWan;
+        if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = NCCommunicationBackground.shared.sessionIdentifierBackgroundWWan;
         
         NSDateFormatter *formatter = [NSDateFormatter new];
         

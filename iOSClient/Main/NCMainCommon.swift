@@ -150,12 +150,12 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         } else {
         
             var session: URLSession?
-            if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
-                session = NCCommunicationBackground.shared.sessionManagerTransfer
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
-                session = NCCommunicationBackground.shared.sessionManagerTransferWWan
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
-                session = NCCommunicationBackground.shared.sessionManagerTransferExtension
+            if metadata.session == NCCommunicationBackground.shared.sessionIdentifierBackground {
+                session = NCCommunicationBackground.sessionManagerBackground
+            } else if metadata.session == NCCommunicationBackground.shared.sessionIdentifierBackgroundWWan {
+                session = NCCommunicationBackground.sessionManagerBackgroundWWan
+            } else if metadata.session == NCCommunicationBackground.shared.sessionIdentifierBackgroundExtension {
+                session = NCCommunicationBackground.sessionManagerBackgroundExtension
             }
             
             session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in

@@ -84,8 +84,11 @@ class fileProviderData: NSObject {
             accountUrlBase = tableAccount.urlBase
             homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                         
-            NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+            NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
+            // Background session
+            NCCommunicationBackground.shared.delegate = NCNetworking.shared
+            NCCommunicationBackground.shared.setupExtensionSession(capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, allowsCellularAccess: true)
             
             return true
         }
@@ -110,8 +113,11 @@ class fileProviderData: NSObject {
                 accountUrlBase = tableAccount.urlBase
                 homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                 
-                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
+                // Background session
+                NCCommunicationBackground.shared.delegate = NCNetworking.shared
+                NCCommunicationBackground.shared.setupExtensionSession(capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, allowsCellularAccess: true)
 
                 foundAccount = true
             }
@@ -142,9 +148,12 @@ class fileProviderData: NSObject {
                 accountUrlBase = tableAccount.urlBase
                 homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
                 
-                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
-                
+                // Background session
+                NCCommunicationBackground.shared.delegate = NCNetworking.shared
+                NCCommunicationBackground.shared.setupExtensionSession(capabilitiesGroup: NCBrandOptions.sharedInstance.capabilitiesGroups, allowsCellularAccess: true)
+
                 foundAccount = true
             }
         }

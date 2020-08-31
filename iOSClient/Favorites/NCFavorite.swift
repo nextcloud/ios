@@ -107,9 +107,9 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
-            collectionView.collectionViewLayout = listLayout
+            collectionView?.collectionViewLayout = listLayout
         } else {
-            collectionView.collectionViewLayout = gridLayout
+            collectionView?.collectionViewLayout = gridLayout
         }
         
         reloadDataSource()
@@ -129,7 +129,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         super.viewWillTransition(to: size, with: coordinator)
         
         coordinator.animate(alongsideTransition: nil) { _ in
-            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView?.collectionViewLayout.invalidateLayout()
         }
     }
     

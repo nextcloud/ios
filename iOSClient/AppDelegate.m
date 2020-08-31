@@ -66,9 +66,6 @@
     [CCUtility createDirectoryStandard];
     [CCUtility emptyTemporaryDirectory];
     
-    // Networking
-    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
-    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     NSInteger logLevel = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
@@ -422,8 +419,8 @@
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
     [self settingSetupCommunication:account];
+    [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -462,13 +459,21 @@
 
 - (void)settingSetupCommunication:(NSString *)account
 {
-    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-    if (serverVersionMajor > 0) {
-        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
-     }
-    
-    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
+    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
     [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
+
+    if (account.length > 0) {
+        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+        if (serverVersionMajor > 0) {
+            [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
+        }
+        [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
+    }
+    
+    // Background session
+    [[NCCommunicationBackground shared] setupWithDelegate:[NCNetworking shared]];
+    [[NCCommunicationBackground shared] setupExtensionSessionWithCapabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups allowsCellularAccess:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1001,6 +1006,7 @@
         return;
     }
     
+    [self settingSetupCommunication:self.account];
     [[NCCommunicationCommon shared] writeLog:@"[LOG] Start perform Fetch With Completion Handler"];
     
     // Verify new photo
