@@ -291,12 +291,11 @@ class FileProviderExtension: NSFileProviderExtension {
             CCUtility.copyFile(atPath: atPath, toPath: toPath)
         }
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else { return }
-        guard let session = NCCommunicationBackground.sessionManagerBackgroundExtension else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
         
-        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: session) {
+        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: NCCommunicationBackground.shared.sessionManagerTransferExtension) {
             
             NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { (error) in }
         }
@@ -336,11 +335,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 var size = 0 as Double
                 var error: NSError?
                 
-                guard let session = NCCommunicationBackground.sessionManagerBackgroundExtension else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
-                
                 guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
@@ -373,7 +367,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 fileURL.stopAccessingSecurityScopedResource()
                                 
                 let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, url: "", contentType: "", livePhoto: false)
-                metadata.session = NCCommunicationBackground.shared.sessionIdentifierBackgroundExtension
+                metadata.session = NCCommunicationCommon.shared.sessionIdentifierExtension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusInUpload)
                 
@@ -382,7 +376,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
                 
-                if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: session) {
+                if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCCommunicationBackground.shared.sessionManagerTransferExtension) {
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
                     NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
                 }

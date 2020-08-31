@@ -83,6 +83,8 @@
         [CCUtility deleteAllChainStore];
         // remove all the App group key
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+        //
+        [self settingSetupCommunication:nil];
     } else {
         // FIX 3.0.5 lost urlbase
         if (tableAccount.urlBase.length == 0) {
@@ -460,7 +462,7 @@
 - (void)settingSetupCommunication:(NSString *)account
 {
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
-    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
+    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
     [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
 
     if (account.length > 0) {
@@ -471,9 +473,9 @@
         [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
     }
     
-    // Background session
-    [[NCCommunicationBackground shared] setupWithDelegate:[NCNetworking shared]];
-    [[NCCommunicationBackground shared] setupExtensionSessionWithCapabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups allowsCellularAccess:YES];
+    (void)[NCCommunicationBackground shared].sessionManagerTransfer;
+    (void)[NCCommunicationBackground shared].sessionManagerTransferWWan;
+    (void)[NCCommunicationBackground shared].sessionManagerTransferExtension;
 }
 
 #pragma --------------------------------------------------------------------------------------------

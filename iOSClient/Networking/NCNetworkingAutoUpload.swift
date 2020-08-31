@@ -40,9 +40,7 @@ class NCNetworkingAutoUpload: NSObject {
         }
     }
     
-    // PRIVATE
-    
-    private func startTimer() {
+    func startTimer() {
         timerProcess = Timer.scheduledTimer(timeInterval: TimeInterval(k_timerAutoUpload), target: self, selector: #selector(process), userInfo: nil, repeats: true)
     }
 
@@ -56,18 +54,17 @@ class NCNetworkingAutoUpload: NSObject {
             return
         }
         
-        timerProcess?.invalidate()
-        
         let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
         counterUpload = metadatasUpload.count
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
         if sizeUpload > k_maxSizeOperationUpload {
-            startTimer()
             return
         }
-                
+        
+        timerProcess?.invalidate()
+        
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
@@ -113,7 +110,7 @@ class NCNetworkingAutoUpload: NSObject {
         if counterUpload == 0 {
             let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d", k_metadataStatusUploadError))
             for metadata in metadatas {
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationBackground.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusWaitUpload))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0 ,status: Int(k_metadataStatusWaitUpload))
             }
         }
          

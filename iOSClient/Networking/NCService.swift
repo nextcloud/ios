@@ -41,13 +41,6 @@ class NCService: NSObject {
             return
         }
         
-        if UIApplication.shared.applicationState == .background {
-            NCCommunicationCommon.shared.writeLog("[LOG] Request Services Server aborted because in background")
-            return
-        } else {
-            NCCommunicationCommon.shared.writeLog("[LOG] Start Request Services Server")
-        }
-
         self.requestUserProfile()
         self.requestServerStatus()
     }
