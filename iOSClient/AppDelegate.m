@@ -1009,16 +1009,8 @@
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        NSInteger results = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"session != ''"] page:0 limit:0 sorted:@"fileName" ascending:NO].count;
-        
-        if (results > 0) {
-            completionHandler(UIBackgroundFetchResultNewData);
-        } else {
-            completionHandler(UIBackgroundFetchResultNoData);
-        }
-        
         [[NCCommunicationCommon shared] writeLog:@"[LOG] End 20 sec. perform Fetch With Completion Handler"];
+        completionHandler(UIBackgroundFetchResultNoData);
     });
 }
 
