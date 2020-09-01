@@ -45,9 +45,46 @@ import Queuer
     var lastReachability: Bool = true
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
-    
     var uploadMetadata: [String: tableMetadata] = [:]
 
+    @objc public let sessionMaximumConnectionsPerHost = 5
+    @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
+    @objc public let sessionIdentifierBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    @objc public let sessionIdentifierBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+
+    @objc public lazy var sessionManagerBackground: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
+        configuration.allowsCellularAccess = true
+        configuration.sessionSendsLaunchEvents = true
+        configuration.isDiscretionary = false
+        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
+        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
+        return session
+    }()
+    
+    @objc public lazy var sessionManagerBackgroundWWan: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundWWan)
+        configuration.allowsCellularAccess = false
+        configuration.sessionSendsLaunchEvents = true
+        configuration.isDiscretionary = false
+        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
+        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
+        return session
+    }()
+    
+    @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
+        configuration.allowsCellularAccess = true
+        configuration.sessionSendsLaunchEvents = true
+        configuration.isDiscretionary = false
+        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
+        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        configuration.sharedContainerIdentifier = NCBrandOptions.sharedInstance.capabilitiesGroups
+        let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
+        return session
+    }()
     
     //MARK: - Communication Delegate
        
@@ -350,10 +387,10 @@ import Queuer
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         
-        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground || metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
-            session = NCCommunicationBackground.shared.sessionManagerTransfer
-        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
-            session = NCCommunicationBackground.shared.sessionManagerTransferWWan
+        if metadata.session == sessionIdentifierBackground || metadata.session == sessionIdentifierBackgroundExtension {
+            session = sessionManagerBackground
+        } else if metadata.session == sessionIdentifierBackgroundWWan {
+            session = sessionManagerBackgroundWWan
         }
         
         if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: "", session: session!) {
@@ -446,7 +483,7 @@ import Queuer
                 
                 if metadata.status == k_metadataStatusUploadForcedStart {
                     
-                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
                     
                     NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                                             
@@ -489,32 +526,32 @@ import Queuer
     @objc func verifyUploadZombie() {
         
         var session: URLSession?
-        let sessionBackground = NCCommunicationCommon.shared.sessionIdentifierBackground
-        let sessionBackgroundWWan = NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan
-        let sessionBackgroundExtension = NCCommunicationCommon.shared.sessionIdentifierExtension
+        //let sessionBackground = sessionIdentifierBackground
+        //let sessionBackgroundWWan = sessionIdentifierBackgroundWWan
+        //let sessionBackgroundExtension = sessionIdentifierBackgroundExtension
         
         // verify k_metadataStatusInUpload (BACKGROUND)
-        let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusInUpload))
+        let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionIdentifierBackground, sessionIdentifierBackgroundExtension, sessionIdentifierBackgroundWWan, k_metadataStatusInUpload))
         
         for metadata in metadatasInUpload {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d AND sessionTaskIdentifier == 0", metadata.ocId, k_metadataStatusInUpload)) {
-                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
+                    NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: self.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
                 }
             }
         }
         
         // k_metadataStatusUploading (BACKGROUND)
-        let metadatasUploading = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", sessionBackground, sessionBackgroundWWan, sessionBackgroundExtension, k_metadataStatusUploading))
+        let metadatasUploading = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", sessionIdentifierBackground, sessionIdentifierBackgroundWWan, sessionIdentifierBackgroundExtension, k_metadataStatusUploading))
         
         for metadata in metadatasUploading {
             
-            if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackground {
-                session = NCCommunicationBackground.shared.sessionManagerTransfer
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierBackgroundWWan {
-                session = NCCommunicationBackground.shared.sessionManagerTransferWWan
-            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierExtension {
-                session = NCCommunicationBackground.shared.sessionManagerTransferExtension
+            if metadata.session == sessionIdentifierBackground {
+                session = self.sessionManagerBackground
+            } else if metadata.session == sessionIdentifierBackgroundWWan {
+                session = self.sessionManagerBackgroundWWan
+            } else if metadata.session == sessionIdentifierBackgroundExtension {
+                session = self.sessionManagerBackgroundExtension
             }
             
             var taskUpload: URLSessionTask?
@@ -528,7 +565,7 @@ import Queuer
                 
                 if taskUpload == nil {
                     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, k_metadataStatusUploading)) {
-                        NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
+                        NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: self.sessionIdentifierBackground, sessionError: "", sessionSelector: nil, sessionTaskIdentifier: 0, status: Int(k_metadataStatusWaitUpload))
                     }
                 }
             })

@@ -68,7 +68,7 @@
     
     // Networking
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
-    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
     
     
     NSInteger logLevel = [CCUtility getLogLevel];
