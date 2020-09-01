@@ -86,6 +86,16 @@ import Queuer
         return session
     }()
     
+    //MARK: - init
+    
+    override init() {
+        super.init()
+        
+        _ = sessionManagerBackground
+        _ = sessionManagerBackgroundWWan
+        _ = sessionIdentifierBackgroundExtension
+    }
+    
     //MARK: - Communication Delegate
        
     func networkReachabilityObserver(_ typeReachability: NCCommunicationCommon.typeReachability) {
