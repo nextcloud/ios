@@ -66,6 +66,11 @@
     [CCUtility createDirectoryStandard];
     [CCUtility emptyTemporaryDirectory];
     
+    // Networking
+    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
+    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    
+    
     NSInteger logLevel = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
@@ -83,8 +88,6 @@
         [CCUtility deleteAllChainStore];
         // remove all the App group key
         [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
-        //
-        [self settingSetupCommunication:nil];
     } else {
         // FIX 3.0.5 lost urlbase
         if (tableAccount.urlBase.length == 0) {
@@ -421,8 +424,8 @@
 
     (void)[NCNetworkingNotificationCenter shared];
 
-    [self settingSetupCommunication:account];
     [[NCCommunicationCommon shared] setupWithAccount:account user:user userId:userID password:password urlBase:urlBase];
+    [self settingSetupCommunication:account];
 }
 
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe
@@ -461,21 +464,13 @@
 
 - (void)settingSetupCommunication:(NSString *)account
 {
-    [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
-    [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent] capabilitiesGroup:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
-
-    if (account.length > 0) {
-        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
-        if (serverVersionMajor > 0) {
-            [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
-        }
-        [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
-    }
+    NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+    if (serverVersionMajor > 0) {
+        [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
+     }
     
-    (void)[NCCommunicationBackground shared].sessionManagerTransfer;
-    (void)[NCCommunicationBackground shared].sessionManagerTransferWWan;
-    (void)[NCCommunicationBackground shared].sessionManagerTransferExtension;
+    [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
+    [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1008,7 +1003,6 @@
         return;
     }
     
-    [self settingSetupCommunication:self.account];
     [[NCCommunicationCommon shared] writeLog:@"[LOG] Start perform Fetch With Completion Handler"];
     
     // Verify new photo
