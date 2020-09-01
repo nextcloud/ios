@@ -78,6 +78,7 @@ class NCNetworkingAutoUpload: NSObject {
                     predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
                 }
                 let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                NCCommunicationCommon.shared.writeLog("[LOG] PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
                 for metadata in metadatas {
                     if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
                         if UIApplication.shared.applicationState == .background { break }
