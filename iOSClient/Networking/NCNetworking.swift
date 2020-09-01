@@ -121,9 +121,13 @@ import Queuer
     }
     
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge")
+
         if checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
+            NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge TRUST")
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
+            NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge ERROR TRUST")
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
