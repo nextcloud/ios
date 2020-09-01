@@ -1775,6 +1775,7 @@ class NCManageDatabase: NSObject {
         metadata.fileNameWithoutExt = (fileName as NSString).deletingPathExtension
         metadata.livePhoto = livePhoto
         metadata.ocId = ocId
+        metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
         metadata.typeFile = results.typeFile
         metadata.uploadDate = Date() as NSDate
