@@ -306,11 +306,14 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
                     let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                     if tableLocalFile == nil && size == metadata.size {
+                    if tableLocalFile == nil && size == metadata.size {
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
-                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-                    else { cell.imageLocal.image = UIImage.init(named: "local") }
+                    if tableLocalFile?.offline ?? false {
+                        cell.imageLocal.image = UIImage.init(named: "offlineFlag")
+                    } else{
+                        cell.imageLocal.image = UIImage.init(named: "local")
+                    }
                 }
             }
             
