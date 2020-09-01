@@ -70,7 +70,6 @@
     [[NCCommunicationCommon shared] setupWithDelegate:[NCNetworking shared]];
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
     
-    
     NSInteger logLevel = [CCUtility getLogLevel];
     [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
@@ -467,7 +466,7 @@
     NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
     if (serverVersionMajor > 0) {
         [[NCCommunicationCommon shared] setupWithNextcloudVersion:serverVersionMajor];
-     }
+    }
     
     [[NCCommunicationCommon shared] setupWithWebDav:[[NCUtility shared] getWebDAVWithAccount:account]];
     [[NCCommunicationCommon shared] setupWithDav:[[NCUtility shared] getDAV]];
