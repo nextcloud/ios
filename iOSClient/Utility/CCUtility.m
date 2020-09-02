@@ -559,6 +559,12 @@
 
 + (void)setCertificateError:(NSString *)account error:(BOOL)error
 {
+    // In background do not write the error
+    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
+    if (error && (state == UIApplicationStateBackground || state == UIApplicationStateInactive)) {
+        return;
+    }
+    
     NSString *key = [@"certificateError" stringByAppendingString:account];
     NSString *sError = (error) ? @"true" : @"false";
     
