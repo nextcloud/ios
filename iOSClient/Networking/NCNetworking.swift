@@ -490,6 +490,8 @@ import Queuer
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
                 #endif
                 
+                NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + " of size: \(size)")
+                
             } else if errorCode == NSURLErrorCancelled {
                 
                 if metadata.status == k_metadataStatusUploadForcedStart {
