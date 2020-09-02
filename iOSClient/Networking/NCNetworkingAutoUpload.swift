@@ -73,7 +73,7 @@ class NCNetworkingAutoUpload: NSObject {
                 let limit = maxConcurrentOperationUpload - counterUpload
                 var predicate = NSPredicate()
                 if UIApplication.shared.applicationState == .background {
-                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND typeFile != %@", sessionSelector, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
+                    predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d AND (typeFile != %@ || livePhoto == true)", sessionSelector, k_metadataStatusWaitUpload, k_metadataTypeFile_video)
                 } else {
                     predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
                 }

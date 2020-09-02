@@ -1034,12 +1034,6 @@
         metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
                         
-        if ([[NCUtility shared] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
-            [metadatasUploadInConflict addObject:metadataForUpload];
-        } else {
-            [metadatasNOConflict addObject:metadataForUpload];
-        }
-        
         // Add Medtadata MOV LIVE PHOTO for upload
         if (livePhoto) {
                 
@@ -1055,6 +1049,9 @@
                     
                     tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
                     
+                    metadataForUpload.livePhoto = true;
+                    metadataMOVForUpload.livePhoto = true;
+                    
                     metadataMOVForUpload.session = session;
                     metadataMOVForUpload.sessionSelector = selectorUploadFile;
                     metadataMOVForUpload.size = fileSize;
@@ -1069,6 +1066,12 @@
             
             while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
                    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
+        }
+        
+        if ([[NCUtility shared] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
+            [metadatasUploadInConflict addObject:metadataForUpload];
+        } else {
+            [metadatasNOConflict addObject:metadataForUpload];
         }
     }
     

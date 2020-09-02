@@ -444,6 +444,9 @@
                         
                         tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
                         
+                        metadataForUpload.livePhoto = true;
+                        metadataMOVForUpload.livePhoto = true;
+                        
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;
@@ -451,7 +454,7 @@
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
                         [metadataFull addObject:metadataMOVForUpload];
-                        
+                                                
                         // Update database Auto Upload
                         if ([selector isEqualToString:selectorUploadAutoUpload])
                             [[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
