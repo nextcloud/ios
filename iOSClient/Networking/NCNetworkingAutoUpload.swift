@@ -79,7 +79,7 @@ class NCNetworkingAutoUpload: NSObject {
                 }
                 let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                 if metadatas.count > 0 {
-                    NCCommunicationCommon.shared.writeLog("[LOG] PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
+                    NCCommunicationCommon.shared.writeLog("PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
                 }
                 for metadata in metadatas {
                     if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {

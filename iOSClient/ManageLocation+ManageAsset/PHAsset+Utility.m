@@ -6,8 +6,9 @@
 //
 
 #import "PHAsset+Utility.h"
-@import Photos;
+#import "NCBridgeSwift.h"
 
+@import Photos;
 @implementation PHAsset (Utilities)
 
 #pragma mark Public methods
@@ -19,7 +20,7 @@
             [changeRequest addAssets:@[self]];
         } completionHandler:^(BOOL success, NSError *error) {
             if(success == NO) {
-                NSLog(@"[LOG] Failed to add PHAsset to album: %@ error: %@", title, error.localizedDescription);
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Failed to add PHAsset to album %@ error: %@", title, error]];
             }
             return completionBlock(success);
         }];
@@ -36,7 +37,7 @@
             [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title];
         } completionHandler:^(BOOL success, NSError *error) {
             if (!success) {
-                NSLog(@"[LOG] Error creating album: %@", error);
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Error creating album: %@", error]];
             } else {
                 PHAssetCollection *assetCollection = [self albumWithTitle:title];
                 saveAssetCollection(assetCollection);
@@ -124,7 +125,7 @@
 
 +(PHAsset*)getAssetFromlocalIdentifier:(NSString*)localIdentifier{
     if(localIdentifier == nil){
-        NSLog(@"[LOG] Cannot get asset from localID because it is nil");
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Cannot get asset from localID because it is nil"]];
         return nil;
     }
     

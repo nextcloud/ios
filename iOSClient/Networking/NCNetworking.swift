@@ -121,13 +121,10 @@ import Queuer
     }
     
     func authenticationChallenge(_ challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge")
 
         if checkTrustedChallenge(challenge: challenge, directoryCertificate: CCUtility.getDirectoryCerificates()) {
-            NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge TRUST")
             completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential.init(trust: challenge.protectionSpace.serverTrust!))
         } else {
-            NCCommunicationCommon.shared.writeLog("[LOG] NCNteworkink.authenticationChallenge ERROR TRUST")
             completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
         }
     }
@@ -519,20 +516,16 @@ import Queuer
             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                 
                 CCUtility.setCertificateError(metadata.account, error: true)
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 
-                CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                                        
             } else {
                 
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
-                
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":errorDescription])
             }
             
             // Delete
             self.uploadMetadata[fileName+serverUrl] = nil
-            
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
     }

@@ -191,7 +191,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -234,7 +234,7 @@ class NCManageDatabase: NSObject {
             do {
                 try FileManager.default.removeItem(at: URL)
             } catch let error {
-                NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+                NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
             }
         }
     }
@@ -296,7 +296,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -309,7 +309,7 @@ class NCManageDatabase: NSObject {
                 realm.add(account, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -325,7 +325,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -432,7 +432,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
             return nil
         }
         
@@ -453,7 +453,7 @@ class NCManageDatabase: NSObject {
                 result.password = "********"
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -475,10 +475,10 @@ class NCManageDatabase: NSObject {
             do {
                 try realm.commitWrite()
             } catch let error {
-                NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+                NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
             }
         } else {
-            print("[LOG] property not found")
+            NCCommunicationCommon.shared.writeLog("Property not found in database")
         }
     }
     
@@ -502,7 +502,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -526,7 +526,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -573,7 +573,7 @@ class NCManageDatabase: NSObject {
                 returnAccount = result
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
         
         return tableAccount.init(value: returnAccount)
@@ -607,7 +607,7 @@ class NCManageDatabase: NSObject {
                 returnAccount = result
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
         
         return tableAccount.init(value: returnAccount)
@@ -679,7 +679,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -766,7 +766,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -856,7 +856,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -983,7 +983,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1050,7 +1050,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1131,7 +1131,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1154,7 +1154,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1193,7 +1193,7 @@ class NCManageDatabase: NSObject {
                 realm.add(directory, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1237,7 +1237,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1256,7 +1256,7 @@ class NCManageDatabase: NSObject {
                 result.offline = offline
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1273,7 +1273,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -1290,7 +1290,7 @@ class NCManageDatabase: NSObject {
                 realm.add(e2e, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1305,7 +1305,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1366,7 +1366,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1410,7 +1410,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1433,7 +1433,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -1460,7 +1460,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1475,7 +1475,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1520,7 +1520,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1564,7 +1564,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1579,7 +1579,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1615,7 +1615,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1653,7 +1653,7 @@ class NCManageDatabase: NSObject {
                 result.offline = offline
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -1794,7 +1794,7 @@ class NCManageDatabase: NSObject {
                 realm.add(metadata, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1809,7 +1809,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1868,7 +1868,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1882,7 +1882,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1897,7 +1897,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1913,7 +1913,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -1929,7 +1929,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
 
@@ -1989,7 +1989,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
         
         for ocId in ocIdsUdate {
@@ -2039,7 +2039,7 @@ class NCManageDatabase: NSObject {
                     }
                 }
             } catch let error {
-                NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+                NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
             }
         }
     }
@@ -2055,7 +2055,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
         
         if let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@", ocId)).first {
@@ -2081,7 +2081,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
    
@@ -2101,7 +2101,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
        
@@ -2121,7 +2121,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2261,7 +2261,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2279,7 +2279,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2311,7 +2311,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2376,7 +2376,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
             return false
         }
         
@@ -2474,7 +2474,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2547,7 +2547,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2563,7 +2563,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2587,7 +2587,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject, update: .all)
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2603,7 +2603,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2658,7 +2658,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2681,7 +2681,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
@@ -2704,7 +2704,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.commitWrite()
         } catch let error {
-            NCCommunicationCommon.shared.writeLog("[LOG] Could not write to database: \(error)")
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
