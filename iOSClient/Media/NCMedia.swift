@@ -716,7 +716,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.shared.stopActivityIndicator()
@@ -785,7 +785,7 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.user) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
