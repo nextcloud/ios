@@ -1016,10 +1016,10 @@
 				370D26AC248A3BB800121797 /* CCCellMainTransfer.swift */,
 				F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */,
 				F78ACD3F21903CC20088454D /* NCGridCell.swift */,
-				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
 				F77444F322281649000D5EB0 /* NCGridMediaCell.swift */,
 				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
+				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F78ACD4121903CE00088454D /* NCListCell.swift */,
 				F78ACD4321903CF20088454D /* NCListCell.xib */,
 			);

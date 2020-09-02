@@ -51,7 +51,9 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+        imageItem.layer.cornerRadius = 6
+        imageItem.layer.masksToBounds = true
     }
     
     override func prepareForReuse() {

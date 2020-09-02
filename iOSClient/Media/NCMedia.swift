@@ -864,6 +864,7 @@ class NCMediaCommandView: UIView {
     @IBOutlet weak var buttonControlWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var zoomInButton: UIButton!
     @IBOutlet weak var zoomOutButton: UIButton!
+    @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var controlButtonView: UIVisualEffectView!
     @IBOutlet weak var title : UILabel!
     
@@ -880,7 +881,7 @@ class NCMediaCommandView: UIView {
         gradient.endPoint = CGPoint(x: 0, y: 0.9)
         gradient.colors = [UIColor.black.withAlphaComponent(0.4).cgColor , UIColor.clear.cgColor]
         layer.insertSublayer(gradient, at: 0)
-        
+        moreButton.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: .white), for: .normal)
         title.text = ""
     }
     
