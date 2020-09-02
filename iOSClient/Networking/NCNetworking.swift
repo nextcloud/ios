@@ -404,7 +404,7 @@ import Queuer
             session = sessionManagerBackgroundWWan
         }
         
-        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: "", session: session!) {
+        if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, description: metadata.ocId, session: session!) {
                      
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
             
@@ -533,9 +533,6 @@ import Queuer
     @objc func verifyUploadZombie() {
         
         var session: URLSession?
-        //let sessionBackground = sessionIdentifierBackground
-        //let sessionBackgroundWWan = sessionIdentifierBackgroundWWan
-        //let sessionBackgroundExtension = sessionIdentifierBackgroundExtension
         
         // verify k_metadataStatusInUpload (BACKGROUND)
         let metadatasInUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d AND sessionTaskIdentifier == 0", sessionIdentifierBackground, sessionIdentifierBackgroundExtension, sessionIdentifierBackgroundWWan, k_metadataStatusInUpload))
