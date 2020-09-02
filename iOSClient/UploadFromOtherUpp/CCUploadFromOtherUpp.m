@@ -45,7 +45,7 @@
     self.title = NSLocalizedString(@"_upload_", nil);
     
     serverUrlLocal= [[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account];
-    destinationTitle = NSLocalizedString(@"_home_", nil);
+    destinationTitle = @"/";
     
     // changeTheming
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
@@ -143,7 +143,11 @@
 {
     if (serverUrl) {
         serverUrlLocal = serverUrl;
-        destinationTitle = metadata.fileNameView;
+        if ([serverUrl isEqualToString:appDelegate.urlBase]) {
+            destinationTitle =  @"/";
+        } else {
+            destinationTitle = [CCUtility returnPathfromServerUrl:serverUrl urlBase:appDelegate.urlBase account:appDelegate.account];
+        }
         self.destinationLabel.text = destinationTitle;
     }
 }
