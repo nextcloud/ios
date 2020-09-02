@@ -497,7 +497,6 @@ import Queuer
                 if metadata.status == k_metadataStatusUploadForcedStart {
                     
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId!, session: sessionIdentifierBackground, sessionError: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusInUpload))
-                    
                     NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
                                             
                 } else {
@@ -512,8 +511,10 @@ import Queuer
                 NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: metadata.account)
                 #endif
                 
-                CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
+                
+                //CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                //NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 
             } else if errorCode == Int(CFNetworkErrors.cfurlErrorServerCertificateUntrusted.rawValue) {
                 
