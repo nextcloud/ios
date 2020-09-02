@@ -26,7 +26,7 @@ import NCCommunication
 
 class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
 
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
@@ -51,6 +51,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     private let refreshControl = UIRefreshControl()
 
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        appDelegate.activeTrash = self
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -65,12 +65,40 @@ class NCSplitViewController: UISplitViewController {
     }
     
     @objc func setPrimaryColumnWidth() {
-        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.width
-        } else {
-            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.height
+        
+        var fraction: CGFloat = 0.4
+        let gap = 1.0 / self.traitCollection.displayScale
+        
+        if let detailNavigationController = self.viewControllers.last as? NCDetailNavigationController {
+            if let detailViewController = detailNavigationController.topViewController as? NCDetailViewController {
+                if detailViewController.metadata == nil {
+                    fraction = 1
+                }
+            }
         }
-        self.preferredPrimaryColumnWidthFraction = 0.4
+        
+        if fraction == 1 || self.isCollapsed {
+           if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+               self.maximumPrimaryColumnWidth = max(UIScreen.main.bounds.width - gap, UIScreen.main.bounds.height - gap)
+           } else {
+               self.maximumPrimaryColumnWidth = min(UIScreen.main.bounds.width - gap, UIScreen.main.bounds.height - gap)
+           }
+        } else {
+            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+                self.maximumPrimaryColumnWidth = UIScreen.main.bounds.width
+            } else {
+                self.maximumPrimaryColumnWidth = UIScreen.main.bounds.height
+            }
+        }
+        
+        self.preferredPrimaryColumnWidthFraction = fraction
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.appDelegate.activeMedia?.collectionView?.reloadData()
+            self.appDelegate.activeFavorite?.collectionView?.reloadData()
+            self.appDelegate.activeOffline?.collectionView?.reloadData()
+            self.appDelegate.activeTrash?.collectionView?.reloadData()
+        }
     }
 }
 

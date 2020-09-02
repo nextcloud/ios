@@ -25,7 +25,7 @@ import Foundation
 
 class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
-    @IBOutlet fileprivate weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
 
     var titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
     @objc var serverUrl = ""

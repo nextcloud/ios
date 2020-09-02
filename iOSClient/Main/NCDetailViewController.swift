@@ -387,7 +387,6 @@ class NCDetailViewController: UIViewController {
                     navigationController.popViewController(animated: true)
                 }
             } else {
-                
                 closeAllSubView()
                 self.navigationController?.navigationBar.topItem?.title = ""
             }

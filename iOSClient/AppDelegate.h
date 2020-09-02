@@ -37,6 +37,7 @@
 @class NCMedia;
 @class NCOffline;
 @class NCFavorite;
+@class NCTrash;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
 @class NCDetailViewController;
@@ -94,6 +95,7 @@
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
+@property (nonatomic, retain) NCTrash *activeTrash;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
