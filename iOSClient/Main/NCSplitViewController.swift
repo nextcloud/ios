@@ -33,13 +33,7 @@ class NCSplitViewController: UISplitViewController {
                 
         self.delegate = self
         self.preferredDisplayMode = .allVisible
-        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.width
-        } else {
-            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.height
-        }
-        self.preferredPrimaryColumnWidthFraction = 0.4
-        
+              
         let navigationController = viewControllers.first as? UINavigationController
         if let tabBarController = navigationController?.topViewController as? UITabBarController {
             appDelegate.createTabBarController(tabBarController)
@@ -62,8 +56,21 @@ class NCSplitViewController: UISplitViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        setPrimaryColumnWidth()
+    }
+    
     @objc func timerHandlerChangeTheming(_ timer: Timer) {
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
+    }
+    
+    @objc func setPrimaryColumnWidth() {
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.width
+        } else {
+            self.maximumPrimaryColumnWidth = UIScreen.main.bounds.height
+        }
+        self.preferredPrimaryColumnWidthFraction = 0.4
     }
 }
 
