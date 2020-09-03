@@ -2192,31 +2192,29 @@ class NCManageDatabase: NSObject {
     
     @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false) -> [tableMetadata] {
         
-        autoreleasepool {
-            let realm = try! Realm()
-            realm.refresh()
-            var metadatas: [tableMetadata] = []
-                    
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            
-            if results.count > 0 {
-                if page == 0 || limit == 0 {
-                    return Array(results.freeze())
-                } else {
-                    
-                    let nFrom = (page - 1) * limit
-                    let nTo = nFrom + (limit - 1)
-                    
-                    for n in nFrom...nTo {
-                        if n == results.count {
-                            break
-                        }
-                        metadatas.append(results[n].freeze())
+        let realm = try! Realm()
+        realm.refresh()
+        var metadatas: [tableMetadata] = []
+                
+        let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        
+        if results.count > 0 {
+            if page == 0 || limit == 0 {
+                return Array(results.freeze())
+            } else {
+                
+                let nFrom = (page - 1) * limit
+                let nTo = nFrom + (limit - 1)
+                
+                for n in nFrom...nTo {
+                    if n == results.count {
+                        break
                     }
+                    metadatas.append(results[n].freeze())
                 }
             }
-            return metadatas
         }
+        return metadatas
     }
     
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
