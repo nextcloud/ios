@@ -267,6 +267,7 @@
         return;
     }
     
+    /*
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] page:1 limit:100 sorted:@"sessionTaskIdentifier" ascending:NO];
@@ -280,6 +281,7 @@
             [self.tableView reloadData];
         });
     });
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
