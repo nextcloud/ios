@@ -79,7 +79,8 @@
     [self.tableView addGestureRecognizer:longPressRecognizer];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_reloadDataSource object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_uploadedFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource) name:k_notificationCenter_downloadedFile object:nil];
 
     [self changeTheming];
 }
@@ -267,21 +268,13 @@
         return;
     }
     
-    /*
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] page:1 limit:100 sorted:@"sessionTaskIdentifier" ascending:NO];
+    CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
         
-        NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"(session CONTAINS 'upload') OR (session CONTAINS 'download')"] page:1 limit:100 sorted:@"sessionTaskIdentifier" ascending:NO];
+    sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupBy:@"session" filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:NO sort:@"fileName" ascending:YES directoryOnTop:NO account:appDelegate.account];
         
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
-        
-        sectionDataSourceTemp  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:appDelegate.listProgressMetadata groupBy:@"session" filterTypeFileImage:NO filterTypeFileVideo:NO filterLivePhoto:NO sort:@"fileName" ascending:YES directoryOnTop:NO account:appDelegate.account];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            sectionDataSource = sectionDataSourceTemp;
-            [self.tableView reloadData];
-        });
-    });
-    */
+    sectionDataSource = sectionDataSourceTemp;
+    [self.tableView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
