@@ -1942,6 +1942,8 @@ class NCManageDatabase: NSObject {
         var metadatasUpdate : [tableMetadata] = []
         var metadatasLocalUpdate : [tableMetadata] = []
         
+        realm.refresh()
+        
         do {
             try realm.safeWrite {
                 
@@ -2128,6 +2130,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
             return nil
@@ -2139,6 +2142,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first else {
             return nil
@@ -2150,6 +2154,7 @@ class NCManageDatabase: NSObject {
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         let results: Results<tableMetadata>
         var finals: [tableMetadata] = []
@@ -2188,8 +2193,9 @@ class NCManageDatabase: NSObject {
     @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
+        realm.refresh()
         var metadatas: [tableMetadata] = []
-        
+                
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if results.count > 0 {
@@ -2214,6 +2220,8 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
         
         let realm = try! Realm()
+        realm.refresh()
+        
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
@@ -2226,7 +2234,8 @@ class NCManageDatabase: NSObject {
     @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int) -> tableMetadata? {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@ AND session != '' AND sessionTaskIdentifier == %d", serverUrl, fileName, taskIdentifier).first else {
             return nil
         }
@@ -2253,6 +2262,7 @@ class NCManageDatabase: NSObject {
     @objc func clearMetadatasUpload(account: String) {
         
         let realm = try! Realm()
+        realm.refresh()
         
         do {
             try realm.safeWrite {
@@ -2286,6 +2296,8 @@ class NCManageDatabase: NSObject {
     @objc func getAssetLocalIdentifiersUploaded(account: String, sessionSelector: String) -> [String] {
         
         let realm = try! Realm()
+        realm.refresh()
+        
         var assetLocalIdentifiers: [String] = []
         
         let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != '' AND deleteAssetLocalIdentifier == true AND sessionSelector == %@", account, sessionSelector)
@@ -2318,6 +2330,7 @@ class NCManageDatabase: NSObject {
     @objc func isLivePhoto(metadata: tableMetadata) -> tableMetadata? {
            
         let realm = try! Realm()
+        realm.refresh()
         
         if !metadata.livePhoto || !CCUtility.getLivePhoto() {
             return nil
@@ -2333,6 +2346,7 @@ class NCManageDatabase: NSObject {
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()
+        realm.refresh()
         
         let sortProperties = [SortDescriptor(keyPath: sort, ascending: ascending), SortDescriptor(keyPath: "fileNameView", ascending: false)]
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(by: sortProperties).freeze()
