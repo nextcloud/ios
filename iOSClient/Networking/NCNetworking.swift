@@ -479,12 +479,13 @@ import Queuer
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                 
                 #if !EXTENSION
-                let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
-                if metadatasUpload.count == 0 {
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.networkingAutoUpload.startProcess()
+                self.getOcIdInSession { (listOcId) in
+                    if listOcId.count == 0 {
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.networkingAutoUpload.startProcess()
+                    }
                 }
-                #endif
+                #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                 

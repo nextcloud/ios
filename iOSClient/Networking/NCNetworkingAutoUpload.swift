@@ -60,9 +60,8 @@ class NCNetworkingAutoUpload: NSObject {
         for metadata in metadatasUpload {
             sizeUpload = sizeUpload + Int(metadata.size)
         }
-        if sizeUpload > k_maxSizeOperationUpload {
-            return
-        }
+        if sizeUpload > k_maxSizeOperationUpload { return }
+        if counterUpload > 0 { return }
         
         timerProcess?.invalidate()
         
