@@ -575,6 +575,28 @@ import Queuer
             })
         }
     }
+    
+    func getOcIdInSession(completion: @escaping (_ listOcId: [String])->()) {
+        
+        var listOcId: [String] = []
+        
+        sessionManagerBackground.getAllTasks(completionHandler: { (tasks) in
+            for task in tasks {
+                listOcId.append(task.description)
+            }
+            self.sessionManagerBackgroundWWan.getAllTasks(completionHandler: { (tasks) in
+                for task in tasks {
+                    listOcId.append(task.description)
+                }
+                self.sessionManagerBackgroundExtension.getAllTasks(completionHandler: { (tasks) in
+                    for task in tasks {
+                        listOcId.append(task.description)
+                    }
+                    completion(listOcId)
+                })
+            })
+        })
+    }
         
     //MARK: - WebDav Read file, folder
     

@@ -68,16 +68,19 @@ class NCSplitViewController: UISplitViewController {
         
         var fraction: CGFloat = 0.4
         let gap = 1.0 / self.traitCollection.displayScale
+        let device = UIDevice.current.userInterfaceIdiom
         
-        if let detailNavigationController = self.viewControllers.last as? NCDetailNavigationController {
-            if let detailViewController = detailNavigationController.topViewController as? NCDetailViewController {
-                if detailViewController.metadata == nil {
-                    fraction = 1
+        if device == .pad {
+            if let detailNavigationController = self.viewControllers.last as? NCDetailNavigationController {
+                if let detailViewController = detailNavigationController.topViewController as? NCDetailViewController {
+                    if detailViewController.metadata == nil {
+                        fraction = 1
+                    }
                 }
             }
         }
         
-        if fraction == 1 || self.isCollapsed {
+        if fraction == 1 {
            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
                self.maximumPrimaryColumnWidth = max(UIScreen.main.bounds.width - gap, UIScreen.main.bounds.height - gap)
            } else {
