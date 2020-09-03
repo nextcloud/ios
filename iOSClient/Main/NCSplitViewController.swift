@@ -57,14 +57,6 @@ class NCSplitViewController: UISplitViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        setPrimaryColumnWidth()
-    }
-    
-    @objc func timerHandlerChangeTheming(_ timer: Timer) {
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
-    }
-    
-    @objc func setPrimaryColumnWidth() {
         
         var fraction: CGFloat = 0.4
         let gap = 1.0 / self.traitCollection.displayScale
@@ -97,11 +89,15 @@ class NCSplitViewController: UISplitViewController {
         self.preferredPrimaryColumnWidthFraction = fraction
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.appDelegate.activeMedia?.collectionView?.reloadData()
-            self.appDelegate.activeFavorite?.collectionView?.reloadData()
-            self.appDelegate.activeOffline?.collectionView?.reloadData()
-            self.appDelegate.activeTrash?.collectionView?.reloadData()
+            self.appDelegate.activeMedia?.collectionView?.collectionViewLayout.invalidateLayout()
+            self.appDelegate.activeFavorite?.collectionView?.collectionViewLayout.invalidateLayout()
+            self.appDelegate.activeOffline?.collectionView?.collectionViewLayout.invalidateLayout()
+            self.appDelegate.activeTrash?.collectionView?.collectionViewLayout.invalidateLayout()
         }
+    }
+    
+    @objc func timerHandlerChangeTheming(_ timer: Timer) {
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
     }
 }
 
