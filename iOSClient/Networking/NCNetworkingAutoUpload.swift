@@ -88,6 +88,7 @@ class NCNetworkingAutoUpload: NSObject {
                         
                         // Is already in upload ?
                         if listOcId.contains(metadata.ocId) {
+                            NCCommunicationCommon.shared.writeLog("Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                             continue
                         }
                         
