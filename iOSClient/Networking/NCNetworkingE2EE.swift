@@ -43,7 +43,7 @@ import Alamofire
         
         fileNameFolder = NCUtility.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
-            self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
             return
         }
         fileNameIdentifier = CCUtility.generateRandomIdentifier()
@@ -55,7 +55,7 @@ import Alamofire
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
-                            self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": k_CCErrorInternalError], errorDescription: "Error convert ocId", completion: completion)
+                            self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": k_CCErrorInternalError], errorDescription: "Error convert ocId", completion: completion)
                             return
                         }
                         NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { (account, errorCode, errorDescription) in
@@ -87,20 +87,20 @@ import Alamofire
                                 let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                 
                                 self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                                    self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                                    self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                                 }
                                 
                             } else {
-                                self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                                self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                             }
                         }
                         
                     } else {
-                        self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
             } else {
-                self.NotificationPost(name: k_notificationCenter_createFolder, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
@@ -117,14 +117,14 @@ import Alamofire
                     let home = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
                     if metadata.serverUrl != home {
                         self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                            self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                            self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                         }
                     } else {
-                        self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
             } else {
-                self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
@@ -136,7 +136,7 @@ import Alamofire
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             
-            self.NotificationPost(name: k_notificationCenter_renameFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_renameFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
 
         } else {
             
@@ -154,7 +154,7 @@ import Alamofire
                 }
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
-                self.NotificationPost(name: k_notificationCenter_deleteFile, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
@@ -317,13 +317,13 @@ import Alamofire
             return
         }
         
-        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: serverUrl) {
+        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
             e2eToken = tableLock.e2eToken
         }
         
         NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "POST") { (account, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 && e2eToken != nil {
-                NCManageDatabase.sharedInstance.setE2ETokenLock(serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
+                NCManageDatabase.sharedInstance.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken!)
             }
             completion(directory, e2eToken, errorCode, errorDescription)
         }
@@ -338,13 +338,13 @@ import Alamofire
             return
         }
         
-        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: serverUrl) {
+        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
             e2eToken = tableLock.e2eToken
         }
         
         NCCommunication.shared.lockE2EEFolder(fileId: directory.fileId, e2eToken: e2eToken, method: "DELETE") { (account, e2eToken, errorCode, errorDescription) in
             if errorCode == 0 {
-                NCManageDatabase.sharedInstance.deteleE2ETokenLock(serverUrl: serverUrl)
+                NCManageDatabase.sharedInstance.deteleE2ETokenLock(account: account, serverUrl: serverUrl)
             }
             completion(directory, e2eToken, errorCode, errorDescription)
         }
@@ -404,12 +404,12 @@ import Alamofire
     
     //MARK: - Notification Post
        
-    private func NotificationPost(name: String, serverUrl: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
+    private func NotificationPost(name: String, account: String, serverUrl: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         var userInfo = userInfo
         DispatchQueue.main.async {
             
             // unlock
-            if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(serverUrl: serverUrl) {
+            if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                 NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
             }
             
