@@ -1574,7 +1574,6 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-
                 let results = realm.objects(tableLocalFile.self).filter(predicate)
                 realm.delete(results)
             }
@@ -1589,29 +1588,24 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-                
-                guard let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
+                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 if let date = date {
-                    result.date = date
+                    result?.date = date
                 }
                 if let exifDate = exifDate {
-                    result.exifDate = exifDate
+                    result?.exifDate = exifDate
                 }
                 if let exifLatitude = exifLatitude {
-                    result.exifLatitude = exifLatitude
+                    result?.exifLatitude = exifLatitude
                 }
                 if let exifLongitude = exifLongitude {
-                    result.exifLongitude = exifLongitude
+                    result?.exifLongitude = exifLongitude
                 }
                 if let fileName = fileName {
-                    result.fileName = fileName
+                    result?.fileName = fileName
                 }
                 if let etag = etag {
-                    result.etag = etag
+                    result?.etag = etag
                 }
             }
         } catch let error {
@@ -1623,11 +1617,8 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
-            return nil
-        }
-        
-        return result.freeze()
+        let result = realm.objects(tableLocalFile.self).filter(predicate).first
+        return result?.freeze()
     }
     
     @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
@@ -1644,13 +1635,8 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.safeWrite {
-                
-                guard let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
-                result.offline = offline
+                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
+                result?.offline = offline
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
