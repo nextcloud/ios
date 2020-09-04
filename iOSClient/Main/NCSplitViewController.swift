@@ -104,12 +104,11 @@ class NCSplitViewController: UISplitViewController {
         } else {
             self.preferredPrimaryColumnWidthFraction = fraction
         }
-                
-        collectionView?.performBatchUpdates({
-            collectionView?.collectionViewLayout.invalidateLayout()
-        }, completion: { (_) in
+        
+        UIView.animate(withDuration: 0.1) {
             self.preferredPrimaryColumnWidthFraction = fraction
-        })
+            collectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
     
     @objc func timerHandlerChangeTheming(_ timer: Timer) {
