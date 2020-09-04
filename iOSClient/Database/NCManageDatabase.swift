@@ -2052,7 +2052,7 @@ class NCManageDatabase: NSObject {
         var result: tableMetadata?
         
         do {
-            try realm.write {
+            try realm.safeWrite {
                 result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.status = status
             }
@@ -2066,18 +2066,13 @@ class NCManageDatabase: NSObject {
     @objc func setMetadataFavorite(ocId: String, favorite: Bool) {
         
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
-            realm.cancelWrite()
-            return
-        }
-        
-        result.favorite = favorite
         
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.favorite = favorite
+                }
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -2086,18 +2081,13 @@ class NCManageDatabase: NSObject {
     @objc func setMetadataEncrypted(ocId: String, encrypted: Bool) {
            
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
-            realm.cancelWrite()
-            return
-        }
-           
-        result.e2eEncrypted = encrypted
-           
+        
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.e2eEncrypted = encrypted
+                }
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -2106,18 +2096,13 @@ class NCManageDatabase: NSObject {
     @objc func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
         
         let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else {
-            realm.cancelWrite()
-            return
-        }
-                
-        result.fileNameView = newFileNameView
-            
+        
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                if let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first {
+                    result.fileNameView = newFileNameView
+                }
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -2128,11 +2113,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
-            return nil
-        }
-        
-        return result.freeze()
+        let result = realm.objects(tableMetadata.self).filter(predicate).first
+        return result?.freeze()
     }
     
     @objc func getMetadata(predicate: NSPredicate, sorted: String, ascending: Bool) -> tableMetadata? {
@@ -2140,11 +2122,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first else {
-            return nil
-        }
-       
-        return result.freeze()
+        let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending).first
+        return result?.freeze()
     }
     
     @objc func getMetadatasViewer(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableMetadata]? {
@@ -2232,11 +2211,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@ AND session != '' AND sessionTaskIdentifier == %d", serverUrl, fileName, taskIdentifier).first else {
-            return nil
-        }
-        
-        return result.freeze()
+        let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@ AND session != '' AND sessionTaskIdentifier == %d", serverUrl, fileName, taskIdentifier).first
+        return result?.freeze()
     }
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
@@ -2275,15 +2251,13 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-        
-        let results = realm.objects(tableMetadata.self).filter("account == %@ AND fileId == %@", account, fileId)
-        for result in results {
-            result.commentsUnread = false
-        }
-        
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND fileId == %@", account, fileId)
+                for result in results {
+                    result.commentsUnread = false
+                }
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -2310,9 +2284,7 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-            
                 let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
-
                 for result in results {
                     result.assetLocalIdentifier = ""
                     result.deleteAssetLocalIdentifier = false
@@ -2332,11 +2304,8 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first else {
-            return nil
-        }
-        
-        return result.freeze()
+        let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameWithoutExt == %@ AND ocId != %@", metadata.account, metadata.serverUrl, metadata.fileNameWithoutExt, metadata.ocId)).first
+        return result?.freeze()
     }
     
     func getMetadatasMedia(predicate: NSPredicate, sort: String, ascending: Bool = false) -> [tableMetadata] {
