@@ -1255,7 +1255,7 @@ class NCManageDatabase: NSObject {
                 
         do {
             try realm.safeWrite {
-                let result = realm.objects(tableDirectory.self).filter("accoun == %@ AND serverUrl == %@", account, serverUrl).first
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
                 result?.richWorkspace = richWorkspace
             }
         } catch let error {
