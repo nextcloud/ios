@@ -30,10 +30,14 @@ extension NCDetailNavigationController {
         if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
             return
         }
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        } else {
+            mainMenuViewController.actions = self.initMoreMenuClose(viewController: viewController)
+        }
 
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
@@ -42,6 +46,21 @@ extension NCDetailNavigationController {
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
         viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    private func initMoreMenuClose(viewController: UIViewController) -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
+                
+        actions.append(
+            NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDetailClose)
+                }
+            )
+        )
+        
+        return actions
     }
     
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
