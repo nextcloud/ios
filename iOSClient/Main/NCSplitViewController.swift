@@ -62,7 +62,6 @@ class NCSplitViewController: UISplitViewController {
         setPrimaryColumn()
     }
     
-    @discardableResult
     private func setPrimaryColumn() {
         
         var fraction: CGFloat = 0.4
