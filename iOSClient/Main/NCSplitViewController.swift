@@ -100,7 +100,7 @@ class NCSplitViewController: UISplitViewController {
         } else if appDelegate.activeOffline?.view?.window != nil {
             collectionView = self.appDelegate.activeOffline?.collectionView
         } else if appDelegate.activeTrash?.view?.window != nil {
-            self.appDelegate.activeTrash?.collectionView?.collectionViewLayout.invalidateLayout()
+            collectionView = self.appDelegate.activeTrash?.collectionView
         } else {
             self.preferredPrimaryColumnWidthFraction = fraction
         }
