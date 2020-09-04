@@ -756,6 +756,8 @@ extension NCMedia {
             searchOldPhotoVideo(value: -180)
         } else if value == -180 {
             searchOldPhotoVideo(value: -999)
+        } else if value == -999 && limit > 0 {
+            searchOldPhotoVideo(value: -999, limit: 0)
         } else {
             if withElseReloadDataSource {
                 reloadDataSource()
@@ -799,6 +801,8 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
+                } else if errorCode == 0 && files.count == 0 && limit > 0 {
+                    self.searchNewPhotoVideo(limit: 0)
                 } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
                     self.searchOldPhotoVideo()
                 }
