@@ -54,7 +54,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
-    private var limit: Int = 100
     private var livePhoto: Bool = false
     
     private var listOcIdReadFileForMedia: [String] = []
@@ -518,7 +517,7 @@ extension NCMedia: UICollectionViewDelegate {
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        print("[LOG] n. " + String(indexPaths.count))
+        //print("[LOG] n. " + String(indexPaths.count))
     }
 }
 
@@ -693,7 +692,7 @@ extension NCMedia {
         }
     }
     
-    private func searchOldPhotoVideo(value: Int = -30) {
+    private func searchOldPhotoVideo(value: Int = -30, limit: Int = 100) {
         
         if oldInProgress { return }
         else { oldInProgress = true }
@@ -716,7 +715,7 @@ extension NCMedia {
         let height = self.tabBarController?.tabBar.frame.size.height ?? 0
         NCUtility.shared.startActivityIndicator(view: self.view, bottom: height + 50)
 
-        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
+        NCCommunication.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
             
             self.oldInProgress = false
             NCUtility.shared.stopActivityIndicator()
@@ -731,17 +730,9 @@ extension NCMedia {
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
                         let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
                         
-                        if metadatasChanged.metadatasUpdate.count < self.limit {
+                        if metadatasChanged.metadatasUpdate.count < limit {
                             
-                            if value == -30 {
-                                self.searchOldPhotoVideo(value: -90)
-                            } else if value == -90 {
-                                self.searchOldPhotoVideo(value: -180)
-                            } else if value == -180 {
-                                self.searchOldPhotoVideo(value: -999)
-                            } else {
-                                self.reloadDataSource()
-                            }
+                            self.researchOldPhotoVideo(value: value, limit: limit, withElseReloadDataSource: true)
                             
                         } else {
                             
@@ -751,19 +742,28 @@ extension NCMedia {
 
                 } else {
                     
-                    if value == -30 {
-                        self.searchOldPhotoVideo(value: -90)
-                    } else if value == -90 {
-                        self.searchOldPhotoVideo(value: -180)
-                    } else if value == -180 {
-                        self.searchOldPhotoVideo(value: -999)
-                    }
+                    self.researchOldPhotoVideo(value: value, limit: limit, withElseReloadDataSource: false)
                 }
             }
         }
     }
     
-    @objc func searchNewPhotoVideo() {
+    private func researchOldPhotoVideo(value: Int , limit: Int, withElseReloadDataSource: Bool) {
+        
+        if value == -30 {
+            searchOldPhotoVideo(value: -90)
+        } else if value == -90 {
+            searchOldPhotoVideo(value: -180)
+        } else if value == -180 {
+            searchOldPhotoVideo(value: -999)
+        } else {
+            if withElseReloadDataSource {
+                reloadDataSource()
+            }
+        }
+    }
+    
+    @objc func searchNewPhotoVideo(limit: Int = 100) {
         
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
@@ -785,7 +785,7 @@ extension NCMedia {
                 }
             }
 
-            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: 0, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
+            NCCommunication.shared.searchMedia(path: self.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: self.appDelegate.user, timeout: 120) { (account, files, errorCode, errorDescription) in
                 
                 self.newInProgress = false
                 
