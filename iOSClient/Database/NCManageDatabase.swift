@@ -1222,20 +1222,14 @@ class NCManageDatabase: NSObject {
     }
     
     @objc func renameDirectory(ocId: String, serverUrl: String) {
-        
+                
         let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first else {
-            realm.cancelWrite()
-            return
-        }
-        
-        result.serverUrl = serverUrl
-        
+                
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+                result?.serverUrl = serverUrl
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -1247,13 +1241,8 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.safeWrite {
-                
-                guard let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
-                result.offline = offline
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.offline = offline
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
@@ -1263,15 +1252,12 @@ class NCManageDatabase: NSObject {
     @objc func setDirectory(richWorkspace: String?, serverUrl: String, account: String) {
         
         let realm = try! Realm()
-        realm.beginWrite()
                 
-        if let result = realm.objects(tableDirectory.self).filter("serverUrl == %@", serverUrl).first {
-            result.richWorkspace = richWorkspace
-            realm.add(result, update: .all)
-        }
-        
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                let result = realm.objects(tableDirectory.self).filter("accoun == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.richWorkspace = richWorkspace
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -1286,7 +1272,6 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-                
                 realm.add(e2e, update: .all)
             }
         } catch let error {
@@ -1416,22 +1401,18 @@ class NCManageDatabase: NSObject {
     
     @objc func deteleE2ETokenLock(serverUrl: String) {
         
+        let realm = try! Realm()
+
         guard let tableAccount = self.getAccountActive() else {
             return
         }
-            
-        let realm = try! Realm()
-
-        realm.beginWrite()
-
-        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", tableAccount.account, serverUrl).first else {
-            return
-        }
-            
-        realm.delete(result)
-            
+        
         do {
-            try realm.commitWrite()
+            try realm.safeWrite {
+                if let result = realm.objects(tableE2eEncryptionLock.self).filter("account == %@ AND serverUrl == %@", tableAccount.account, serverUrl).first {
+                    realm.delete(result)
+                }
+            }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
@@ -1446,7 +1427,6 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-            
                 let addObject = tableExternalSites()
             
                 addObject.account = account
@@ -1470,7 +1450,6 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.safeWrite {
-            
                 let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
                 realm.delete(results)
             }
