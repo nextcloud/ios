@@ -268,7 +268,7 @@ import Alamofire
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                         
-                        //CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
+                        CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                                                                                     
                     } else if errorCode == 401 || errorCode == 403 {
                         
