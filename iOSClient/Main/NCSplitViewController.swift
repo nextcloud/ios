@@ -79,7 +79,7 @@ class NCSplitViewController: UISplitViewController {
             }
         }
         
-        if fraction == 1 {
+        if fraction == 1 || self.isCollapsed {
            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
                self.maximumPrimaryColumnWidth = max(UIScreen.main.bounds.width - gap, UIScreen.main.bounds.height - gap)
            } else {
