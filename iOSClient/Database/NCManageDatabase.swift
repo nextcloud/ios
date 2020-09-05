@@ -1931,37 +1931,37 @@ class NCManageDatabase: NSObject {
     }
     
     func setMetadataSession(ocId: String, session: String? = nil, sessionError: String? = nil, sessionSelector: String? = nil, sessionTaskIdentifier: Int? = nil, status: Int? = nil, etag: String? = nil, setFavorite: Bool = false) {
-        
-        DispatchQueue.main.async {
-            let realm = try! Realm()
-            do {
-                try realm.safeWrite {
-                    let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                    if let session = session {
-                        result?.session = session
-                    }
-                    if let sessionError = sessionError {
-                        result?.sessionError = sessionError
-                    }
-                    if let sessionSelector = sessionSelector {
-                        result?.sessionSelector = sessionSelector
-                    }
-                    if let sessionTaskIdentifier = sessionTaskIdentifier {
-                        result?.sessionTaskIdentifier = sessionTaskIdentifier
-                    }
-                    if let status = status {
-                        result?.status = status
-                    }
-                    if let etag = etag {
-                        result?.etag = etag
-                    }
-                    if setFavorite {
-                        result?.favorite = true
-                    }
+            
+        let realm = try! Realm()
+        realm.refresh()
+
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                if let session = session {
+                    result?.session = session
                 }
-            } catch let error {
-                NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+                if let sessionError = sessionError {
+                    result?.sessionError = sessionError
+                }
+                if let sessionSelector = sessionSelector {
+                    result?.sessionSelector = sessionSelector
+                }
+                if let sessionTaskIdentifier = sessionTaskIdentifier {
+                    result?.sessionTaskIdentifier = sessionTaskIdentifier
+                }
+                if let status = status {
+                    result?.status = status
+                }
+                if let etag = etag {
+                    result?.etag = etag
+                }
+                if setFavorite {
+                    result?.favorite = true
+                }
             }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
     
