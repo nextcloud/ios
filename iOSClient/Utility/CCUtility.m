@@ -1368,13 +1368,14 @@
     return [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
 }
 
-+ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadata notification:(BOOL)notification completion:(void(^)(tableMetadata *newMetadata, NSString* fileNamePath))completion
++ (void)extractImageVideoFromAssetLocalIdentifierForUpload:(tableMetadata *)metadataForUpload notification:(BOOL)notification completion:(void(^)(tableMetadata *metadata, NSString* fileNamePath))completion
 {
-    if (metadata == nil) {
+    if (metadataForUpload == nil) {
         completion(nil, nil);
         return;
     }
-    tableMetadata *newMetadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadata];
+    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForUpload];
     
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
@@ -1440,7 +1441,7 @@
                     
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
-                    newMetadata.contentType = @"image/jpeg";
+                    metadata.contentType = @"image/jpeg";
                 }
                 
                 NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:fileName];
@@ -1448,19 +1449,19 @@
                 [[NSFileManager defaultManager]removeItemAtPath:fileNamePath error:nil];
                 [imageData writeToFile:fileNamePath options:NSDataWritingAtomic error:&error];
                 
-                if (newMetadata.e2eEncrypted) {
-                    newMetadata.fileNameView = fileName;
+                if (metadata.e2eEncrypted) {
+                    metadata.fileNameView = fileName;
                 } else {
-                    newMetadata.fileNameView = fileName;
-                    newMetadata.fileName = fileName;
+                    metadata.fileNameView = fileName;
+                    metadata.fileName = fileName;
                 }
                      
-                newMetadata.creationDate = creationDate;
-                newMetadata.date = modificationDate;
-                newMetadata.size = fileSize;
+                metadata.creationDate = creationDate;
+                metadata.date = modificationDate;
+                metadata.size = fileSize;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(newMetadata, fileNamePath);
+                    completion(metadata, fileNamePath);
                 });
             }];
         }
@@ -1488,7 +1489,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:newMetadata.fileNameView];
+                    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     NSURL *fileNamePathURL = [[NSURL alloc] initFileURLWithPath:fileNamePath];
                     NSError *error = nil;
                                        
@@ -1507,11 +1508,11 @@
                             
                         } else {
                             
-                            newMetadata.creationDate = creationDate;
-                            newMetadata.date = modificationDate;
-                            newMetadata.size = fileSize;
+                            metadata.creationDate = creationDate;
+                            metadata.date = modificationDate;
+                            metadata.size = fileSize;
                             
-                            completion(newMetadata, fileNamePath);
+                            completion(metadata, fileNamePath);
                         }
                     });
                 }
