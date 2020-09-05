@@ -148,8 +148,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         buttonDone1.setTitleColor(.black, for: .normal)
                 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
-
+        
         changeTheming()
     }
     
@@ -523,10 +522,6 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
 extension NCSelect {
 
-    @objc func reloadDataSource() {
-        loadDatasource(withLoadFolder: false)
-    }
-    
     @objc func loadDatasource(withLoadFolder: Bool) {
         
         var predicate: NSPredicate?
