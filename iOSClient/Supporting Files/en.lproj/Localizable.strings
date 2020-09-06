@@ -796,7 +796,7 @@
 "_not_possible_download_"               = "It is not possible to download the file";
 "_not_possible_upload_"                 = "It is not possible to upload the file";
 "_method_not_allowed_"                  = "The requested method is not supported";
-"_invalid_url_"                         = "Invalid server url";
+"_invalid_url_"                         = "Invalid server URL";
 "_invalid_literal_"                     = "Invalid search string";
 "_invalid_date_format_"                 = "Invalid date format";
 "_invalid_data_format_"                 = "Invalid data format";
