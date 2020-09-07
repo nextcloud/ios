@@ -36,6 +36,8 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
 
+    @IBOutlet weak var progressView: UIProgressView!
+
     var filePreviewImageView : UIImageView {
         get{
          return imageItem

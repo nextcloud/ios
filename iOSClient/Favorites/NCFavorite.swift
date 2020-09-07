@@ -91,6 +91,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
 
         changeTheming()
     }
@@ -134,7 +135,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         }
     }
     
-    //MARK: - NotificationCenter
+    // MARK: - NotificationCenter
 
     @objc func deleteFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
@@ -159,6 +160,32 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
                 if errorCode == 0 {
                     self.dataSource?.reloadMetadata(ocId: metadata.ocId)
                     collectionView.reloadData()
+                }
+            }
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+//            let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
+//            let progress = userInfo["progress"] as? CGFloat ?? 0
+//            let totalBytes = userInfo["totalBytes"] as? Double ?? 0
+//            let totalBytesExpected = userInfo["totalBytesExpected"] as? Double ?? 0
+            
+            if let ocId = userInfo["ocId"] as? String, let progress = userInfo["progress"] as? Float {
+                if let index = dataSource?.getIndexMetadata(ocId: ocId) {
+                    if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
+                        if layout == k_layout_grid {
+                            if progress > 0 {
+                                (cell as! NCGridCell).progressView.isHidden = false
+                                (cell as! NCGridCell).progressView.progress = progress
+                            }
+                        } else {
+                            (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
+                        }
+                    }
                 }
             }
         }
@@ -438,10 +465,33 @@ extension NCFavorite: UICollectionViewDataSource {
         }
         
         if layout == k_layout_grid {
+            
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+            
+            (cell as! NCGridCell).progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+            (cell as! NCGridCell).progressView.trackTintColor = .clear
+            (cell as! NCGridCell).progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
+            
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
+                (cell as! NCGridCell).progressView.isHidden = false
+            } else {
+                (cell as! NCGridCell).progressView.isHidden = true
+            }
+            
         } else {
+            
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            
+            (cell as! NCListCell).progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+            (cell as! NCListCell).progressView.trackTintColor = .clear
+            (cell as! NCListCell).progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
             (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
+                (cell as! NCListCell).progressView.isHidden = false
+            } else {
+                (cell as! NCListCell).progressView.isHidden = true
+            }
         }
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -67,6 +65,9 @@
                             <constraint firstAttribute="width" constant="15" id="xLe-lb-N1p"/>
                         </constraints>
                     </imageView>
+                    <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JQo-Vc-Ejk">
+                        <rect key="frame" x="0.0" y="220" width="220" height="2"/>
+                    </progressView>
                 </subviews>
             </view>
             <constraints>
@@ -74,6 +75,7 @@
                 <constraint firstItem="AYs-f2-vve" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-20" id="3e3-0A-NSl"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="10" id="4Yq-Nh-z1l"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="5" id="89Q-77-ulE"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="JQo-Vc-Ejk" secondAttribute="trailing" id="E03-Dk-iZ5"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" id="Pfe-J0-t9I"/>
@@ -87,6 +89,8 @@
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-20" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-20" id="upV-Ov-WWd"/>
+                <constraint firstItem="JQo-Vc-Ejk" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="wiV-1m-wt8"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="JQo-Vc-Ejk" secondAttribute="bottom" constant="43" id="zV9-iQ-Zm5"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="260"/>
@@ -98,11 +102,12 @@
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
+                <outlet property="progressView" destination="JQo-Vc-Ejk" id="cdf-7W-tao"/>
             </connections>
             <point key="canvasLocation" x="88" y="141.67916041979012"/>
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="more" width="50" height="50"/>
+        <image name="more" width="425" height="425"/>
     </resources>
 </document>

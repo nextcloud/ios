@@ -156,9 +156,8 @@ import Foundation
         createMetadatas(metadatasSource: metadatas)
     }
     
-    // MARK: -
     
-    private func getIndexMetadata(ocId: String) -> Int? {
+    func getIndexMetadata(ocId: String) -> Int? {
         
         var index: Int = 0
 

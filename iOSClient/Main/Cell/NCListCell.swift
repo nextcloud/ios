@@ -44,6 +44,8 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
     
+    @IBOutlet weak var progressView: UIProgressView!
+    
     @IBOutlet weak var separator: UIView!
     
     var filePreviewImageView : UIImageView {
