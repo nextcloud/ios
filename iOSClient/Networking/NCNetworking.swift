@@ -288,7 +288,7 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+            //NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
             completion(errorCode)
         }

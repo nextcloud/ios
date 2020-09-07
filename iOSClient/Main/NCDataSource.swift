@@ -118,10 +118,42 @@ import Foundation
         }
     }
         
+    func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
+
+        var directories: Int = 0
+        var files: Int = 0
+        var size: Double = 0
+
+        for metadata in metadatas {
+            if metadata.directory {
+                directories += 1
+            } else {
+                files += 1
+            }
+            size = size + metadata.size
+        }
+        
+        return (directories, files, size)
+    }
+    
     @objc func deleteMetadata(ocId: String) {
         if let index = self.getIndexMetadata(ocId: ocId) {
             metadatas.remove(at: index)
         }
+    }
+    
+    @objc func reloadMetadata(ocId: String) {
+        if let index = self.getIndexMetadata(ocId: ocId) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+                metadatas[index] = metadata
+            }
+        }
+    }
+    
+    @objc func addMetadata(_ metadata: tableMetadata) {
+        
+        self.metadatas.append(metadata)
+        createMetadatas(metadatasSource: metadatas)
     }
     
     // MARK: -
@@ -155,75 +187,5 @@ import Foundation
     
     @objc func numberOfItemsInSection(section: Int) -> Int {
         return metadatas.count
-    }
-    
-    func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
-
-        var directories: Int = 0
-        var files: Int = 0
-        var size: Double = 0
-
-        for metadata in metadatas {
-            if metadata.directory {
-                directories += 1
-            } else {
-                files += 1
-            }
-            size = size + metadata.size
-        }
-        
-        return (directories, files, size)
-    }
-    
-    @objc func getIndexPathAt(metadata: tableMetadata) -> IndexPath? {
-        
-        var row: Int = 0
-        let section: Int = 0
-        
-        for metadataCount in metadatas {
-            if metadataCount.ocId == metadata.ocId {
-                return IndexPath(row: row, section: section)
-            }
-            row += 1
-        }
-        return nil
-    }
-    
-    @objc func reloadItemAt(indexPath: IndexPath, with createMetadatas: Bool) -> [tableMetadata] {
-        
-        let row = indexPath.row
-        
-        if row > self.metadatas.count - 1 {
-            let metadata = metadatas[row]
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                metadatas[row] = metadata
-            }
-        }
-        
-        if createMetadatas {
-            self.createMetadatas(metadatasSource: metadatas)
-        }
-        
-        return metadatas
-    }
-    
-    @objc func deleteItemAt(indexPath: IndexPath) -> [tableMetadata] {
-        
-        let row = indexPath.row
-        
-        if row > self.metadatas.count - 1 {
-            metadatas.remove(at: row)
-        }
-        
-        return metadatas
-    }
-    
-    
-    
-    @objc func addMetadata(_ metadata: tableMetadata) -> [tableMetadata] {
-        
-        self.metadatas.append(metadata)
-        createMetadatas(metadatasSource: metadatas)
-        return metadatas
     }
 }

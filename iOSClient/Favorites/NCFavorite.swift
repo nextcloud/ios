@@ -90,6 +90,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
 
         changeTheming()
     }
@@ -145,6 +146,19 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
                     collectionView.reloadData()
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+    }
+    
+    @objc func downloadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0 {
+                    self.dataSource?.reloadMetadata(ocId: metadata.ocId)
+                    collectionView.reloadData()
                 }
             }
         }
@@ -254,7 +268,6 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-            
                 segueViewController.metadata = metadataPush
             }
         }
@@ -330,7 +343,15 @@ extension NCFavorite: UICollectionViewDelegate {
             
         } else {
             
-            performSegue(withIdentifier: "segueDetail", sender: self)
+            if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
+                performSegue(withIdentifier: "segueDetail", sender: self)
+            } else {
+                NCNetworking.shared.download(metadata: metadataPush!, selector: "") { (errorCode) in
+                    if errorCode == 0 {
+                        self.performSegue(withIdentifier: "segueDetail", sender: self)
+                    }
+                }
+            }
         }
     }
 }
