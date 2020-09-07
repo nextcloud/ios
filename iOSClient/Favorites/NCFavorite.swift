@@ -169,21 +169,21 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-//            let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
-//            let progress = userInfo["progress"] as? CGFloat ?? 0
-//            let totalBytes = userInfo["totalBytes"] as? Double ?? 0
-//            let totalBytesExpected = userInfo["totalBytesExpected"] as? Double ?? 0
-            
-            if let ocId = userInfo["ocId"] as? String, let progress = userInfo["progress"] as? Float {
+            if let ocId = userInfo["ocId"] as? String {
                 if let index = dataSource?.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
+                        let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                        let progress = progressNumber.floatValue
                         if layout == k_layout_grid {
                             if progress > 0 {
                                 (cell as! NCGridCell).progressView.isHidden = false
                                 (cell as! NCGridCell).progressView.progress = progress
                             }
                         } else {
-                            (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
+                            if progress > 0 {
+                                (cell as! NCListCell).progressView.isHidden = false
+                                (cell as! NCListCell).progressView.progress = progress
+                            }
                         }
                     }
                 }
