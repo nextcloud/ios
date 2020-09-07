@@ -47,15 +47,15 @@ import Foundation
                 }
             } else if sort == "sessionTaskIdentifier" {
                 if ascending {
-                    return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
-                } else {
                     return obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier
+                } else {
+                    return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
                 }
             } else if sort == "size" {
                 if ascending {
-                    return obj1.size < obj2.size
-                } else {
                     return obj1.size > obj2.size
+                } else {
+                    return obj1.size < obj2.size
                 }
             } else {
                 let range = Range(NSMakeRange(0, obj1.fileNameView.count), in: obj1.fileNameView)
