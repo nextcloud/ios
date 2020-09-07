@@ -99,7 +99,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+
         changeTheming()
     }
     
@@ -436,7 +437,7 @@ extension NCOffline: UICollectionViewDataSource {
                     header.labelSectionHeightConstraint.constant = 0
                 } else {
                     header.labelSection.isHidden = false
-                    header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                    header.setTitleLabel(title: "")
                     header.labelSectionHeightConstraint.constant = sectionHeaderHeight
                 }
                 
@@ -446,7 +447,7 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
                 
                 return footer
             }
@@ -457,7 +458,7 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
                 
-                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                header.setTitleLabel(title: "")
                 
                 return header
                 
@@ -465,7 +466,7 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
                 
                 return footer
             }

@@ -359,6 +359,10 @@ extension NCFavorite: UICollectionViewDataSource {
                 if groupBy == "none" {
                     header.labelSection.isHidden = true
                     header.labelSectionHeightConstraint.constant = 0
+                } else {
+                    header.labelSection.isHidden = false
+                    header.setTitleLabel(title: "")
+                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
                 }
                 
                 return header
@@ -367,7 +371,8 @@ extension NCFavorite: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                //footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }
@@ -378,7 +383,7 @@ extension NCFavorite: UICollectionViewDataSource {
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
                 
-                //header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                header.setTitleLabel(title: "")
                 
                 return header
                 
@@ -386,7 +391,8 @@ extension NCFavorite: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                //footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }

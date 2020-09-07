@@ -148,7 +148,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         buttonDone1.setTitleColor(.black, for: .normal)
                 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+
         changeTheming()
     }
     
@@ -416,7 +417,7 @@ extension NCSelect: UICollectionViewDataSource {
                     header.labelSectionHeightConstraint.constant = 0
                 } else {
                     header.labelSection.isHidden = false
-                    header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                    header.setTitleLabel(title: "")
                     header.labelSectionHeightConstraint.constant = sectionHeaderHeight
                 }
                 
@@ -426,7 +427,7 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
                 
                 return footer
             }
@@ -437,7 +438,7 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
                 
-                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                header.setTitleLabel(title: "")
                 
                 return header
                 
@@ -445,7 +446,7 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
                 
                 return footer
             }
@@ -522,6 +523,10 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
 extension NCSelect {
 
+    @objc func reloadDataSource() {
+        loadDatasource(withLoadFolder: false)
+    }
+    
     @objc func loadDatasource(withLoadFolder: Bool) {
         
         var predicate: NSPredicate?

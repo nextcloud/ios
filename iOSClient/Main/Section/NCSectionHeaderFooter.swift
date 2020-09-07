@@ -60,8 +60,9 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         buttonOrderWidthConstraint.constant = size.width + 5
     }
     
-    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {
+    func setTitleLabel(title: String) {
         
+        /*
         var title = ""
         
         if sectionDatasource.sections.object(at: section) is String {
@@ -71,6 +72,7 @@ class NCSectionHeaderMenu: UICollectionReusableView {
             let titleDate = sectionDatasource.sections.object(at: section) as! Date
             title = CCUtility.getTitleSectionDate(titleDate)
         }
+        */
         
         if title.contains("download") {
             labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
@@ -123,8 +125,9 @@ class NCSectionHeader: UICollectionReusableView {
         self.backgroundColor = NCBrandColor.sharedInstance.select
     }
     
-    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {
+    func setTitleLabel(title: String) {
         
+        /*
         var title = ""
         
         if sectionDatasource.sections.object(at: section) is String {
@@ -134,6 +137,7 @@ class NCSectionHeader: UICollectionReusableView {
             let titleDate = sectionDatasource.sections.object(at: section) as! Date
             title = CCUtility.getTitleSectionDate(titleDate)
         }
+        */
         
         if title.contains("download") {
             labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
@@ -156,21 +160,21 @@ class NCSectionFooter: UICollectionReusableView {
         labelSection.textColor = NCBrandColor.sharedInstance.icon
     }
     
-    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata) {
+    func setTitleLabel(directories: Int, files: Int, size: Double) {
         
         var foldersText = ""
         var filesText = ""
         
-        if sectionDatasource.directories > 1 {
-            foldersText = "\(sectionDatasource.directories) " + NSLocalizedString("_folders_", comment: "")
-        } else if sectionDatasource.directories == 1 {
+        if directories > 1 {
+            foldersText = "\(directories) " + NSLocalizedString("_folders_", comment: "")
+        } else if directories == 1 {
             foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
         }
         
-        if sectionDatasource.files > 1 {
-            filesText = "\(sectionDatasource.files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(sectionDatasource.totalSize)
-        } else if sectionDatasource.files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(sectionDatasource.totalSize)
+        if files > 1 {
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
+        } else if files == 1 {
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
         }
         
         if foldersText == "" {

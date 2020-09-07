@@ -121,13 +121,22 @@ import Foundation
         return metadatas.count
     }
     
-    @objc func getSize() -> Double {
-        
+    func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
+
+        var directories: Int = 0
+        var files: Int = 0
         var size: Double = 0
+
         for metadata in metadatas {
+            if metadata.directory {
+                directories += 1
+            } else {
+                files += 1
+            }
             size = size + metadata.size
         }
-        return size
+        
+        return (directories, files, size)
     }
     
 }
