@@ -139,4 +139,32 @@ import Foundation
         return (directories, files, size)
     }
     
+    @objc func getIndexPathAt(metadata: tableMetadata) -> IndexPath? {
+        var row: Int = 0
+        for metadataCount in metadatas {
+            if metadataCount.ocId == metadata.ocId {
+                return IndexPath(row: row, section: 0)
+            }
+            row += 1
+        }
+        return nil
+    }
+    
+    @objc func reloadItemAt(indexPath: IndexPath) {
+        let row = indexPath.row
+        
+        if row > self.metadatas.count - 1 {
+            let metadata = metadatas[row]
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                metadatas[row] = metadata
+            }
+        }
+    }
+    
+    @objc func deleteItemAt(indexPath: IndexPath) {
+        let row = indexPath.row
+        if row > self.metadatas.count - 1 {
+            metadatas.remove(at: row)
+        }
+    }
 }
