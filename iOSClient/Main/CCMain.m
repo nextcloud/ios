@@ -477,6 +477,8 @@
     if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
+    
+    [self reloadDatasource:self.serverUrl ocId:nil];
 }
 
 - (void)moveFile:(NSNotification *)notification
