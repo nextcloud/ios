@@ -186,8 +186,10 @@ class NCDetailViewController: UIViewController {
         guard let metadata = self.metadata else { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let progress = userInfo["progress"] as? Float {
+            if let account = userInfo["account"] as? String, let serverUrl = userInfo["serverUrl"] as? String {
                 if account == metadata.account && serverUrl == metadata.serverUrl {
+                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                    let progress = progressNumber.floatValue
                     self.progress(progress)
                 }
             }
