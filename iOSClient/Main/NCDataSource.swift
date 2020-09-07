@@ -1,5 +1,5 @@
 //
-//  NCSectionDataSourceMetadata.swift
+//  NCDataSource.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/09/2020.
@@ -23,19 +23,16 @@
 
 import Foundation
 
-class NCSectionDataSourceMetadata: NSObject {
+@objc class NCDataSource: NSObject {
     
-    override init() {
-        super.init()
-    }
+    @objc var metadatas: [tableMetadata] = []
+    @objc var sections: Int = 1
     
-    @objc func creataDataSourseSectionMetadata(metadatasSource: [tableMetadata], sort: String, ascending: Bool, groupBy: String? = nil, directoryOnTop: Bool, filterLivePhoto: Bool) -> [tableMetadata] {
+    @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, groupBy: String? = nil, directoryOnTop: Bool, filterLivePhoto: Bool) {
         
-        var metadatas: [tableMetadata] = []
         var metadatasFavorite: [tableMetadata] = []
         var numDirectory: Int = 0
         var numDirectoryFavorite:Int = 0
-        
 
         /*
         Metadata order
@@ -63,9 +60,9 @@ class NCSectionDataSourceMetadata: NSObject {
             } else {
                 let range = Range(NSMakeRange(0, obj1.fileNameView.count), in: obj1.fileNameView)
                 if ascending {
-                    return obj1.fileNameView.compare(obj1.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedAscending
+                    return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedAscending
                 } else {
-                    return obj1.fileNameView.compare(obj1.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedDescending
+                    return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedDescending
                 }
             }
         }
@@ -83,12 +80,12 @@ class NCSectionDataSourceMetadata: NSObject {
             
             if metadata.directory && directoryOnTop {
                 if metadata.favorite {
+                    metadatas.insert(metadata, at: numDirectoryFavorite)
                     numDirectoryFavorite += 1
                     numDirectory += 1
-                    metadatas.insert(metadata, at: numDirectoryFavorite)
                 } else {
-                    numDirectory += 1
                     metadatas.insert(metadata, at: numDirectory)
+                    numDirectory += 1
                 }
             } else {
                 if metadata.favorite && directoryOnTop {
@@ -107,7 +104,30 @@ class NCSectionDataSourceMetadata: NSObject {
             [sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
         }
         */
-        
-        return metadatas
     }
+    
+    @objc func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
+        
+        let row = indexPath.row
+        
+        if row > self.metadatas.count - 1 {
+            return nil
+        } else {
+            return metadatas[row]
+        }
+    }
+    
+    @objc func numberOfItemsInSection(section: Int) -> Int {
+        return metadatas.count
+    }
+    
+    @objc func getSize() -> Double {
+        
+        var size: Double = 0
+        for metadata in metadatas {
+            size = size + metadata.size
+        }
+        return size
+    }
+    
 }
