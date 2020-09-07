@@ -150,7 +150,7 @@ import Foundation
         return nil
     }
     
-    @objc func reloadItemAt(indexPath: IndexPath) {
+    @objc func reloadItemAt(indexPath: IndexPath) -> [tableMetadata] {
         let row = indexPath.row
         
         if row > self.metadatas.count - 1 {
@@ -159,12 +159,16 @@ import Foundation
                 metadatas[row] = metadata
             }
         }
+        
+        return metadatas
     }
     
-    @objc func deleteItemAt(indexPath: IndexPath) {
+    @objc func deleteItemAt(indexPath: IndexPath) -> [tableMetadata] {
         let row = indexPath.row
         if row > self.metadatas.count - 1 {
             metadatas.remove(at: row)
         }
+        
+        return metadatas
     }
 }
