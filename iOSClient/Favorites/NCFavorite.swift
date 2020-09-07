@@ -476,6 +476,7 @@ extension NCFavorite: UICollectionViewDataSource {
                 (cell as! NCGridCell).progressView.isHidden = false
             } else {
                 (cell as! NCGridCell).progressView.isHidden = true
+                (cell as! NCGridCell).progressView.progress = 0.0
             }
             
         } else {
@@ -491,6 +492,7 @@ extension NCFavorite: UICollectionViewDataSource {
                 (cell as! NCListCell).progressView.isHidden = false
             } else {
                 (cell as! NCListCell).progressView.isHidden = true
+                (cell as! NCListCell).progressView.progress = 0.0
             }
         }
         
