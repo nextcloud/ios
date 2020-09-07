@@ -36,8 +36,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
     private var isEditMode = false
     private var selectocId: [String] = []
     
-    private var sectionDatasource = CCSectionDataSourceMetadata()
-    
+    private var dataSource: NCDataSource?
+
     private var layout = ""
     private var groupBy = ""
     private var titleButton = ""
@@ -100,6 +100,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
 
         changeTheming()
     }
@@ -147,11 +148,25 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                 if errorCode == 0 {
-                    self.reloadDataSource()
+                    self.dataSource?.deleteMetadata(ocId: metadata.ocId)
+                    collectionView.reloadData()
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
+            }
+        }
+    }
+    
+    @objc func downloadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0 {
+                    self.dataSource?.reloadMetadata(ocId: metadata.ocId)
+                    collectionView.reloadData()
                 }
             }
         }
@@ -318,16 +333,14 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         let photoDataSource: NSMutableArray = []
         
-        for ocId: String in sectionDatasource.allOcId as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: ocId) as! tableMetadata
-            if metadata.typeFile == k_metadataTypeFile_image {
+        for metadata in (dataSource?.metadatas ?? [tableMetadata]()) {
+            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
                 photoDataSource.add(metadata)
             }
         }
         
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-            
                 segueViewController.metadata = metadataPush
             }
         }
@@ -342,7 +355,7 @@ extension NCOffline: UIViewControllerPreviewingDelegate {
         
         guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else { return nil }
+        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return nil }
         guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
 
         viewController.metadata = metadata
@@ -378,9 +391,7 @@ extension NCOffline: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return
-        }
+        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
         metadataPush = metadata
         
         if isEditMode {
@@ -405,7 +416,15 @@ extension NCOffline: UICollectionViewDelegate {
             
         } else {
             
-            performSegue(withIdentifier: "segueDetail", sender: self)
+            if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
+                performSegue(withIdentifier: "segueDetail", sender: self)
+            } else {
+                NCNetworking.shared.download(metadata: metadataPush!, selector: "") { (errorCode) in
+                    if errorCode == 0 {
+                        self.performSegue(withIdentifier: "segueDetail", sender: self)
+                    }
+                }
+            }
         }
     }
 }
@@ -429,7 +448,7 @@ extension NCOffline: UICollectionViewDataSource {
                 header.delegate = self
                 header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
                 header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
-                header.setStatusButton(count: sectionDatasource.allOcId.count)
+                header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
                 header.setTitleSorted(datasourceTitleButton: titleButton)
                 
                 if groupBy == "none" {
@@ -447,7 +466,8 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }
@@ -466,7 +486,8 @@ extension NCOffline: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }
@@ -474,21 +495,18 @@ extension NCOffline: UICollectionViewDataSource {
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        return sections
+        return dataSource?.sections ?? 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let key = sectionDatasource.sections.object(at: section)
-        let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-        return datasource.count
+        return dataSource?.numberOfItemsInSection(section: section) ?? 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: UICollectionViewCell
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
@@ -522,7 +540,7 @@ extension NCOffline: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        let sections = dataSource?.sections ?? 1
         if (section == sections - 1) {
             return CGSize(width: collectionView.frame.width, height: footerHeight)
         } else {
@@ -542,7 +560,6 @@ extension NCOffline {
         var ascending: Bool
         var directoryOnTop: Bool
         
-        sectionDatasource = CCSectionDataSourceMetadata()
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_offline)
 
         if serverUrl == "" {
@@ -558,13 +575,13 @@ extension NCOffline {
                 ocIds.append(file.ocId)
             }
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+            let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
+            self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
             
         } else {
             
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: true, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+            let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+            self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         }
         
         self.refreshControl.endRefreshing()
