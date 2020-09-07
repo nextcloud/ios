@@ -66,6 +66,10 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+        
+        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
     }
     
     override func prepareForReuse() {

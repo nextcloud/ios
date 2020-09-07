@@ -56,6 +56,9 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+        
+        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
     }
     
     override func prepareForReuse() {

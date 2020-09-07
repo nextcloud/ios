@@ -468,10 +468,6 @@ extension NCFavorite: UICollectionViewDataSource {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             
-            (cell as! NCGridCell).progressView.tintColor = NCBrandColor.sharedInstance.brandElement
-            (cell as! NCGridCell).progressView.trackTintColor = .clear
-            (cell as! NCGridCell).progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
-            
             if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
                 (cell as! NCGridCell).progressView.isHidden = false
             } else {
@@ -482,11 +478,6 @@ extension NCFavorite: UICollectionViewDataSource {
         } else {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-            
-            (cell as! NCListCell).progressView.tintColor = NCBrandColor.sharedInstance.brandElement
-            (cell as! NCListCell).progressView.trackTintColor = .clear
-            (cell as! NCListCell).progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
-            (cell as! NCListCell).separator.backgroundColor = NCBrandColor.sharedInstance.separator
             
             if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
                 (cell as! NCListCell).progressView.isHidden = false
