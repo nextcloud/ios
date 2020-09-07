@@ -333,7 +333,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
             
             timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
             
-            buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "audioStop")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
+            buttonPlayStop.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "stop")!, width: 200, height: 200, color: NCBrandColor.sharedInstance.icon), for: .normal)
         }
     }
     
