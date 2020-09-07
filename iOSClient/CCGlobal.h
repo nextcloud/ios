@@ -318,9 +318,9 @@
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_reloadMediaDataSource      @"reloadMediaDataSource"
 
-#define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: ocId, task, serverUrl, account
+#define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: metadata, task, serverUrl, account
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: ocId, serverUrl, account
+#define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: metadata, serverUrl, account
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription

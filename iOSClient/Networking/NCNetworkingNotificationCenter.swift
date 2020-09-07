@@ -42,10 +42,6 @@ import Foundation
     //MARK: - Download
 
     @objc func downloadFileStart(_ notification: NSNotification) {
-        
-//        if let userInfo = notification.userInfo as NSDictionary? {
-//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String { }
-//        }
     }
     
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -142,10 +138,6 @@ import Foundation
     //MARK: - Upload
 
     @objc func uploadFileStart(_ notification: NSNotification) {
-        
-//        if let userInfo = notification.userInfo as NSDictionary? {
-//            if let ocId = userInfo["ocId"] as? String, let serverUrl = userInfo["serverUrl"] as? String, let _ = userInfo["task"] as? URLSessionUploadTask { }
-//        }
     }
     
     @objc func uploadedFile(_ notification: NSNotification) {

@@ -152,10 +152,15 @@ import Foundation
     
     @objc func addMetadata(_ metadata: tableMetadata) {
         
+        for metadataCount in metadatas {
+            if metadataCount.ocId == metadata.ocId {
+                return
+            }
+        }
+        
         self.metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
     }
-    
     
     func getIndexMetadata(ocId: String) -> Int? {
         

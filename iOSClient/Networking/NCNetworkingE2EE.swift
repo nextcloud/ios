@@ -232,7 +232,7 @@ import Alamofire
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: nil, sessionSelector: nil, sessionTaskIdentifier: nil, status: Int(k_metadataStatusUploading))
                     
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["ocId":metadata.ocId, "serverUrl":serverUrl, "account": metadata.account])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata, "serverUrl":serverUrl, "account": metadata.account])
                     
                 }, progressHandler: { (progress) in
                     
