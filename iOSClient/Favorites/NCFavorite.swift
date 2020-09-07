@@ -184,8 +184,8 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata , let serverUrl = userInfo["serverUrl"] as? String{
-                if serverUrl == self.serverUrl {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.serverUrl == self.serverUrl && metadata.account == appDelegate.account {
                     self.dataSource?.addMetadata(metadata)
                     collectionView.reloadData()
                 }

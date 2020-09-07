@@ -27,10 +27,8 @@ import Foundation
     @objc public static let shared: NCNetworkingNotificationCenter = {
         let instance = NCNetworkingNotificationCenter()
         
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFileStart), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFileStart), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         
         return instance
@@ -41,9 +39,6 @@ import Foundation
     
     //MARK: - Download
 
-    @objc func downloadFileStart(_ notification: NSNotification) {
-    }
-    
     @objc func downloadedFile(_ notification: NSNotification) {
             
         if let userInfo = notification.userInfo as NSDictionary? {
@@ -137,9 +132,6 @@ import Foundation
     
     //MARK: - Upload
 
-    @objc func uploadFileStart(_ notification: NSNotification) {
-    }
-    
     @objc func uploadedFile(_ notification: NSNotification) {
     
         if let userInfo = notification.userInfo as NSDictionary? {

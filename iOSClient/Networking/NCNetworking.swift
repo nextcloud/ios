@@ -248,7 +248,7 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = request
             
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["metadata":metadata, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["metadata":metadata])
             
         }, progressHandler: { (progress) in
             
@@ -409,7 +409,7 @@ import Queuer
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
             #endif
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata, "task":task, "serverUrl":metadata.serverUrl, "account":metadata.account])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata])
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
             completion(0, "")
