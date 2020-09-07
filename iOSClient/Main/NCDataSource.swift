@@ -44,6 +44,8 @@ import Foundation
         createMetadatas(metadatasSource: metadatasSource)
     }
     
+    // MARK: -
+    
     private func createMetadatas(metadatasSource: [tableMetadata]) {
         
         var metadatasFavorite: [tableMetadata] = []
@@ -115,6 +117,30 @@ import Foundation
             metadatas.insert(contentsOf: metadatasFavorite, at: numDirectory)
         }
     }
+        
+    @objc func deleteMetadata(ocId: String) {
+        if let index = self.getIndexMetadata(ocId: ocId) {
+            metadatas.remove(at: index)
+        }
+    }
+    
+    // MARK: -
+    
+    private func getIndexMetadata(ocId: String) -> Int? {
+        
+        var index: Int = 0
+
+        for metadataCount in metadatas {
+            if metadataCount.ocId == ocId {
+                return index
+            }
+            index += 1
+        }
+        return nil
+        
+    }
+    
+    // MARK: -
     
     @objc func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
         
@@ -150,10 +176,13 @@ import Foundation
     }
     
     @objc func getIndexPathAt(metadata: tableMetadata) -> IndexPath? {
+        
         var row: Int = 0
+        let section: Int = 0
+        
         for metadataCount in metadatas {
             if metadataCount.ocId == metadata.ocId {
-                return IndexPath(row: row, section: 0)
+                return IndexPath(row: row, section: section)
             }
             row += 1
         }
@@ -161,6 +190,7 @@ import Foundation
     }
     
     @objc func reloadItemAt(indexPath: IndexPath, with createMetadatas: Bool) -> [tableMetadata] {
+        
         let row = indexPath.row
         
         if row > self.metadatas.count - 1 {
@@ -178,7 +208,9 @@ import Foundation
     }
     
     @objc func deleteItemAt(indexPath: IndexPath) -> [tableMetadata] {
+        
         let row = indexPath.row
+        
         if row > self.metadatas.count - 1 {
             metadatas.remove(at: row)
         }
@@ -186,7 +218,10 @@ import Foundation
         return metadatas
     }
     
+    
+    
     @objc func addMetadata(_ metadata: tableMetadata) -> [tableMetadata] {
+        
         self.metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
         return metadatas
