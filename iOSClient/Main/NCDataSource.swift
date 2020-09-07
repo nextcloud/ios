@@ -98,12 +98,6 @@ import Foundation
         if directoryOnTop && metadatasFavorite.count > 0 {
             metadatas.insert(contentsOf: metadatasFavorite, at: numDirectory)
         }
-                
-        /*
-        if (directoryOnTop && metadataFilesFavorite.count > 0) {
-            [sectionDataSource.metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
-        }
-        */
     }
     
     @objc func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
