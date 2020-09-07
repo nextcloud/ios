@@ -181,4 +181,10 @@ import Foundation
         
         return metadatas
     }
+    
+    @objc func addMetadata(_ metadata: tableMetadata) -> [tableMetadata] {
+        self.metadatas.append(metadata)
+        createMetadatas(metadatasSource: metadatas)
+        return metadatas
+    }
 }
