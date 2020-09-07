@@ -27,8 +27,24 @@ import Foundation
     
     @objc var metadatas: [tableMetadata] = []
     @objc var sections: Int = 1
+
+    private var sort: String = ""
+    private var ascending: Bool = true
+    private var directoryOnTop: Bool = true
+    private var filterLivePhoto: Bool = true
     
     @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, groupBy: String? = nil, directoryOnTop: Bool, filterLivePhoto: Bool) {
+        super.init()
+        
+        self.sort = sort
+        self.ascending = ascending
+        self.directoryOnTop = directoryOnTop
+        self.filterLivePhoto = filterLivePhoto
+        
+        createMetadatas(metadatasSource: metadatasSource)
+    }
+    
+    private func createMetadatas(metadatasSource: [tableMetadata]) {
         
         var metadatasFavorite: [tableMetadata] = []
         var numDirectory: Int = 0
