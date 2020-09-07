@@ -73,7 +73,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var networkInProgress = false
     private var selectocId: [String] = []
     private var overwrite = false
-    private var sectionDatasource = CCSectionDataSourceMetadata()
+    
+    private var dataSource: NCDataSource?
     
     private var layout = ""
     private var groupBy = ""
@@ -342,9 +343,7 @@ extension NCSelect: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return
-        }
+        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
         
         if isEditMode {
             if let index = selectocId.firstIndex(of: metadata.ocId) {
@@ -408,8 +407,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
                 
                 header.delegate = self
-                
-                header.setStatusButton(count: sectionDatasource.allOcId.count)
+                header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
                 header.setTitleSorted(datasourceTitleButton: titleButton)
                 
                 if groupBy == "none" {
@@ -427,7 +425,8 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }
@@ -446,7 +445,8 @@ extension NCSelect: UICollectionViewDataSource {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
                 
-                footer.setTitleLabel(directories: sectionDatasource.directories, files: sectionDatasource.files, size: sectionDatasource.totalSize)
+                let info = dataSource?.getFilesInformation()
+                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
                 
                 return footer
             }
@@ -454,21 +454,18 @@ extension NCSelect: UICollectionViewDataSource {
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
-        return sections
+        return dataSource?.sections ?? 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let key = sectionDatasource.sections.object(at: section)
-        let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-        return datasource.count
+        return dataSource?.numberOfItemsInSection(section: section) ?? 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: UICollectionViewCell
         
-        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
@@ -510,7 +507,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        let sections = dataSource?.sections ?? 1
         if (section == sections - 1) {
             return CGSize(width: collectionView.frame.width, height: footerHeight)
         } else {
@@ -534,7 +531,6 @@ extension NCSelect {
         var ascending: Bool
         var directoryOnTop: Bool
         
-        sectionDatasource = CCSectionDataSourceMetadata()
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
         
         if serverUrl == "" {
@@ -559,8 +555,8 @@ extension NCSelect {
             }
         }
         
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
-        sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupBy: groupBy, filterTypeFileImage: false, filterTypeFileVideo: false, filterLivePhoto: false, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, account: appDelegate.account)
+        let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         if withLoadFolder {
             loadFolder()
