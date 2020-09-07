@@ -160,7 +160,7 @@ import Foundation
         return nil
     }
     
-    @objc func reloadItemAt(indexPath: IndexPath) -> [tableMetadata] {
+    @objc func reloadItemAt(indexPath: IndexPath, with createMetadatas: Bool) -> [tableMetadata] {
         let row = indexPath.row
         
         if row > self.metadatas.count - 1 {
@@ -168,6 +168,10 @@ import Foundation
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
                 metadatas[row] = metadata
             }
+        }
+        
+        if createMetadatas {
+            self.createMetadatas(metadatasSource: metadatas)
         }
         
         return metadatas
