@@ -515,7 +515,7 @@ extension NCFavorite: UICollectionViewDataSource {
             } else {
                 (cell as! NCListCell).progressView.isHidden = true
                 (cell as! NCListCell).progressView.progress = 0.0
-                (cell as! NCGridCell).setButtonMore(named: "more")
+                (cell as! NCListCell).setButtonMore(named: "more")
             }
         }
         

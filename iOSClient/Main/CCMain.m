@@ -461,7 +461,7 @@
     if (arrayDeleteMetadata.count > 0) {
         tableMetadata *metadata = arrayDeleteMetadata.firstObject;
         [arrayDeleteMetadata removeObjectAtIndex:0];
-        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase onlyLocal:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 
     if (errorCode == 0 ) {
@@ -1330,7 +1330,7 @@
         [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account urlBase:appDelegate.urlBase onlyLocal:false  completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View

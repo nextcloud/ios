@@ -108,7 +108,10 @@ extension NCFavorite {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: false) { (errorCode, errorDescription) in }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: true) { (errorCode, errorDescription) in }
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)

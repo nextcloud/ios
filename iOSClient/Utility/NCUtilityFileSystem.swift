@@ -88,5 +88,13 @@ class NCUtilityFileSystem: NSObject {
             return false
         }
     }
+    
+    @objc func deleteFile(filePath: String) {
+        
+        do {
+            try FileManager.default.removeItem(atPath: filePath)
+        }
+        catch {}
+    }
 }
 
