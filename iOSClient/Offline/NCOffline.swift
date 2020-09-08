@@ -82,8 +82,6 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         // Refresh Control
         collectionView.addSubview(refreshControl)
-        
-        // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(reloadDataSource), for: .valueChanged)
@@ -584,8 +582,7 @@ extension NCOffline {
             self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         }
         
-        self.refreshControl.endRefreshing()
-        
+        refreshControl.endRefreshing()
         collectionView.reloadData()
     }
     

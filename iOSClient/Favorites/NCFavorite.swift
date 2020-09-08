@@ -53,6 +53,8 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
+    private let refreshControl = UIRefreshControl()
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -77,6 +79,12 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
 
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
+        
+        // Refresh Control
+        collectionView.addSubview(refreshControl)
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        refreshControl.addTarget(self, action: #selector(reloadDataSourceNetwork), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self
@@ -122,11 +130,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if serverUrl == "" {
-            listingFavorites()
-        } else {
-            readFolder()
-        }
+        reloadDataSourceNetwork()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -583,33 +587,38 @@ extension NCFavorite {
             self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         }
         
+        refreshControl.endRefreshing()
         collectionView.reloadData()
     }
     
-    private func readFolder() {
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
-            if errorCode == 0 {
-                for metadata in metadatas ?? [] {
-                    if !metadata.directory {
-                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        if localFile == nil || localFile?.etag != metadata.etag {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+    @objc func reloadDataSourceNetwork() {
+        
+        if serverUrl == "" {
+            
+            NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
+                if errorCode == 0 {
+                    for metadata in metadatas ?? [] {
+                        if !metadata.directory && CCUtility.getFavoriteOffline() {
+                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            if localFile == nil || localFile?.etag != metadata.etag {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                            }
                         }
                     }
                 }
                 self.reloadDataSource()
             }
-        }
-    }
-    
-    private func listingFavorites() {
-        NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
-            if errorCode == 0 {
-                for metadata in metadatas ?? [] {
-                    if !metadata.directory && CCUtility.getFavoriteOffline() {
-                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        if localFile == nil || localFile?.etag != metadata.etag {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+            
+        } else {
+            
+            NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+                if errorCode == 0 {
+                    for metadata in metadatas ?? [] {
+                        if !metadata.directory {
+                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            if localFile == nil || localFile?.etag != metadata.etag {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                            }
                         }
                     }
                 }
