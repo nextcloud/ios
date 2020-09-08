@@ -32,7 +32,7 @@ extension NCFavorite {
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMoreMenu(metadata: metadata)
+            mainMenuViewController.actions = self.initMoreMenu(metadata: metadata, viewController: viewController)
 
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = viewController
@@ -44,10 +44,11 @@ extension NCFavorite {
         }
     }
     
-    private func initMoreMenu(metadata: tableMetadata) -> [NCMenuAction] {
+    private func initMoreMenu(metadata: tableMetadata, viewController: UIViewController) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             iconHeader = icon
@@ -67,7 +68,7 @@ extension NCFavorite {
             )
         )
 
-        if self.serverUrl == "" {
+        if serverUrl == "" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
@@ -101,6 +102,18 @@ extension NCFavorite {
             )
         }
 
+        if !isFolderEncrypted && serverUrl != "" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_move_or_copy_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.openSelectView(viewController: viewController, array: [metadata])
+                    }
+                )
+            )
+        }
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),

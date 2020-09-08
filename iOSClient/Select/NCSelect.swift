@@ -25,7 +25,7 @@ import Foundation
 import NCCommunication
 
 @objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, buttonType: String, overwrite: Bool)
+    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
@@ -58,6 +58,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var isOverwriteHide = true
     @objc var keyLayout = k_layout_view_move
     @objc var heightToolBarTop: CGFloat = 100
+    @objc var array: [Any] = []
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
@@ -241,17 +242,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, buttonType: "cancel", overwrite: overwrite)
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, array: array, buttonType: "cancel", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done", overwrite: overwrite)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, array: array, buttonType: "done", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone1(_ sender: Any) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, buttonType: "done1", overwrite: overwrite)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, array: array, buttonType: "done1", overwrite: overwrite)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -384,7 +385,7 @@ extension NCSelect: UICollectionViewDelegate {
             
         } else {
             
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, buttonType: "select", overwrite: overwrite)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, array: array, buttonType: "select", overwrite: overwrite)
             self.dismiss(animated: true, completion: nil)
         }
     }
