@@ -343,7 +343,7 @@ class NCCollectionCommon: NSObject {
     func notificationDeleteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String ,onlyLocal: Bool) {
         if errorCode == 0 {
             if !onlyLocal {
-                dataSource?.deleteMetadata(ocId: metadata.ocId)
+                _ = dataSource?.deleteMetadata(ocId: metadata.ocId)
             }
             collectionView?.reloadData()
         } else {
@@ -351,15 +351,23 @@ class NCCollectionCommon: NSObject {
         }
     }
     
+    func notificationDownloadFileStart(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
+        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
+            collectionView?.reloadData()
+        }
+    }
+    
     func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        dataSource?.reloadMetadata(ocId: metadata.ocId)
-        collectionView?.reloadData()
+        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
+            collectionView?.reloadData()
+        }
     }
     
     func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            dataSource?.reloadMetadata(ocId: metadata.ocId)
-            collectionView?.reloadData()
+            if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
+                collectionView?.reloadData()
+            }
         }
     }
     

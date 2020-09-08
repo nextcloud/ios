@@ -26,9 +26,9 @@ import Foundation
 extension NotificationCenter {
 
     func postOnMainThread(name: String, object anObject: Any? = nil, userInfo aUserInfo: [AnyHashable : Any]? = nil) {
-        if UIApplication.shared.applicationState == .background {
-            return
-        }
+//        if UIApplication.shared.applicationState == .background {
+//            return
+//        }
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: Notification.Name.init(rawValue: name), object: anObject, userInfo: aUserInfo)
         }

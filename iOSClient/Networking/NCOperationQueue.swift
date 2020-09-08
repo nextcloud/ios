@@ -235,7 +235,10 @@ class NCOperationSynchronization: ConcurrentOperation {
                 }
             } else {
                 if self.download {
-                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                    let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    if localFile == nil || localFile?.etag != metadata.etag {
+                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                    }
                 }
                 self.finish()
             }
