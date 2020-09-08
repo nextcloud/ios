@@ -377,12 +377,14 @@ class NCCollectionCommon: NSObject {
                     if progress > 0 {
                         cell.progressView?.isHidden = false
                         cell.progressView?.progress = progress
+                        cell.setButtonMore(named: "stop")
                     }
                 } else if cell is NCGridCell {
                     let cell = cell as! NCGridCell
                     if progress > 0 {
                         cell.progressView.isHidden = false
                         cell.progressView.progress = progress
+                        cell.setButtonMore(named: "stop")
                     }
                 }
             }
