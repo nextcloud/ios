@@ -99,7 +99,10 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFileStart), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+        
         changeTheming()
     }
     
@@ -145,12 +148,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                if errorCode == 0 {
-                    self.dataSource?.deleteMetadata(ocId: metadata.ocId)
-                    collectionView.reloadData()
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                }
+                NCCollectionCommon.shared.notificationDeleteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription, onlyLocal: false)
             }
         }
     }
@@ -159,11 +157,40 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 {
-                    self.dataSource?.reloadMetadata(ocId: metadata.ocId)
-                    collectionView.reloadData()
-                }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
+                NCCollectionCommon.shared.notificationDownloadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
+            }
+        }
+    }
+    
+    @objc func uploadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
+                NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
+            }
+        }
+    }
+    
+    @objc func uploadFileStart(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                NCCollectionCommon.shared.notificationUploadFileStart(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
+            }
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+                let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                let progress = progressNumber.floatValue
+                NCCollectionCommon.shared.notificationTriggerProgressTask(collectionView: collectionView, dataSource: dataSource, ocId: ocId, progress: progress)
             }
         }
     }

@@ -168,7 +168,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
-                NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
+                NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
             }
         }
     }
