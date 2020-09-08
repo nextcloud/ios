@@ -504,28 +504,10 @@ extension NCFavorite: UICollectionViewDataSource {
         if layout == k_layout_grid {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-            
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
-                (cell as! NCGridCell).progressView.isHidden = false
-                (cell as! NCGridCell).setButtonMore(named: "stop")
-            } else {
-                (cell as! NCGridCell).progressView.isHidden = true
-                (cell as! NCGridCell).progressView.progress = 0.0
-                (cell as! NCGridCell).setButtonMore(named: "more")
-            }
-                        
+           
         } else {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-            
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
-                (cell as! NCListCell).progressView.isHidden = false
-                (cell as! NCListCell).setButtonMore(named: "stop")
-            } else {
-                (cell as! NCListCell).progressView.isHidden = true
-                (cell as! NCListCell).progressView.progress = 0.0
-                (cell as! NCListCell).setButtonMore(named: "more")
-            }
         }
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)

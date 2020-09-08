@@ -365,6 +365,16 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 cell.backgroundView = nil
             }
             
+            // Transfer
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
+                cell.progressView.isHidden = false
+                cell.setButtonMore(named: "stop")
+            } else {
+                cell.progressView.isHidden = true
+                cell.progressView.progress = 0.0
+                cell.setButtonMore(named: "more")
+            }
+            
             // Remove last separator
             if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
                 cell.separator.isHidden = true
@@ -452,6 +462,16 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             } else {
                 cell.imageSelect.isHidden = true
                 cell.backgroundView = nil
+            }
+            
+            // Transfer
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
+                cell.progressView.isHidden = false
+                cell.setButtonMore(named: "stop")
+            } else {
+                cell.progressView.isHidden = true
+                cell.progressView.progress = 0.0
+                cell.setButtonMore(named: "more")
             }
         }
     }
