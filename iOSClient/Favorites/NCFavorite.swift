@@ -308,15 +308,11 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else { return }
-                   
-        
+        guard let tabBarController = self.tabBarController else { return }
+
         if namedButtonMore == "more" {
-        
-            guard let tabBarController = self.tabBarController else { return }
             toggleMoreMenu(viewController: tabBarController, metadata: metadata)
-            
         } else if namedButtonMore == "stop" {
-            
             NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
         }
     }
