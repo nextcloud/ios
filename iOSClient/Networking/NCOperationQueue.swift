@@ -36,11 +36,14 @@ import NCCommunication
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    private let deleteQueue = Queuer(name: "deleteQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
+    private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
 
     private var timerReadFileForMediaQueue: Timer?
 
     @objc func cancelAllQueue() {
         downloadCancelAll()
+        deleteCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
         readFileForMediaCancelAll()
@@ -61,6 +64,40 @@ import NCCommunication
     }
     @objc func downloadCount() -> Int {
         return downloadQueue.operationCount
+    }
+    
+    // Delete file
+    
+    @objc func delete(metadata: tableMetadata, onlyLocal: Bool) {
+        for operation in deleteQueue.operations as! [NCOperationDelete]  {
+            if operation.metadata.ocId == metadata.ocId {
+                return
+            }
+        }
+        deleteQueue.addOperation(NCOperationDelete.init(metadata: metadata, onlyLocal: onlyLocal))
+    }
+    @objc func deleteCancelAll() {
+        deleteQueue.cancelAll()
+    }
+    @objc func deleteCount() -> Int {
+        return deleteQueue.operationCount
+    }
+    
+    // Copy Move file
+    
+    @objc func copyMove(metadata: tableMetadata, serverUrl: String, overwrite: Bool, move: Bool) {
+        for operation in copyMoveQueue.operations as! [NCOperationCopyMove]  {
+            if operation.metadata.ocId == metadata.ocId {
+                return
+            }
+        }
+        copyMoveQueue.addOperation(NCOperationCopyMove.init(metadata: metadata, serverUrlTo: serverUrl, overwrite: overwrite, move: move))
+    }
+    @objc func copyMoveCancelAll() {
+        copyMoveQueue.cancelAll()
+    }
+    @objc func copyMoveCount() -> Int {
+        return copyMoveQueue.operationCount
     }
     
     // Synchronization
@@ -156,6 +193,62 @@ class NCOperationDownload: ConcurrentOperation {
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
                 self.finish()
+            }
+        }
+    }
+}
+
+//MARK: -
+
+class NCOperationDelete: ConcurrentOperation {
+   
+    var metadata: tableMetadata
+    var onlyLocal: Bool
+    
+    init(metadata: tableMetadata, onlyLocal: Bool) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.onlyLocal = onlyLocal
+    }
+    
+    override func start() {
+        if isCancelled {
+            self.finish()
+        } else {
+            NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: onlyLocal) { (_, _) in
+                self.finish()
+            }
+        }
+    }
+}
+
+//MARK: -
+
+class NCOperationCopyMove: ConcurrentOperation {
+   
+    var metadata: tableMetadata
+    var serverUrlTo: String
+    var overwrite: Bool
+    var move: Bool
+
+    init(metadata: tableMetadata, serverUrlTo: String, overwrite: Bool, move: Bool) {
+        self.metadata = tableMetadata.init(value: metadata)
+        self.serverUrlTo = serverUrlTo
+        self.overwrite = overwrite
+        self.move = move
+    }
+    
+    override func start() {
+        if isCancelled {
+            self.finish()
+        } else {
+            if move {
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                    self.finish()
+                }
+            } else {
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite) { (errorCode, errorDescription) in
+                    self.finish()
+                }
             }
         }
     }
