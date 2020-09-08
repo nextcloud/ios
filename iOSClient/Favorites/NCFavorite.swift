@@ -160,11 +160,9 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
                     self.dataSource?.reloadMetadata(ocId: metadata.ocId)
                     collectionView.reloadData()
-                }
             }
         }
     }
