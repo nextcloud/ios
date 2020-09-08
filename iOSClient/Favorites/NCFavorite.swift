@@ -313,6 +313,11 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
     
     // MARK: SEGUE
     
+    @objc func segue(metadata: tableMetadata) {
+        self.metadataPush = metadata
+        performSegue(withIdentifier: "segueDetail", sender: self)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         let photoDataSource: NSMutableArray = []
@@ -403,11 +408,7 @@ extension NCFavorite: UICollectionViewDelegate {
             if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
                 performSegue(withIdentifier: "segueDetail", sender: self)
             } else {
-                NCNetworking.shared.download(metadata: metadataPush!, selector: "") { (errorCode) in
-                    if errorCode == 0 {
-                        self.performSegue(withIdentifier: "segueDetail", sender: self)
-                    }
-                }
+                NCNetworking.shared.download(metadata: metadataPush!, selector: selectorLoadFileViewFavorite) { (_) in }
             }
         }
     }

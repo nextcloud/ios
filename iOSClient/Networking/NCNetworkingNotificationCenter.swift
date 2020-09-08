@@ -77,10 +77,10 @@ import Foundation
                                 
                             } else {
                                 
-                                if appDelegate.activeMain.view.window != nil {
+                                if appDelegate.activeMain.view.window != nil && selector == selectorLoadFileView{
                                     appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
-                                } else if appDelegate.activeFavorite.view.window != nil {
-                                    //appDelegate.activeFavorite.shouldPerformSegue(metadata, selector: selector)
+                                } else if appDelegate.activeFavorite.view.window != nil && selector == selectorLoadFileViewFavorite{
+                                    appDelegate.activeFavorite.segue(metadata: metadata)
                                 }
                             }
                         }
