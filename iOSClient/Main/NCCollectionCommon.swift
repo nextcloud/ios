@@ -192,7 +192,7 @@ class NCCollectionCommon: NSObject {
             } else {
                 cell.imageShared.image = NCCollectionCommonImages.cellCanShareImage
             }
-            if metadata.ownerId != appDelegate.userID {
+            if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
                 // Load avatar
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
                 let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-avatar-" + metadata.ownerId + ".png"
