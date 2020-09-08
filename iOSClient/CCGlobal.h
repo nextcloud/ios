@@ -125,16 +125,20 @@
 //
 #define k_metadataStatusNormal                          0
 
+#define k_metadataStatustypeDownload                    1
+
 #define k_metadataStatusWaitDownload                    2
 #define k_metadataStatusInDownload                      3
 #define k_metadataStatusDownloading                     4
 #define k_metadataStatusDownloadError                   5
 
-#define k_metadataStatusWaitUpload                      6
-#define k_metadataStatusInUpload                        7
-#define k_metadataStatusUploading                       8
-#define k_metadataStatusUploadError                     9
-#define k_metadataStatusUploadForcedStart               10
+#define k_metadataStatusTypeUpload                      6
+
+#define k_metadataStatusWaitUpload                      7
+#define k_metadataStatusInUpload                        8
+#define k_metadataStatusUploading                       9
+#define k_metadataStatusUploadError                     10
+#define k_metadataStatusUploadForcedStart               11
 
 // Timer
 #define k_timerAutoUpload                               5

@@ -55,14 +55,13 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     }
 
     var delegate: NCListCellDelegate?
-    
     var objectId = ""
     var indexPath = IndexPath()
+    var namedButtonMore = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -70,6 +69,8 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        
+        setButtonMore(named: "more")
     }
     
     override func prepareForReuse() {
@@ -83,6 +84,11 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreListItem(with: objectId, sender: sender)
+    }
+    
+    func setButtonMore(named: String) {
+        namedButtonMore = named
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
     }
 }
 

@@ -496,22 +496,26 @@ extension NCFavorite: UICollectionViewDataSource {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
                 (cell as! NCGridCell).progressView.isHidden = false
+                (cell as! NCGridCell).setButtonMore(named: "stop")
             } else {
                 (cell as! NCGridCell).progressView.isHidden = true
                 (cell as! NCGridCell).progressView.progress = 0.0
+                (cell as! NCGridCell).setButtonMore(named: "more")
             }
-            
+                        
         } else {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status == k_metadataStatusInUpload {
+            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
                 (cell as! NCListCell).progressView.isHidden = false
+                (cell as! NCGridCell).setButtonMore(named: "stop")
             } else {
                 (cell as! NCListCell).progressView.isHidden = true
                 (cell as! NCListCell).progressView.progress = 0.0
+                (cell as! NCGridCell).setButtonMore(named: "more")
             }
         }
         

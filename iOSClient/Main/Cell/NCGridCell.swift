@@ -43,22 +43,22 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
          return imageItem
         }
     }
-
     
     var delegate: NCGridCellDelegate?
-    
     var objectId = ""
     var indexPath = IndexPath()
+    var namedButtonMore = ""
     
     override func awakeFromNib() {
         super.awakeFromNib()
-       
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+        
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
         
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        
+        setButtonMore(named: "more")
     }
     
     override func prepareForReuse() {
@@ -68,6 +68,11 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: objectId, sender: sender)
+    }
+    
+    func setButtonMore(named: String) {
+        namedButtonMore = named
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
     }
 }
 
