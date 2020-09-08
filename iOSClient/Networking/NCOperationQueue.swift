@@ -39,7 +39,6 @@ import NCCommunication
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
    
-
     private var timerReadFileForMediaQueue: Timer?
 
     @objc func cancelAllQueue() {

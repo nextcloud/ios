@@ -499,35 +499,10 @@ extension NCCollectionCommon: NCSelectDelegate {
             var move = true
             if buttonType == "done1" { move = false }
             
-            /*
-            if (move) {
-                [[NCNetworking shared] moveMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
-            } else {
-                [[NCNetworking shared] copyMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+            for metadata in array as! [tableMetadata] {
+                NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: move)
             }
-            */
-            
         }
-        /*
-         if (serverUrl != nil) {
-             // E2EE DENIED
-             if ([CCUtility isFolderEncrypted:serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase:appDelegate.urlBase]) {
-                 
-                 [[NCContentPresenter shared] messageNotification:@"_move_" description:@"_e2e_error_not_move_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorE2EENotMove forced:true];
-                 return;
-             }
-             
-             BOOL move = true;
-             if ([buttonType isEqualToString:@"done1"]) { move = false; }
-             
-             if ([_selectedocIdsMetadatas count] > 0) {
-                 NSArray *metadatas = [_selectedocIdsMetadatas allValues];
-                 [self moveCopyFileOrFolderMetadata:[metadatas objectAtIndex:0] serverUrlTo:serverUrl move:move overwrite:overwrite];
-             } else {
-                 [self moveCopyFileOrFolderMetadata:self.metadata serverUrlTo:serverUrl move:move overwrite:overwrite];
-             }
-         }
-         */
     }
 
     func openSelectView(viewController: UIViewController, array: [Any]) {
