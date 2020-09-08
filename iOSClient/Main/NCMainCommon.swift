@@ -29,7 +29,6 @@ import NCCommunication
 //MARK: - Main Common
 
 class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
-    
     @objc static let shared: NCMainCommon = {
         let instance = NCMainCommon()
         instance.createImagesThemingColor()
@@ -814,6 +813,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     }
     
     //MARK: - OpenShare
+    
     @objc func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
         
         let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
