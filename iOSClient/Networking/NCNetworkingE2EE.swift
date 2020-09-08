@@ -117,14 +117,14 @@ import Alamofire
                     let home = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
                     if metadata.serverUrl != home {
                         self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                            self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                            self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                         }
                     } else {
-                        self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
                     }
                 }
             } else {
-                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }
@@ -154,7 +154,7 @@ import Alamofire
                 }
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
-                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }
     }

@@ -143,9 +143,11 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                 if errorCode == 0 {
-                    self.dataSource?.deleteMetadata(ocId: metadata.ocId)
+                    if !onlyLocal {
+                        self.dataSource?.deleteMetadata(ocId: metadata.ocId)
+                    }
                     collectionView.reloadData()
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -511,7 +513,7 @@ extension NCFavorite: UICollectionViewDataSource {
             
             if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
                 (cell as! NCListCell).progressView.isHidden = false
-                (cell as! NCGridCell).setButtonMore(named: "stop")
+                (cell as! NCListCell).setButtonMore(named: "stop")
             } else {
                 (cell as! NCListCell).progressView.isHidden = true
                 (cell as! NCListCell).progressView.progress = 0.0

@@ -752,7 +752,7 @@ import Queuer
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLivePhoto.ocId))
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
             }
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": 0], errorDescription: "", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": true ,"errorCode": 0], errorDescription: "", completion: completion)
             return
         }
         
@@ -794,7 +794,7 @@ import Queuer
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
             
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_delete_file_", completion: completion)
+            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_delete_file_", completion: completion)
             return
         }
                 
@@ -815,7 +815,7 @@ import Queuer
                 }
             }
             
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
         }
     }
     

@@ -328,7 +328,7 @@
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
-#define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, onlyLocal, errorCode, errorDescription
 #define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew, errorCode, errorDescription
 #define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo, errorCode, errorDescription
