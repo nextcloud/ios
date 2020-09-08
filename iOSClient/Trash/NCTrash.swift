@@ -313,7 +313,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         }
     }
     
-    func tapMoreGridItem(with objectId: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         if !isEditMode {
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
 

@@ -83,7 +83,7 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, sender: sender)
+        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
     func setButtonMore(named: String) {
@@ -94,5 +94,5 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
 
 protocol NCListCellDelegate {
     func tapShareListItem(with objectId: String, sender: Any)
-    func tapMoreListItem(with objectId: String, sender: Any)
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any)
 }

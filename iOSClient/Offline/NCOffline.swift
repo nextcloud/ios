@@ -235,8 +235,8 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         
     }
     
-    func tapMoreListItem(with objectId: String, sender: Any) {
-        tapMoreGridItem(with: objectId, sender: sender)
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any) {
+        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
     func tapShareListItem(with objectId: String, sender: Any) {
@@ -248,7 +248,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
         NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
     
-    func tapMoreGridItem(with objectId: String, sender: Any) {
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
             return

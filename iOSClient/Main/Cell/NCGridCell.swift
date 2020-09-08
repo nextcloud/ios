@@ -67,7 +67,7 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
     func setButtonMore(named: String) {
@@ -77,5 +77,5 @@ class NCGridCell: UICollectionViewCell, NCImageCellProtocol {
 }
 
 protocol NCGridCellDelegate {
-    func tapMoreGridItem(with objectId: String, sender: Any)
+    func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any)
 }
