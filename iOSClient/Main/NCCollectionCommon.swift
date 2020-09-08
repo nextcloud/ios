@@ -387,3 +387,92 @@ class NCCollectionCommon: NSObject {
         }
     }
 }
+
+// MARK: - List Layout
+
+class NCListLayout: UICollectionViewFlowLayout {
+    
+    let itemHeight: CGFloat = 60
+    
+    override init() {
+        super.init()
+        
+        sectionHeadersPinToVisibleBounds = false
+        
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = 1
+        
+        self.scrollDirection = .vertical
+        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                let itemWidth: CGFloat = collectionView.frame.width
+                return CGSize(width: itemWidth, height: self.itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: 100, height: 100)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+}
+
+// MARK: - Grid Layout
+
+class NCGridLayout: UICollectionViewFlowLayout {
+    
+    var heightLabelPlusButton: CGFloat = 45
+    var marginLeftRight: CGFloat = 6
+    var itemForLine: CGFloat = 3
+
+    override init() {
+        super.init()
+        
+        sectionHeadersPinToVisibleBounds = false
+        
+        minimumInteritemSpacing = 1
+        minimumLineSpacing = marginLeftRight
+        
+        self.scrollDirection = .vertical
+        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
+                
+                return CGSize(width: itemWidth, height: itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: 100, height: 100)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+}

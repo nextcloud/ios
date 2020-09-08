@@ -952,3 +952,50 @@ class NCMediaCommandView: UIView {
         gradient.frame = bounds
     }
 }
+
+// MARK: - Media Grid Layout
+
+class NCGridMediaLayout: UICollectionViewFlowLayout {
+    
+    var marginLeftRight: CGFloat = 6
+    var itemForLine: CGFloat = 3
+    
+    override init() {
+        super.init()
+        
+        sectionHeadersPinToVisibleBounds = false
+        
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = marginLeftRight
+        
+        self.scrollDirection = .vertical
+        self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                let itemHeight: CGFloat = itemWidth
+                
+                return CGSize(width: itemWidth, height: itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: 100, height: 100)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
+}
+

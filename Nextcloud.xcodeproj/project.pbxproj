@@ -218,7 +218,6 @@
 		F78ACD4621903D010088454D /* NCGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4521903D010088454D /* NCGridCell.xib */; };
 		F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell.swift */; };
 		F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4921903F850088454D /* NCTrashListCell.xib */; };
-		F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4E2190440D0088454D /* NCLayout.swift */; };
 		F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD55219047E90088454D /* NCSectionHeader.xib */; };
@@ -569,7 +568,6 @@
 		F78ACD4521903D010088454D /* NCGridCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCGridCell.xib; sourceTree = "<group>"; };
 		F78ACD4821903F850088454D /* NCTrashListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashListCell.swift; sourceTree = "<group>"; };
 		F78ACD4921903F850088454D /* NCTrashListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
-		F78ACD4E2190440D0088454D /* NCLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLayout.swift; sourceTree = "<group>"; };
 		F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
 		F78ACD55219047E90088454D /* NCSectionHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
@@ -813,10 +811,9 @@
 			isa = PBXGroup;
 			children = (
 				F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */,
+				371B5A2F23D0B04B00FAFAE9 /* Menu */,
 				F78ACD3E21903BA20088454D /* Cell */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
-				F78ACD4D219043E70088454D /* Layout */,
-				371B5A2F23D0B04B00FAFAE9 /* Menu */,
 				F78ACD50219046AC0088454D /* Section */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
@@ -900,6 +897,15 @@
 				F7169A1B1EE590930086BD69 /* NCSharesCell.xib */,
 			);
 			path = Shares;
+			sourceTree = "<group>";
+		};
+		F720B5B72507B9A5008C94E5 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				F77444F322281649000D5EB0 /* NCGridMediaCell.swift */,
+				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 		F728CE741BF6322C00E69702 /* Share */ = {
@@ -1021,8 +1027,6 @@
 				F70211F61BAC56E9003FC03E /* CCCellMain.xib */,
 				370D26AC248A3BB800121797 /* CCCellMainTransfer.swift */,
 				F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */,
-				F77444F322281649000D5EB0 /* NCGridMediaCell.swift */,
-				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
 				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F78ACD3F21903CC20088454D /* NCGridCell.swift */,
 				F78ACD4521903D010088454D /* NCGridCell.xib */,
@@ -1039,14 +1043,6 @@
 				F78ACD4921903F850088454D /* NCTrashListCell.xib */,
 			);
 			path = Cell;
-			sourceTree = "<group>";
-		};
-		F78ACD4D219043E70088454D /* Layout */ = {
-			isa = PBXGroup;
-			children = (
-				F78ACD4E2190440D0088454D /* NCLayout.swift */,
-			);
-			path = Layout;
 			sourceTree = "<group>";
 		};
 		F78ACD50219046AC0088454D /* Section */ = {
@@ -1379,6 +1375,7 @@
 		F7EC9CB921185F2000F1C5CE /* Media */ = {
 			isa = PBXGroup;
 			children = (
+				F720B5B72507B9A5008C94E5 /* Cell */,
 				F7501C302212E57400FB1415 /* NCMedia.storyboard */,
 				F7501C312212E57400FB1415 /* NCMedia.swift */,
 				F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */,
@@ -1989,7 +1986,6 @@
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
-				F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */,
 				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
 				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
