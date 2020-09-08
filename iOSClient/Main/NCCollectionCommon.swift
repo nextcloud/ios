@@ -228,7 +228,7 @@ class NCCollectionCommon: NSObject {
             }
             
             // Transfer
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
+            if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
                 cell.setButtonMore(named: "stop")
             } else {
@@ -327,7 +327,7 @@ class NCCollectionCommon: NSObject {
             }
             
             // Transfer
-            if metadata.status == k_metadataStatusInDownload  ||  metadata.status >= k_metadataStatusTypeUpload {
+            if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
                 cell.setButtonMore(named: "stop")
             } else {
