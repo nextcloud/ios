@@ -148,14 +148,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                if errorCode == 0 {
-                    if !onlyLocal {
-                        self.dataSource?.deleteMetadata(ocId: metadata.ocId)
-                    }
-                    collectionView.reloadData()
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                }
+                NCCollectionCommon.shared.notificationDeleteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription, onlyLocal: onlyLocal)
             }
         }
     }
@@ -165,8 +158,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
-                    self.dataSource?.reloadMetadata(ocId: metadata.ocId)
-                    collectionView.reloadData()
+                NCCollectionCommon.shared.notificationDownloadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -175,11 +167,8 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 {
-                    self.dataSource?.reloadMetadata(ocId: metadata.ocId)
-                    collectionView.reloadData()
-                }
+            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
+                NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -189,10 +178,7 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.serverUrl == self.serverUrl && metadata.account == appDelegate.account {
-                    self.dataSource?.addMetadata(metadata)
-                    collectionView.reloadData()
-                }
+                NCCollectionCommon.shared.notificationUploadFileStart(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
             }
         }
     }
@@ -202,23 +188,9 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
-                if let index = dataSource?.getIndexMetadata(ocId: ocId) {
-                    if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
-                        let progressNumber = userInfo["progress"] as? NSNumber ?? 0
-                        let progress = progressNumber.floatValue
-                        if layout == k_layout_grid {
-                            if progress > 0 {
-                                (cell as! NCGridCell).progressView.isHidden = false
-                                (cell as! NCGridCell).progressView.progress = progress
-                            }
-                        } else {
-                            if progress > 0 {
-                                (cell as! NCListCell).progressView.isHidden = false
-                                (cell as! NCListCell).progressView.progress = progress
-                            }
-                        }
-                    }
-                }
+                let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                let progress = progressNumber.floatValue
+                NCCollectionCommon.shared.notificationTriggerProgressTask(collectionView: collectionView, dataSource: dataSource, ocId: ocId, progress: progress)
             }
         }
     }

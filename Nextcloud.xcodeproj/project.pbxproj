@@ -813,6 +813,11 @@
 			isa = PBXGroup;
 			children = (
 				F710D1FA24057E5E00A6033D /* ActionSheetHeaderView */,
+				F78ACD3E21903BA20088454D /* Cell */,
+				F7DFB7E9219C5A0500680748 /* Create cloud */,
+				F78ACD4D219043E70088454D /* Layout */,
+				371B5A2F23D0B04B00FAFAE9 /* Menu */,
+				F78ACD50219046AC0088454D /* Section */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
 				F73F537E1E929C8500F8678D /* CCMore.swift */,
@@ -820,11 +825,7 @@
 				F78F6FAE1CC8CCB700F4EA25 /* CCSection.h */,
 				F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */,
 				F7C1EEA425053A9C00866ACC /* NCDataSource.swift */,
-				F78ACD3E21903BA20088454D /* Cell */,
-				F7DFB7E9219C5A0500680748 /* Create cloud */,
-				F78ACD4D219043E70088454D /* Layout */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
-				371B5A2F23D0B04B00FAFAE9 /* Menu */,
 				F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */,
 				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
 				37C83A0E24532BA600618A3B /* CCMain+Swift.swift */,
@@ -835,7 +836,6 @@
 				F7E09CE623E308AD00FB3E9E /* NCMasterNavigationController.swift */,
 				F77444F7222816D5000D5EB0 /* NCPhotosPickerViewController.swift */,
 				F7E09CE423E3088A00FB3E9E /* NCSplitViewController.swift */,
-				F78ACD50219046AC0088454D /* Section */,
 			);
 			path = Main;
 			sourceTree = "<group>";

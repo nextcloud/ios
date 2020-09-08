@@ -336,4 +336,54 @@ class NCCollectionCommon: NSObject {
             }
         }
     }
+    
+    // MARK -
+    
+    func notificationDeleteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String ,onlyLocal: Bool) {
+        if errorCode == 0 {
+            if !onlyLocal {
+                dataSource?.deleteMetadata(ocId: metadata.ocId)
+            }
+            collectionView?.reloadData()
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        }
+    }
+    
+    func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
+        dataSource?.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
+    }
+    
+    func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
+        dataSource?.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
+    }
+    
+    func notificationUploadFileStart(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
+        if metadata.serverUrl == serverUrl && metadata.account == account {
+            dataSource?.addMetadata(metadata)
+            collectionView?.reloadData()
+        }
+    }
+    
+    func notificationTriggerProgressTask(collectionView: UICollectionView?, dataSource: NCDataSource?, ocId: String, progress: Float) {
+        if let index = dataSource?.getIndexMetadata(ocId: ocId) {
+            if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
+                if cell is NCListCell {
+                    let cell = cell as! NCListCell
+                    if progress > 0 {
+                        cell.progressView?.isHidden = false
+                        cell.progressView?.progress = progress
+                    }
+                } else if cell is NCGridCell {
+                    let cell = cell as! NCGridCell
+                    if progress > 0 {
+                        cell.progressView.isHidden = false
+                        cell.progressView.progress = progress
+                    }
+                }
+            }
+        }
+    }
 }
