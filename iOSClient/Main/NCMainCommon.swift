@@ -255,7 +255,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
-            cell.shared.image = nil
+            cell.imageShared.image = nil
             
             if metadata.directory {
                 
@@ -323,26 +323,26 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             
             // Share image
             if (isShare) {
-                cell.shared.image = NCMainCommonImages.cellSharedImage
+                cell.imageShared.image = NCMainCommonImages.cellSharedImage
             } else if (tableShare != nil && tableShare!.shareType == 3) {
-                cell.shared.image = NCMainCommonImages.cellShareByLinkImage
+                cell.imageShared.image = NCMainCommonImages.cellShareByLinkImage
             } else if (tableShare != nil && tableShare!.shareType != 3) {
-                cell.shared.image = NCMainCommonImages.cellSharedImage
+                cell.imageShared.image = NCMainCommonImages.cellSharedImage
             } else {
-                cell.shared.image = NCMainCommonImages.cellCanShareImage
+                cell.imageShared.image = NCMainCommonImages.cellCanShareImage
             }
             if metadata.ownerId != appDelegate.userID {
                 // Load avatar
                 let fileNameSource = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + metadata.ownerId + ".png"
                 let fileNameSourceAvatar = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-avatar-" + metadata.ownerId + ".png"
                 if FileManager.default.fileExists(atPath: fileNameSourceAvatar) {
-                    cell.shared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
+                    cell.imageShared.image = UIImage(contentsOfFile: fileNameSourceAvatar)
                 } else if FileManager.default.fileExists(atPath: fileNameSource) {
-                    cell.shared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                    cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
                         if errorCode == 0 && account == appDelegate.account {
-                            cell.shared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
+                            cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
                     }
                 }

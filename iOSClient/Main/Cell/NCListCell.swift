@@ -38,7 +38,7 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
 
     @IBOutlet weak var labelInfo: UILabel!
 
-    @IBOutlet weak var shared: UIImageView!
+    @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var sharedLeftConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
@@ -88,7 +88,7 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
     
     func setButtonMore(named: String) {
         namedButtonMore = named
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
     }
 }
 
