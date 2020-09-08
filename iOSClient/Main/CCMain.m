@@ -926,7 +926,7 @@
 {
     CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
@@ -1475,7 +1475,7 @@
 - (void)triggerProgressTask:(NSNotification *)notification
 {
     if (sectionDataSource.ocIdIndexPath != nil) {
-        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
+        [[NCMainCommon shared] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:self.serverUrl];
     }
 }
 
@@ -1487,10 +1487,10 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        tableMetadata *metadataSection = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+        tableMetadata *metadataSection = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (metadataSection) {
-            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataSection uploadStatusForcedStart:false];
+            [[NCMainCommon shared] cancelTransferMetadata:metadataSection uploadStatusForcedStart:false];
         }
     }
 }
@@ -1504,7 +1504,7 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         [NCUtility.shared startActivityIndicatorWithView:self.view bottom:0];
-        [[NCMainCommon sharedInstance] cancelAllTransfer];
+        [[NCMainCommon shared] cancelAllTransfer];
         [NCUtility.shared stopActivityIndicator];
     }]];
     
@@ -1528,10 +1528,10 @@
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase: appDelegate.urlBase]) {
-        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:1];
+        [[NCMainCommon shared] openShareWithViewController:self metadata:metadata indexPage:1];
     }
 }
 
@@ -1540,10 +1540,10 @@
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase:appDelegate.urlBase]) {
-        [[NCMainCommon sharedInstance] openShareWithViewController:self metadata:metadata indexPage:2];
+        [[NCMainCommon shared] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }
 
@@ -1552,7 +1552,7 @@
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata) {
     }
@@ -1610,7 +1610,7 @@
         NSMutableArray *items = [NSMutableArray new];
         
         if ([self indexPathIsValid:indexPath])
-            self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+            self.metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
        
         [self becomeFirstResponder];
         
@@ -1794,14 +1794,14 @@
 
 - (void)openinTouchFile:(id)sender
 {
-    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
+    [[NCMainCommon shared] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
 /************************************ OPEN QUICK LOOK ******************************/
 
 - (void)openQuickLookTouch:(id)sender
 {
-    [[NCMainCommon sharedInstance] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
+    [[NCMainCommon shared] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
 }
 
 /************************************ PASTE ************************************/
@@ -1875,7 +1875,7 @@
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     return [self canOpenMenuAction:metadata];
 }
@@ -1887,7 +1887,7 @@
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    self.metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (direction == MGSwipeDirectionRightToLeft) {
         [self actionDelete:indexPath];
@@ -1902,7 +1902,7 @@
 
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", metadata.ocId]];
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -1944,7 +1944,7 @@
     CGPoint touch = [gestureRecognizer locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
     
-    self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    self.metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     [self toggleMoreMenuWithViewController:self.tabBarController indexPath:indexPath metadata:self.metadata metadataFolder:_metadataFolder];
 }
@@ -2149,7 +2149,7 @@
 {    
     if (tableView.editing == 1) {
         
-        tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+        tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
             return NO;
@@ -2285,7 +2285,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     tableShare *shareCell;
    
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata] || (_metadataFolder != nil && [[NCManageDatabase sharedInstance] isTableInvalidated:_metadataFolder])) {
@@ -2299,7 +2299,7 @@
         }
     }
 
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory tableShare:shareCell livePhoto:livePhoto];
+    UITableViewCell *cell = [[NCMainCommon shared] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory tableShare:shareCell livePhoto:livePhoto];
     
     // NORMAL - > MAIN
     
@@ -2444,7 +2444,7 @@
     CCCellMain *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // settiamo il record file.
-    self.metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    self.metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (!self.metadata)
         return;
@@ -2521,7 +2521,7 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     [_selectedocIdsMetadatas removeObjectForKey:metadata.ocId];
     
@@ -2533,7 +2533,7 @@
     for (int i = 0; i < self.tableView.numberOfSections; i++) {
         for (int j = 0; j < [self.tableView numberOfRowsInSection:i]; j++) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
-            tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+            tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
             [_selectedocIdsMetadatas setObject:metadata forKey:metadata.ocId];
             [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }

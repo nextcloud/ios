@@ -30,7 +30,7 @@ import NCCommunication
 
 class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
     
-    @objc static let sharedInstance: NCMainCommon = {
+    @objc static let shared: NCMainCommon = {
         let instance = NCMainCommon()
         instance.createImagesThemingColor()
         return instance

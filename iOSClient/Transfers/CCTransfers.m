@@ -150,7 +150,7 @@
         CGPoint touchPoint = [recognizer locationInView:self.tableView];
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
         
-        metadataForRecognizer = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+        metadataForRecognizer = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         [self becomeFirstResponder];
 
@@ -201,7 +201,7 @@
 - (void)triggerProgressTask:(NSNotification *)notification
 {
     if (sectionDataSource.ocIdIndexPath != nil) {
-        [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:nil];
+        [[NCMainCommon shared] triggerProgressTask:notification sectionDataSourceocIdIndexPath:sectionDataSource.ocIdIndexPath tableView:self.tableView viewController:self serverUrlViewController:nil];
     }
 }
 
@@ -217,7 +217,7 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId = %@", ocId]];
         
         if (metadata)
-            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata uploadStatusForcedStart:false];
+            [[NCMainCommon shared] cancelTransferMetadata:metadata uploadStatusForcedStart:false];
     }
 }
 
@@ -229,7 +229,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [[NCMainCommon sharedInstance] cancelAllTransfer];
+        [[NCMainCommon shared] cancelAllTransfer];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -246,7 +246,7 @@
 - (void)startTask:(id)sender
 {
     if (metadataForRecognizer.status == k_metadataStatusUploading) {
-        [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer uploadStatusForcedStart:true];
+        [[NCMainCommon shared] cancelTransferMetadata:metadataForRecognizer uploadStatusForcedStart:true];
     } else {
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
         metadata.status = k_metadataStatusInUpload;
@@ -472,7 +472,7 @@
         return [CCCellMainTransfer new];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@"" tableShare:nil livePhoto:false];
+    UITableViewCell *cell = [[NCMainCommon shared] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:nil serverUrl:metadata.serverUrl autoUploadFileName:@"" autoUploadDirectory:@"" tableShare:nil livePhoto:false];
     
     // TRANSFER
     

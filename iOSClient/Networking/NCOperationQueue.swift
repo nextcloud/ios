@@ -271,9 +271,9 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
                 var cell: NCImageCellProtocol?
-                if self.view is UICollectionView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                if self.view is UICollectionView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
                     cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
-                } else if self.view is UITableView && NCMainCommon.sharedInstance.isValidIndexPath(self.indexPath, view: self.view) {
+                } else if self.view is UITableView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
                     cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
                 }
 

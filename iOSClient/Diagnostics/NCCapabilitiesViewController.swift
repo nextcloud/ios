@@ -204,7 +204,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
             do {
                 try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
-                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: nil)
+                NCMainCommon.shared.openIn(fileURL: fileURL, selector: nil)
             } catch { }
         }
     }

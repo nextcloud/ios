@@ -102,7 +102,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.sharedInstance.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
+                NCMainCommon.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if message.body as? String == "loading" {

@@ -116,7 +116,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_create_voice_memo_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCMainCommon.sharedInstance.startAudioRecorder()
+                    NCMainCommon.shared.startAudioRecorder()
                 }
             )
         )

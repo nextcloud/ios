@@ -65,15 +65,15 @@ import Foundation
                                                         
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
-                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
-                                NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
                                 
                             } else {
                                 
@@ -89,7 +89,7 @@ import Foundation
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
-                            NCMainCommon.sharedInstance.openIn(fileURL: fileURL, selector: selector)
+                            NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
                         }
                         
                     case selectorSaveAlbum:

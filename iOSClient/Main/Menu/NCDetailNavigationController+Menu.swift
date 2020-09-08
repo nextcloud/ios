@@ -90,7 +90,7 @@ extension NCDetailNavigationController {
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                 }
             )
         )
@@ -100,7 +100,7 @@ extension NCDetailNavigationController {
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCMainCommon.sharedInstance.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
+                        NCMainCommon.shared.downloadOpen(metadata: metadata, selector: selectorOpenInDetail)
                     }
                 )
             )

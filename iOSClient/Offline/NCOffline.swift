@@ -245,7 +245,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
             return
         }
         
-        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+        NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
     
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
@@ -296,7 +296,7 @@ class NCOffline: UIViewController, UIGestureRecognizerDelegate, NCListCellDelega
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCMainCommon.sharedInstance.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                        NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                     }
                 )
             )
@@ -519,7 +519,7 @@ extension NCOffline: UICollectionViewDataSource {
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         
-        NCMainCommon.sharedInstance.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self)
+        NCMainCommon.shared.collectionViewCellForItemAt(indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self)
         
         return cell
     }
