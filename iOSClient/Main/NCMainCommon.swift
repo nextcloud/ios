@@ -134,7 +134,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         }
     }
     
-    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool, uploadStatusForcedStart: Bool) {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, uploadStatusForcedStart: Bool) {
         
         if metadata.session.count == 0 {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -205,7 +205,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
                 
                 // Cancel Task
                 if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                    self.cancelTransferMetadata(metadata, reloadDatasource: false, uploadStatusForcedStart: false)
+                    self.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
                 }
             }
         }

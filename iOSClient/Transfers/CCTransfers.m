@@ -217,7 +217,7 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId = %@", ocId]];
         
         if (metadata)
-            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true uploadStatusForcedStart:false];
+            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata uploadStatusForcedStart:false];
     }
 }
 
@@ -246,7 +246,7 @@
 - (void)startTask:(id)sender
 {
     if (metadataForRecognizer.status == k_metadataStatusUploading) {
-        [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer reloadDatasource:false uploadStatusForcedStart:true];
+        [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataForRecognizer uploadStatusForcedStart:true];
     } else {
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
         metadata.status = k_metadataStatusInUpload;

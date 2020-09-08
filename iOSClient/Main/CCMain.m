@@ -1490,7 +1490,7 @@
         tableMetadata *metadataSection = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (metadataSection) {
-            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataSection reloadDatasource:true uploadStatusForcedStart:false];
+            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadataSection uploadStatusForcedStart:false];
         }
     }
 }
