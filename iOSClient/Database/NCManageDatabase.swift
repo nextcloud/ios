@@ -2138,16 +2138,15 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String) -> tableMetadata? {
+    @objc func getMetadataInSessionFromTaskDescription(_ description: String?) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard  let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@", serverUrl, fileName).first else {
-            return nil
-        }
+        guard let description = description else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", description).first else { return nil }
         
-         return tableMetadata.init(value: result)
+        return tableMetadata.init(value: result)
     }
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {

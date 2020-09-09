@@ -388,6 +388,7 @@ import Queuer
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var task: URLSessionTask?
+        let description = metadata.ocId
         
         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
             
@@ -408,7 +409,7 @@ import Queuer
             
         }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
          
-            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: "", task: task!, errorCode: errorCode, errorDescription: errorDescription)
+            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task!, errorCode: errorCode, errorDescription: errorDescription)
             
             completion(errorCode, errorDescription)
         }
@@ -453,7 +454,7 @@ import Queuer
         
         if let metadataTmp = self.uploadMetadataInBackground[fileName+serverUrl] {
             metadata = metadataTmp
-        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl) {
+        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromTaskDescription(task.description){
             self.uploadMetadataInBackground[fileName+serverUrl] = metadataTmp
             metadata = metadataTmp
         }
@@ -468,7 +469,7 @@ import Queuer
             delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         } else {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl) else { return }
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromTaskDescription(description) else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
             
             if errorCode == 0 && ocId != nil {
