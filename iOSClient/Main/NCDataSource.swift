@@ -49,6 +49,7 @@ import Foundation
     private func createMetadatas(metadatasSource: [tableMetadata]) {
         
         var metadatasFavorite: [tableMetadata] = []
+        var metadatasTemp: [tableMetadata] = []
         var numDirectory: Int = 0
         var numDirectoryFavorite:Int = 0
 
@@ -98,24 +99,26 @@ import Foundation
             
             if metadata.directory && directoryOnTop {
                 if metadata.favorite {
-                    metadatas.insert(metadata, at: numDirectoryFavorite)
+                    metadatasTemp.insert(metadata, at: numDirectoryFavorite)
                     numDirectoryFavorite += 1
                     numDirectory += 1
                 } else {
-                    metadatas.insert(metadata, at: numDirectory)
+                    metadatasTemp.insert(metadata, at: numDirectory)
                     numDirectory += 1
                 }
             } else {
                 if metadata.favorite && directoryOnTop {
                     metadatasFavorite.append(metadata)
                 } else {
-                    metadatas.append(metadata)
+                    metadatasTemp.append(metadata)
                 }
             }
         }
         if directoryOnTop && metadatasFavorite.count > 0 {
-            metadatas.insert(contentsOf: metadatasFavorite, at: numDirectory)
+            metadatasTemp.insert(contentsOf: metadatasFavorite, at: numDirectory)
         }
+        
+        self.metadatas = metadatasTemp
     }
         
     func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
@@ -124,7 +127,7 @@ import Foundation
         var files: Int = 0
         var size: Double = 0
 
-        for metadata in metadatas {
+        for metadata in self.metadatas {
             if metadata.directory {
                 directories += 1
             } else {
@@ -139,7 +142,7 @@ import Foundation
     @objc func deleteMetadata(ocId: String) -> Bool {
         var found = false
         if let index = self.getIndexMetadata(ocId: ocId) {
-            metadatas.remove(at: index)
+            self.metadatas.remove(at: index)
             found = true
         }
         return found
@@ -149,7 +152,7 @@ import Foundation
         var found = false
         if let index = self.getIndexMetadata(ocId: ocId) {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
-                metadatas[index] = metadata
+                self.metadatas[index] = metadata
                 found = true
             }
         }
@@ -191,11 +194,11 @@ import Foundation
         if row > self.metadatas.count - 1 {
             return nil
         } else {
-            return metadatas[row]
+            return self.metadatas[row]
         }
     }
     
     @objc func numberOfItemsInSection(section: Int) -> Int {
-        return metadatas.count
+        return self.metadatas.count
     }
 }
