@@ -398,6 +398,11 @@ import Queuer
             
             if task == nil && requestUpload?.task != nil {
                 task = requestUpload?.task
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task!.taskIdentifier, status: Int(k_metadataStatusUploading))
+                #if !EXTENSION
+                CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                #endif
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata])
             }
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
@@ -434,9 +439,10 @@ import Queuer
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
             completion(0, "")
-        } else {
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
+        } else {
+            
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             completion(Int(k_CCErrorInternalError), "task null")
         }
     }
