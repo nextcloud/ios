@@ -286,7 +286,6 @@ import Queuer
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
-            
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             
             completion(errorCode)
@@ -407,7 +406,9 @@ import Queuer
             
         }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
          
+            self.uploadRequest[fileNameLocalPath] = nil
             self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task!, errorCode: errorCode, errorDescription: errorDescription)
+            
             completion(errorCode, errorDescription)
         }
     }
@@ -503,8 +504,8 @@ import Queuer
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
                 
                 #if !EXTENSION
-                self.getOcIdInSession { (listOcId) in
-                    if listOcId.count == 0 {
+                self.getOcIdInBackgroundSession { (listOcId) in
+                    if listOcId.count == 0 && self.uploadRequest.count == 0 {
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate
                         appDelegate.networkingAutoUpload.startProcess()
                     }
@@ -601,7 +602,7 @@ import Queuer
         }
     }
     
-    func getOcIdInSession(completion: @escaping (_ listOcId: [String])->()) {
+    func getOcIdInBackgroundSession(completion: @escaping (_ listOcId: [String])->()) {
         
         var listOcId: [String] = []
         

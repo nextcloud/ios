@@ -66,7 +66,7 @@ class NCNetworkingAutoUpload: NSObject {
         
         debugPrint("[LOG] PROCESS-AUTO-UPLOAD \(counterUpload)")
     
-        NCNetworking.shared.getOcIdInSession { (listOcId) in
+        NCNetworking.shared.getOcIdInBackgroundSession { (listOcId) in
             
             for sessionSelector in sessionSelectors {
                 if counterUpload < maxConcurrentOperationUpload {
