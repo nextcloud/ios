@@ -386,7 +386,29 @@ import Queuer
     //
     private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        completion(0, "")
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+        var requestUpload: UploadRequest?
+        var task: URLSessionTask?
+        
+        NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
+            
+            requestUpload = request
+            
+        }, progressHandler: { (progress) in
+            
+            if task == nil && requestUpload?.task != nil {
+                task = requestUpload?.task
+            }
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
+            
+        }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
+         
+            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: "", task: task!, errorCode: errorCode, errorDescription: errorDescription)
+            
+            completion(errorCode, errorDescription)
+        }
     }
     
     private func uploadFileInBackground(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -427,7 +449,7 @@ import Queuer
         
         if let metadataTmp = self.uploadMetadata[fileName+serverUrl] {
             metadata = metadataTmp
-        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) {
+        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl) {
             self.uploadMetadata[fileName+serverUrl] = metadataTmp
             metadata = metadataTmp
         }
@@ -442,7 +464,7 @@ import Queuer
             delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         } else {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier) else { return }
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl) else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
             
             if errorCode == 0 && ocId != nil {

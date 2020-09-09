@@ -2138,12 +2138,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String, taskIdentifier: Int) -> tableMetadata? {
+    @objc func getMetadataInSessionFromFileName(_ fileName: String, serverUrl: String) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard  let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@ AND session != '' AND sessionTaskIdentifier == %d", serverUrl, fileName, taskIdentifier).first else {
+        guard  let result = realm.objects(tableMetadata.self).filter("serverUrl == %@ AND fileName == %@", serverUrl, fileName).first else {
             return nil
         }
         
