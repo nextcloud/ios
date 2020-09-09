@@ -554,18 +554,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
 
     @objc var serverUrl = ""
         
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
-    private var metadataPush: tableMetadata?
-    private var isEditMode = false
-    private var selectocId: [String] = []
+    internal var metadataPush: tableMetadata?
+    internal var isEditMode = false
+    internal var selectocId: [String] = []
         
-    private var dataSource: NCDataSource?
+    internal var dataSource: NCDataSource?
         
-    private var layout = ""
-    private var groupBy = ""
-    private var titleButton = ""
-    private var itemForLine = 0
+    internal var layout = ""
+    internal var groupBy = ""
+    internal var titleButton = ""
+    internal var itemForLine = 0
 
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
@@ -577,11 +577,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
         
-    private let refreshControl = UIRefreshControl()
+    internal let refreshControl = UIRefreshControl()
     
     // DECLARE
-    var layoutKey = ""
-    var titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
+    internal var layoutKey = ""
+    internal var titleCurrentFolder = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -672,7 +672,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
     }
-        
+    
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
@@ -769,21 +769,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         return nil
-        //return CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         return nil
-//        let text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
-//        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-//        return NSAttributedString.init(string: text, attributes: attributes)
     }
     
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         return nil
-//        let text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
-//        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-//        return NSAttributedString.init(string: text, attributes: attributes)
     }
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
@@ -844,16 +837,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else { return }
-        guard let tabBarController = self.tabBarController else { return }
-
-        /*
-        if namedButtonMore == "more" {
-            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
-        } else if namedButtonMore == "stop" {
-            NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
-        }
-        */
     }
     
     // MARK: SEGUE
@@ -879,6 +862,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
             }
         }
     }
+    
+    // MARK: - NC API & Algorithm
+    
+    @objc func reloadDataSource() { }
+    @objc func reloadDataSourceNetwork() { }
 }
 
 // MARK: - 3D Touch peek and pop
@@ -920,45 +908,9 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
 }
 
 // MARK: - Collection View
-
 extension NCCollectionViewCommon: UICollectionViewDelegate {
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
-        metadataPush = metadata
-        
-        if isEditMode {
-            if let index = selectocId.firstIndex(of: metadata.ocId) {
-                selectocId.remove(at: index)
-            } else {
-                selectocId.append(metadata.ocId)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            return
-        }
-        
-        /*
-        if metadata.directory {
-            
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
-            let ncFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
-            
-            ncFavorite.serverUrl = serverUrlPush
-            ncFavorite.titleCurrentFolder = metadataPush!.fileNameView
-            
-            self.navigationController?.pushViewController(ncFavorite, animated: true)
-            
-        } else {
-            
-            if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
-                performSegue(withIdentifier: "segueDetail", sender: self)
-            } else {
-                NCNetworking.shared.download(metadata: metadataPush!, selector: selectorLoadFileViewFavorite) { (_) in }
-            }
-        }
-        */
-    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) { }
 }
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
@@ -1082,15 +1034,3 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         }
     }
 }
-
-// MARK: - NC API & Algorithm
-
-extension NCCollectionViewCommon {
-
-    @objc func reloadDataSource() {
-    }
-    
-    @objc func reloadDataSourceNetwork() {
-    }
-}
-
