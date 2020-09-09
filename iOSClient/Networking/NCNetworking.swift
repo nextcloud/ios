@@ -45,7 +45,7 @@ import Queuer
     var lastReachability: Bool = true
     var downloadRequest: [String: DownloadRequest] = [:]
     var uploadRequest: [String: UploadRequest] = [:]
-    var uploadMetadata: [String: tableMetadata] = [:]
+    var uploadMetadataInBackground: [String: tableMetadata] = [:]
 
     @objc public let sessionMaximumConnectionsPerHost = 5
     @objc public let sessionIdentifierBackground: String = "com.nextcloud.session.upload.background"
@@ -387,17 +387,16 @@ import Queuer
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        var requestUpload: UploadRequest?
         var task: URLSessionTask?
         
         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
             
-            requestUpload = request
+            self.uploadRequest[fileNameLocalPath] = request
             
         }, progressHandler: { (progress) in
             
-            if task == nil && requestUpload?.task != nil {
-                task = requestUpload?.task
+            if task == nil && self.uploadRequest[fileNameLocalPath]?.task != nil {
+                task = self.uploadRequest[fileNameLocalPath]?.task
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task!.taskIdentifier, status: Int(k_metadataStatusUploading))
                 #if !EXTENSION
                 CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
@@ -452,10 +451,10 @@ import Queuer
         
         var metadata: tableMetadata?
         
-        if let metadataTmp = self.uploadMetadata[fileName+serverUrl] {
+        if let metadataTmp = self.uploadMetadataInBackground[fileName+serverUrl] {
             metadata = metadataTmp
         } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromFileName(fileName, serverUrl: serverUrl) {
-            self.uploadMetadata[fileName+serverUrl] = metadataTmp
+            self.uploadMetadataInBackground[fileName+serverUrl] = metadataTmp
             metadata = metadataTmp
         }
         
@@ -548,7 +547,7 @@ import Queuer
             }
             
             // Delete
-            self.uploadMetadata[fileName+serverUrl] = nil
+            self.uploadMetadataInBackground[fileName+serverUrl] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
