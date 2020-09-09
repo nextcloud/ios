@@ -63,6 +63,7 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
         super.awakeFromNib()
        
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
         
