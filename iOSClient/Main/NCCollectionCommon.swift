@@ -361,21 +361,18 @@ class NCCollectionCommon: NSObject {
     }
     
     func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
-            collectionView?.reloadData()
-        }
+        dataSource?.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
     }
     
     func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
-            collectionView?.reloadData()
-        }
+        dataSource?.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
     }
     
     func notificationDownloadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
-            collectionView?.reloadData()
-        }
+        dataSource?.reloadMetadata(ocId: metadata.ocId)
+        collectionView?.reloadData()
     }
     
     func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
@@ -387,17 +384,15 @@ class NCCollectionCommon: NSObject {
     
     func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
-                collectionView?.reloadData()
-            }
+            dataSource?.reloadMetadata(ocId: metadata.ocId)
+            collectionView?.reloadData()
         }
     }
     
     func notificationUploadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            if dataSource?.deleteMetadata(ocId: metadata.ocId) ?? false {
-                collectionView?.reloadData()
-            }
+            dataSource?.deleteMetadata(ocId: metadata.ocId)
+            collectionView?.reloadData()
         }
     }
         

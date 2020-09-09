@@ -139,24 +139,18 @@ import Foundation
         return (directories, files, size)
     }
     
-    @objc func deleteMetadata(ocId: String) -> Bool {
-        var found = false
+    @objc func deleteMetadata(ocId: String) {
         if let index = self.getIndexMetadata(ocId: ocId) {
             self.metadatas.remove(at: index)
-            found = true
         }
-        return found
     }
     
-    @objc func reloadMetadata(ocId: String) -> Bool {
-        var found = false
+    @objc func reloadMetadata(ocId: String) {
         if let index = self.getIndexMetadata(ocId: ocId) {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
                 self.metadatas[index] = metadata
-                found = true
             }
         }
-        return found
     }
     
     @objc func addMetadata(_ metadata: tableMetadata) {
