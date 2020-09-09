@@ -253,7 +253,7 @@
         metadata.session = NCNetworking.shared.sessionIdentifierBackground;
        
         [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        [[NCNetworking shared] uploadWithMetadata:metadata background:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] uploadWithMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 }
 

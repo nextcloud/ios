@@ -311,7 +311,7 @@ import Queuer
         }
     }
     
-    @objc func upload(metadata: tableMetadata, background: Bool = true, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
+    @objc func upload(metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -348,10 +348,10 @@ import Queuer
                 #if !EXTENSION
                 NCNetworkingE2EE.shared.upload(metadata: metadata, account: account, completion: completion)
                 #endif
-            } else if background {
-                uploadFileInBackground(metadata: metadata, account: account, completion: completion)
-            } else {
+            } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
                 uploadFile(metadata: metadata, account: account, completion: completion)
+            } else {
+                uploadFileInBackground(metadata: metadata, account: account, completion: completion)
             }
            
         } else {
@@ -374,10 +374,10 @@ import Queuer
                     #if !EXTENSION
                     NCNetworkingE2EE.shared.upload(metadata: extractMetadata, account: account, completion: completion)
                     #endif
-                } else if background {
-                    self.uploadFileInBackground(metadata: extractMetadata, account: account, completion: completion)
-                } else {
+                } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
                     self.uploadFile(metadata: extractMetadata, account: account, completion: completion)
+                } else {
+                    self.uploadFileInBackground(metadata: extractMetadata, account: account, completion: completion)
                 }
             }
         }

@@ -399,6 +399,7 @@
         if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo == NO) session = NCNetworking.shared.sessionIdentifierBackground;
         if (assetMediaType == PHAssetMediaTypeImage && tableAccount.autoUploadWWAnPhoto) session = NCNetworking.shared.sessionIdentifierBackgroundWWan;
         if (assetMediaType == PHAssetMediaTypeVideo && tableAccount.autoUploadWWAnVideo) session = NCNetworking.shared.sessionIdentifierBackgroundWWan;
+        if ([selector isEqualToString:selectorUploadAutoUploadAll]) session = NCCommunicationCommon.shared.sessionIdentifierUpload;
         
         NSDateFormatter *formatter = [NSDateFormatter new];
         
