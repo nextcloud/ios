@@ -297,7 +297,6 @@ import Queuer
 
     @objc func cancelUpload(ocId: String) {
         guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return }
-        
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
         
         if let request = uploadRequest[fileNameLocalPath] {

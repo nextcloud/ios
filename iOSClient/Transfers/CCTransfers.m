@@ -245,16 +245,12 @@
 
 - (void)startTask:(id)sender
 {
-    if (metadataForRecognizer.status == k_metadataStatusUploading) {
-        [[NCMainCommon shared] cancelTransferMetadata:metadataForRecognizer uploadStatusForcedStart:true];
-    } else {
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
-        metadata.status = k_metadataStatusInUpload;
-        metadata.session = NCNetworking.shared.sessionIdentifierBackground;
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] copyObjectWithMetadata:metadataForRecognizer];
+    metadata.status = k_metadataStatusInUpload;
+    metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload;
        
-        [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        [[NCNetworking shared] uploadWithMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    }
+    [[NCManageDatabase sharedInstance] addMetadata:metadata];
+    [[NCNetworking shared] uploadWithMetadata:metadata completion:^(NSInteger errorCode, NSString *errorDescription) { }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
