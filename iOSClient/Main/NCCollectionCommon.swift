@@ -359,7 +359,11 @@ class NCCollectionCommon: NSObject {
             } else {
                 if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.deleteItems(at: [indexPath])
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: [indexPath])
+                    }, completion: { (_) in
+                        collectionView?.reloadData()
+                    })
                 }
             }
         } else {
@@ -408,7 +412,11 @@ class NCCollectionCommon: NSObject {
         if metadata.serverUrl == serverUrl && metadata.account == account {
             if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
                 let indexPath = IndexPath(row: row, section: 0)
-                collectionView?.deleteItems(at: [indexPath])
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: [indexPath])
+                }, completion: { (_) in
+                    collectionView?.reloadData()
+                })
             }
         }
     }
