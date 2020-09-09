@@ -165,16 +165,19 @@ import Foundation
         return index
     }
     
-    func addMetadata(_ metadata: tableMetadata) {
+    func addMetadata(_ metadata: tableMetadata) -> Int? {
+        
+        // verificare se esiste già un file con lo stesso nome
         
         for metadataCount in metadatas {
             if metadataCount.ocId == metadata.ocId {
-                return
+                return nil
             }
         }
         
         self.metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
+        return getIndexMetadata(ocId: metadata.ocId)
     }
     
     func getIndexMetadata(ocId: String) -> Int? {
