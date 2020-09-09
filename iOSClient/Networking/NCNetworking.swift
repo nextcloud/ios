@@ -223,8 +223,10 @@ import Queuer
         if let request = downloadRequest[fileNameLocalPath] {
             request.cancel()
         } else {
-            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":ocId, "serverUrl":serverUrl])
+            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_cancelDownload, userInfo: ["metadata":metadata])
+            }
         }
     }
     
@@ -233,16 +235,14 @@ import Queuer
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
-        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) == nil {
+        if NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) == nil {
             NCManageDatabase.sharedInstance.addMetadata(tableMetadata.init(value: metadata))
         }
             
         if metadata.status == Int(k_metadataStatusInDownload) || metadata.status == Int(k_metadataStatusDownloading) { return }
                 
         NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: NCCommunicationCommon.shared.sessionIdentifierDownload, sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusInDownload))
-            
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, object: nil, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
-        
+                    
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (request) in
             
             self.downloadRequest[fileNameLocalPath] = request
@@ -288,7 +288,6 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
-            //NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
             completion(errorCode)
         }
@@ -297,7 +296,7 @@ import Queuer
     //MARK: - Upload
 
     @objc func cancelUpload(ocId: String) {
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else { return }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return }
         
         guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
         
@@ -307,7 +306,7 @@ import Queuer
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_cancelUpload, userInfo: ["metadata":metadata])
         }
     }
     
@@ -436,7 +435,6 @@ import Queuer
             #endif
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata])
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
             
             completion(0, "")
             
@@ -451,10 +449,11 @@ import Queuer
         delegate?.uploadProgress?(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         
         var metadata: tableMetadata?
+        let description: String = task.taskDescription ?? ""
         
         if let metadataTmp = self.uploadMetadataInBackground[fileName+serverUrl] {
             metadata = metadataTmp
-        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataInSessionFromTaskDescription(task.description){
+        } else if let metadataTmp = NCManageDatabase.sharedInstance.getMetadataFromOcId(description){
             self.uploadMetadataInBackground[fileName+serverUrl] = metadataTmp
             metadata = metadataTmp
         }
@@ -469,7 +468,7 @@ import Queuer
             delegate?.uploadComplete?(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size:size, description: description, task: task, errorCode: errorCode, errorDescription: errorDescription)
         } else {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadataInSessionFromTaskDescription(description) else { return }
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(description) else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
             
             if errorCode == 0 && ocId != nil {
@@ -551,7 +550,6 @@ import Queuer
             self.uploadMetadataInBackground[fileName+serverUrl] = nil
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         }
     }
     

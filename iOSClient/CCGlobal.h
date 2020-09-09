@@ -324,9 +324,14 @@
 
 #define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: metadata
 #define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_cancelUpload               @"cancelUpload"                     // userInfo: metadata
+
 #define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: metadata
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
+#define k_notificationCenter_cancelDownload             @"cancelDownload"                   // userInfo: metadata
+
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: fileName, serverUrl, errorCode, errorDescription
 #define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, onlyLocal, errorCode, errorDescription
 #define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription

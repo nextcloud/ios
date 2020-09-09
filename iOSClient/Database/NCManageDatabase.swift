@@ -2138,13 +2138,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadataInSessionFromTaskDescription(_ description: String?) -> tableMetadata? {
+    @objc func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
         
         let realm = try! Realm()
         realm.refresh()
         
-        guard let description = description else { return nil }
-        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", description).first else { return nil }
+        guard let ocId = ocId else { return nil }
+        guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
         
         return tableMetadata.init(value: result)
     }
