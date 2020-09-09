@@ -351,10 +351,18 @@ class NCCollectionCommon: NSObject {
     
     func notificationDeleteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String ,onlyLocal: Bool) {
         if errorCode == 0 {
-            if !onlyLocal {
-                _ = dataSource?.deleteMetadata(ocId: metadata.ocId)
+            if onlyLocal {
+                if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.reloadItems(at: [indexPath])
+                }
+            } else {
+                if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.deleteItems(at: [indexPath])
+                }
             }
-            collectionView?.reloadData()
+            
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
@@ -399,8 +407,10 @@ class NCCollectionCommon: NSObject {
     
     func notificationUploadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            dataSource?.deleteMetadata(ocId: metadata.ocId)
-            collectionView?.reloadData()
+            if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                collectionView?.deleteItems(at: [indexPath])
+            }
         }
     }
         

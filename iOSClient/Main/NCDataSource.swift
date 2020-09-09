@@ -139,10 +139,12 @@ import Foundation
         return (directories, files, size)
     }
     
-    func deleteMetadata(ocId: String) {
+    func deleteMetadata(ocId: String) -> Int? {
         if let index = self.getIndexMetadata(ocId: ocId) {
             self.metadatas.remove(at: index)
+            return index
         }
+        return nil
     }
     
     func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
