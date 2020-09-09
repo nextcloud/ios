@@ -600,7 +600,7 @@ extension NCFavorite {
             NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
-                        if !metadata.directory {
+                        if !metadata.directory && CCUtility.getFavoriteOffline() {                            
                             let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             if localFile == nil || localFile?.etag != metadata.etag {
                                 NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
