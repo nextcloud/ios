@@ -362,7 +362,6 @@ class NCCollectionCommon: NSObject {
                     collectionView?.deleteItems(at: [indexPath])
                 }
             }
-            
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
