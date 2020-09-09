@@ -468,12 +468,12 @@ import Queuer
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(description) else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
+            let ocIdTemp = metadata.ocId
             
             if errorCode == 0 && ocId != nil {
                 
                 let metadata = tableMetadata.init(value: metadata)
-                let ocIdTemp = metadata.ocId
-                
+               
                 CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
                     
                 metadata.uploadDate = date ?? NSDate()
@@ -512,7 +512,7 @@ import Queuer
                 #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                 
             } else {
                 
@@ -547,7 +547,7 @@ import Queuer
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
             }
             
             // Delete

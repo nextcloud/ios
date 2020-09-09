@@ -327,7 +327,7 @@
 #define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: metadata
 
 #define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: metadata
-#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, ocIdTemp, errorCode, errorDescription
 #define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: metadata
 
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected

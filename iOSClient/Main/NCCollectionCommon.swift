@@ -382,9 +382,9 @@ class NCCollectionCommon: NSObject {
         }
     }
     
-    func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
+    func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, ocIdTemp: String, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            dataSource?.reloadMetadata(ocId: metadata.ocId)
+            dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
             collectionView?.reloadData()
         }
     }

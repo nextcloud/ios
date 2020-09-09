@@ -145,13 +145,19 @@ import Foundation
         }
     }
     
-    @objc func reloadMetadata(ocId: String) {
-        if let index = self.getIndexMetadata(ocId: ocId) {
+    @objc func reloadMetadata(ocId: String, ocIdTemp: String? = nil) {
+        var index: Int?
+        
+        if ocIdTemp != nil {
+            index = self.getIndexMetadata(ocId: ocIdTemp!)
+        } else {
+            index = self.getIndexMetadata(ocId: ocId)
+        }
+        
+        if index != nil {
             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                self.metadatas[index] = metadata
-            } else {
-                print("metadata not found")
-            }
+                self.metadatas[index!] = metadata
+            } 
         }
     }
     
