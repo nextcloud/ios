@@ -364,7 +364,8 @@
             if (!_hud)
                 _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
-            [_hud visibleHudTitle:NSLocalizedString(@"_create_full_upload_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
+            [[NCContentPresenter shared] messageNotification:@"_attention_" description:@"_create_full_upload_" delay:k_dismissAfterSecondLong type:messageTypeInfo errorCode:0 forced:true];
+            [_hud visibleHudTitle:NSLocalizedString(@"_wait_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
         }
     });
     
