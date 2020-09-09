@@ -361,18 +361,24 @@ class NCCollectionCommon: NSObject {
     }
     
     func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        dataSource?.reloadMetadata(ocId: metadata.ocId)
-        collectionView?.reloadData()
+        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+            let indexPath = IndexPath(row: row, section: 0)
+            collectionView?.reloadItems(at: [indexPath])
+        }
     }
     
     func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        dataSource?.reloadMetadata(ocId: metadata.ocId)
-        collectionView?.reloadData()
+        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+            let indexPath = IndexPath(row: row, section: 0)
+            collectionView?.reloadItems(at: [indexPath])
+        }
     }
     
     func notificationDownloadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
-        dataSource?.reloadMetadata(ocId: metadata.ocId)
-        collectionView?.reloadData()
+        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+            let indexPath = IndexPath(row: row, section: 0)
+            collectionView?.reloadItems(at: [indexPath])
+        }
     }
     
     func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
@@ -384,8 +390,10 @@ class NCCollectionCommon: NSObject {
     
     func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, ocIdTemp: String, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
-            collectionView?.reloadData()
+            if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
+                let indexPath = IndexPath(row: row, section: 0)
+                collectionView?.reloadItems(at: [indexPath])
+            }
         }
     }
     

@@ -139,13 +139,13 @@ import Foundation
         return (directories, files, size)
     }
     
-    @objc func deleteMetadata(ocId: String) {
+    func deleteMetadata(ocId: String) {
         if let index = self.getIndexMetadata(ocId: ocId) {
             self.metadatas.remove(at: index)
         }
     }
     
-    @objc func reloadMetadata(ocId: String, ocIdTemp: String? = nil) {
+    func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
         var index: Int?
         
         if ocIdTemp != nil {
@@ -159,9 +159,11 @@ import Foundation
                 self.metadatas[index!] = metadata
             } 
         }
+        
+        return index
     }
     
-    @objc func addMetadata(_ metadata: tableMetadata) {
+    func addMetadata(_ metadata: tableMetadata) {
         
         for metadataCount in metadatas {
             if metadataCount.ocId == metadata.ocId {
@@ -189,7 +191,7 @@ import Foundation
     
     // MARK: -
     
-    @objc func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
+    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
         
         let row = indexPath.row
         
@@ -200,7 +202,7 @@ import Foundation
         }
     }
     
-    @objc func numberOfItemsInSection(section: Int) -> Int {
+    func numberOfItemsInSection(section: Int) -> Int {
         return self.metadatas.count
     }
 }
