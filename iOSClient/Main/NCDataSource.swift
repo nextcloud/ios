@@ -147,8 +147,10 @@ import Foundation
     
     @objc func reloadMetadata(ocId: String) {
         if let index = self.getIndexMetadata(ocId: ocId) {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 self.metadatas[index] = metadata
+            } else {
+                print("metadata not found")
             }
         }
     }
