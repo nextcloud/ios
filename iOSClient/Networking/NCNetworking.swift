@@ -383,7 +383,6 @@ import Queuer
         }
     }
     
-    //
     private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
