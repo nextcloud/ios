@@ -141,6 +141,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadStartFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadedFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadCancelFile object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadStartFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadedFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadCancelFile object:nil];
+
     // Search
     self.definesPresentationContext = YES;
     self.searchController.searchResultsUpdater = self;
@@ -1960,6 +1968,14 @@
     NSString *serverUrl = userInfo[@"serverUrl"];
     
     [self reloadDatasource:serverUrl ocId:ocId];
+}
+
+- (void)reloadDatasourceTransfer:(NSNotification *)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    tableMetadata *metadata = userInfo[@"metadata"];
+
+    [self reloadDatasource:metadata.serverUrl ocId:metadata.ocId];
 }
 
 - (void)reloadDatasource:(NSString *)serverUrl ocId:(NSString *)ocId

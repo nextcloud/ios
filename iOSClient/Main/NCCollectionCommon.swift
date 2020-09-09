@@ -351,7 +351,7 @@ class NCCollectionCommon: NSObject {
         }
     }
     
-    func notificationDownloadFileStart(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
+    func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
             collectionView?.reloadData()
         }
@@ -359,6 +359,19 @@ class NCCollectionCommon: NSObject {
     
     func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
+            collectionView?.reloadData()
+        }
+    }
+    
+    func notificationDownloadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
+        if dataSource?.reloadMetadata(ocId: metadata.ocId) ?? false {
+            collectionView?.reloadData()
+        }
+    }
+    
+    func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
+        if metadata.serverUrl == serverUrl && metadata.account == account {
+            dataSource?.addMetadata(metadata)
             collectionView?.reloadData()
         }
     }
@@ -371,13 +384,14 @@ class NCCollectionCommon: NSObject {
         }
     }
     
-    func notificationUploadFileStart(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
+    func notificationUploadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, serverUrl: String, account: String) {
         if metadata.serverUrl == serverUrl && metadata.account == account {
-            dataSource?.addMetadata(metadata)
-            collectionView?.reloadData()
+            if dataSource?.deleteMetadata(ocId: metadata.ocId) ?? false {
+                collectionView?.reloadData()
+            }
         }
     }
-    
+        
     func notificationTriggerProgressTask(collectionView: UICollectionView?, dataSource: NCDataSource?, ocId: String, progress: Float) {
         if let index = dataSource?.getIndexMetadata(ocId: ocId) {
             if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {

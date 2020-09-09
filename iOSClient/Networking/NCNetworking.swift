@@ -225,7 +225,7 @@ import Queuer
         } else {
             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_cancelDownload, userInfo: ["metadata":metadata])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["metadata":metadata])
             }
         }
     }
@@ -248,7 +248,7 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = request
             
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadFileStart, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadStartFile, userInfo: ["metadata":metadata])
             
         }, progressHandler: { (progress) in
             
@@ -306,7 +306,7 @@ import Queuer
             CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_cancelUpload, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
         }
     }
     
@@ -401,7 +401,7 @@ import Queuer
                 #if !EXTENSION
                 CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 #endif
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
             }
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
@@ -434,7 +434,7 @@ import Queuer
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
             #endif
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadFileStart, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
             
             completion(0, "")
             

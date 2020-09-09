@@ -322,13 +322,13 @@
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_reloadMediaDataSource      @"reloadMediaDataSource"
 
-#define k_notificationCenter_uploadFileStart            @"uploadFileStart"                  // userInfo: metadata
-#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_cancelUpload               @"cancelUpload"                     // userInfo: metadata
-
-#define k_notificationCenter_downloadFileStart          @"downloadFileStart"                // userInfo: metadata
+#define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: metadata
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
-#define k_notificationCenter_cancelDownload             @"cancelDownload"                   // userInfo: metadata
+#define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: metadata
+
+#define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: metadata
+#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: metadata
 
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 

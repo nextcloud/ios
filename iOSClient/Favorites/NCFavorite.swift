@@ -96,12 +96,17 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadFileStart), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadFileStart(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadFileStart), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadCancelFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadCancelFile), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
 
         changeTheming()
@@ -144,6 +149,10 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
     
     // MARK: - NotificationCenter
 
+    @objc func changeTheming() {
+        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+    }
+    
     @objc func deleteFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -154,12 +163,12 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         }
     }
     
-    @objc func downloadFileStart(_ notification: NSNotification) {
+    @objc func downloadStartFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                NCCollectionCommon.shared.notificationDownloadFileStart(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
+                NCCollectionCommon.shared.notificationDownloadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -174,6 +183,26 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         }
     }
     
+    @objc func downloadCancelFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                NCCollectionCommon.shared.notificationDownloadCancelFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
+            }
+        }
+    }
+    
+    @objc func uploadStartFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                NCCollectionCommon.shared.notificationUploadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
+            }
+        }
+    }
+    
     @objc func uploadedFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -184,12 +213,12 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
         }
     }
     
-    @objc func uploadFileStart(_ notification: NSNotification) {
+    @objc func uploadCancelFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                NCCollectionCommon.shared.notificationUploadFileStart(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
+                NCCollectionCommon.shared.notificationUploadCancelFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, serverUrl: serverUrl, account: appDelegate.account)
             }
         }
     }
@@ -204,10 +233,6 @@ class NCFavorite: UIViewController, UIGestureRecognizerDelegate, NCListCellDeleg
                 NCCollectionCommon.shared.notificationTriggerProgressTask(collectionView: collectionView, dataSource: dataSource, ocId: ocId, progress: progress)
             }
         }
-    }
-    
-    @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
     
     // MARK: DZNEmpty
