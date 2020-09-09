@@ -409,7 +409,6 @@ import Queuer
         }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
          
             self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task!, errorCode: errorCode, errorDescription: errorDescription)
-            
             completion(errorCode, errorDescription)
         }
     }
@@ -493,7 +492,7 @@ import Queuer
                 
                 // Delete Asset on Photos album
                 if tableAccount.autoUploadDeleteAssetLocalIdentifier && metadata.assetLocalIdentifier != "" && metadata.sessionSelector == selectorUploadAutoUpload {
-                        metadata.deleteAssetLocalIdentifier = true;
+                    metadata.deleteAssetLocalIdentifier = true;
                 }
                 
                 if CCUtility.getDisableLocalCacheAfterUpload() {
