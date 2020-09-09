@@ -160,6 +160,11 @@ class NCCollectionCommon: NSObject {
                         cell.imageItem.image = UIImage.init(named: "file")
                     }
                 }
+                if cell.imageItem.image == nil {
+                    cell.imageItem.backgroundColor = .lightGray
+                } else {
+                    cell.imageItem.backgroundColor = nil
+                }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                 
@@ -277,7 +282,6 @@ class NCCollectionCommon: NSObject {
                 } else {
                     cell.imageItem.image = NCCollectionCommonImages.cellFolderImage
                 }
-                
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
@@ -297,6 +301,11 @@ class NCCollectionCommon: NSObject {
                     } else {
                         cell.imageItem.image = UIImage.init(named: "file")
                     }
+                }
+                if cell.imageItem.image == nil {
+                    cell.imageItem.backgroundColor = .lightGray
+                } else {
+                    cell.imageItem.backgroundColor = nil
                 }
                 
                 // image Local
