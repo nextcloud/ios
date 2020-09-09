@@ -84,10 +84,10 @@ class NCOffline: NCCollectionViewCommon  {
         metadataPush = metadata
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: metadata.ocId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: metadata.ocId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(metadata.ocId)
+                selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
             return

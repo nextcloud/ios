@@ -558,7 +558,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
        
     internal var metadataPush: tableMetadata?
     internal var isEditMode = false
-    internal var selectocId: [String] = []
+    internal var selectOcId: [String] = []
         
     internal var dataSource: NCDataSource?
         
@@ -1005,7 +1005,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         
-        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectocId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self)
+        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: nil, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectOcId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self)
         
         return cell
     }
