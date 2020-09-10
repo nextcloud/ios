@@ -133,14 +133,15 @@
     // Notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasource:) name:k_notificationCenter_reloadDataSource object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:k_notificationCenter_setTitleMain object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_renameFile object:nil];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadStartFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadedFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadCancelFile object:nil];
@@ -148,6 +149,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadStartFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadedFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadCancelFile object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
 
     // Search
     self.definesPresentationContext = YES;
@@ -455,6 +458,8 @@
             [self readFolder:serverUrl];
         }
     }
+    
+    [self reloadDatasource:self.serverUrl ocId:nil];
 }
 
 - (void)deleteFile:(NSNotification *)notification
@@ -510,6 +515,8 @@
     if (errorCode != 0 && self.view.window != nil) {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
+    
+    [self reloadDatasource:self.serverUrl ocId:nil];
 }
 
 - (void)copyFile:(NSNotification *)notification
@@ -559,6 +566,8 @@
     } else {
         [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
+    
+    [self reloadDatasource:self.serverUrl ocId:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
