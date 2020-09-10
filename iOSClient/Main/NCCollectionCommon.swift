@@ -394,7 +394,7 @@ class NCCollectionCommon: NSObject {
         }
     }
     
-    func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
+    func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if let row = dataSource?.addMetadata(metadata) {
             let indexPath = IndexPath(row: row, section: 0)
             collectionView?.performBatchUpdates({
@@ -402,9 +402,7 @@ class NCCollectionCommon: NSObject {
             }, completion: { (_) in
                 collectionView?.reloadData()
             })
-            return true
         }
-        return false
     }
     
     func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, ocIdTemp: String) -> Bool {
