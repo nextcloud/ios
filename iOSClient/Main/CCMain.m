@@ -1389,7 +1389,8 @@
 }
 
 // DELEGATE : Select
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
+
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type array:(NSArray *)array buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
     if (serverUrl != nil) {
         // E2EE DENIED

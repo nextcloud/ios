@@ -117,14 +117,14 @@ import NCCommunication
     
     // Download Thumbnail
     
-    @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath? = nil, dataSource: NCDataSource? = nil) {
         if metadata.hasPreview && metadata.status == k_metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
                 if operation.metadata.ocId == metadata.ocId {
                     return
                 }
             }
-            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath))
+            downloadThumbnailQueue.addOperation(NCOperationDownloadThumbnail.init(metadata: metadata, urlBase: urlBase, view: view, indexPath: indexPath, dataSource: dataSource))
         }
     }
     
@@ -347,13 +347,15 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var urlBase: String
     var view: Any
-    var indexPath: IndexPath
+    var indexPath: IndexPath?
+    var dataSource: NCDataSource?
     
-    init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
+    init(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath?, dataSource: NCDataSource?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.urlBase = urlBase
         self.view = view
         self.indexPath = indexPath
+        self.dataSource = dataSource
     }
     
     override func start() {
@@ -368,12 +370,17 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
                 var cell: NCImageCellProtocol?
-                if self.view is UICollectionView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
-                    cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
-                } else if self.view is UITableView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
-                    cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                
+                if self.dataSource != nil {
+                    
+                } else if self.indexPath != nil {
+                    if self.view is UICollectionView && NCMainCommon.shared.isValidIndexPath(self.indexPath!, view: self.view) {
+                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath!) as? NCImageCellProtocol
+                    } else if self.view is UITableView && NCMainCommon.shared.isValidIndexPath(self.indexPath!, view: self.view) {
+                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath!) as? NCImageCellProtocol
+                    }
                 }
-
+                
                 if (cell != nil) {
                     var previewImage: UIImage!
                     if errorCode == 0 && imageIcon != nil {
