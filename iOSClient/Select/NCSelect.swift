@@ -377,7 +377,8 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
             visualController.heightToolBarTop = heightToolBarTop
-                
+            visualController.array = array
+
             visualController.titleCurrentFolder = metadataPush!.fileNameView
             visualController.serverUrl = serverUrlPush
                    

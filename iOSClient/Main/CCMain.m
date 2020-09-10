@@ -136,11 +136,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:k_notificationCenter_progressTask object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteFile:) name:k_notificationCenter_deleteFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(favoriteFile:) name:k_notificationCenter_favoriteFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moveFile:) name:k_notificationCenter_moveFile object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(copyFile:) name:k_notificationCenter_copyFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:k_notificationCenter_changeTheming object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createFolder:) name:k_notificationCenter_createFolder object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadStartFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadedFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_downloadCancelFile object:nil];
@@ -148,6 +146,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadStartFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadedFile object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_uploadCancelFile object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_renameFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_moveFile object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDatasourceTransfer:) name:k_notificationCenter_copyFile object:nil];
+
+
 
     // Search
     self.definesPresentationContext = YES;
@@ -487,52 +491,6 @@
     }
     
     [self reloadDatasource:self.serverUrl ocId:nil];
-}
-
-- (void)moveFile:(NSNotification *)notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-//    tableMetadata *metadataNew = userInfo[@"metadataNew"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
-    
-    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
-    
-    if (arrayMoveMetadata.count > 0) {
-        tableMetadata *metadata = arrayMoveMetadata.firstObject;
-        NSString *serverUrlTo = arrayMoveServerUrlTo.firstObject;
-        [arrayMoveMetadata removeObjectAtIndex:0];
-        [arrayMoveServerUrlTo removeObjectAtIndex:0];
-        [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    }
-    
-    if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
-    }
-}
-
-- (void)copyFile:(NSNotification *)notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    tableMetadata *metadata = userInfo[@"metadata"];
-//    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
-    
-    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
-    
-    if (arrayCopyMetadata.count > 0) {
-        tableMetadata *metadata = arrayCopyMetadata.firstObject;
-        NSString *serverUrlTo = arrayCopyServerUrlTo.firstObject;
-        [arrayCopyMetadata removeObjectAtIndex:0];
-        [arrayCopyServerUrlTo removeObjectAtIndex:0];
-        [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    }
-    
-    if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
-    }
 }
 
 - (void)favoriteFile:(NSNotification *)notification
@@ -1975,7 +1933,13 @@
 {
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
-
+    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    NSString *errorDescription = userInfo[@"errorDescription"];
+    
+    if (errorCode != 0 && self.view.window != nil) {
+        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+    }
+    
     [self reloadDatasource:metadata.serverUrl ocId:metadata.ocId];
 }
 

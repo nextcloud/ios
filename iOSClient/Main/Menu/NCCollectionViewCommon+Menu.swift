@@ -121,6 +121,35 @@ extension NCCollectionViewCommon {
                 )
             )
         }
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_rename_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+                    
+                    alertController.addTextField { (textField) in
+                        textField.text = metadata.fileNameView
+                        textField.delegate = self as? UITextFieldDelegate
+                        textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(sender:)), for: UIControl.Event.editingChanged)
+                    }
+
+                    let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+
+                    let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                        let fileNameNew = alertController.textFields![0].text
+                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in }
+                    })
+                    okAction.isEnabled = false
+                    alertController.addAction(cancelAction)
+                    alertController.addAction(okAction)
+
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            )
+        )
+        
 
         if !isFolderEncrypted && serverUrl != "" {
             actions.append(

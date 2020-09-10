@@ -388,6 +388,17 @@ class NCCollectionCommon: NSObject {
         }
     }
     
+    func notificationRenameFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String) {
+        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+            let indexPath = IndexPath(row: row, section: 0)
+            collectionView?.performBatchUpdates({
+                collectionView?.reloadItems(at: [indexPath])
+            }, completion: { (_) in
+                collectionView?.reloadData()
+            })
+        }
+    }
+    
     func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
             let indexPath = IndexPath(row: row, section: 0)
@@ -668,6 +679,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_copyFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
@@ -717,6 +729,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         }
     }
     
+    // MARK: - Utility
+    
+    @objc func minCharTextFieldDidChange(sender: UITextField) {
+        guard let alertController = self.presentedViewController as? UIAlertController else { return }
+        guard let password = alertController.textFields?.first else { return }
+        guard let ok = alertController.actions.last else { return }
+        ok.isEnabled =  password.text?.count ?? 0 >= 8
+    }
+    
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
@@ -744,6 +765,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     }
     
     @objc func copyFile(_ notification: NSNotification) { }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                NCCollectionCommon.shared.notificationRenameFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription)
+            }
+        }
+    }
     
     @objc func downloadStartFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
