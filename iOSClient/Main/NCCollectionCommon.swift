@@ -405,13 +405,9 @@ class NCCollectionCommon: NSObject {
         }
     }
     
-    func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, ocIdTemp: String) -> Bool {
-        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
-            let indexPath = IndexPath(row: row, section: 0)
-            collectionView?.reloadItems(at: [indexPath])
-            return true
-        }
-        return false
+    func notificationUploadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, ocIdTemp: String) {
+        _ = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
+        collectionView?.reloadData()
     }
     
     func notificationUploadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
@@ -768,9 +764,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if !NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, ocIdTemp:ocIdTemp) {
-                        self.reloadDataSource()
-                    }
+                    NCCollectionCommon.shared.notificationUploadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, ocIdTemp:ocIdTemp)
                 }
             }
         }
