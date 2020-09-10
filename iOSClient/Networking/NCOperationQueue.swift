@@ -118,7 +118,7 @@ import NCCommunication
     // Download Thumbnail
     
     @objc func downloadThumbnail(metadata: tableMetadata, urlBase: String, view: Any, indexPath: IndexPath) {
-        if metadata.hasPreview && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
+        if metadata.hasPreview && metadata.status == k_metadataStatusNormal && (!CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
             for operation in downloadThumbnailQueue.operations as! [NCOperationDownloadThumbnail] {
                 if operation.metadata.ocId == metadata.ocId {
                     return
