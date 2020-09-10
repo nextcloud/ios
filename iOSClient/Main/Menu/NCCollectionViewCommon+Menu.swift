@@ -47,7 +47,7 @@ extension NCCollectionViewCommon {
     private func initMenu(viewController: UIViewController, metadata: tableMetadata, selectOcId: [String]) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)        
         
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
@@ -72,7 +72,7 @@ extension NCCollectionViewCommon {
         if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_remove_favorites_", comment: ""),
+                    title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
                     action: { menuAction in
                         NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in }

@@ -416,6 +416,17 @@ class NCCollectionCommon: NSObject {
     
     func notificationFavoriteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, favorite: Bool, errorCode: Int, errorDescription: String) {
         if errorCode == 0 {
+            if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                collectionView?.reloadItems(at: [indexPath])
+            }
+            if favorite {
+                if CCUtility.getFavoriteOffline() {
+                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                } else {
+                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
+                }
+            }
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
