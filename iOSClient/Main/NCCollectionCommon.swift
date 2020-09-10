@@ -1020,7 +1020,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return dataSource?.sections ?? 1
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -1067,7 +1067,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = dataSource?.sections ?? 1
+        let sections = 1
         if (section == sections - 1) {
             return CGSize(width: collectionView.frame.width, height: footerHeight)
         } else {
