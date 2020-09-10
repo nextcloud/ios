@@ -29,7 +29,7 @@ extension NCCollectionViewCommon {
 
     func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
             mainMenuViewController.actions = self.initMoreMenu(metadata: metadata, viewController: viewController)

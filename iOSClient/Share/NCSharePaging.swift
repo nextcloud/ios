@@ -268,7 +268,7 @@ class NCShareHeaderView: UIView {
     var ocId = ""
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
             NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
                 if errorCode == 0 {
                     if !metadata.favorite {

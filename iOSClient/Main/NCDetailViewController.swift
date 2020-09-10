@@ -288,7 +288,7 @@ class NCDetailViewController: UIViewController {
                     // OTHER
                     if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                         
-                        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
                             self.metadata = metadata
                             self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
                         } else {
@@ -417,7 +417,7 @@ class NCDetailViewController: UIViewController {
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
                 
-        self.metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        self.metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId)
         self.selector = selector
         self.backgroundView.image = nil
         
@@ -723,7 +723,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         let ocId = metadata.ocId
         if metadata.typeFile == k_metadataTypeFile_image && !view.isLoading {
             DispatchQueue.global().async {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                     if let image = NCViewerImageCommon.shared.getImage(metadata: metadata) {
                         DispatchQueue.main.async {
                             view.image = image

@@ -324,7 +324,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                     action: { menuAction in
                         self.isEditMode = false
                         for ocId in self.selectocId {
-                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in }
                             }
                         }

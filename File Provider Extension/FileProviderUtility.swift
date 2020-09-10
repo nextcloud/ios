@@ -32,13 +32,13 @@ class fileProviderUtility: NSObject {
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         
         let ocId = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))?.account
+        return NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId)?.account
     }
     
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
         
         let ocId = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+        return NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId)
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
@@ -64,7 +64,7 @@ class fileProviderUtility: NSObject {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
                 // get the metadata.ocId of parent Directory
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", directory.ocId))  {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(directory.ocId) {
                     let identifier = getItemIdentifier(metadata: metadata)
                     return identifier
                 }

@@ -1035,7 +1035,7 @@ import Queuer
                 }
                 
                 NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
-                guard let metadataNew = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) else { return }
+                guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
                                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":serverUrlTo])

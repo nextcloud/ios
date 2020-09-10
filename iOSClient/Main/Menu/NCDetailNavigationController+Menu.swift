@@ -33,7 +33,7 @@ extension NCDetailNavigationController {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
             mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
         } else {
             mainMenuViewController.actions = self.initMoreMenuClose(viewController: viewController)

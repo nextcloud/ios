@@ -290,7 +290,7 @@ class FileProviderExtension: NSFileProviderExtension {
             let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             CCUtility.copyFile(atPath: atPath, toPath: toPath)
         }
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocId)) else { return }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path

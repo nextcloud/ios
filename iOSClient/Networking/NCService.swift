@@ -79,7 +79,7 @@ class NCService: NSObject {
                 // Synchronize Offline Directory ---
                 if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "serverUrl", ascending: true) {
                     for directory: tableDirectory in directories {
-                        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", directory.ocId)) else {
+                        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(directory.ocId) else {
                             continue
                         }
                         NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)
@@ -89,7 +89,7 @@ class NCService: NSObject {
                 // Synchronize Offline Files ---
                 let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", tableAccount.account), sorted: "fileName", ascending: true)
                 for file: tableLocalFile in files {
-                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", file.ocId)) else {
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(file.ocId) else {
                         continue
                     }
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadFile)

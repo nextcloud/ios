@@ -29,7 +29,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
                 
         guard let ocIdTemp = description else { return }
-        guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp)) else { return }
+        guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdTemp) else { return }
         let metadata = tableMetadata.init(value: metadataTemp)
         
         let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))

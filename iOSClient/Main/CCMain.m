@@ -1691,7 +1691,7 @@
             NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
             
             if (ocId) {
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:ocId];
                 if (metadata) {
                     return [CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView];
                 } else {
@@ -1720,7 +1720,7 @@
             NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
 
             if (ocId) {
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:ocId];
                 if (metadata) {
                     if ([CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
                         isValid = YES;
@@ -1835,7 +1835,7 @@
         NSData *dataocId = [dic objectForKey: k_metadataKeyedUnarchiver];
         NSString *ocId = [NSKeyedUnarchiver unarchiveObjectWithData:dataocId];
 
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", ocId]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:ocId];
         
         if (metadata) {
             
@@ -2000,7 +2000,7 @@
         // Create metadatas
         NSMutableArray *metadatas = [NSMutableArray new];
         for (tableMetadata *resultMetadata in _searchResultMetadatas) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"ocId == %@", resultMetadata.ocId]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:resultMetadata.ocId];
             if (metadata) {
                 [metadatas addObject:metadata];
             }

@@ -66,7 +66,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.sharedInstance.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", tag.ocId))  else { continue }
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(tag.ocId)  else { continue }
                 fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
                 itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
@@ -75,7 +75,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             fileProviderData.sharedInstance.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.sharedInstance.account)
             for (identifier, _) in fileProviderData.sharedInstance.listFavoriteIdentifierRank {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(identifier) else { continue }
                 itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
             

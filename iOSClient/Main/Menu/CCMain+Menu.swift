@@ -104,7 +104,7 @@ extension CCMain {
 
     @objc func toggleMoreMenu(viewController: UIViewController, indexPath: IndexPath, metadata: tableMetadata, metadataFolder: tableMetadata) {
            
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
             mainMenuViewController.actions = self.initMoreMenu(indexPath: indexPath, metadata: metadata, metadataFolder: metadataFolder)
