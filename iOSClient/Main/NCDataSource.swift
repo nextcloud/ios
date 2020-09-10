@@ -180,8 +180,10 @@ import Foundation
             index += 1
         }
         
+        // Append & rebuild
         self.metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
+        
         return getIndexMetadata(ocId: metadata.ocId)
     }
     
@@ -195,6 +197,7 @@ import Foundation
             }
             index += 1
         }
+        
         return nil
     }
     
@@ -212,6 +215,7 @@ import Foundation
     }
     
     func numberOfItemsInSection(section: Int) -> Int {
+        
         return self.metadatas.count
     }
 }
