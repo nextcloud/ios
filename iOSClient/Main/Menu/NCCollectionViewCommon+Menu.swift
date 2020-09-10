@@ -48,7 +48,18 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)        
+        var isOffline = false
         
+        if metadata.directory {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
+                isOffline = directory.offline
+            }
+        } else {
+            if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                isOffline = localFile.offline
+            }
+        }
+            
         var iconHeader: UIImage!
         if let icon = UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             iconHeader = icon
@@ -82,16 +93,18 @@ extension NCCollectionViewCommon {
         }
         
         // Offline
-        if layoutKey == k_layout_view_offline && self.serverUrl == "" || (layoutKey != k_layout_view_offline) {
+        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && self.serverUrl == "" || (layoutKey != k_layout_view_offline)) {
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_remove_available_offline_", comment: ""),
+                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        if metadata.directory {
-                            NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
-                        } else {
-                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                        if isOffline {
+                            if metadata.directory {
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
+                            } else {
+                                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                            }
                         }
                         self.reloadDataSource()
                     }
