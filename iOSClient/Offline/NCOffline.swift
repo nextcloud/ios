@@ -45,18 +45,6 @@ class NCOffline: NCCollectionViewCommon  {
         return NSAttributedString.init(string: text, attributes: attributes)
     }
         
-    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
-        
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
-        guard let tabBarController = self.tabBarController else { return }
-
-        if namedButtonMore == "more" {
-            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
-        } else if namedButtonMore == "stop" {
-            NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
-        }
-    }
-    
     // MARK: SEGUE
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

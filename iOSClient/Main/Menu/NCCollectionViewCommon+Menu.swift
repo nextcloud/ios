@@ -1,5 +1,5 @@
 //
-//  NCOffline+Menu.swift
+//  NCCollectionViewCommon+Menu.swift
 //  Nextcloud
 //
 //  Created by Philippe Weidmann on 24.01.20.
@@ -25,7 +25,7 @@
 
 import FloatingPanel
 
-extension NCOffline {
+extension NCCollectionViewCommon {
 
     func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
         
@@ -68,7 +68,21 @@ extension NCOffline {
             )
         )
 
-        if self.serverUrl == "" {
+        // Favorite
+        if layoutKey == k_layout_view_favorite && serverUrl == "" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_remove_favorites_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
+                    action: { menuAction in
+                        NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in }
+                    }
+                )
+            )
+        }
+        
+        // Offline
+        if layoutKey == k_layout_view_offline && self.serverUrl == "" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_remove_available_offline_", comment: ""),
@@ -84,13 +98,58 @@ extension NCOffline {
                 )
             )
         }
-        
+
+        // All
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                }
+            )
+        )
+
+        if !metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_open_in_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                    }
+                )
+            )
+        }
+
+        /*
+        if !isFolderEncrypted && serverUrl != "" {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_move_or_copy_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.openSelectView(viewController: viewController, array: [metadata])
+                    }
+                )
+            )
+        }
+        */
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                action: { menuAction in
+                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: false) { (errorCode, errorDescription) in }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: true) { (errorCode, errorDescription) in }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
+                    self.present(alertController, animated: true, completion:nil)
                 }
             )
         )

@@ -869,7 +869,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     
     func tapShareListItem(with objectId: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "ocId == %@", objectId)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else {
             return
         }
         
@@ -878,6 +878,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
+        guard let tabBarController = self.tabBarController else { return }
+
+        if namedButtonMore == "more" {
+            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
+        } else if namedButtonMore == "stop" {
+            NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
+        }
     }
     
     // MARK: SEGUE
