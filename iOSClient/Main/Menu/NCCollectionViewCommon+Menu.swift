@@ -105,6 +105,16 @@ extension NCCollectionViewCommon {
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
                             }
+                        } else {
+                            if metadata.directory {
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: true, account: self.appDelegate.account)
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                            } else {
+                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
+                                if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
+                                }
+                            }
                         }
                         self.reloadDataSource()
                     }
