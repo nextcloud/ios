@@ -69,7 +69,7 @@ extension NCCollectionViewCommon {
         )
 
         // Favorite
-        if layoutKey == k_layout_view_favorite && serverUrl == "" {
+        if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_remove_favorites_", comment: ""),
@@ -82,7 +82,7 @@ extension NCCollectionViewCommon {
         }
         
         // Offline
-        if layoutKey == k_layout_view_offline && self.serverUrl == "" {
+        if layoutKey == k_layout_view_offline && self.serverUrl == "" || (layoutKey != k_layout_view_offline) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_remove_available_offline_", comment: ""),
