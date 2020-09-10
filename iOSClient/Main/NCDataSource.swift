@@ -167,12 +167,15 @@ import Foundation
     
     func addMetadata(_ metadata: tableMetadata) -> Int? {
         
-        // verificare se esiste già un file con lo stesso nome
+        var index: Int = 0
         
+        // Already exists
         for metadataCount in metadatas {
-            if metadataCount.ocId == metadata.ocId {
-                return nil
+            if metadataCount.fileNameView == metadata.fileNameView || metadataCount.ocId == metadata.ocId {
+                metadatas[index] = metadata
+                return index
             }
+            index += 1
         }
         
         self.metadatas.append(metadata)
