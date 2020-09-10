@@ -95,7 +95,7 @@ class NCCollectionCommon: NSObject {
         
         // Download preview
         if downloadThumbnail {
-            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath, dataSource: dataSource)
+            NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
         }
         
         var isShare = false
