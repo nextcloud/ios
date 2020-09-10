@@ -372,7 +372,9 @@ class NCCollectionCommon: NSObject {
                     })
                 }
             }
-        } 
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        }
     }
     
     func notificationMoveFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String) {
@@ -385,17 +387,37 @@ class NCCollectionCommon: NSObject {
                     collectionView?.reloadData()
                 })
             }
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
     }
     
     func notificationRenameFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String) {
-        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
-            let indexPath = IndexPath(row: row, section: 0)
-            collectionView?.performBatchUpdates({
-                collectionView?.reloadItems(at: [indexPath])
-            }, completion: { (_) in
-                collectionView?.reloadData()
-            })
+        if errorCode == 0 {
+            if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                collectionView?.performBatchUpdates({
+                    collectionView?.reloadItems(at: [indexPath])
+                }, completion: { (_) in
+                    collectionView?.reloadData()
+                })
+            }
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        }
+    }
+    
+    func notificationCreateFolder(collectionView: UICollectionView?, dataSource: NCDataSource?, fileName: String, serverUrl: String, errorCode: Int, errorDescription: String) {
+        if errorCode == 0 {
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        }
+    }
+    
+    func notificationFavoriteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, favorite: Bool, errorCode: Int, errorDescription: String) {
+        if errorCode == 0 {
+        } else {
+            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
     }
     
@@ -676,10 +698,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_copyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_createFolder), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_favoriteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
@@ -772,6 +797,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                 NCCollectionCommon.shared.notificationRenameFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription)
+            }
+        }
+    }
+    
+    @objc func createFolder(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let fileName = userInfo["fileName"] as? String, let serverUrl = userInfo["serverUrl"] as? String,let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                NCCollectionCommon.shared.notificationCreateFolder(collectionView: collectionView, dataSource: dataSource, fileName: fileName, serverUrl: serverUrl, errorCode: errorCode, errorDescription: errorDescription)
+            }
+        }
+    }
+    
+    @objc func favoriteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let favorite = userInfo["favorite"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                NCCollectionCommon.shared.notificationFavoriteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, favorite: favorite, errorCode: errorCode, errorDescription: errorDescription)
             }
         }
     }
