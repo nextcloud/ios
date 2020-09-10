@@ -1696,6 +1696,7 @@ class NCManageDatabase: NSObject {
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
         metadata.iconName = results.iconName
+        metadata.etag = ocId
         metadata.ext = (fileName as NSString).pathExtension.lowercased()
         metadata.fileName = fileName
         metadata.fileNameView = fileName
