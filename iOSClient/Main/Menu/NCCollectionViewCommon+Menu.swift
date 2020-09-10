@@ -27,12 +27,12 @@ import FloatingPanel
 
 extension NCCollectionViewCommon {
 
-    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, selectOcId: [String]) {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMoreMenu(metadata: metadata, viewController: viewController)
+            mainMenuViewController.actions = self.initMenu(viewController: viewController, metadata: metadata, selectOcId: selectOcId)
 
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = viewController
@@ -44,7 +44,7 @@ extension NCCollectionViewCommon {
         }
     }
     
-    private func initMoreMenu(metadata: tableMetadata, viewController: UIViewController) -> [NCMenuAction] {
+    private func initMenu(viewController: UIViewController, metadata: tableMetadata, selectOcId: [String]) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
@@ -122,7 +122,6 @@ extension NCCollectionViewCommon {
             )
         }
 
-        /*
         if !isFolderEncrypted && serverUrl != "" {
             actions.append(
                 NCMenuAction(
@@ -134,7 +133,6 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-        */
         
         actions.append(
             NCMenuAction(
@@ -143,10 +141,26 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: false) { (errorCode, errorDescription) in }
+                        if selectOcId.count > 0 {
+                            for ocId in selectOcId {
+                                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                    NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                                }
+                            }
+                        } else {
+                            NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                        }
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: true) { (errorCode, errorDescription) in }
+                        if selectOcId.count > 0 {
+                            for ocId in selectOcId {
+                                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                    NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                                }
+                            }
+                        } else {
+                            NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                        }
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)

@@ -372,8 +372,19 @@ class NCCollectionCommon: NSObject {
                     })
                 }
             }
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+        } 
+    }
+    
+    func notificationMoveFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String) {
+        if errorCode == 0 {
+            if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                let indexPath = IndexPath(row: row, section: 0)
+                collectionView?.performBatchUpdates({
+                    collectionView?.deleteItems(at: [indexPath])
+                }, completion: { (_) in
+                    collectionView?.reloadData()
+                })
+            }
         }
     }
     
@@ -655,7 +666,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_copyFile), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadCancelFile), object: nil)
@@ -719,7 +732,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
             }
         }
     }
+   
+    @objc func moveFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
         
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["metadataNew"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
+                NCCollectionCommon.shared.notificationMoveFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription)
+            }
+        }
+    }
+    
+    @objc func copyFile(_ notification: NSNotification) { }
+    
     @objc func downloadStartFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -880,7 +905,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         guard let tabBarController = self.tabBarController else { return }
 
         if namedButtonMore == "more" {
-            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
+            toggleMoreMenu(viewController: tabBarController, metadata: metadata, selectOcId: selectOcId)
         } else if namedButtonMore == "stop" {
             NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
         }
