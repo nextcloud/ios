@@ -121,6 +121,9 @@ class NCCollectionCommon: NSObject {
             cell.imageFavorite.image = nil
             cell.imageShared.image = nil
             
+            cell.imageItem.image = nil
+            cell.imageItem.backgroundColor = nil
+            
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
@@ -155,17 +158,16 @@ class NCCollectionCommon: NSObject {
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else if(!metadata.hasPreview) {
-                    if metadata.iconName.count > 0 {
-                        cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                    } else {
-                        cell.imageItem.image = UIImage.init(named: "file")
-                    }
-                }
-                if cell.imageItem.image == nil {
-                    cell.imageItem.backgroundColor = .lightGray
                 } else {
-                    cell.imageItem.backgroundColor = nil
+                    if metadata.hasPreview {
+                        cell.imageItem.backgroundColor = .lightGray
+                    } else {
+                        if metadata.iconName.count > 0 {
+                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
+                        } else {
+                            cell.imageItem.image = UIImage.init(named: "file")
+                        }
+                    }
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
@@ -265,6 +267,9 @@ class NCCollectionCommon: NSObject {
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
             
+            cell.imageItem.image = nil
+            cell.imageItem.backgroundColor = nil
+            
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
@@ -297,17 +302,16 @@ class NCCollectionCommon: NSObject {
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                } else if(!metadata.hasPreview) {
-                    if metadata.iconName.count > 0 {
-                        cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                    } else {
-                        cell.imageItem.image = UIImage.init(named: "file")
-                    }
-                }
-                if cell.imageItem.image == nil {
-                    cell.imageItem.backgroundColor = .lightGray
                 } else {
-                    cell.imageItem.backgroundColor = nil
+                    if metadata.hasPreview {
+                        cell.imageItem.backgroundColor = .lightGray
+                    } else {
+                        if metadata.iconName.count > 0 {
+                            cell.imageItem.image = UIImage.init(named: metadata.iconName)
+                        } else {
+                            cell.imageItem.image = UIImage.init(named: "file")
+                        }
+                    }
                 }
                 
                 // image Local
