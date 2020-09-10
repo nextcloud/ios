@@ -26,14 +26,13 @@ import Foundation
 @objc class NCDataSource: NSObject {
     
     @objc var metadatas: [tableMetadata] = []
-    @objc var sections: Int = 1
 
     private var sort: String = ""
     private var ascending: Bool = true
     private var directoryOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     
-    @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, groupBy: String? = nil, directoryOnTop: Bool, filterLivePhoto: Bool) {
+    @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         
         self.sort = sort
@@ -140,14 +139,17 @@ import Foundation
     }
     
     func deleteMetadata(ocId: String) -> Int? {
+        
         if let index = self.getIndexMetadata(ocId: ocId) {
             self.metadatas.remove(at: index)
             return index
         }
+        
         return nil
     }
     
     func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
+        
         var index: Int?
         
         if ocIdTemp != nil {
@@ -194,7 +196,6 @@ import Foundation
             index += 1
         }
         return nil
-        
     }
     
     // MARK: -
