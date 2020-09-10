@@ -68,7 +68,9 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
         imageItem.layer.masksToBounds = true
         
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
-        progressView.transform = CGAffineTransform(scaleX: 1, y: 1)
+        progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
+        progressView.trackTintColor = .clear
+
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         
         setButtonMore(named: "more")
