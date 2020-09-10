@@ -351,13 +351,12 @@ class NCCollectionCommon: NSObject {
     
     // MARK: -
     
-    func notificationDeleteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String ,onlyLocal: Bool) -> Bool {
+    func notificationDeleteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, errorCode: Int, errorDescription: String ,onlyLocal: Bool) {
         if errorCode == 0 {
             if onlyLocal {
                 if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.reloadItems(at: [indexPath])
-                    return true
                 }
             } else {
                 if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
@@ -367,41 +366,32 @@ class NCCollectionCommon: NSObject {
                     }, completion: { (_) in
                         collectionView?.reloadData()
                     })
-                    return true
                 }
             }
         } else {
             NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            return false
         }
-        return false
     }
     
-    func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
+    func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
             let indexPath = IndexPath(row: row, section: 0)
             collectionView?.reloadItems(at: [indexPath])
-            return true
         }
-        return false
     }
     
-    func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
+    func notificationDownloadedFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
             let indexPath = IndexPath(row: row, section: 0)
             collectionView?.reloadItems(at: [indexPath])
-            return true
         }
-        return false
     }
     
-    func notificationDownloadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
+    func notificationDownloadCancelFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
         if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
             let indexPath = IndexPath(row: row, section: 0)
             collectionView?.reloadItems(at: [indexPath])
-            return true
         }
-        return false
     }
     
     func notificationUploadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) -> Bool {
@@ -727,9 +717,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                if !NCCollectionCommon.shared.notificationDeleteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription, onlyLocal: onlyLocal) {
-                    self.reloadDataSource()
-                }
+                NCCollectionCommon.shared.notificationDeleteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, errorCode: errorCode, errorDescription: errorDescription, onlyLocal: onlyLocal)
             }
         }
     }
@@ -739,9 +727,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if !NCCollectionCommon.shared.notificationDownloadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata) {
-                    self.reloadDataSource()
-                }
+                NCCollectionCommon.shared.notificationDownloadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -751,9 +737,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
-                if !NCCollectionCommon.shared.notificationDownloadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata) {
-                    self.reloadDataSource()
-                }
+                NCCollectionCommon.shared.notificationDownloadedFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -763,9 +747,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if !NCCollectionCommon.shared.notificationDownloadCancelFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata) {
-                    self.reloadDataSource()
-                }
+                NCCollectionCommon.shared.notificationDownloadCancelFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
             }
         }
     }
@@ -776,9 +758,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if !NCCollectionCommon.shared.notificationUploadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata) {
-                        self.reloadDataSource()
-                    }
+                    NCCollectionCommon.shared.notificationUploadStartFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata)
                 }
             }
         }
