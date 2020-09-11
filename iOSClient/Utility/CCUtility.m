@@ -1391,17 +1391,6 @@
     NSDate *creationDate = asset.creationDate;
     NSDate *modificationDate = asset.modificationDate;
     NSArray *resourceArray = [PHAssetResource assetResourcesForAsset:asset];
-    /*
-    BOOL isLocallayAvailable = [[resourceArray.firstObject valueForKey:@"locallyAvailable"] boolValue];
-    if (!isLocallayAvailable) {
-        if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"metadata": metadata, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_locally_"}];
-        }
-        
-        completion(nil, nil);
-        return;
-    }
-    */
     long fileSize = [[resourceArray.firstObject valueForKey:@"fileSize"] longValue];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

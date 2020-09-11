@@ -357,7 +357,6 @@ import Queuer
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    
                     completion(Int(k_CCErrorInternalError), "Internal error")
                     return
                 }
