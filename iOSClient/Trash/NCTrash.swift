@@ -575,7 +575,8 @@ extension NCTrash {
         
         datasource = tashItems
         
-        reloadDataThenPerform {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock {
             // GoTo ocId
             if self.blinkocId != nil {
                 for item in 0...self.datasource.count-1 {
@@ -589,12 +590,7 @@ extension NCTrash {
                     }
                 }
             }
-        }        
-    }
-    
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
+        }
         collectionView.reloadData()
         CATransaction.commit()
     }
