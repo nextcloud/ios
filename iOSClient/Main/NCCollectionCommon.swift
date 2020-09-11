@@ -634,8 +634,8 @@ extension NCCollectionCommon: NCSelectDelegate {
 
 // MARK: - Nextcloud CollectionView Common
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
-        
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+
     @IBOutlet weak var collectionView: UICollectionView!
 
     @objc var serverUrl = ""
@@ -668,6 +668,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
+    internal var enableSearchBar: Bool = false
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -677,11 +678,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        /*
-         let search = UISearchController(searchResultsController: nil)
-         search.searchResultsUpdater = self
-         self.navigationItem.searchController = search
-         */
+        
+        if enableSearchBar {
+            let search = UISearchController(searchResultsController: nil)
+            search.searchResultsUpdater = self
+            self.navigationItem.searchController = search
+        }
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -939,6 +941,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
+    }
+    
+    // MARK: SEARCH
+    
+    func updateSearchResults(for searchController: UISearchController) {
+
     }
         
     // MARK: TAP EVENT
