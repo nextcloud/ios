@@ -69,11 +69,12 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         super.viewWillAppear(animated)
         
         loadDataSource()
-        loadActivity(idActivity: 0)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        loadActivity(idActivity: 0)
     }
     
     @objc func changeTheming() {
