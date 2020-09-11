@@ -691,6 +691,35 @@ import Queuer
         }
     }
     
+    @objc func searchFiles(urlBase: String, user: String, dataFileXML: String, literal: String, completion: @escaping (_ account: String, _ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+        
+        NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: user) { (account, files, errorCode, errorDescription) in
+            
+            if errorCode == 0  {
+                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                    
+                    // Update sub directories
+                    for metadata in metadatasFolder {
+                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                    }
+                    
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                    
+                    completion(account, metadatas, errorCode, errorDescription)
+                }
+                
+            } else {
+                
+                #if !EXTENSION
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                #endif
+                
+                completion(account, nil, errorCode, errorDescription)
+            }
+        }
+    }
+    
     //MARK: - WebDav Create Folder
 
     @objc func createFolder(fileName: String, serverUrl: String, account: String, urlBase: String, overwrite: Bool = false, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
@@ -733,6 +762,11 @@ import Queuer
             } else if errorCode == 405 && overwrite {
                 self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": 0], errorDescription: "", completion: completion)
             } else {
+                
+                #if !EXTENSION
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                #endif
+                
                 self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
             }
         }

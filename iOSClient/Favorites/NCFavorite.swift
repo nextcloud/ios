@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCFavorite: NCCollectionViewCommon  {
     
@@ -31,6 +32,7 @@ class NCFavorite: NCCollectionViewCommon  {
         appDelegate.activeFavorite = self
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = k_layout_view_favorite
+        enableSearchBar = true
     }
     
     // MARK: DZNEmpty
@@ -146,6 +148,14 @@ class NCFavorite: NCCollectionViewCommon  {
                 }
                 self.reloadDataSource()
             }
+        }
+    }
+    
+    override func searchDataSourceNetwork() {
+        if literalSearch == "" { return }
+        
+        NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch) { (account, metadatas, errorCode, errorDescription) in
+            
         }
     }
 }

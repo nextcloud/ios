@@ -634,7 +634,7 @@ extension NCCollectionCommon: NCSelectDelegate {
 
 // MARK: - Nextcloud CollectionView Common
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -662,6 +662,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
+    
+    private var timerInputSearch: Timer?
+    internal var literalSearch: String = ""
         
     internal let refreshControl = UIRefreshControl()
     
@@ -683,6 +686,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let search = UISearchController(searchResultsController: nil)
             search.searchResultsUpdater = self
             self.navigationItem.searchController = search
+            search.delegate = self
+            search.searchBar.delegate = self
         }
         
         // Cell
@@ -947,8 +952,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func updateSearchResults(for searchController: UISearchController) {
 
-    }
+        timerInputSearch?.invalidate()
+        timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(searchDataSourceNetwork), userInfo: nil, repeats: false)
         
+        literalSearch = searchController.searchBar.text ?? ""
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
+    }
+    
     // MARK: TAP EVENT
     
     func tapSwitchHeader(sender: Any) {
@@ -1041,6 +1054,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func reloadDataSource() { }
     @objc func reloadDataSourceNetwork() { }
+    @objc func searchDataSourceNetwork() { }
 }
 
 // MARK: - 3D Touch peek and pop
