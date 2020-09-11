@@ -28,7 +28,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     @IBOutlet weak var collectionView: UICollectionView!
 
-    var path = ""
+    var trashPath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkocId: String?
     
@@ -60,6 +60,8 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+
         // Cell
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
@@ -74,9 +76,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         gridLayout = NCGridLayout()
         
         // Add Refresh Control
-        collectionView.refreshControl = refreshControl
-        
-        // Configure Refresh Control
+        collectionView.addSubview(refreshControl)
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
         
         // empty Data Source
@@ -101,17 +103,16 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         } else {
             collectionView.collectionViewLayout = gridLayout
         }
-        
-        // Datasource & serverUrl
-        
-        if path == "" {
+                
+        if trashPath == "" {
             guard let userID = (appDelegate.userID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return }
-            path = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/trashbin/" + userID + "/trash/"
+            trashPath = appDelegate.urlBase + "/" + NCUtility.shared.getDAV() + "/trashbin/" + userID + "/trash/"
         }
-        
-        if (datasource.count == 0) {
-            reloadDataSource()
-        }
+        reloadDataSource()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
         loadListingTrash()
     }
@@ -403,7 +404,7 @@ extension NCTrash: UICollectionViewDelegate {
             
             let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
             
-            ncTrash.path = tableTrash.filePath + tableTrash.fileName
+            ncTrash.trashPath = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             
             self.navigationController?.pushViewController(ncTrash, animated: true)
@@ -568,7 +569,7 @@ extension NCTrash {
         
         datasource.removeAll()
         
-        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sort: sort, ascending: ascending, account: appDelegate.account) else {
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: trashPath, sort: sort, ascending: ascending, account: appDelegate.account) else {
             return
         }
         
@@ -591,13 +592,20 @@ extension NCTrash {
         }        
     }
     
+    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(closure)
+        collectionView.reloadData()
+        CATransaction.commit()
+    }
+    
     @objc func loadListingTrash() {
         
         NCCommunication.shared.listingTrash(showHiddenFiles: false) { (account, items, errorCode, errorDescription) in
             self.refreshControl.endRefreshing()
          
             if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path, account: self.appDelegate.account)
+                NCManageDatabase.sharedInstance.deleteTrash(filePath: self.trashPath, account: self.appDelegate.account)
                 NCManageDatabase.sharedInstance.addTrash(account: account, items: items)
             } else if errorCode != 0 {
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
@@ -607,13 +615,6 @@ extension NCTrash {
             
             self.reloadDataSource()
         }
-    }
-    
-    func reloadDataThenPerform(_ closure: @escaping (() -> Void)) {
-        CATransaction.begin()
-        CATransaction.setCompletionBlock(closure)
-        collectionView.reloadData()
-        CATransaction.commit()
     }
     
     func restoreItem(with fileId: String) {

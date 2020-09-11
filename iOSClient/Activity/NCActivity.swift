@@ -47,6 +47,8 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        
         self.title = NSLocalizedString("_activity_", comment: "")
 
         // empty Data Source
@@ -358,7 +360,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
                     if let result = NCManageDatabase.sharedInstance.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
                         viewController.blinkocId = result.fileId
-                        viewController.path = result.filePath
+                        viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
                         NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
