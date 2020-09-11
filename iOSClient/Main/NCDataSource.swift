@@ -32,6 +32,10 @@ import Foundation
     private var directoryOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     
+    override init() {
+        super.init()
+    }
+    
     @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         

@@ -93,6 +93,7 @@ class NCFavorite: NCCollectionViewCommon  {
     // MARK: - NC API & Algorithm
     
     override func reloadDataSource() {
+        super.reloadDataSource()
         
         var sort: String
         var ascending: Bool
@@ -116,7 +117,8 @@ class NCFavorite: NCCollectionViewCommon  {
     }
     
     override func reloadDataSourceNetwork() {
-     
+        super.reloadDataSourceNetwork()
+        
         if serverUrl == "" {
             
             NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
@@ -154,10 +156,15 @@ class NCFavorite: NCCollectionViewCommon  {
     }
     
     override func searchDataSourceNetwork() {
+        super.searchDataSourceNetwork()
+        
+        guard let literalSearch = literalSearch else { return }
         if literalSearch == "" { return }
         
         NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch) { (account, metadatas, errorCode, errorDescription) in
-            
+            if self.isSearching {
+                
+            }
         }
     }
 }

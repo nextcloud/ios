@@ -653,8 +653,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private let footerHeight: CGFloat = 50
     
     private var timerInputSearch: Timer?
-    internal var literalSearch: String = ""
-        
+    internal var literalSearch: String?
+    internal var isSearching: Bool = false
+    internal var isSearchingInProgress: Bool = false
+    
     internal let refreshControl = UIRefreshControl()
     
     // DECLARE
@@ -943,12 +945,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         timerInputSearch?.invalidate()
         timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(searchDataSourceNetwork), userInfo: nil, repeats: false)
-        
-        literalSearch = searchController.searchBar.text ?? ""
+        literalSearch = searchController.searchBar.text
     }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
+        dataSource = NCDataSource.init()
+        isSearching = true
+        collectionView.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        
+        literalSearch = ""
+        isSearching = false
+        reloadDataSource()
     }
     
     // MARK: TAP EVENT
@@ -1042,7 +1053,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NC API & Algorithm
     
     @objc func reloadDataSource() { }
-    @objc func reloadDataSourceNetwork() { }
+    @objc func reloadDataSourceNetwork() {}
     @objc func searchDataSourceNetwork() { }
 }
 
