@@ -112,9 +112,10 @@
     }
 
     // Wite data EXIF in TableLocalFile
+    /*
     if (tiff || gps)
         [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil etag:nil];
-    
+    */
     CFRelease(originalSource);
     CFRelease(imageProperties);
 }

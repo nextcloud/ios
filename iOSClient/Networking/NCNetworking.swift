@@ -971,7 +971,7 @@ import Queuer
                             
                 } else {
                             
-                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: fileNameNew, etag: nil)
+                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, fileName: fileNameNew, etag: nil)
                     // Move file system
                     let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                     let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew

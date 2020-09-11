@@ -1490,7 +1490,6 @@ class NCManageDatabase: NSObject {
                 let addObject = tableLocalFile()
                 
                 addObject.account = metadata.account
-                addObject.date = metadata.date
                 addObject.etag = metadata.etag
                 addObject.exifDate = NSDate()
                 addObject.exifLatitude = "-1"
@@ -1520,25 +1519,13 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(ocId: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?) {
+    @objc func setLocalFile(ocId: String, fileName: String?, etag: String?) {
         
         let realm = try! Realm()
 
         do {
             try realm.safeWrite {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                if let date = date {
-                    result?.date = date
-                }
-                if let exifDate = exifDate {
-                    result?.exifDate = exifDate
-                }
-                if let exifLatitude = exifLatitude {
-                    result?.exifLatitude = exifLatitude
-                }
-                if let exifLongitude = exifLongitude {
-                    result?.exifLongitude = exifLongitude
-                }
                 if let fileName = fileName {
                     result?.fileName = fileName
                 }
@@ -1578,6 +1565,20 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
                 result?.offline = offline
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @objc func setLocalFile(ocId: String, lastAccessDate: Date) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
+                result?.lastAccessDate = lastAccessDate as NSDate
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

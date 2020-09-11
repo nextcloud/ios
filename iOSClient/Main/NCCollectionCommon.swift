@@ -677,6 +677,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, NCL
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        /*
+         let search = UISearchController(searchResultsController: nil)
+         search.searchResultsUpdater = self
+         self.navigationItem.searchController = search
+         */
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
