@@ -575,9 +575,7 @@ extension NCSelect {
             
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
-            } else {
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-            }
+            } 
         }
     }
     

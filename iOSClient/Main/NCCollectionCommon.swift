@@ -372,8 +372,6 @@ class NCCollectionCommon: NSObject {
                     })
                 }
             }
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
     }
     
@@ -387,8 +385,6 @@ class NCCollectionCommon: NSObject {
                     collectionView?.reloadData()
                 })
             }
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
     }
     
@@ -402,16 +398,11 @@ class NCCollectionCommon: NSObject {
                     collectionView?.reloadData()
                 })
             }
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
         }
     }
     
     func notificationCreateFolder(collectionView: UICollectionView?, dataSource: NCDataSource?, fileName: String, serverUrl: String, errorCode: Int, errorDescription: String) {
-        if errorCode == 0 {
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-        }
+      
     }
     
     func notificationFavoriteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, favorite: Bool, errorCode: Int, errorDescription: String) {
@@ -427,9 +418,7 @@ class NCCollectionCommon: NSObject {
                     NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
                 }
             }
-        } else {
-            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-        }
+        } 
     }
     
     func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {

@@ -227,8 +227,6 @@ class NCDetailViewController: UIViewController {
                         }
                     }
                     
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -263,8 +261,6 @@ class NCDetailViewController: UIViewController {
                     if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                         viewUnload()
                     }
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
@@ -295,9 +291,6 @@ class NCDetailViewController: UIViewController {
                             viewUnload()
                         }
                     }
-                    
-                } else {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }
         }
