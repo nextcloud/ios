@@ -129,6 +129,8 @@ class NCFavorite: NCCollectionViewCommon  {
                             }
                         }
                     }
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
                 self.reloadDataSource()
             }
