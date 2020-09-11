@@ -627,6 +627,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    internal let refreshControl = UIRefreshControl()
+    internal var searchController: UISearchController?
+    
     @objc var serverUrl = ""
         
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -634,7 +637,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadataPush: tableMetadata?
     internal var isEditMode = false
     internal var selectOcId: [String] = []
-        
+    internal var metadatasSource: [tableMetadata] = []
     internal var dataSource: NCDataSource?
         
     internal var layout = ""
@@ -657,8 +660,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var isSearching: Bool = false
     internal var isSearchingInProgress: Bool = false
     
-    internal let refreshControl = UIRefreshControl()
-    
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -674,11 +675,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.navigationBar.prefersLargeTitles = true
         
         if enableSearchBar {
-            let search = UISearchController(searchResultsController: nil)
-            search.searchResultsUpdater = self
-            self.navigationItem.searchController = search
-            search.delegate = self
-            search.searchBar.delegate = self
+            searchController = UISearchController(searchResultsController: nil)
+            searchController!.searchResultsUpdater = self
+            self.navigationItem.searchController = searchController
+            searchController!.delegate = self
+            searchController!.searchBar.delegate = self
         }
         
         // Cell
@@ -944,21 +945,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func updateSearchResults(for searchController: UISearchController) {
 
         timerInputSearch?.invalidate()
-        timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(searchDataSourceNetwork), userInfo: nil, repeats: false)
+        timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(reloadDataSourceNetwork), userInfo: nil, repeats: false)
         literalSearch = searchController.searchBar.text
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
         dataSource = NCDataSource.init()
-        isSearching = true
         collectionView.reloadData()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         
         literalSearch = ""
-        isSearching = false
         reloadDataSource()
     }
     
@@ -1053,8 +1052,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NC API & Algorithm
     
     @objc func reloadDataSource() { }
-    @objc func reloadDataSourceNetwork() {}
-    @objc func searchDataSourceNetwork() { }
+    @objc func reloadDataSourceNetwork() { }
 }
 
 // MARK: - 3D Touch peek and pop

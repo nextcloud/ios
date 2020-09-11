@@ -93,33 +93,45 @@ class NCFavorite: NCCollectionViewCommon  {
     // MARK: - NC API & Algorithm
     
     override func reloadDataSource() {
-        super.reloadDataSource()
-        
+          
         var sort: String
         var ascending: Bool
         var directoryOnTop: Bool
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
         
-        if serverUrl == "" {
-            
-            let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
-            self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
-            
-        } else {
-            
-            let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
-            self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        if searchController?.isActive ?? false == false {
+       
+            if serverUrl == "" {
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
+            } else {
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+            }
         }
+        
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
     }
     
     override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
+       
+        if searchController?.isActive ?? false {
         
-        if serverUrl == "" {
+            if literalSearch == nil || literalSearch?.count ?? 0 < 2 {
+                self.reloadDataSource()
+                return
+            }
+            
+            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
+                if self.searchController?.isActive ?? false && errorCode == 0 {
+                    self.metadatasSource = metadatas!
+                }
+                self.reloadDataSource()
+            }
+            
+        } else if serverUrl == "" {
             
             NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
@@ -151,19 +163,6 @@ class NCFavorite: NCCollectionViewCommon  {
                     }
                 }
                 self.reloadDataSource()
-            }
-        }
-    }
-    
-    override func searchDataSourceNetwork() {
-        super.searchDataSourceNetwork()
-        
-        guard let literalSearch = literalSearch else { return }
-        if literalSearch == "" { return }
-        
-        NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch) { (account, metadatas, errorCode, errorDescription) in
-            if self.isSearching {
-                
             }
         }
     }
