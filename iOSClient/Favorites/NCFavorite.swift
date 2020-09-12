@@ -47,13 +47,29 @@ class NCFavorite: NCCollectionViewCommon  {
     }
     
     override func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
+        
+        var text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
+        
+        if searchController?.isActive ?? false {
+            if isReloadDataSourceNetworkInProgress {
+                text = "\n"+NSLocalizedString("_search_in_progress_", comment: "")
+            } else {
+                text = "\n"+NSLocalizedString("_search_no_record_found_", comment: "")
+            }
+        }
+        
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
     
     override func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
+        
+        var text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
+        
+        if searchController?.isActive ?? false {
+            text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
+        }
+        
         let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
@@ -129,15 +145,22 @@ class NCFavorite: NCCollectionViewCommon  {
                 return
             }
             
+            isReloadDataSourceNetworkInProgress = true
+            collectionView?.reloadData()
+            
             NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
                 if self.searchController?.isActive ?? false && errorCode == 0 {
                     self.metadatasSource = metadatas!
                 }
+                self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
             
         } else if serverUrl == "" {
             
+            isReloadDataSourceNetworkInProgress = true
+            collectionView?.reloadData()
+
             NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
@@ -151,11 +174,15 @@ class NCFavorite: NCCollectionViewCommon  {
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
+                self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
             
         } else {
             
+            isReloadDataSourceNetworkInProgress = true
+            collectionView?.reloadData()
+
             NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
@@ -167,6 +194,7 @@ class NCFavorite: NCCollectionViewCommon  {
                         }
                     }
                 }
+                self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
         }

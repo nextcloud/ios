@@ -658,7 +658,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var timerInputSearch: Timer?
     internal var literalSearch: String?
     internal var isSearching: Bool = false
-    internal var isSearchingInProgress: Bool = false
+    
+    internal var isReloadDataSourceNetworkInProgress: Bool = false
     
     // DECLARE
     internal var layoutKey = ""
