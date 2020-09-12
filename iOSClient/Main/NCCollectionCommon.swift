@@ -665,7 +665,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
-    internal var DZNimage: String = ""
+    internal var DZNimage: UIImage?
     internal var DZNtitle: String = ""
     internal var DZNdescription: String = ""
     
@@ -935,7 +935,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
         }
         
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: DZNimage), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        return DZNimage
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
