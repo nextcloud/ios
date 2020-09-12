@@ -103,28 +103,15 @@ class NCFavorite: NCCollectionViewCommon  {
     override func reloadDataSourceNetwork() {
        
         if isSearching {
+            networkSearch()
+            return
+        }
         
-            if literalSearch == nil || literalSearch?.count ?? 0 < 2 {
-                self.reloadDataSource()
-                return
-            }
+        isReloadDataSourceNetworkInProgress = true
+        collectionView?.reloadData()
+        
+        if serverUrl == "" {
             
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-            
-            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
-                if self.searchController?.isActive ?? false && errorCode == 0 {
-                    self.metadatasSource = metadatas!
-                }
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
-            }
-            
-        } else if serverUrl == "" {
-            
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-
             NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
@@ -144,9 +131,6 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-
             NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {

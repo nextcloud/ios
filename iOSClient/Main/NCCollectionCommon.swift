@@ -1086,6 +1086,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func reloadDataSource() { }
     @objc func reloadDataSourceNetwork() { }
+    @objc func networkSearch() {
+        if literalSearch?.count ?? 0 > 1 {
+        
+            isReloadDataSourceNetworkInProgress = true
+            collectionView?.reloadData()
+            
+            NCNetworking.shared.searchFiles(urlBase: appDelegate.urlBase, user: appDelegate.user, literal: literalSearch!) { (account, metadatas, errorCode, errorDescription) in
+                if self.searchController?.isActive ?? false && errorCode == 0 {
+                    self.metadatasSource = metadatas!
+                }
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
+            }
+        }
+    }
 }
 
 // MARK: - 3D Touch peek and pop
