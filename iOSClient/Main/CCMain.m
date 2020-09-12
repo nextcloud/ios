@@ -997,7 +997,7 @@
         
         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
         if ([autoUploadPath isEqualToString:serverUrl]) {
-            if ([[NCNetworking shared] createFoloderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
+            if ([[NCNetworking shared] createFolderWithAssets:(PHFetchResult *)assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
                 [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
                 return;
             }

@@ -676,16 +676,16 @@ import Queuer
         
         NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, responseData, errorCode, errorDescription) in
 
-            if errorCode == 0 {
-                if files.count == 1 {
-                    let file = files[0]
-                    let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account, urlBase: file.urlBase)
-                    let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
-                    completion(account, metadata, errorCode, "")
-                } else {
-                    completion(account, nil, errorCode, "")
-                }
+            if errorCode == 0 && files.count == 1 {
+                
+                let file = files[0]
+                let isEncrypted = CCUtility.isFolderEncrypted(file.serverUrl, e2eEncrypted:file.e2eEncrypted, account: account, urlBase: file.urlBase)
+                let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: isEncrypted, account: account)
+                
+                completion(account, metadata, errorCode, errorDescription)
+               
             } else {
+                
                 completion(account, nil, errorCode, errorDescription)
             }
         }
@@ -698,6 +698,7 @@ import Queuer
         NCCommunication.shared.searchLiteral(serverUrl: urlBase, depth: "infinity", literal: literal, showHiddenFiles: CCUtility.getShowHiddenFiles(), user: user) { (account, files, errorCode, errorDescription) in
             
             if errorCode == 0  {
+                
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Update sub directories
@@ -751,22 +752,32 @@ import Queuer
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
         
         NCCommunication.shared.createFolder(fileNameFolderUrl) { (account, ocId, date, errorCode, errorDescription) in
+            
             if errorCode == 0 {
+                
                 self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { (account, metadataFolder, errorCode, errorDescription) in
+                    
                     if errorCode == 0 {
+                        
                         // Add Metadata
                         NCManageDatabase.sharedInstance.addMetadata(metadataFolder!)
                         // Add folder
                         NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder!.e2eEncrypted, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
+                        
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
                             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata])
                         }
                     }
+                    
                     completion(errorCode, errorDescription)
                 }
+                
             } else if errorCode == 405 && overwrite {
+                
                 completion(0, "")
+                
             } else {
+                
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
@@ -776,7 +787,7 @@ import Queuer
         }
     }
     
-    @objc func createFoloder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
+    @objc func createFolder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
         
         let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
         let fileName =  NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
