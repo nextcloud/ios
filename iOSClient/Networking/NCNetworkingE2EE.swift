@@ -43,7 +43,7 @@ import Alamofire
         
         fileNameFolder = NCUtility.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         if fileNameFolder.count == 0 {
-            self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            completion(0, "")
             return
         }
         fileNameIdentifier = CCUtility.generateRandomIdentifier()
@@ -55,7 +55,7 @@ import Alamofire
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
-                            self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": k_CCErrorInternalError], errorDescription: "Error convert ocId", completion: completion)
+                            completion(Int(k_CCErrorInternalError), "Error convert ocId")
                             return
                         }
                         NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { (account, errorCode, errorDescription) in
@@ -87,20 +87,21 @@ import Alamofire
                                 let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                 
                                 self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                                    self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                                    
+                                    completion(errorCode, errorDescription ?? "")
                                 }
                                 
                             } else {
-                                self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                                completion(errorCode, errorDescription)
                             }
                         }
                         
                     } else {
-                        self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        completion(errorCode, errorDescription)
                     }
                 }
             } else {
-                self.NotificationPost(name: k_notificationCenter_createFolder, account: account, serverUrl: serverUrl, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                completion(errorCode, errorDescription ?? "")
             }
         }
     }
