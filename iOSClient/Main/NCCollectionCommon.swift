@@ -927,15 +927,40 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return nil
+        
+        if searchController?.isActive ?? false {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        }
+        
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        return nil
+        
+        var text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
+        
+        if searchController?.isActive ?? false {
+            if isReloadDataSourceNetworkInProgress {
+                text = "\n"+NSLocalizedString("_search_in_progress_", comment: "")
+            } else {
+                text = "\n"+NSLocalizedString("_search_no_record_found_", comment: "")
+            }
+        }
+        
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
     }
     
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        return nil
+        
+        var text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
+        
+        if searchController?.isActive ?? false {
+            text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
+        }
+        
+        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
     }
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
