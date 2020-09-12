@@ -948,6 +948,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         timerInputSearch?.invalidate()
         timerInputSearch = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(reloadDataSourceNetwork), userInfo: nil, repeats: false)
         literalSearch = searchController.searchBar.text
+        collectionView?.reloadData()
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -958,6 +959,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
         isSearching = false
         literalSearch = ""
         reloadDataSource()

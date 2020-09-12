@@ -38,6 +38,11 @@ class NCFavorite: NCCollectionViewCommon  {
     // MARK: DZNEmpty
         
     override func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        
+        if searchController?.isActive ?? false {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        }
+        
         return CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
     
