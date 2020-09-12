@@ -489,21 +489,15 @@
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
 //    tableMetadata *metadataNew = userInfo[@"metadataNew"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
     
-    if (arrayMoveMetadata.count > 0) {
+    if (arrayCopyMetadata.count > 0) {
         tableMetadata *metadata = arrayMoveMetadata.firstObject;
         NSString *serverUrlTo = arrayMoveServerUrlTo.firstObject;
         [arrayMoveMetadata removeObjectAtIndex:0];
         [arrayMoveServerUrlTo removeObjectAtIndex:0];
         [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
-    }
-    
-    if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
     
     [self reloadDatasource:self.serverUrl ocId:nil];
@@ -513,9 +507,6 @@
 {
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
-//    NSString *serverUrlTo = userInfo[@"serverUrlTo"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
     
@@ -526,10 +517,6 @@
         [arrayCopyServerUrlTo removeObjectAtIndex:0];
         [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
-    
-    if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
-    }
 }
 
 - (void)favoriteFile:(NSNotification *)notification
@@ -538,23 +525,17 @@
     
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
     BOOL favorite = [userInfo[@"favorite"] boolValue];
     
-    if (errorCode == 0) {
-        if (self.searchController.isActive) {
-            [self readFolder:self.serverUrl];
-        } 
-        if (favorite) {
-            if ([CCUtility getFavoriteOffline]) {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadAllFile];
-            } else {
-                [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorReadFile];
-            }
+    if (self.searchController.isActive) {
+        [self readFolder:self.serverUrl];
+    }
+    if (favorite) {
+        if ([CCUtility getFavoriteOffline]) {
+            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadAllFile];
+        } else {
+            [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorReadFile];
         }
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
     
     [self reloadDatasource:self.serverUrl ocId:nil];

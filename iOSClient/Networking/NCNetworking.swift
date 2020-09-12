@@ -935,13 +935,15 @@ import Queuer
     
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
+                
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite])
             } else {
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
             }
             
-            self.NotificationPost(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            completion(errorCode, errorDescription)
         }
     }
     
@@ -1005,15 +1007,15 @@ import Queuer
         
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
             return
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            completion(0, "")
             return
         }
         if fileNameNew.count == 0 || fileNameNew == metadata.fileNameView {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            completion(0, "")
             return
         }
         
@@ -1045,13 +1047,16 @@ import Queuer
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                     } catch { }
                 }
+                
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
+                
             } else {
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
             }
                     
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            completion(errorCode, errorDescription)
         }
     }
     
@@ -1076,7 +1081,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
             return
         }
         
@@ -1092,14 +1097,17 @@ import Queuer
                 }
                 
                 NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
+                guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
+
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew])
+                
             } else {
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
             }
             
-            guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
-            self.NotificationPost(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            completion(errorCode, errorDescription)
         }
     }
     
@@ -1124,7 +1132,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            self.NotificationPost(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_modify_file_", completion: completion)
+            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
             return
         }
         
@@ -1132,28 +1140,19 @@ import Queuer
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
         
         NCCommunication.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite) { (account, errorCode, errorDescription) in
-                    
-            if errorCode != 0 {
+                   
+            if errorCode == 0 {
+                
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo])
+
+            } else {
+                
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
             }
-            self.NotificationPost(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
-        }
-    }
-    
-    //MARK: - Notification Post
-    
-    private func NotificationPost(name: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
-        var userInfo = userInfo
-        DispatchQueue.main.async {
             
-            if errorDescription == nil { userInfo["errorDescription"] = "" }
-            else { userInfo["errorDescription"] = NSLocalizedString(errorDescription as! String, comment: "") }
-            
-            NotificationCenter.default.postOnMainThread(name: name, userInfo: userInfo)
-            
-            completion(userInfo["errorCode"] as! Int, userInfo["errorDescription"] as! String)
+            completion(errorCode, errorDescription)
         }
     }
 }

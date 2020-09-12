@@ -335,9 +335,9 @@
 #define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: metadata
 #define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, onlyLocal
 #define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew, errorCode, errorDescription
-#define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo, errorCode, errorDescription
-#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite, errorCode, errorDescription
+#define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew
+#define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo
+#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite
 
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
