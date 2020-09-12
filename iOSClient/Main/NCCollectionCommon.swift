@@ -368,7 +368,9 @@ class NCCollectionCommon: NSObject {
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
                     }, completion: { (_) in
-                        collectionView?.reloadData()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            collectionView?.reloadData()
+                        }
                     })
                 }
             }
@@ -382,7 +384,9 @@ class NCCollectionCommon: NSObject {
                 collectionView?.performBatchUpdates({
                     collectionView?.deleteItems(at: [indexPath])
                 }, completion: { (_) in
-                    collectionView?.reloadData()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        collectionView?.reloadData()
+                    }
                 })
             }
         }
@@ -403,22 +407,6 @@ class NCCollectionCommon: NSObject {
     
     func notificationCreateFolder(collectionView: UICollectionView?, dataSource: NCDataSource?, fileName: String, serverUrl: String, errorCode: Int, errorDescription: String) {
       
-    }
-    
-    func notificationFavoriteFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata, favorite: Bool, errorCode: Int, errorDescription: String) {
-        if errorCode == 0 {
-            if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
-                let indexPath = IndexPath(row: row, section: 0)
-                collectionView?.reloadItems(at: [indexPath])
-            }
-            if favorite {
-                if CCUtility.getFavoriteOffline() {
-                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
-                } else {
-                    NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
-                }
-            }
-        } 
     }
     
     func notificationDownloadStartFile(collectionView: UICollectionView?, dataSource: NCDataSource?, metadata: tableMetadata) {
@@ -464,7 +452,9 @@ class NCCollectionCommon: NSObject {
             collectionView?.performBatchUpdates({
                 collectionView?.deleteItems(at: [indexPath])
             }, completion: { (_) in
-                collectionView?.reloadData()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    collectionView?.reloadData()
+                }
             })
             return true
         }
@@ -837,8 +827,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let favorite = userInfo["favorite"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-                NCCollectionCommon.shared.notificationFavoriteFile(collectionView: collectionView, dataSource: dataSource, metadata: metadata, favorite: favorite, errorCode: errorCode, errorDescription: errorDescription)
+            if let metadata = userInfo["metadata"] as? tableMetadata, let favorite = userInfo["favorite"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let _ = userInfo["errorDescription"] as? String {
+                if errorCode == 0 {
+                    self.reloadDataSource()
+                    if favorite {
+                        if CCUtility.getFavoriteOffline() {
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                        } else {
+                            NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
+                        }
+                    }
+                }
             }
         }
     }

@@ -152,6 +152,7 @@ import Foundation
         return nil
     }
     
+    @discardableResult
     func reloadMetadata(ocId: String, ocIdTemp: String? = nil) -> Int? {
         
         var index: Int?
