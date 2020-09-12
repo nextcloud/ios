@@ -464,8 +464,6 @@
 {
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
-    NSString *errorDescription = userInfo[@"errorDescription"];
     
     if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
     
@@ -475,18 +473,12 @@
         [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase onlyLocal:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
     }
 
-    if (errorCode == 0 ) {
-        if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
-            [self readFileReloadFolder];
-        } else {
-            if (self.searchController.isActive) {
-                [self readFolder:self.serverUrl];
-            }
+    if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
+        [self readFileReloadFolder];
+    } else {
+        if (self.searchController.isActive) {
+            [self readFolder:self.serverUrl];
         }
-    }
-    
-    if (errorCode != 0 && self.view.window != nil) {
-        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
     }
     
     [self reloadDatasource:self.serverUrl ocId:nil];

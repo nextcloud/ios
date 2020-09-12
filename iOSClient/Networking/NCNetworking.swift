@@ -823,13 +823,18 @@ import Queuer
     @objc func deleteMetadata(_ metadata: tableMetadata, account: String, urlBase: String, onlyLocal: Bool, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
                 
         if (onlyLocal) {
+            
             NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+            
             if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLivePhoto.ocId))
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
             }
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": true ,"errorCode": 0], errorDescription: "", completion: completion)
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": true])
+            completion(0, "")
+            
             return
         }
         
@@ -871,7 +876,7 @@ import Queuer
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
             
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_no_permission_delete_file_", completion: completion)
+            completion(Int(k_CCErrorInternalError), "_no_permission_delete_file_")
             return
         }
                 
@@ -890,6 +895,9 @@ import Queuer
                 if metadata.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
+                
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
+                
             } else {
                 
                 #if !EXTENSION
@@ -897,7 +905,7 @@ import Queuer
                 #endif
             }
             
-            self.NotificationPost(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+            completion(errorCode, errorDescription)
         }
     }
     

@@ -371,8 +371,8 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account == appDelegate.account && errorCode == 0 {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.account == appDelegate.account {
                     
                     let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
                     let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }

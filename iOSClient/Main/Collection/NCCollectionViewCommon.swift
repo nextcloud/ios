@@ -197,25 +197,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool, let errorCode = userInfo["errorCode"] as? Int, let _ = userInfo["errorDescription"] as? String {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool {
                 
-                if errorCode == 0 {
-                    if onlyLocal {
-                        if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
-                            let indexPath = IndexPath(row: row, section: 0)
-                            collectionView?.reloadItems(at: [indexPath])
-                        }
-                    } else {
-                        if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
-                            let indexPath = IndexPath(row: row, section: 0)
-                            collectionView?.performBatchUpdates({
-                                collectionView?.deleteItems(at: [indexPath])
-                            }, completion: { (_) in
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    self.collectionView?.reloadData()
-                                }
-                            })
-                        }
+                if onlyLocal {
+                    if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.reloadItems(at: [indexPath])
+                    }
+                } else {
+                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                self.collectionView?.reloadData()
+                            }
+                        })
                     }
                 }
             }
