@@ -665,6 +665,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
+    internal var DZNimage: String = ""
+    internal var DZNtitle: String = ""
+    internal var DZNdescription: String = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -932,12 +935,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
         }
         
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: DZNimage), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         
-        var text = "\n"+NSLocalizedString("_favorite_no_files_", comment: "")
+        var text = "\n"+NSLocalizedString(DZNtitle, comment: "")
         
         if searchController?.isActive ?? false {
             if isReloadDataSourceNetworkInProgress {
@@ -953,7 +956,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         
-        var text = "\n"+NSLocalizedString("_tutorial_favorite_view_", comment: "")
+        var text = "\n"+NSLocalizedString(DZNdescription, comment: "")
         
         if searchController?.isActive ?? false {
             text = "\n"+NSLocalizedString("_search_instruction_", comment: "")

@@ -33,6 +33,9 @@ class NCFavorite: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = k_layout_view_favorite
         enableSearchBar = true
+        DZNimage = "favorite"
+        DZNtitle = "_favorite_no_files_"
+        DZNdescription = "_tutorial_favorite_view_"
     }
     
     // MARK: - Collection View
