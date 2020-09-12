@@ -676,10 +676,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
-            searchController!.searchResultsUpdater = self
+            searchController?.searchResultsUpdater = self
             self.navigationItem.searchController = searchController
-            searchController!.delegate = self
-            searchController!.searchBar.delegate = self
+            searchController?.dimsBackgroundDuringPresentation = false
+            searchController?.delegate = self
+            searchController?.searchBar.delegate = self
         }
         
         // Cell
@@ -951,12 +952,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
-        dataSource = NCDataSource.init()
-        collectionView.reloadData()
+        isSearching = true
+        metadatasSource.removeAll()
+        reloadDataSource()
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
         literalSearch = ""
         reloadDataSource()
     }

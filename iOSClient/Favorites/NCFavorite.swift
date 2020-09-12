@@ -100,7 +100,7 @@ class NCFavorite: NCCollectionViewCommon  {
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
         
-        if searchController?.isActive ?? false == false {
+        if !isSearching {
        
             if serverUrl == "" {
                 metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
@@ -117,7 +117,7 @@ class NCFavorite: NCCollectionViewCommon  {
     
     override func reloadDataSourceNetwork() {
        
-        if searchController?.isActive ?? false {
+        if isSearching {
         
             if literalSearch == nil || literalSearch?.count ?? 0 < 2 {
                 self.reloadDataSource()
