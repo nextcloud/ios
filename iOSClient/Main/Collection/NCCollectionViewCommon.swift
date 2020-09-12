@@ -34,10 +34,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
-    internal var metadataPush: tableMetadata?
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var metadatasSource: [tableMetadata] = []
+    internal var metadataFolder: tableMetadata?
+    internal var metadataPush: tableMetadata?
     internal var dataSource: NCDataSource?
         
     internal var layout = ""
@@ -52,6 +53,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var gridLayout: NCGridLayout!
             
     private let headerMenuHeight: CGFloat = 50
+    private var headerRichWorkspaceHeight: CGFloat = 0
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
@@ -267,11 +269,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func createFolder(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
-//        if let userInfo = notification.userInfo as NSDictionary? {
-//            if let fileName = userInfo["fileName"] as? String, let serverUrl = userInfo["serverUrl"] as? String,let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
-               
-//            }
-//        }
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                    if let row = dataSource?.addMetadata(metadata) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.insertItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    }
+                }
+            }
+        }
     }
     
     @objc func favoriteFile(_ notification: NSNotification) {
@@ -585,7 +596,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     // MARK: - NC API & Algorithm
     
-    @objc func reloadDataSource() { }
+    @objc func reloadDataSource() {
+        if metadataFolder?.richWorkspace?.count ?? 0 == 0 {
+            headerRichWorkspaceHeight = 0
+        } else {
+            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+        }
+    }
     @objc func reloadDataSourceNetwork() { }
     @objc func networkSearch() {
         if literalSearch?.count ?? 0 > 1 {
@@ -669,7 +686,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
                 header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
                 header.setTitleSorted(datasourceTitleButton: titleButton)
-                
+                header.labelSectionHeightConstraint.constant = headerRichWorkspaceHeight
+
                 if groupBy == "none" {
                     header.labelSection.isHidden = true
                     header.labelSectionHeightConstraint.constant = 0
@@ -677,6 +695,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.labelSection.isHidden = false
                     header.setTitleLabel(title: "")
                     header.labelSectionHeightConstraint.constant = sectionHeaderHeight
+                }
+                
+                if metadataFolder?.richWorkspace?.count ?? 0 == 0 {
+                    header.labelSection.isHidden = true
+                } else {
+                    header.labelSection.isHidden = false
                 }
                 
                 return header
@@ -750,11 +774,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         if section == 0 {
-            if groupBy == "none" {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
-            } else {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
-            }
+            return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight + headerRichWorkspaceHeight)
         } else {
             return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
         }

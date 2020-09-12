@@ -78,7 +78,8 @@ class NCFavorite: NCCollectionViewCommon  {
     // MARK: - NC API & Algorithm
     
     override func reloadDataSource() {
-          
+        super.reloadDataSource()
+        
         var sort: String
         var ascending: Bool
         var directoryOnTop: Bool
@@ -101,7 +102,8 @@ class NCFavorite: NCCollectionViewCommon  {
     }
     
     override func reloadDataSourceNetwork() {
-       
+        super.reloadDataSourceNetwork()
+        
         if isSearching {
             networkSearch()
             return
@@ -141,6 +143,7 @@ class NCFavorite: NCCollectionViewCommon  {
                             }
                         }
                     }
+                    self.metadataFolder = metadataFolder
                 }
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()

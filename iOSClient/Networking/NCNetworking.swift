@@ -745,7 +745,7 @@ import Queuer
             fileNameFolder = NCUtility.shared.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
         }
         if fileNameFolder.count == 0 {
-            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": Int(0)], errorDescription: "", completion: completion)
+            completion(0, "")
             return
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
@@ -758,18 +758,21 @@ import Queuer
                         NCManageDatabase.sharedInstance.addMetadata(metadataFolder!)
                         // Add folder
                         NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder!.e2eEncrypted, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
+                        
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
+                            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata], errorDescription: errorDescription, completion: completion)
+                        }
                     }
-                    self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                    completion(errorCode, errorDescription)
                 }
             } else if errorCode == 405 && overwrite {
-                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": 0], errorDescription: "", completion: completion)
+                completion(0, "")
             } else {
-                
                 #if !EXTENSION
                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 #endif
                 
-                self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["fileName": fileName, "serverUrl": serverUrl, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                completion(errorCode, errorDescription)
             }
         }
     }

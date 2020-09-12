@@ -448,18 +448,16 @@
 - (void)createFolder:(NSNotification *)notification
 {
     NSDictionary *userInfo = notification.userInfo;
-    NSString *serverUrl = userInfo[@"serverUrl"];
-    NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
+    tableMetadata *metadata = userInfo[@"metadata"];
     
-    if (![serverUrl isEqualToString:self.serverUrl]) { return; }
-    if (errorCode == 0) {
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl e2eEncrypted:nil account:appDelegate.account urlBase: appDelegate.urlBase];
-        if (isFolderEncrypted) {
-            [self readFolder:serverUrl];
-        }
+    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
+    
+    BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:nil account:appDelegate.account urlBase: appDelegate.urlBase];
+    if (isFolderEncrypted) {
+        [self readFolder:metadata.serverUrl];
+    } else {
+        [self reloadDatasource:self.serverUrl ocId:nil];
     }
-    
-    [self reloadDatasource:self.serverUrl ocId:nil];
 }
 
 - (void)deleteFile:(NSNotification *)notification
