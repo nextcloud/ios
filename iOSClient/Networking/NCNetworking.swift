@@ -663,10 +663,6 @@ import Queuer
             
             } else {
                 
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
-                
                 completion(account, nil, nil, nil, nil, errorCode, errorDescription)
             }
         }
@@ -708,16 +704,11 @@ import Queuer
                     }
                     
                     NCManageDatabase.sharedInstance.addMetadatas(metadatas)
-                    
                     completion(account, metadatas, errorCode, errorDescription)
                 }
                 
             } else {
-                
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
-                
+                              
                 completion(account, nil, errorCode, errorDescription)
             }
         }
@@ -777,10 +768,6 @@ import Queuer
                 completion(0, "")
                 
             } else {
-                
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
                 
                 completion(errorCode, errorDescription)
             }
@@ -898,11 +885,6 @@ import Queuer
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
                 
-            } else {
-                
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
             }
             
             completion(errorCode, errorDescription)
@@ -937,10 +919,6 @@ import Queuer
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite])
-            } else {
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
             }
             
             completion(errorCode, errorDescription)
@@ -1050,10 +1028,6 @@ import Queuer
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
                 
-            } else {
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
             }
                     
             completion(errorCode, errorDescription)
@@ -1101,10 +1075,6 @@ import Queuer
 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew])
                 
-            } else {
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
             }
             
             completion(errorCode, errorDescription)
@@ -1144,12 +1114,6 @@ import Queuer
             if errorCode == 0 {
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo])
-
-            } else {
-                
-                #if !EXTENSION
-                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                #endif
             }
             
             completion(errorCode, errorDescription)
