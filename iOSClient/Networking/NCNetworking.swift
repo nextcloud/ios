@@ -758,9 +758,8 @@ import Queuer
                         NCManageDatabase.sharedInstance.addMetadata(metadataFolder!)
                         // Add folder
                         NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder!.e2eEncrypted, favorite: metadataFolder!.favorite, ocId: metadataFolder!.ocId, fileId: metadataFolder!.fileId, etag: nil, permissions: metadataFolder!.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadataFolder!.richWorkspace, account: account)
-                        
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
-                            self.NotificationPost(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata], errorDescription: errorDescription, completion: completion)
+                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata])
                         }
                     }
                     completion(errorCode, errorDescription)
