@@ -215,7 +215,10 @@ class NCOperationDelete: ConcurrentOperation {
         if isCancelled {
             self.finish()
         } else {
-            NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: onlyLocal) { (_, _) in
+            NCNetworking.shared.deleteMetadata(metadata, account: metadata.account, urlBase: metadata.urlBase, onlyLocal: onlyLocal) { (errorCode, errorDescription) in
+                if errorCode != 0 {
+                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
                 self.finish()
             }
         }
@@ -449,7 +452,7 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
                     }
                 } else if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_mediaFileNotFounf, userInfo: ["metadata": self.metadata])
+                    //NotificationCenter.default.postOnMainThread(name: k_notificationCenter_mediaFileNotFounf, userInfo: ["metadata": self.metadata])
                 }
                 self.finish()
             }

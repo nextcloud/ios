@@ -470,7 +470,11 @@
     if (arrayDeleteMetadata.count > 0) {
         tableMetadata *metadata = arrayDeleteMetadata.firstObject;
         [arrayDeleteMetadata removeObjectAtIndex:0];
-        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase onlyLocal:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] deleteMetadata:metadata account:metadata.account urlBase:metadata.urlBase onlyLocal:false completion:^(NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }
 
     if ([metadata.fileNameView.lowercaseString isEqualToString:k_fileNameRichWorkspace.lowercaseString]) {
@@ -1318,7 +1322,11 @@
         [arrayDeleteMetadata addObject:self.metadata];
     }
     
-    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account urlBase:appDelegate.urlBase onlyLocal:false  completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+    [[NCNetworking shared] deleteMetadata:arrayDeleteMetadata.firstObject account:appDelegate.account urlBase:appDelegate.urlBase onlyLocal:false  completion:^(NSInteger errorCode, NSString *errorDescription) {
+        if (errorCode != 0) {
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+        }
+    }];
     [arrayDeleteMetadata removeObjectAtIndex:0];
         
     // End Select Table View
@@ -1446,7 +1454,11 @@
         
         UITextField *fileName = alertController.textFields.firstObject;
         
-        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account urlBase:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account urlBase:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode != 0){
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }];
     
     okAction.enabled = NO;
@@ -1883,7 +1895,11 @@
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
-        [[NCNetworking shared] favoriteMetadata:self.metadata urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] favoriteMetadata:self.metadata urlBase:appDelegate.urlBase completion:^(NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }
     
     return YES;

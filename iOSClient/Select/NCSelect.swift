@@ -575,7 +575,9 @@ extension NCSelect {
             
             if errorCode == 0 {
                 self.loadDatasource(withLoadFolder: true)
-            } 
+            }  else {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
         }
     }
     
@@ -584,8 +586,10 @@ extension NCSelect {
         networkInProgress = true
         collectionView.reloadData()
         
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (_, _, _, _, _, _, _) in
-            
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (_, _, _, _, _, errorCode, errorDescription) in
+            if errorCode != 0 {
+                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
             self.networkInProgress = false
             self.loadDatasource(withLoadFolder: false)
         }
