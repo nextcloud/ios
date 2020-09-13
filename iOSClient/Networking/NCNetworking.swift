@@ -918,7 +918,17 @@ import Queuer
             if errorCode == 0 && metadata.account == account {
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata, "favorite": favorite])
+                #if !EXTENSION
+                if favorite {
+                    if CCUtility.getFavoriteOffline() {
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                    } else {
+                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
+                    }
+                }
+                #endif
+                
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata])
             }
             
             completion(errorCode, errorDescription)

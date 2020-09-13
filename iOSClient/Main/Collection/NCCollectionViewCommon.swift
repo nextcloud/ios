@@ -283,14 +283,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let favorite = userInfo["favorite"] as? Bool{
-                self.reloadDataSource()
-                if favorite {
-                    if CCUtility.getFavoriteOffline() {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
-                    } else {
-                        NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorReadFile)
-                    }
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if dataSource?.getIndexMetadata(ocId: metadata.ocId) != nil {
+                    self.reloadDataSource()
                 }
             }
         }

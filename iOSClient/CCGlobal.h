@@ -338,7 +338,7 @@
 #define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
 #define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew
 #define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo
-#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata, favorite
+#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata
 
 #define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
