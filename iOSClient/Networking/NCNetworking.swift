@@ -916,6 +916,7 @@ import Queuer
         NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { (account, errorCode, errorDescription) in
     
             if errorCode == 0 && metadata.account == account {
+                
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
                 
                 #if !EXTENSION
