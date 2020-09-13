@@ -1280,12 +1280,11 @@
                 [[NCOperationQueue shared] deleteWithMetadata:metadata onlyLocal:false];
             }
         }
+        [selectOcId removeAllObjects];
+        [self tableViewSelect:false];
     } else {
         [[NCOperationQueue shared] deleteWithMetadata:self.metadata onlyLocal:false];
     }
-    
-    [selectOcId removeAllObjects];
-    [self tableViewSelect:false];
 }
 
 // DELEGATE : Select
@@ -1303,15 +1302,18 @@
         BOOL move = true;
         if ([buttonType isEqualToString:@"done1"]) { move = false; }
         
-        for (NSString *ocId in selectOcId) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:ocId];
-            if (metadata) {
-                [[NCOperationQueue shared] copyMoveWithMetadata:metadata serverUrl:serverUrl overwrite:overwrite move:move];
+        if (_isSelectedMode) {
+            for (NSString *ocId in selectOcId) {
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromOcId:ocId];
+                if (metadata) {
+                    [[NCOperationQueue shared] copyMoveWithMetadata:metadata serverUrl:serverUrl overwrite:overwrite move:move];
+                }
             }
+            [selectOcId removeAllObjects];
+            [self tableViewSelect:false];
+        } else {
+            [[NCOperationQueue shared] copyMoveWithMetadata:metadata serverUrl:serverUrl overwrite:overwrite move:move];
         }
-        
-        [selectOcId removeAllObjects];
-        [self tableViewSelect:false];
     }
 }
 
