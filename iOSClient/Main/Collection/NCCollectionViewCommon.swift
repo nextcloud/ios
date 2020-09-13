@@ -241,7 +241,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func copyFile(_ notification: NSNotification) { }
+    @objc func copyFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let serverUrlTo = userInfo["serverUrlTo"] as? String {
+                if serverUrlTo == self.serverUrl {
+                    self.reloadDataSource()
+                }
+            }
+        }
+    }
     
     @objc func renameFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
