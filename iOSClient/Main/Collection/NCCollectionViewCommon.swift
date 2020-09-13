@@ -146,6 +146,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        appDelegate.activeServerUrl = self.serverUrl
         self.navigationItem.title = titleCurrentFolder
                 
         // get auto upload folder

@@ -219,6 +219,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     [self updateNavBarShadow:self.tableView force:false];
     if(_isViewDidLoad && _isRoot) {
         self.navigationItem.hidesSearchBarWhenScrolling = false;
@@ -253,6 +254,8 @@
     if (self.searchController.isActive == false) {
         [self reloadDatasource:self.serverUrl ocId:nil];
     }
+    
+    appDelegate.activeServerUrl = self.serverUrl;
 }
 
 - (void)viewDidAppear:(BOOL)animated

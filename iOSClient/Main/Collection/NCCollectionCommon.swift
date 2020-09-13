@@ -30,6 +30,8 @@ class NCCollectionCommon: NSObject {
         instance.createImagesThemingColor()
         return instance
     }()
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     struct NCCollectionCommonImages {
         static var cellSharedImage = UIImage()
@@ -74,10 +76,61 @@ class NCCollectionCommon: NSObject {
     }
     
     // MARK: -
+
+    @objc func createFolder() {
+        
+        let serverUrl = appDelegate.activeServerUrl
+    }
+    
+    /*
+        - (void)createFolder
+        {
+            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+            NSString *message;
+            UIAlertController *alertController;
+            
+            if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
+                message = @"/";
+            } else {
+                message = [serverUrl lastPathComponent];
+            }
+            
+            alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            
+            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                
+                textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+            }];
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }];
+            
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                
+                UITextField *fileName = alertController.textFields.firstObject;
+                
+                [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account urlBase:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) {
+                    if (errorCode != 0){
+                        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+                    }
+                }];
+            }];
+            
+            okAction.enabled = NO;
+            
+            [alertController addAction:cancelAction];
+            [alertController addAction:okAction];
+            
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+
+        */
+    
+    
+    // MARK: -
     
     func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         var tableShare: tableShare?
         
         // Share
@@ -209,7 +262,7 @@ class NCCollectionCommon: NSObject {
                     cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == appDelegate.account {
+                        if errorCode == 0 && account == self.appDelegate.account {
                             cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
                     }
