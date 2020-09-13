@@ -458,7 +458,7 @@ class NCOperationReadFileForMediaQueue: ConcurrentOperation {
                     }
                 } else if errorCode == 404 {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
-                    //NotificationCenter.default.postOnMainThread(name: k_notificationCenter_mediaFileNotFounf, userInfo: ["metadata": self.metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_mediaFileNotFound, userInfo: ["metadata": self.metadata])
                 }
                 self.finish()
             }
