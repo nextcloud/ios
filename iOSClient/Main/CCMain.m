@@ -1312,7 +1312,7 @@
             [selectOcId removeAllObjects];
             [self tableViewSelect:false];
         } else {
-            [[NCOperationQueue shared] copyMoveWithMetadata:metadata serverUrl:serverUrl overwrite:overwrite move:move];
+            [[NCOperationQueue shared] copyMoveWithMetadata:self.metadata serverUrl:serverUrl overwrite:overwrite move:move];
         }
     }
 }
