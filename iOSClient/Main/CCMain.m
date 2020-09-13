@@ -501,7 +501,11 @@
         NSString *serverUrlTo = arrayMoveServerUrlTo.firstObject;
         [arrayMoveMetadata removeObjectAtIndex:0];
         [arrayMoveServerUrlTo removeObjectAtIndex:0];
-        [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] moveMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }
     
     [self reloadDatasource:self.serverUrl ocId:nil];
@@ -519,7 +523,11 @@
         NSString *serverUrlTo = arrayCopyServerUrlTo.firstObject;
         [arrayCopyMetadata removeObjectAtIndex:0];
         [arrayCopyServerUrlTo removeObjectAtIndex:0];
-        [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) { }];
+        [[NCNetworking shared] copyMetadata:metadata serverUrlTo:serverUrlTo overwrite:true completion:^(NSInteger errorCode, NSString *errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }
 }
 
@@ -1364,9 +1372,17 @@
     }
     
     if (move) {
-        [[NCNetworking shared] moveMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+        [[NCNetworking shared] moveMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     } else {
-        [[NCNetworking shared] copyMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDesctiption) { }];
+        [[NCNetworking shared] copyMetadata:arrayMetadata.firstObject serverUrlTo:arrayServerUrlTo.firstObject overwrite:overwrite completion:^(NSInteger errorCode, NSString * errorDescription) {
+            if (errorCode != 0) {
+                [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
+            }
+        }];
     }
     
     [arrayMetadata removeObjectAtIndex:0];

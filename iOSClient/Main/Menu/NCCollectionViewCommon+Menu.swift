@@ -166,7 +166,11 @@ extension NCCollectionViewCommon {
 
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in }
+                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
+                            if errorCode != 0 {
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
+                        }
                     })
                     okAction.isEnabled = false
                     alertController.addAction(cancelAction)
