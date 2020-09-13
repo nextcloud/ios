@@ -79,53 +79,32 @@ class NCCollectionCommon: NSObject {
 
     @objc func createFolder() {
         
-        let serverUrl = appDelegate.activeServerUrl
-    }
-    
-    /*
-        - (void)createFolder
-        {
-            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *message;
-            UIAlertController *alertController;
-            
-            if ([serverUrl isEqualToString:[[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account]]) {
-                message = @"/";
-            } else {
-                message = [serverUrl lastPathComponent];
-            }
-            
-            alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                
-                textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
-            }];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }];
-            
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                
-                UITextField *fileName = alertController.textFields.firstObject;
-                
-                [[NCNetworking shared] createFolderWithFileName:[fileName.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] serverUrl:serverUrl account:appDelegate.account urlBase:appDelegate.urlBase overwrite:false completion:^(NSInteger errorCode, NSString *errorDescription) {
-                    if (errorCode != 0){
-                        [[NCContentPresenter shared] messageNotification:@"_error_" description:errorDescription delay:k_dismissAfterSecond type:messageTypeError errorCode:errorCode forced:false];
-                    }
-                }];
-            }];
-            
-            okAction.enabled = NO;
-            
-            [alertController addAction:cancelAction];
-            [alertController addAction:okAction];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
+        guard let serverUrl = appDelegate.activeServerUrl else { return }
+        
+        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
+        
+        alertController.addTextField { (textField) in
+            textField.autocapitalizationType = UITextAutocapitalizationType.sentences
+            textField.delegate = self as? UITextFieldDelegate
         }
+        
+        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+            if let fileNameFolder = alertController.textFields?.first?.text {
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
+                    if errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    }
+                }
+            }
+        })
+        
+        okAction.isEnabled = false
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
 
-        */
-    
+        appDelegate.window.rootViewController?.present(alertController, animated: true, completion: nil)        
+    }
     
     // MARK: -
     
