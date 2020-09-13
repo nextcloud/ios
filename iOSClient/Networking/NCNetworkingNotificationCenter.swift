@@ -138,9 +138,7 @@ import Foundation
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int, let errorDescription = userInfo["errorDescription"] as? String {
                                                 
                 if metadata.account == appDelegate.account {
-                    if errorCode == 0 {
-                        
-                    } else {
+                    if errorCode != 0 {
                         if errorCode != -999 && errorCode != 401 && errorDescription != "" {
                             NCContentPresenter.shared.messageNotification("_upload_file_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
