@@ -146,7 +146,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        appDelegate.activeServerUrl = self.serverUrl
         self.navigationItem.title = titleCurrentFolder
                 
         // get auto upload folder
@@ -160,6 +159,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = listLayout
         } else {
             collectionView?.collectionViewLayout = gridLayout
+        }
+        
+        if serverUrl == "" {
+            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        } else {
+            appDelegate.activeServerUrl = self.serverUrl
         }
         
         reloadDataSource()
