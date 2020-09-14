@@ -236,15 +236,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["metadataNew"] as? tableMetadata {
                 
-                if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.performBatchUpdates({
-                        collectionView?.deleteItems(at: [indexPath])
-                    }, completion: { (_) in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            self.collectionView?.reloadData()
-                        }
-                    })
+                if metadata.serverUrl == serverUrl {
+                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                self.collectionView?.reloadData()
+                            }
+                        })
+                    } else {
+                        self.collectionView?.reloadData()
+                    }
                 }
             }
         }
