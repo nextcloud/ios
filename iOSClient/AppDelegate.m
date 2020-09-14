@@ -869,34 +869,6 @@
     }
 }
 
-- (NSString *)getTabBarControllerActiveServerUrl
-{
-    NSString *serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:self.urlBase account:self.account];
-
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
-        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                NSInteger index = tabBarController.selectedIndex;
-                   
-                // select active serverUrl
-                if (index == k_tabBarApplicationIndexFile) {
-                    serverUrl = self.activeMain.serverUrl;
-                } else if (index == k_tabBarApplicationIndexFavorite) {
-                    if (self.activeFavorite.serverUrl)
-                        serverUrl = self.activeFavorite.serverUrl;
-                } else if (index == k_tabBarApplicationIndexMedia) {
-                    serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:self.urlBase account:self.account];
-                }
-            }
-        }
-    }
-    
-    return serverUrl;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------

@@ -133,7 +133,6 @@
 
 // TabBarController
 - (void)createTabBarController:(UITabBarController *)tabBarController;
-- (NSString *)getTabBarControllerActiveServerUrl;
 
 // Push Notification
 - (void)pushNotification;

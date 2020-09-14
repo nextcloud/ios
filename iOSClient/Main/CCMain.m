@@ -716,7 +716,7 @@
         
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
-            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+            NSString *serverUrl = appDelegate.activeServerUrl;
             NSString *fileName =  [url lastPathComponent];
             NSString *ocId = [[NSUUID UUID] UUIDString];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
@@ -786,7 +786,7 @@
     [viewController openPhotosPickerViewControllerWithPhAssets:^(NSArray<PHAsset *> * _Nullable assets) {
         if (assets.count > 0) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+                NSString *serverUrl = appDelegate.activeServerUrl;
                 
                 NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets cryptated:NO session:NCNetworking.shared.sessionIdentifierBackground delegate:self];
                 
