@@ -57,7 +57,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var isButtonDone1Hide = true
     @objc var isOverwriteHide = true
     @objc var keyLayout = k_layout_view_move
-    @objc var heightToolBarTop: CGFloat = 100
     @objc var array: [Any] = []
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -76,7 +75,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var overwrite = false
     
     private var dataSource: NCDataSource?
-    
+    internal var richWorkspaceText: String?
+
     private var layout = ""
     private var groupBy = ""
     private var titleButton = ""
@@ -88,8 +88,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
         
-    private let headerMenuHeight: CGFloat = 50
-    private let sectionHeaderHeight: CGFloat = 20
+    private let headerHeight: CGFloat = 50
+    private var headerRichWorkspaceHeight: CGFloat = 0
     private let footerHeight: CGFloat = 50
     
     private var shares: [tableShare]?
@@ -99,29 +99,27 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
         collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
-        collectionView.register(UINib.init(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
         // Footer
         collectionView.register(UINib.init(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
         
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
-        
-        // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandElement
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
@@ -160,8 +158,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
         self.navigationItem.title = titleCurrentFolder
         
-        toolBarTop.constant = -heightToolBarTop
-        
+        toolBarTop.constant = -100
         buttonDone.setTitle(titleButtonDone, for: .normal)
         buttonDone1.setTitle(titleButtonDone1, for: .normal)
         buttonDone1.isHidden = isButtonDone1Hide
@@ -379,7 +376,6 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.isButtonDone1Hide = isButtonDone1Hide
             visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
-            visualController.heightToolBarTop = heightToolBarTop
             visualController.array = array
 
             visualController.titleCurrentFolder = metadataPush!.fileNameView
@@ -399,54 +395,34 @@ extension NCSelect: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        if (indexPath.section == 0) {
+        if kind == UICollectionView.elementKindSectionHeader {
             
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-                
-                if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                } else {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                }
-                
-                header.delegate = self
-                header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
-                header.setTitleSorted(datasourceTitleButton: titleButton)
-                
-                return header
-                
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+            
+            if collectionView.collectionViewLayout == gridLayout {
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                let info = dataSource?.getFilesInformation()
-                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
-                
-                return footer
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             }
+            
+            header.delegate = self
+            header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
+            header.setTitleSorted(datasourceTitleButton: titleButton)
+            header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
+            header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
+            
+            return header
             
         } else {
             
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
-                
-                header.setTitleLabel(title: "")
-                
-                return header
-                
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                let info = dataSource?.getFilesInformation()
-                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
-                
-                return footer
-            }
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            
+            let info = dataSource?.getFilesInformation()
+            footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
+            
+            return footer
         }
+            
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -491,24 +467,18 @@ extension NCSelect: UICollectionViewDataSource {
 extension NCSelect: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if section == 0 {
-            if groupBy == "none" {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
-            } else {
-                return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
-            }
+        
+        if richWorkspaceText?.count ?? 0 == 0 {
+            headerRichWorkspaceHeight = 0
         } else {
-            return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
+            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
         }
+        
+        return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = 1
-        if (section == sections - 1) {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        }
+        return CGSize(width: collectionView.frame.width, height: footerHeight)
     }
 }
 
@@ -559,6 +529,9 @@ extension NCSelect {
         } else {
             self.refreshControl.endRefreshing()
         }
+        
+        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account,serverUrl))
+        richWorkspaceText = directory?.richWorkspace
         
         collectionView.reloadData()
     }

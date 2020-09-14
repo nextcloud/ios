@@ -80,7 +80,7 @@ extension NCCollectionViewCommon {
         )
 
         // Favorite
-        if (layoutKey == k_layout_view_favorite && serverUrl == nil) || (layoutKey != k_layout_view_favorite) {
+        if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
@@ -97,7 +97,7 @@ extension NCCollectionViewCommon {
         }
         
         // Offline
-        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == nil || (layoutKey != k_layout_view_offline)) {
+        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == "" || (layoutKey != k_layout_view_offline)) {
             actions.append(
                 NCMenuAction(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
@@ -182,7 +182,7 @@ extension NCCollectionViewCommon {
         )
         
 
-        if !isFolderEncrypted && serverUrl != nil {
+        if !isFolderEncrypted && serverUrl != "" {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),

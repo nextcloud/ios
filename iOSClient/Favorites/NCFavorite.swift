@@ -89,10 +89,10 @@ class NCFavorite: NCCollectionViewCommon  {
         
         if !isSearching {
        
-            if serverUrl == nil {
+            if serverUrl == "" {
                 metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
             } else {
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl!))
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
             }
         }
         
@@ -113,7 +113,7 @@ class NCFavorite: NCCollectionViewCommon  {
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
         
-        if serverUrl == nil {
+        if serverUrl == "" {
             
             NCNetworking.shared.listingFavoritescompletion(selector: selectorListingFavorite) { (account, metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
@@ -134,7 +134,7 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
-            NCNetworking.shared.readFolder(serverUrl: serverUrl!, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+            NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory && CCUtility.getFavoriteOffline() {

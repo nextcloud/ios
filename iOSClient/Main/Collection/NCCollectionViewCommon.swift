@@ -30,7 +30,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
     
-    @objc var serverUrl: String?
+    @objc var serverUrl: String = ""
         
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
@@ -161,7 +161,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = gridLayout
         }
         
-        if serverUrl == nil {
+        if serverUrl == "" {
             appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         } else {
             appDelegate.activeServerUrl = self.serverUrl
@@ -573,9 +573,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         toggleMoreSelect(viewController: tabBarController, selectOcId: selectOcId)
     }
     
-    func tapMoreHeader(sender: Any) {
-
-    }
+    func tapMoreHeader(sender: Any) { }
     
     func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any) {
         

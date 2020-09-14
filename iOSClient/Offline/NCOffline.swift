@@ -92,7 +92,7 @@ class NCOffline: NCCollectionViewCommon  {
 
         if !isSearching {
             
-            if serverUrl == nil {
+            if serverUrl == "" {
                
                 if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "serverUrl", ascending: true) {
                     for directory: tableDirectory in directories {
@@ -109,7 +109,7 @@ class NCOffline: NCCollectionViewCommon  {
                 
             } else {
                
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl!))
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
             }
         }
         
@@ -126,12 +126,12 @@ class NCOffline: NCCollectionViewCommon  {
             return
         }
                     
-        if serverUrl != nil {
+        if serverUrl != "" {
            
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
             
-            NCNetworking.shared.readFolder(serverUrl: serverUrl!, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+            NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {

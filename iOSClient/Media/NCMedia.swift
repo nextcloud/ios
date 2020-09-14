@@ -257,7 +257,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                         viewController.selectFile = false
                         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         viewController.type = "mediaFolder"
-                        viewController.heightToolBarTop = 50
                         
                         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                         self.present(navigationController, animated: true, completion: nil)
