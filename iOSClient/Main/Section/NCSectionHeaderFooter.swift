@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import MarkdownKit
 
 class NCSectionHeaderMenu: UICollectionReusableView {
     
@@ -29,12 +30,13 @@ class NCSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewLabelSection: UIView!
-    @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var labelSectionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewRichWorkspace: UIView!
+    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCSectionHeaderMenuDelegate?
+    private var markdownParser = MarkdownParser()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,7 +48,6 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
-        viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.select
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
     }
@@ -60,29 +61,6 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         buttonOrderWidthConstraint.constant = size.width + 5
     }
     
-    func setTitleLabel(title: String) {
-        
-        /*
-        var title = ""
-        
-        if sectionDatasource.sections.object(at: section) is String {
-            title = sectionDatasource.sections.object(at: section) as! String
-        }
-        if sectionDatasource.sections.object(at: section) is Date {
-            let titleDate = sectionDatasource.sections.object(at: section) as! Date
-            title = CCUtility.getTitleSectionDate(titleDate)
-        }
-        */
-        
-        if title.contains("download") {
-            labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
-        } else if title.contains("upload") {
-            labelSection.text = NSLocalizedString("_title_section_upload_", comment: "")
-        } else {
-            labelSection.text = NSLocalizedString(title, comment: "")
-        }
-    }
-    
     func setStatusButton(count: Int) {
         
         if count == 0 {
@@ -94,6 +72,11 @@ class NCSectionHeaderMenu: UICollectionReusableView {
             buttonOrder.isEnabled = true
             buttonMore.isEnabled = true
         }
+    }
+    
+    func setRichWorkspaceText(richWorkspaceText: String?) {
+        guard let richWorkspaceText = richWorkspaceText else { return }
+        textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {

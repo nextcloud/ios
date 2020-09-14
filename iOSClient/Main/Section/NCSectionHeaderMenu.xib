@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -75,22 +73,23 @@
                         <constraint firstItem="0bo-yl-t5k" firstAttribute="leading" secondItem="1LD-cd-zhc" secondAttribute="trailing" constant="18" id="tBF-23-TJ4"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-5C-E5z">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-5C-E5z" userLabel="ViewRichWorkspace">
                     <rect key="frame" x="0.0" y="113" width="375" height="50"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PVg-rp-dMy">
-                            <rect key="frame" x="10" y="18" width="355" height="14.5"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <nil key="textColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pYo-pF-MGv">
+                            <rect key="frame" x="5" y="0.0" width="365" height="50"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="textColor" systemColor="labelColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
                     </subviews>
-                    <color key="backgroundColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
-                        <constraint firstAttribute="trailing" secondItem="PVg-rp-dMy" secondAttribute="trailing" constant="10" id="Rup-Kj-YB9"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="10" id="VT2-KQ-3Rs"/>
+                        <constraint firstItem="pYo-pF-MGv" firstAttribute="top" secondItem="NC1-5C-E5z" secondAttribute="top" id="PgU-fC-vEG"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
-                        <constraint firstItem="PVg-rp-dMy" firstAttribute="centerY" secondItem="NC1-5C-E5z" secondAttribute="centerY" id="kJS-Jt-w50"/>
+                        <constraint firstAttribute="trailing" secondItem="pYo-pF-MGv" secondAttribute="trailing" constant="5" id="nSk-Jr-ufp"/>
+                        <constraint firstItem="pYo-pF-MGv" firstAttribute="leading" secondItem="NC1-5C-E5z" secondAttribute="leading" constant="5" id="qoB-Sw-ipc"/>
+                        <constraint firstAttribute="bottom" secondItem="pYo-pF-MGv" secondAttribute="bottom" id="t4r-dA-VyW"/>
                     </constraints>
                 </view>
             </subviews>
@@ -109,10 +108,10 @@
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonOrderWidthConstraint" destination="jvv-Ug-l3I" id="E6N-z6-2VC"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
-                <outlet property="labelSection" destination="PVg-rp-dMy" id="wrp-Tl-oBd"/>
-                <outlet property="labelSectionHeightConstraint" destination="eT3-4m-mJ6" id="e31-Et-7U1"/>
                 <outlet property="separator" destination="LZu-Te-clJ" id="EwO-za-LxT"/>
-                <outlet property="viewLabelSection" destination="NC1-5C-E5z" id="FXG-Lp-IGJ"/>
+                <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
+                <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
+                <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
             </connections>
             <point key="canvasLocation" x="138.40000000000001" y="194.75262368815595"/>
         </collectionReusableView>

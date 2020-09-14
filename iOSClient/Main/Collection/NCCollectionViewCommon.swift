@@ -52,9 +52,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
             
-    private let headerMenuHeight: CGFloat = 50
+    private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
-    private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
     
     private var timerInputSearch: Timer?
@@ -674,71 +673,34 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        if (indexPath.section == 0) {
+        if kind == UICollectionView.elementKindSectionHeader {
             
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
-                
-                if collectionView.collectionViewLayout == gridLayout {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                } else {
-                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                }
-                
-                header.delegate = self
-                header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-                header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
-                header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
-                header.setTitleSorted(datasourceTitleButton: titleButton)
-                header.labelSectionHeightConstraint.constant = headerRichWorkspaceHeight
-
-                if groupBy == "none" {
-                    header.labelSection.isHidden = true
-                    header.labelSectionHeightConstraint.constant = 0
-                } else {
-                    header.labelSection.isHidden = false
-                    header.setTitleLabel(title: "")
-                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
-                }
-                
-                if metadataFolder?.richWorkspace?.count ?? 0 == 0 {
-                    header.labelSection.isHidden = true
-                } else {
-                    header.labelSection.isHidden = false
-                }
-                
-                return header
-                
+            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
+            
+            if collectionView.collectionViewLayout == gridLayout {
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                let info = dataSource?.getFilesInformation()
-                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
-                
-                return footer
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             }
+            
+            header.delegate = self
+            header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
+            header.setTitleSorted(datasourceTitleButton: titleButton)
+            header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
+            header.setRichWorkspaceText(richWorkspaceText: metadataFolder?.richWorkspace)
+
+            return header
             
         } else {
             
-            if kind == UICollectionView.elementKindSectionHeader {
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCSectionHeader
-                
-                header.setTitleLabel(title: "")
-                
-                return header
-                
-            } else {
-                
-                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
-                
-                let info = dataSource?.getFilesInformation()
-                footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
-                
-                return footer
-            }
+            let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
+            
+            let info = dataSource?.getFilesInformation()
+            footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
+            
+            return footer
         }
     }
     
@@ -778,19 +740,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        if section == 0 {
-            return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight + headerRichWorkspaceHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
-        }
+        return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = 1
-        if (section == sections - 1) {
-            return CGSize(width: collectionView.frame.width, height: footerHeight)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        }
+        return CGSize(width: collectionView.frame.width, height: footerHeight)
     }
 }

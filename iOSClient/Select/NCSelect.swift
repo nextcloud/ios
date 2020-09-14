@@ -412,15 +412,6 @@ extension NCSelect: UICollectionViewDataSource {
                 header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
                 header.setTitleSorted(datasourceTitleButton: titleButton)
                 
-                if groupBy == "none" {
-                    header.labelSection.isHidden = true
-                    header.labelSectionHeightConstraint.constant = 0
-                } else {
-                    header.labelSection.isHidden = false
-                    header.setTitleLabel(title: "")
-                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
-                }
-                
                 return header
                 
             } else {
