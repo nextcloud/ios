@@ -220,9 +220,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
                         }, completion: { (_) in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                self.collectionView?.reloadData()
-                            }
+                            self.collectionView?.reloadData()
                         })
                     }
                 }
@@ -242,12 +240,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
                         }, completion: { (_) in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                self.collectionView?.reloadData()
-                            }
+                            self.collectionView?.reloadData()
                         })
-                    } else {
-                        self.collectionView?.reloadData()
                     }
                 }
             }
@@ -405,9 +399,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
                         }, completion: { (_) in
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                self.collectionView?.reloadData()
-                            }
+                            self.collectionView?.reloadData()
                         })
                     } else {
                         self.reloadDataSource()
