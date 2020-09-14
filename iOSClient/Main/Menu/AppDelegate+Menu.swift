@@ -125,8 +125,32 @@ extension AppDelegate {
             NCMenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement),
                 action: { menuAction in
-                    NCMainCommon.shared.createFolder()
-                    //appDelegate.activeMain.createFolder()
+                    
+                     guard let serverUrl = appDelegate.activeServerUrl else { return }
+                    
+                     let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
+                    
+                     alertController.addTextField { (textField) in
+                         //[textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+                         textField.autocapitalizationType = UITextAutocapitalizationType.sentences
+                     }
+                    
+                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                         if let fileNameFolder = alertController.textFields?.first?.text {
+                             NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: appDelegate.account, urlBase: appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
+                                 if errorCode != 0 {
+                                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                 }
+                             }
+                         }
+                     })
+                    
+                     //okAction.enabled = NO;
+                     alertController.addAction(cancelAction)
+                     alertController.addAction(okAction)
+
+                     appDelegate.window.rootViewController?.present(alertController, animated: true, completion: nil)
                 }
             )
         )
