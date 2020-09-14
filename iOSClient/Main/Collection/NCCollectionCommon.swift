@@ -75,8 +75,8 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         
-        NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
+        NCCollectionCommonImages.cellCheckedYes = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 200, height: 200), isAspectRation: true)
+        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 200, height: 200, color: NCBrandColor.sharedInstance.graySoft)
         
         NCCollectionCommonImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
     }
@@ -334,10 +334,10 @@ class NCCollectionCommon: NSObject {
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectocId.contains(metadata.ocId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
+                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedYes
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.isHidden = true
+                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedNo
                     cell.backgroundView = nil
                 }
             } else {
