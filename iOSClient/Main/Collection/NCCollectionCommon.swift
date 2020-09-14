@@ -50,6 +50,9 @@ class NCCollectionCommon: NSObject {
         static var cellFolderAutomaticUploadImage = UIImage()
         static var cellFolderImage = UIImage()
         
+        static var cellCheckedYes = UIImage()
+        static var cellCheckedNo = UIImage()
+
         static var cellPlayImage = UIImage()
     }
     
@@ -71,6 +74,9 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        
+        NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
+        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
         
         NCCollectionCommonImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
     }
@@ -222,10 +228,10 @@ class NCCollectionCommon: NSObject {
                 cell.imageSelect.isHidden = false
                 
                 if selectocId.contains(metadata.ocId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
+                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedYes
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
+                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedNo
                     cell.backgroundView = nil
                 }
             } else {
