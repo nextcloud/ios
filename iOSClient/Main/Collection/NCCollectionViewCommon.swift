@@ -40,6 +40,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadataFolder: tableMetadata?
     internal var metadataPush: tableMetadata?
     internal var dataSource: NCDataSource?
+    internal var richWorkspaceText: String?
         
     internal var layout = ""
     internal var groupBy = ""
@@ -601,11 +602,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NC API & Algorithm
     
     @objc func reloadDataSource() {
-        if metadataFolder?.richWorkspace?.count ?? 0 == 0 {
-            headerRichWorkspaceHeight = 0
-        } else {
-            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
-        }
+        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl))
+        richWorkspaceText = directory?.richWorkspace
     }
     @objc func reloadDataSourceNetwork() { }
     @objc func networkSearch() {
@@ -689,7 +687,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
             header.setTitleSorted(datasourceTitleButton: titleButton)
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
-            header.setRichWorkspaceText(richWorkspaceText: metadataFolder?.richWorkspace)
+            header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
 
             return header
             
@@ -740,6 +738,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        if richWorkspaceText?.count ?? 0 == 0 {
+            headerRichWorkspaceHeight = 0
+        } else {
+            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+        }
+        
         return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
     }
     
