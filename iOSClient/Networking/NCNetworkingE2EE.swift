@@ -55,6 +55,10 @@ import Alamofire
                 NCCommunication.shared.createFolder(fileNameFolderUrl, addCustomHeaders: ["e2e-token" : e2eToken!]) { (account, ocId, date, errorCode, errorDescription) in
                     if errorCode == 0 {
                         guard let fileId = NCUtility.shared.ocIdToFileId(ocId: ocId) else {
+                            // unlock
+                            if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                            }
                             completion(Int(k_CCErrorInternalError), "Error convert ocId")
                             return
                         }
@@ -87,16 +91,32 @@ import Alamofire
                                 let _ = NCManageDatabase.sharedInstance.addE2eEncryption(object)
                                 
                                 self.sendE2EMetadata(account: account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                                    
+                                    // unlock
+                                    if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                                        NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                    }
+                                    if errorCode == 0 {
+                                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata])
+                                        }
+                                    }
                                     completion(errorCode, errorDescription ?? "")
                                 }
                                 
                             } else {
+                                // unlock
+                                if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                                }
                                 completion(errorCode, errorDescription)
                             }
                         }
                         
                     } else {
+                        // unlock
+                        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                        }
                         completion(errorCode, errorDescription)
                     }
                 }
@@ -118,14 +138,24 @@ import Alamofire
                     let home = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
                     if metadata.serverUrl != home {
                         self.sendE2EMetadata(account: metadata.account, serverUrl: metadata.serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: deleteE2eEncryption, urlBase: urlBase) { (e2eToken, errorCode, errorDescription) in
-                            self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                            // unlock
+                            if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                            }
+                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
+                            completion(errorCode, errorDescription ?? "")
                         }
                     } else {
-                        self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                        // unlock
+                        if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                            NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                        }
+                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
+                        completion(errorCode, errorDescription)
                     }
                 }
             } else {
-                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                completion(errorCode, errorDescription ?? "")
             }
         }
     }
@@ -137,7 +167,7 @@ import Alamofire
         // verify if exists the new fileName
         if NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             
-            self.NotificationPost(name: k_notificationCenter_renameFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "errorCode": Int(k_CCErrorInternalError)], errorDescription: "_file_already_exists_", completion: completion)
+            completion(Int(k_CCErrorInternalError), "_file_already_exists_")
 
         } else {
             
@@ -152,10 +182,16 @@ import Alamofire
                     do {
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                     } catch { }
+                    
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
-                self.NotificationPost(name: k_notificationCenter_deleteFile, account: metadata.account, serverUrl: metadata.serverUrl, userInfo: ["metadata": metadata, "onlyLocal": false, "errorCode": errorCode], errorDescription: errorDescription, completion: completion)
+                // unlock
+                if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
+                    NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
+                }
+                
+                completion(errorCode, errorDescription)
             }
         }
     }
@@ -403,26 +439,6 @@ import Alamofire
             } else {
                 completion(e2eToken, errorCode, errorDescription)
             }
-        }
-    }
-    
-    //MARK: - Notification Post
-       
-    private func NotificationPost(name: String, account: String, serverUrl: String, userInfo: [AnyHashable : Any], errorDescription: Any?, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
-        var userInfo = userInfo
-        DispatchQueue.main.async {
-            
-            // unlock
-            if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: account, serverUrl: serverUrl) {
-                NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
-            }
-            
-            if errorDescription == nil { userInfo["errorDescription"] = "" }
-            else { userInfo["errorDescription"] = NSLocalizedString(errorDescription as! String, comment: "") }
-               
-            NotificationCenter.default.postOnMainThread(name: name, userInfo: userInfo)
-               
-            completion(userInfo["errorCode"] as! Int, userInfo["errorDescription"] as! String)
         }
     }
 }

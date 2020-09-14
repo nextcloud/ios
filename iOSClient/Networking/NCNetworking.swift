@@ -884,7 +884,6 @@ import Queuer
                 }
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
-                
             }
             
             completion(errorCode, errorDescription)
