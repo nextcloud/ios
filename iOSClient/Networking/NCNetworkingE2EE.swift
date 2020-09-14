@@ -96,9 +96,7 @@ import Alamofire
                                         NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
                                     }
                                     if errorCode == 0 {
-                                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata])
-                                        }
+                                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: nil)
                                     }
                                     completion(errorCode, errorDescription ?? "")
                                 }

@@ -444,13 +444,11 @@
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     
-    if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
-    
-    BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:metadata.serverUrl e2eEncrypted:nil account:appDelegate.account urlBase: appDelegate.urlBase];
-    if (isFolderEncrypted) {
-        [self readFolder:metadata.serverUrl];
-    } else {
+    if (metadata) {
+         if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
         [self reloadDatasource:self.serverUrl ocId:nil];
+    } else {
+        [self readFolder:metadata.serverUrl];
     }
 }
 
