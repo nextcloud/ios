@@ -76,37 +76,6 @@ class NCCollectionCommon: NSObject {
     }
     
     // MARK: -
-
-    @objc func createFolder() {
-        
-        guard let serverUrl = appDelegate.activeServerUrl else { return }
-        
-        let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
-        
-        alertController.addTextField { (textField) in
-            textField.autocapitalizationType = UITextAutocapitalizationType.sentences
-            textField.delegate = self as? UITextFieldDelegate
-        }
-        
-        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
-        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-            if let fileNameFolder = alertController.textFields?.first?.text {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, overwrite: false) { (errorCode, errorDescription) in
-                    if errorCode != 0 {
-                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                    }
-                }
-            }
-        })
-        
-        okAction.isEnabled = false
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-
-        appDelegate.window.rootViewController?.present(alertController, animated: true, completion: nil)        
-    }
-    
-    // MARK: -
     
     func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
         

@@ -76,7 +76,6 @@
 
 - (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;
-- (void)createFolder;
 
 - (void)setTableViewHeader;
 

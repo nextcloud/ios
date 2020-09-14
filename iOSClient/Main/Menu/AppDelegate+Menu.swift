@@ -125,7 +125,8 @@ extension AppDelegate {
             NCMenuAction(title: NSLocalizedString("_create_folder_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement),
                 action: { menuAction in
-                    appDelegate.activeMain.createFolder()
+                    NCMainCommon.shared.createFolder()
+                    //appDelegate.activeMain.createFolder()
                 }
             )
         )
