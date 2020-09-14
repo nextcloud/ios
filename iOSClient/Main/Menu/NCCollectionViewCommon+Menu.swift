@@ -27,12 +27,12 @@ import FloatingPanel
 
 extension NCCollectionViewCommon {
 
-    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, selectOcId: [String]) {
+    func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
             
             let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
-            mainMenuViewController.actions = self.initMenu(viewController: viewController, metadata: metadata, selectOcId: selectOcId)
+            mainMenuViewController.actions = self.initMenuMore(viewController: viewController, metadata: metadata)
 
             let menuPanelController = NCMenuPanelController()
             menuPanelController.parentPresenter = viewController
@@ -44,7 +44,7 @@ extension NCCollectionViewCommon {
         }
     }
     
-    private func initMenu(viewController: UIViewController, metadata: tableMetadata, selectOcId: [String]) -> [NCMenuAction] {
+    private func initMenuMore(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)        
@@ -80,7 +80,7 @@ extension NCCollectionViewCommon {
         )
 
         // Favorite
-        if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
+        if (layoutKey == k_layout_view_favorite && serverUrl == nil) || (layoutKey != k_layout_view_favorite) {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
@@ -97,7 +97,7 @@ extension NCCollectionViewCommon {
         }
         
         // Offline
-        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && self.serverUrl == "" || (layoutKey != k_layout_view_offline)) {
+        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == nil || (layoutKey != k_layout_view_offline)) {
             actions.append(
                 NCMenuAction(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
@@ -182,7 +182,7 @@ extension NCCollectionViewCommon {
         )
         
 
-        if !isFolderEncrypted && serverUrl != "" {
+        if !isFolderEncrypted && serverUrl != nil {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
@@ -201,26 +201,10 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        if selectOcId.count > 0 {
-                            for ocId in selectOcId {
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                                    NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
-                                }
-                            }
-                        } else {
-                            NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
-                        }
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
-                        if selectOcId.count > 0 {
-                            for ocId in selectOcId {
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                                    NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
-                                }
-                            }
-                        } else {
-                            NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
-                        }
+                        NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)
@@ -228,6 +212,75 @@ extension NCCollectionViewCommon {
             )
         )
 
+        return actions
+    }
+    
+    func toggleMoreSelect(viewController: UIViewController, selectOcId: [String]) {
+        
+        let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
+        mainMenuViewController.actions = self.initMenuSelect(viewController: viewController, selectOcId: selectOcId)
+
+        let menuPanelController = NCMenuPanelController()
+        menuPanelController.parentPresenter = viewController
+        menuPanelController.delegate = mainMenuViewController
+        menuPanelController.set(contentViewController: mainMenuViewController)
+        menuPanelController.track(scrollView: mainMenuViewController.tableView)
+
+        viewController.present(menuPanelController, animated: true, completion: nil)
+    }
+    
+    private func initMenuSelect(viewController: UIViewController, selectOcId: [String]) -> [NCMenuAction] {
+        var actions = [NCMenuAction]()
+       
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_select_all_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                }
+            )
+        )
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    for ocId in selectOcId {
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                            NCCollectionCommon.shared.openSelectView(viewController: viewController, array: [metadata])
+                        }
+                    }
+                }
+            )
+        )
+        
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_delete_selected_files_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                action: { menuAction in
+                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        for ocId in selectOcId {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
+                            }
+                        }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
+                        for ocId in selectOcId {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
+                            }
+                        }
+                    })
+                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
+                    self.present(alertController, animated: true, completion:nil)
+                }
+            )
+        )
+        
         return actions
     }
 }

@@ -514,6 +514,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: TAP EVENT
     
     @objc func tapSelect(sender: Any) {
+        
         isEditMode = !isEditMode
         self.collectionView.reloadData()
     }
@@ -552,23 +553,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func tapSelectMenu(sender: Any) {
-      
+        
+        guard let tabBarController = self.tabBarController else { return }
+        toggleMoreSelect(viewController: tabBarController, selectOcId: selectOcId)
     }
     
     func tapMoreHeader(sender: Any) {
-        
+
     }
     
     func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any) {
+        
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
     func tapShareListItem(with objectId: String, sender: Any) {
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else {
-            return
-        }
-        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
         NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
         
@@ -578,7 +579,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let tabBarController = self.tabBarController else { return }
 
         if namedButtonMore == "more" {
-            toggleMoreMenu(viewController: tabBarController, metadata: metadata, selectOcId: selectOcId)
+            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
         } else if namedButtonMore == "stop" {
             NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
         }
