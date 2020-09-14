@@ -36,7 +36,11 @@ class NCSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCSectionHeaderMenuDelegate?
+    
     private var markdownParser = MarkdownParser()
+    private var richWorkspaceText: String?
+    private var textViewColor: UIColor?
+    private let gradient : CAGradientLayer = CAGradientLayer()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -50,6 +54,32 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        
+        // Gradient
+        gradient.startPoint = CGPoint(x: 0, y: 0.60)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        viewRichWorkspace.layer.addSublayer(gradient)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+        if textViewColor != NCBrandColor.sharedInstance.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+            markdownParser.header.font = UIFont.systemFont(ofSize: 25)
+            if let richWorkspaceText = richWorkspaceText {
+                textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+            }
+            textViewColor = NCBrandColor.sharedInstance.textView
+            
+            if CCUtility.getDarkMode() {
+                gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            } else {
+                gradient.colors = [UIColor.init(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            }
+            
+        }
     }
     
     func setTitleSorted(datasourceTitleButton: String) {
@@ -76,7 +106,10 @@ class NCSectionHeaderMenu: UICollectionReusableView {
     
     func setRichWorkspaceText(richWorkspaceText: String?) {
         guard let richWorkspaceText = richWorkspaceText else { return }
-        textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+        if richWorkspaceText != self.richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+            self.richWorkspaceText = richWorkspaceText
+        }
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
