@@ -448,7 +448,7 @@
          if (![metadata.serverUrl isEqualToString:self.serverUrl]) { return; }
         [self reloadDatasource:self.serverUrl ocId:nil];
     } else {
-        [self readFolder:metadata.serverUrl];
+        [self readFolder:self.serverUrl];
     }
 }
 
