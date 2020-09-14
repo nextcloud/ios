@@ -167,6 +167,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             appDelegate.activeServerUrl = self.serverUrl
         }
         
+        setNavigationItem()
         reloadDataSource()
     }
         
@@ -181,6 +182,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
+    }
+    
+    func setNavigationItem() {
+        if isEditMode {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
+        } else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
+            self.navigationItem.leftBarButtonItem = nil
         }
     }
     
@@ -516,6 +527,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func tapSelect(sender: Any) {
         
         isEditMode = !isEditMode
+        selectOcId.removeAll()
+        setNavigationItem()
         self.collectionView.reloadData()
     }
     
@@ -685,9 +698,18 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
 }
 
 // MARK: - Collection View
+
 extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) { }
+    
+    func collectionViewSelectAll() {
+        selectOcId.removeAll()
+        for metadata in metadatasSource {
+            selectOcId.append(metadata.ocId)
+        }
+        collectionView.reloadData()
+    }
 }
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
@@ -695,15 +717,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
-            
-            if isEditMode {
-                self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
-                self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(tapSelect(sender:)))
-            } else {
-                self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_select_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(tapSelect(sender:)))
-                self.navigationItem.leftBarButtonItem = nil
-            }
-            
+                        
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {

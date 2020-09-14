@@ -41,6 +41,7 @@ class NCFavorite: NCCollectionViewCommon  {
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        super.collectionView(collectionView, didSelectItemAt: indexPath)
         
         guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
         metadataPush = metadata

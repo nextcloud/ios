@@ -237,6 +237,7 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_select_all_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "selectFull"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
+                    self.collectionViewSelectAll()
                 }
             )
         )
