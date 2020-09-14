@@ -247,11 +247,16 @@ extension NCCollectionViewCommon {
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
+                    var meradatasSelect = [tableMetadata]()
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                            NCCollectionCommon.shared.openSelectView(viewController: viewController, array: [metadata])
+                            meradatasSelect.append(metadata)
                         }
                     }
+                    if meradatasSelect.count > 0 {
+                        NCCollectionCommon.shared.openSelectView(viewController: viewController, array: meradatasSelect)
+                    }
+                    self.tapSelect(sender: self)
                 }
             )
         )
@@ -268,6 +273,7 @@ extension NCCollectionViewCommon {
                                 NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: false)
                             }
                         }
+                        self.tapSelect(sender: self)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (action:UIAlertAction) in
                         for ocId in selectOcId {
@@ -275,6 +281,7 @@ extension NCCollectionViewCommon {
                                 NCOperationQueue.shared.delete(metadata: metadata, onlyLocal: true)
                             }
                         }
+                        self.tapSelect(sender: self)
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)

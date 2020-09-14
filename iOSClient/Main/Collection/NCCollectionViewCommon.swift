@@ -527,8 +527,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func tapSelect(sender: Any) {
         
         isEditMode = !isEditMode
+        
         selectOcId.removeAll()
         setNavigationItem()
+        
         self.collectionView.reloadData()
     }
     
