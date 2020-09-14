@@ -38,6 +38,17 @@ class NCOffline: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_offline_view_"
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if serverUrl == "" {
+            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        } else {
+            appDelegate.activeServerUrl = self.serverUrl
+        }
+        
+        super.viewWillAppear(animated)
+    }
+    
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

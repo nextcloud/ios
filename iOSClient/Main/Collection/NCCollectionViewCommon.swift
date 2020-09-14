@@ -161,12 +161,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = gridLayout
         }
         
-        if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        } else {
-            appDelegate.activeServerUrl = self.serverUrl
-        }
-        
         setNavigationItem()
         reloadDataSource()
     }
