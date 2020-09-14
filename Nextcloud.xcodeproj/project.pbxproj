@@ -221,7 +221,6 @@
 		F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4921903F850088454D /* NCTrashListCell.xib */; };
 		F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
 		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
-		F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD55219047E90088454D /* NCSectionHeader.xib */; };
 		F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
 		F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */ = {isa = PBXBuildFile; fileRef = F78B9682234F785300F54315 /* NCSelectDestination.m */; };
 		F78B9686234F785300F54315 /* NCSelectDestination.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78B9684234F785300F54315 /* NCSelectDestination.storyboard */; };
@@ -572,7 +571,6 @@
 		F78ACD4921903F850088454D /* NCTrashListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
 		F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
-		F78ACD55219047E90088454D /* NCSectionHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F78B9682234F785300F54315 /* NCSelectDestination.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCSelectDestination.m; sourceTree = "<group>"; };
 		F78B9683234F785300F54315 /* NCSelectDestination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCSelectDestination.h; sourceTree = "<group>"; };
@@ -1060,7 +1058,6 @@
 			isa = PBXGroup;
 			children = (
 				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
-				F78ACD55219047E90088454D /* NCSectionHeader.xib */,
 				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
 				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
 			);
@@ -1826,7 +1823,6 @@
 				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
 				F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
-				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,

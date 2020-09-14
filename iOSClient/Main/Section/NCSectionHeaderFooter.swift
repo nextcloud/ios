@@ -140,40 +140,6 @@ protocol NCSectionHeaderMenuDelegate {
     func tapRichWorkspace(sender: Any)
 }
 
-class NCSectionHeader: UICollectionReusableView {
-    
-    @IBOutlet weak var labelSection: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        self.backgroundColor = NCBrandColor.sharedInstance.select
-    }
-    
-    func setTitleLabel(title: String) {
-        
-        /*
-        var title = ""
-        
-        if sectionDatasource.sections.object(at: section) is String {
-            title = sectionDatasource.sections.object(at: section) as! String
-        }
-        if sectionDatasource.sections.object(at: section) is Date {
-            let titleDate = sectionDatasource.sections.object(at: section) as! Date
-            title = CCUtility.getTitleSectionDate(titleDate)
-        }
-        */
-        
-        if title.contains("download") {
-            labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
-        } else if title.contains("upload") {
-            labelSection.text = NSLocalizedString("_title_section_upload_", comment: "")
-        } else {
-            labelSection.text = NSLocalizedString(title, comment: "")
-        }
-    }
-}
-
 class NCSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
