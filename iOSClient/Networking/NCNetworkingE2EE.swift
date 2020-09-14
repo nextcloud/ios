@@ -140,7 +140,6 @@ import Alamofire
                             if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                                 NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
                             }
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
                             completion(errorCode, errorDescription ?? "")
                         }
                     } else {
@@ -148,7 +147,6 @@ import Alamofire
                         if let tableLock = NCManageDatabase.sharedInstance.getE2ETokenLock(account: metadata.account, serverUrl: metadata.serverUrl) {
                             NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
                         }
-                        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
                         completion(errorCode, errorDescription)
                     }
                 }
