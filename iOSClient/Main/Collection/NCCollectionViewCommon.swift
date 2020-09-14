@@ -232,13 +232,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["metadataNew"] as? tableMetadata {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
                 
-                if metadata.serverUrl == serverUrl {
+                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    }
+                } else if metadataNew.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                    if let row = dataSource?.addMetadata(metadataNew) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.insertItems(at: [indexPath])
                         }, completion: { (_) in
                             self.collectionView?.reloadData()
                         })
