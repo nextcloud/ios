@@ -336,6 +336,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     func tapShareListItem(with objectId: String, sender: Any) {
     }
+    
+    func tapRichWorkspace(sender: Any) {
+    }
 }
 
 // MARK: - Collection View

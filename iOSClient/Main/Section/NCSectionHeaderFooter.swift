@@ -24,7 +24,7 @@
 import Foundation
 import MarkdownKit
 
-class NCSectionHeaderMenu: UICollectionReusableView {
+class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
@@ -59,6 +59,10 @@ class NCSectionHeaderMenu: UICollectionReusableView {
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         viewRichWorkspace.layer.addSublayer(gradient)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
+        tap.delegate = self
+        viewRichWorkspace?.addGestureRecognizer(tap)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
@@ -123,12 +127,17 @@ class NCSectionHeaderMenu: UICollectionReusableView {
     @IBAction func touchUpInsideOrder(_ sender: Any) {
         delegate?.tapOrderHeader(sender: sender)
     }
+    
+    @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
+        delegate?.tapRichWorkspace(sender: sender)
+    }
 }
 
 protocol NCSectionHeaderMenuDelegate {
     func tapSwitchHeader(sender: Any)
     func tapMoreHeader(sender: Any)
     func tapOrderHeader(sender: Any)
+    func tapRichWorkspace(sender: Any)
 }
 
 class NCSectionHeader: UICollectionReusableView {

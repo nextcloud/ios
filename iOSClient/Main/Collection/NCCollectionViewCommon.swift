@@ -30,7 +30,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
     
-    @objc var serverUrl = ""
+    @objc var serverUrl: String?
         
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
@@ -161,7 +161,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = gridLayout
         }
         
-        if serverUrl == "" {
+        if serverUrl == nil {
             appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         } else {
             appDelegate.activeServerUrl = self.serverUrl
@@ -572,6 +572,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             toggleMoreMenu(viewController: tabBarController, metadata: metadata, selectOcId: selectOcId)
         } else if namedButtonMore == "stop" {
             NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
+        }
+    }
+    
+    func tapRichWorkspace(sender: Any) {
+        
+        if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+            if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
+                viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
+                viewerRichWorkspace.serverUrl = appDelegate.activeServerUrl
+                
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true, completion: nil)
+            }
         }
     }
     
