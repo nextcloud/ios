@@ -42,6 +42,7 @@
 @class IMImagemeterViewer;
 @class NCDetailViewController;
 @class NCNetworkingAutoUpload;
+@class NCDocumentPickerViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
@@ -49,8 +50,8 @@
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 @property (nonatomic, strong) NSTimer *timerErrorNetworking;
 
-// For LMMediaPlayerView
-@property (strong, nonatomic) UIWindow *window;
+@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) NCDocumentPickerViewController *documentPickerViewController;
 
 // Parameter account
 @property (nonatomic, strong) NSString *account;

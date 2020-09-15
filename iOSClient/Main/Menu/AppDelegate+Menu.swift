@@ -68,7 +68,7 @@ extension AppDelegate {
                 action: { menuAction in
                     if let navigationController = (self.window.rootViewController as! UISplitViewController).viewControllers.first as? UINavigationController {
                         if let tabBarController = navigationController.topViewController as? UITabBarController {
-                            NCDocumentPickerViewController.init(tabBarController: tabBarController)
+                            self.documentPickerViewController = NCDocumentPickerViewController.init(tabBarController: tabBarController)
                         }
                     }
                 }
