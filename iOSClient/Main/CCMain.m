@@ -772,34 +772,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Assets Picker =====
-#pragma --------------------------------------------------------------------------------------------
-
--(void)dismissFormUploadAssets
-{
-}
-
-- (void)openAssetsPickerController
-{
-    NCPhotosPickerViewController *viewController = [[NCPhotosPickerViewController alloc] init:self maxSelectedAssets:100 singleSelectedMode:false];
-    
-    [viewController openPhotosPickerViewControllerWithPhAssets:^(NSArray<PHAsset *> * _Nullable assets) {
-        if (assets.count > 0) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                NSString *serverUrl = appDelegate.activeServerUrl;
-                
-                NCCreateFormUploadAssets *form = [[NCCreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:(NSMutableArray *)assets cryptated:NO session:NCNetworking.shared.sessionIdentifierBackground delegate:self];
-                
-                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-                [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-                
-                [self presentViewController:navigationController animated:YES completion:nil];
-            });
-        }
-    }];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Save selected File =====
 #pragma --------------------------------------------------------------------------------------------
 

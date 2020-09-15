@@ -24,22 +24,39 @@
 import Foundation
 import TLPhotoPicker
 
-class NCPhotosPickerViewController: NSObject {
-    
+class NCPhotosPickerViewController: NSObject, createFormUploadAssetsDelegate {
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var sourceViewController: UIViewController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
-    @objc init (_ viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+    @discardableResult
+    init (viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
         sourceViewController = viewController
+        super.init()
+        
         self.maxSelectedAssets = maxSelectedAssets
         self.singleSelectedMode = singleSelectedMode
+        
+        self.openPhotosPickerViewController { (assets) in
+            guard let assets = assets else { return }
+            if assets.count > 0 {
+                
+                let mutableAssets = NSMutableArray(array: assets)
+                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: mutableAssets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: self)
+                let navigationController = UINavigationController.init(rootViewController: form)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    viewController.present(navigationController, animated: true, completion: nil)
+                }
+            }
+        }
     }
     
-    @objc func openPhotosPickerViewController(phAssets: @escaping ([PHAsset]?) -> ()) {
+    private func openPhotosPickerViewController(completition: @escaping ([PHAsset]?) -> ()) {
         
-        var selectedPhAssets: [PHAsset] = []
+        var selectedAssets: [PHAsset] = []
         var configure = TLPhotosPickerConfigure()
         
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -55,36 +72,13 @@ class NCPhotosPickerViewController: NSObject {
             
             for asset: TLPHAsset in assets {
                 if asset.phAsset != nil {
-                    selectedPhAssets.append(asset.phAsset!)
+                    selectedAssets.append(asset.phAsset!)
                 }
             }
             
-            phAssets(selectedPhAssets)
+            completition(selectedAssets)
             
         }, didCancel: nil)
-        
-        /*
-        let viewController = customPhotoPickerViewController(withTLPHAssets: { (assets) in
-            
-            for asset: TLPHAsset in assets {
-                if asset.phAsset != nil {
-                    asset.tempCopyMediaFile(videoRequestOptions: nil, imageRequestOptions: nil, livePhotoRequestOptions: nil, exportPreset: AVAssetExportPresetHighestQuality, convertLivePhotosToJPG: false, progressBlock: { (progress) in }) { (url, contentType) in
-                        
-                        selectedPhAssets.append(asset.phAsset!)
-                        selectedUrls.append(url)
-                        
-                        if asset == assets.last {
-                            phAssets(selectedPhAssets, selectedUrls)
-                        }
-                    }
-                }
-            }
-            
-        }) {
-            
-            phAssets(nil,nil)
-        }
-        */
         
         viewController.didExceedMaximumNumberOfSelection = { (picker) in
             NCContentPresenter.shared.messageNotification("_info_", description: "_limited_dimension_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -101,6 +95,10 @@ class NCPhotosPickerViewController: NSObject {
         viewController.configure = configure
 
         sourceViewController.present(viewController, animated: true, completion: nil)
+    }
+    
+    func dismissFormUploadAssets() {
+           
     }
 }
 

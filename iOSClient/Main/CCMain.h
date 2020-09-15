@@ -74,7 +74,6 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)openAssetsPickerController;
 - (void)openImportDocumentPicker;
 
 - (void)setTableViewHeader;

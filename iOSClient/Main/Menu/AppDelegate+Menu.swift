@@ -27,6 +27,10 @@ import FloatingPanel
 import NCCommunication
 
 extension AppDelegate {
+    func dismissFormUploadAssets() {
+        
+    }
+    
 
     @objc public func showMenuIn(viewController: UIViewController) {
         
@@ -56,7 +60,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    appDelegate.activeMain.openAssetsPickerController()
+                    NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 100, singleSelectedMode: false)
                 }
             )
         )
