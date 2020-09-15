@@ -1095,9 +1095,7 @@ class NCManageDatabase: NSObject {
                 if let permissions = permissions {
                     addObject.permissions = permissions
                 }
-                if let richWorkspace = richWorkspace {
-                    addObject.richWorkspace = richWorkspace
-                }
+                addObject.richWorkspace = richWorkspace
                 addObject.serverUrl = serverUrl
            
                 realm.add(addObject, update: .all)
