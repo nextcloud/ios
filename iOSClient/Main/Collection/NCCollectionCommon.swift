@@ -250,6 +250,11 @@ class NCCollectionCommon: NSObject {
                 cell.setButtonMore(named: "more")
             }
             
+            // Live Photo
+            if metadata.livePhoto {
+                cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
+            }
+            
             // Remove last separator
             if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
                 cell.separator.isHidden = true
@@ -353,6 +358,11 @@ class NCCollectionCommon: NSObject {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
                 cell.setButtonMore(named: "more")
+            }
+            
+            // Live Photo
+            if metadata.livePhoto {
+                cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
             }
         }
     }
