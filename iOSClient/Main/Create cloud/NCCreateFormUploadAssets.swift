@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import Queuer
 
 @objc protocol createFormUploadAssetsDelegate {
     
@@ -328,10 +329,14 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
-            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
-            var useSubFolder : Bool = false
-            
+            let useFolderPhotoRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
+            let useSubFolderRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            var useSubFolder: Bool = false
+            var livePhoto: Bool = false
+            var metadatasMOV: [tableMetadata] = []
+            var metadatasNOConflict: [tableMetadata] = []
+            var metadatasUploadInConflict: [tableMetadata] = []
+
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
@@ -340,12 +345,103 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
                 
-                NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase)
+                if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) == false {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                }
+                
+                for asset in self.assets {
+                    
+                    let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+                    let assetDate = asset.creationDate ?? Date()
+                    let dateFormatter = DateFormatter()
+                    
+                    // Detect LivePhoto Upload
+                    if (asset.mediaSubtypes == PHAssetMediaSubtype.photoLive || asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue + PHAssetMediaSubtype.photoHDR.rawValue) && CCUtility.getLivePhoto() {
+                        livePhoto = true
+                    }
+                    
+                    // Create serverUrl if use sub folder
+                    dateFormatter.dateFormat = "yyyy"
+                    let yearString = dateFormatter.string(from: assetDate)
+                   
+                    dateFormatter.dateFormat = "MM"
+                    let monthString = dateFormatter.string(from: assetDate)
+                    
+                    self.serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                    
+                    // Check if is in upload
+                    let isRecordInSessions = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, self.serverUrl, fileName), sorted: "fileName", ascending: false)
+                    if isRecordInSessions.count > 0 {
+                        continue
+                    }
+                    
+                    let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                    
+                    metadataForUpload.assetLocalIdentifier = asset.localIdentifier
+                    metadataForUpload.session = self.session
+                    metadataForUpload.sessionSelector = selectorUploadFile
+                    metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(asset: asset))
+                    metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                    
+                    if livePhoto {
+                        
+                        let fileNameMove = (fileName as NSString).deletingPathExtension
+                        let ocId = NSUUID().uuidString
+                        let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameMove)!
+                        
+                        let semaphore = Semaphore()
+                        CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
+                            if let url = url {
+                                let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
+                                let metadataMOVForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, ocId:ocId, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+
+                                metadataForUpload.livePhoto = true
+                                metadataMOVForUpload.livePhoto = true
+                                
+                                metadataMOVForUpload.session = self.session
+                                metadataMOVForUpload.sessionSelector = selectorUploadFile
+                                metadataMOVForUpload.size = fileSize
+                                metadataMOVForUpload.status = Int(k_metadataStatusWaitUpload)
+                                metadataMOVForUpload.typeFile = k_metadataTypeFile_video
+
+                                metadatasMOV.append(metadataMOVForUpload)
+                            }
+                            semaphore.continue()
+                        }
+                        semaphore.wait()
+                    }
+                    
+                    if NCUtility.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: self.serverUrl, fileName: fileName) != nil {
+                        metadatasUploadInConflict.append(metadataForUpload)
+                    } else {
+                        metadatasNOConflict.append(metadataForUpload)
+                    }
+                }
+                
+                // Verify if file(s) exists
+                if metadatasUploadInConflict.count > 0 {
+                    
+                    if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                        
+                        conflict.serverUrl = self.serverUrl
+                        conflict.metadatasNOConflict = metadatasNOConflict
+                        conflict.metadatasMOV = metadatasMOV
+                        conflict.metadatasUploadInConflict = metadatasUploadInConflict
+                    
+                        self.appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                    }
+                    
+                } else {
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatasNOConflict)
+                    NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
+                    
+                    self.appDelegate.networkingAutoUpload.startProcess()
+                }
             }
-            
-            //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }
+    
+    
     
     @objc func cancel() {
         
