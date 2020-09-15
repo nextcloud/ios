@@ -88,7 +88,6 @@
 
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
 - (void)actionDelete:(NSIndexPath *)indexPath;
-- (void)createRichWorkspace;
 
 @end
 

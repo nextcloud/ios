@@ -161,7 +161,14 @@ extension AppDelegate {
                     title: NSLocalizedString("_add_folder_info_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        self.activeMain.createRichWorkspace()
+                        let richWorkspaceCommon = NCRichWorkspaceCommon()
+                        if let viewController = appDelegate.window.rootViewController {
+                            if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, k_fileNameRichWorkspace.lowercased())) == nil {
+                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
+                            } else {
+                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
+                            }
+                        }
                     }
                 )
             )

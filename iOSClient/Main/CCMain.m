@@ -1450,18 +1450,6 @@
     [self presentViewController:navigationController animated:NO completion:NULL];
 }
 
-- (void)createRichWorkspace
-{
-    NCRichWorkspaceCommon *richWorkspaceCommon = [NCRichWorkspaceCommon new];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, self.serverUrl, k_fileNameRichWorkspace.lowercaseString]];
-    
-    if (metadata) {
-        [richWorkspaceCommon openViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
-    } else {
-        [richWorkspaceCommon createViewerNextcloudTextWithServerUrl:self.serverUrl viewController:self];
-    }
-}
-
 - (void)toggleSortMenu
 {
     NCSortMenu *sortMenu = [NCSortMenu new];
