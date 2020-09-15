@@ -46,8 +46,7 @@ class NCPhotosPickerViewController: NSObject {
             guard let assets = assets else { return }
             if assets.count > 0 {
                 
-                let mutableAssets = NSMutableArray(array: assets)
-                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: mutableAssets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
+                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: assets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
                 let navigationController = UINavigationController.init(rootViewController: form)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {

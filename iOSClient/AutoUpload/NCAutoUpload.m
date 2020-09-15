@@ -346,7 +346,7 @@
     NSString *serverUrl;
     
     // Check Asset : NEW or FULL
-    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
+    NSArray *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if (newAssetToUpload == nil || [newAssetToUpload count] == 0) {
@@ -513,7 +513,7 @@
 #pragma mark ===== get Camera Roll new Asset ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account selector:(NSString *)selector alignPhotoLibrary:(BOOL)alignPhotoLibrary
+- (NSArray *)getCameraRollAssets:(tableAccount *)account selector:(NSString *)selector alignPhotoLibrary:(BOOL)alignPhotoLibrary
 {
     @synchronized(self) {
         
@@ -571,11 +571,11 @@
                         [newAssets addObject:asset];
                 }
                 
-                return (PHFetchResult *)newAssets;
+                return newAssets;
                 
             } else {
             
-                return assets;
+                return (NSArray *)[assets copy];
             }
         }
     }
@@ -591,11 +591,11 @@
 {
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
-    PHFetchResult *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
+    NSArray *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
    
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.account];
     if (assets != nil) {
-        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets account:account.account];
+        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:assets account:account.account];
 
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Align Photo Library %lu", (unsigned long)[assets count]]];
     }

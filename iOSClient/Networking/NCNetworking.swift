@@ -774,7 +774,7 @@ import Queuer
         }
     }
     
-    @objc func createFolder(assets: PHFetchResult<AnyObject>, selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
+    @objc func createFolder(assets: [PHAsset], selector: String, useSubFolder: Bool, account: String, urlBase: String) -> Bool {
         
         let serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: urlBase, account: account)
         let fileName =  NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()

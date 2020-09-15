@@ -32,7 +32,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     var serverUrl: String = ""
     var titleServerUrl: String?
-    var assets = NSMutableArray()
+    var assets: [PHAsset] = []
     var cryptated: Bool = false
     var session: String = ""
     weak var delegate: createFormUploadAssetsDelegate?
@@ -41,7 +41,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     let targetSizeImagePreview = CGSize(width:100, height: 100)
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate?) {
+    @objc convenience init(serverUrl: String, assets: [PHAsset], cryptated: Bool, session: String, delegate: createFormUploadAssetsDelegate?) {
         
         self.init()
         
@@ -79,8 +79,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
-        if assets.count == 1 && (assets[0] as! PHAsset).mediaType == PHAssetMediaType.image {
-            PHImageManager.default().requestImage(for: assets[0] as! PHAsset, targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
+        if assets.count == 1 && assets[0].mediaType == PHAssetMediaType.image {
+            PHImageManager.default().requestImage(for: assets[0], targetSize: targetSizeImagePreview, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: { (image, info) in
                 self.imagePreview = image
             })
         }
@@ -333,12 +333,17 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             var useSubFolder : Bool = false
             
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                
                 self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
+            let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+            if autoUploadPath == self.serverUrl {
+                
+                NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase)
+            }
+            
+            //self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }
     
@@ -352,7 +357,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     func previewFileName(valueRename : String?) -> String {
         
         var returnString: String = ""
-        let asset = assets[0] as! PHAsset
+        let asset = assets[0]
         
         if (CCUtility.getOriginalFileName(k_keyFileNameOriginal)) {
             

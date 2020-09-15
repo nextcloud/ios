@@ -71,10 +71,6 @@
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
-
-- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
-
-
 - (void)setTableViewHeader;
 
 //expose methods for swift

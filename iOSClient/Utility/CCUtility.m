@@ -1285,11 +1285,11 @@
     return fileName;
 }
 
-+ (NSArray *)createNameSubFolder:(PHFetchResult *)alassets
++ (NSArray *)createNameSubFolder:(NSArray *)assets
 {
     NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];
     
-    for (PHAsset *asset in alassets) {
+    for (PHAsset *asset in assets) {
         
         NSDate *assetDate = asset.creationDate;
         
