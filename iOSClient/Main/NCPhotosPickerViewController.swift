@@ -24,7 +24,7 @@
 import Foundation
 import TLPhotoPicker
 
-class NCPhotosPickerViewController: NSObject, createFormUploadAssetsDelegate {
+class NCPhotosPickerViewController: NSObject {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var sourceViewController: UIViewController
@@ -44,7 +44,7 @@ class NCPhotosPickerViewController: NSObject, createFormUploadAssetsDelegate {
             if assets.count > 0 {
                 
                 let mutableAssets = NSMutableArray(array: assets)
-                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: mutableAssets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: self)
+                let form = NCCreateFormUploadAssets.init(serverUrl: self.appDelegate.activeServerUrl, assets: mutableAssets, cryptated: false, session: NCNetworking.shared.sessionIdentifierBackground, delegate: nil)
                 let navigationController = UINavigationController.init(rootViewController: form)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -95,10 +95,6 @@ class NCPhotosPickerViewController: NSObject, createFormUploadAssetsDelegate {
         viewController.configure = configure
 
         sourceViewController.present(viewController, animated: true, completion: nil)
-    }
-    
-    func dismissFormUploadAssets() {
-           
     }
 }
 
