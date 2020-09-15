@@ -761,10 +761,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
-        if metadata.fileNameView.uppercased() == k_fileNameRichWorkspace.uppercased() && richWorkspaceText?.count == 0 {
-            
-        }
-        
         if layout == k_layout_grid {
             
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
