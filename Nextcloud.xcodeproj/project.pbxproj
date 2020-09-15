@@ -171,7 +171,7 @@
 		F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F774264822EB4D0000B23912 /* NCShareUserDropDownCell.xib */; };
 		F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F322281649000D5EB0 /* NCGridMediaCell.swift */; };
 		F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77444F422281649000D5EB0 /* NCGridMediaCell.xib */; };
-		F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F7222816D5000D5EB0 /* NCPhotosPickerViewController.swift */; };
+		F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */; };
 		F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */ = {isa = PBXBuildFile; fileRef = F774DF0C1FCC26BD002AF9FC /* iTunesArtwork@1x.png */; };
 		F774DF101FCC26BE002AF9FC /* iTunesArtwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F774DF0D1FCC26BD002AF9FC /* iTunesArtwork@2x.png */; };
 		F774DF111FCC26BE002AF9FC /* iTunesArtwork@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F774DF0E1FCC26BE002AF9FC /* iTunesArtwork@3x.png */; };
@@ -547,7 +547,7 @@
 		F77439621FCD6D9C00662C46 /* es-UY */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-UY"; path = "es-UY.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F77444F322281649000D5EB0 /* NCGridMediaCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCGridMediaCell.swift; sourceTree = "<group>"; };
 		F77444F422281649000D5EB0 /* NCGridMediaCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCGridMediaCell.xib; sourceTree = "<group>"; };
-		F77444F7222816D5000D5EB0 /* NCPhotosPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPhotosPickerViewController.swift; sourceTree = "<group>"; };
+		F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPickerViewController.swift; sourceTree = "<group>"; };
 		F774DF0C1FCC26BD002AF9FC /* iTunesArtwork@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@1x.png"; sourceTree = "<group>"; };
 		F774DF0D1FCC26BD002AF9FC /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
 		F774DF0E1FCC26BE002AF9FC /* iTunesArtwork@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@3x.png"; sourceTree = "<group>"; };
@@ -831,7 +831,7 @@
 				F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F7E09CE623E308AD00FB3E9E /* NCMasterNavigationController.swift */,
-				F77444F7222816D5000D5EB0 /* NCPhotosPickerViewController.swift */,
+				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 				F7E09CE423E3088A00FB3E9E /* NCSplitViewController.swift */,
 			);
 			path = Main;
@@ -2000,7 +2000,7 @@
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift in Sources */,
-				F77444F8222816D5000D5EB0 /* NCPhotosPickerViewController.swift in Sources */,
+				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */,
 				F7E09CE523E3088C00FB3E9E /* NCSplitViewController.swift in Sources */,
 				F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  NCPhotosPickerViewController.swift
+//  NCPickerViewController.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 11/11/2018.
@@ -23,6 +23,9 @@
 
 import Foundation
 import TLPhotoPicker
+import MobileCoreServices
+
+//MARK: - Photo Picker
 
 class NCPhotosPickerViewController: NSObject {
 
@@ -111,3 +114,77 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
         self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.sharedInstance.brandElement
     }
 }
+
+//MARK: - Document Picker
+
+class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
+
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    @discardableResult
+    init (tabBarController: UITabBarController) {
+        super.init()
+          
+        let documentProviderMenu = UIDocumentPickerViewController(documentTypes: ["public.data"], in: .import)
+        
+        documentProviderMenu.modalPresentationStyle = .formSheet
+        documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
+        documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
+        documentProviderMenu.delegate = self
+        
+        appDelegate.window.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+    }
+    
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
+            
+        if controller.documentPickerMode == .import {
+            
+            let coordinator = NSFileCoordinator.init(filePresenter: nil)
+
+            coordinator.coordinate(readingItemAt: url, options: NSFileCoordinator.ReadingOptions.forUploading, error: nil) { (url) in
+                
+                let fileName = url.lastPathComponent
+                let serverUrl = appDelegate.activeServerUrl!
+                let ocId = NSUUID().uuidString
+                let data = try? Data.init(contentsOf: url)
+                let path = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)!)
+                
+                if data != nil {
+                    
+                    do {
+                        try data?.write(to: path)
+                        let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                        
+                        metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                        metadataForUpload.sessionSelector = selectorUploadFile
+                        metadataForUpload.size = Double(data?.count ?? 0)
+                        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                        
+                        if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
+                            
+                            if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                                
+                                conflict.serverUrl = serverUrl
+                                conflict.metadatasUploadInConflict = [metadataForUpload]
+                            
+                                appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                            }
+                        
+                        } else {
+                            
+                            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                            appDelegate.networkingAutoUpload.startProcess()
+                        }
+                        
+                    } catch {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_write_file_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    }
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_read_file_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                }
+            }
+        }
+    }
+}
+
+

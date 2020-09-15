@@ -27,11 +27,7 @@ import FloatingPanel
 import NCCommunication
 
 extension AppDelegate {
-    func dismissFormUploadAssets() {
-        
-    }
     
-
     @objc public func showMenuIn(viewController: UIViewController) {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
@@ -70,7 +66,11 @@ extension AppDelegate {
                 title: NSLocalizedString("_upload_file_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "file"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    appDelegate.activeMain.openImportDocumentPicker()
+                    if let navigationController = (self.window.rootViewController as! UISplitViewController).viewControllers.first as? UINavigationController {
+                        if let tabBarController = navigationController.topViewController as? UITabBarController {
+                            NCDocumentPickerViewController.init(tabBarController: tabBarController)
+                        }
+                    }
                 }
             )
         )
