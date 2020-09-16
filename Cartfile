@@ -21,4 +21,4 @@ github "AssistoLab/DropDown" "v2.3.13"
 
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.7"
-github "https://github.com/marinofaggiana/OpenSSL"
+github "https://github.com/marinofaggiana/OpenSSL" "master"
