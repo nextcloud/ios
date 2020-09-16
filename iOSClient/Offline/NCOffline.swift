@@ -156,6 +156,9 @@ class NCOffline: NCCollectionViewCommon  {
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
+            
+        } else {
+            self.reloadDataSource()
         }
     }
 }
