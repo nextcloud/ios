@@ -1,5 +1,5 @@
 # carthage-build.sh
-# Usage example: ./carthage-build.sh build --no-use-binaries --platform iOS --cache-builds
+# Usage example: ./carthage-build.sh update --no-use-binaries --platform iOS --cache-builds
 
 set -euo pipefail
 
