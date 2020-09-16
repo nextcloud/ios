@@ -329,6 +329,25 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         self.dismiss(animated: true, completion: {
             
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
+            let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
+            var useSubFolder : Bool = false
+            
+            if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
+                
+                self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+                useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
+            }
+            
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
+        })
+    }
+    
+    /*
+    @objc func save() {
+        
+        self.dismiss(animated: true, completion: {
+            
             let useFolderPhotoRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
             let useSubFolderRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder: Bool = false
@@ -440,8 +459,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             }
         })
     }
-    
-    
+    */
     
     @objc func cancel() {
         

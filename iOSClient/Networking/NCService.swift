@@ -66,6 +66,7 @@ class NCService: NSObject {
                 
                 let user = tableAccount.user
                 let url = tableAccount.urlBase
+                let stringUser = CCUtility.getStringUser(user, urlBase: url)!
                 
                 self.appDelegate.settingAccount(tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userID: tableAccount.userID, password: CCUtility.getPassword(tableAccount.account))
                        
@@ -96,7 +97,7 @@ class NCService: NSObject {
                 }
                                         
                 let avatarUrl = "\(self.appDelegate.urlBase!)/index.php/avatar/\(self.appDelegate.user!)/\(k_avatar_size)".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, urlBase: url) + "-" + self.appDelegate.user + ".png"
+                let fileNamePath = CCUtility.getDirectoryUserData() + "/" + stringUser + "-" + self.appDelegate.user + ".png"
                         
                 NCCommunication.shared.downloadContent(serverUrl: avatarUrl) { (account, data, errorCode, errorMessage) in
                     if errorCode == 0 {

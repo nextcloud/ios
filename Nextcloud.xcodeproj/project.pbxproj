@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -202,6 +202,14 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78111692507AEB500CB218B /* NCCollectionCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78111682507AEB500CB218B /* NCCollectionCommon.swift */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F782A57B25123694007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57A25123694007BBABD /* Realm */; };
+		F782A57D25123694007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A57C25123694007BBABD /* RealmSwift */; };
+		F782A583251236B7007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A582251236B7007BBABD /* Realm */; };
+		F782A585251236B7007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A584251236B7007BBABD /* RealmSwift */; };
+		F782A587251236CA007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A586251236CA007BBABD /* Realm */; };
+		F782A589251236CA007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A588251236CA007BBABD /* RealmSwift */; };
+		F782A58B251236D1007BBABD /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = F782A58A251236D1007BBABD /* Realm */; };
+		F782A58D251236D1007BBABD /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F782A58C251236D1007BBABD /* RealmSwift */; };
 		F782FDC424E6933900666099 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
@@ -260,8 +268,6 @@
 		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
 		F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
-		F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40C0F2199BA5D0004137E /* Realm.framework */; };
-		F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40C112199BA620004137E /* RealmSwift.framework */; };
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
 		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
@@ -722,6 +728,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F782A58D251236D1007BBABD /* RealmSwift in Frameworks */,
+				F782A58B251236D1007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,6 +737,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
+				F782A583251236B7007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -736,6 +746,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
+				F782A587251236CA007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -765,15 +777,15 @@
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
 				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
+				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
-				F7C40C102199BA5D0004137E /* Realm.framework in Frameworks */,
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
-				F7C40C122199BA620004137E /* RealmSwift.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
 				F700510322DF6897003A3356 /* Parchment.framework in Frameworks */,
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
+				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
 			);
@@ -1567,6 +1579,10 @@
 			dependencies = (
 			);
 			name = "Notification Service Extension";
+			packageProductDependencies = (
+				F782A58A251236D1007BBABD /* Realm */,
+				F782A58C251236D1007BBABD /* RealmSwift */,
+			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1584,6 +1600,10 @@
 			dependencies = (
 			);
 			name = Share;
+			packageProductDependencies = (
+				F782A582251236B7007BBABD /* Realm */,
+				F782A584251236B7007BBABD /* RealmSwift */,
+			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1601,6 +1621,10 @@
 			dependencies = (
 			);
 			name = "File Provider Extension";
+			packageProductDependencies = (
+				F782A586251236CA007BBABD /* Realm */,
+				F782A588251236CA007BBABD /* RealmSwift */,
+			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1624,6 +1648,10 @@
 				2C33C48523E2C475005F963B /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
+			packageProductDependencies = (
+				F782A57A25123694007BBABD /* Realm */,
+				F782A57C25123694007BBABD /* RealmSwift */,
+			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
 			productType = "com.apple.product-type.application";
@@ -1727,6 +1755,9 @@
 				da,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
+			packageReferences = (
+				F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */,
+			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1864,8 +1895,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SVGKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjack.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
@@ -2226,7 +2255,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -2277,7 +2310,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				MTL_FAST_MATH = YES;
@@ -2320,7 +2357,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2364,7 +2405,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Share.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2414,7 +2459,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2464,7 +2513,11 @@
 				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/File_Provider_Extension.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2503,7 +2556,11 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)\"/Libraries external/openssl\"";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2547,7 +2604,11 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)\"/Libraries external/openssl\"";
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = "";
 				MARKETING_VERSION = 3.0.7;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2681,7 +2742,8 @@
 				);
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG NC";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2736,6 +2798,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F782A57A25123694007BBABD /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = Realm;
+		};
+		F782A57C25123694007BBABD /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+		F782A582251236B7007BBABD /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = Realm;
+		};
+		F782A584251236B7007BBABD /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+		F782A586251236CA007BBABD /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = Realm;
+		};
+		F782A588251236CA007BBABD /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+		F782A58A251236D1007BBABD /* Realm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = Realm;
+		};
+		F782A58C251236D1007BBABD /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
+			productName = RealmSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F7F67BA01A24D27800EE80DA /* Project object */;
 }

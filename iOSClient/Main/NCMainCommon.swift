@@ -470,7 +470,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             if metadata.account != appDelegate.account {
                 let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account))
                 if tableAccount != nil {
-                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(tableAccount!.user, urlBase: tableAccount!.urlBase) + "-" + tableAccount!.user + ".png"
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
                     var avatar = UIImage.init(contentsOfFile: fileNamePath)
                     if avatar != nil {
                         let avatarImageView = CCAvatar.init(image: avatar, borderColor: UIColor.black, borderWidth: 0.5)

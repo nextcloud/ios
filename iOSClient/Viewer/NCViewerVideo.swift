@@ -104,7 +104,7 @@ class NCViewerVideo: NSObject {
                 }
                 
                 CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                _ = NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
                 KTVHTTPCache.cacheDelete(with: self.videoURL)
                 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":self.metadata.ocId, "serverUrl":self.metadata.serverUrl])

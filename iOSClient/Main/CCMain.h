@@ -39,7 +39,7 @@
 @class tableMetadata;
 @class NCViewRichWorkspace;
 
-@interface CCMain : UITableViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMain : UITableViewController <UIActionSheetDelegate, UIGestureRecognizerDelegate, UIViewControllerPreviewingDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, strong) NCViewRichWorkspace *viewRichWorkspace;
 
@@ -82,6 +82,8 @@
 
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
 - (void)actionDelete:(NSIndexPath *)indexPath;
+
+- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
 @end
 
