@@ -372,6 +372,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
 
             for asset in self.assets {
                     
+                var serverUrl = self.serverUrl
                 let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
                 let assetDate = asset.creationDate ?? Date()
                 let dateFormatter = DateFormatter()
@@ -382,21 +383,24 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 }
                 
                 // Create serverUrl if use sub folder
-                dateFormatter.dateFormat = "yyyy"
-                let yearString = dateFormatter.string(from: assetDate)
-               
-                dateFormatter.dateFormat = "MM"
-                let monthString = dateFormatter.string(from: assetDate)
-                
-                self.serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                if (useSubFolder) {
+                    // Create serverUrl if use sub folder
+                    dateFormatter.dateFormat = "yyyy"
+                    let yearString = dateFormatter.string(from: assetDate)
+                   
+                    dateFormatter.dateFormat = "MM"
+                    let monthString = dateFormatter.string(from: assetDate)
+                    
+                    serverUrl = autoUploadPath + "/" + yearString + "/" + monthString
+                }
                 
                 // Check if is in upload
-                let isRecordInSessions = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, self.serverUrl, fileName), sorted: "fileName", ascending: false)
+                let isRecordInSessions = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
                 if isRecordInSessions.count > 0 {
                     continue
                 }
                 
-                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                 
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
@@ -414,7 +418,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                         if let url = url {
                             let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
-                            let metadataMOVForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, ocId:ocId, serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                            let metadataMOVForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, ocId:ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
 
                             metadataForUpload.livePhoto = true
                             metadataMOVForUpload.livePhoto = true
@@ -432,7 +436,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     semaphore.wait()
                 }
                 
-                if NCUtility.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: self.serverUrl, fileName: fileName) != nil {
+                if NCUtility.shared.getMetadataConflict(account: self.appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {
                     metadatasUploadInConflict.append(metadataForUpload)
                 } else {
                     metadatasNOConflict.append(metadataForUpload)
