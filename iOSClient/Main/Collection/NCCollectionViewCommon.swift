@@ -601,7 +601,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let navigationController = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateInitialViewController() as? UINavigationController {
             if let viewerRichWorkspace = navigationController.topViewController as? NCViewerRichWorkspace {
                 viewerRichWorkspace.richWorkspaceText = richWorkspaceText ?? ""
-                viewerRichWorkspace.serverUrl = appDelegate.activeServerUrl
+                viewerRichWorkspace.serverUrl = serverUrl
                 
                 navigationController.modalPresentationStyle = .fullScreen
                 self.present(navigationController, animated: true, completion: nil)
@@ -636,7 +636,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NC API & Algorithm
     
     @objc func reloadDataSource() {
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl))
+        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
     }
     @objc func reloadDataSourceNetwork() { }
