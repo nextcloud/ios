@@ -358,7 +358,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                if (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account) || (layoutKey == k_layout_view_transfers) {
                     
                     if let row = dataSource?.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
@@ -378,7 +378,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int {
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                if (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account) || (layoutKey == k_layout_view_transfers) {
                    
                     dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
                     collectionView?.reloadData()
@@ -392,7 +392,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                if (metadata.serverUrl == serverUrl && metadata.account == appDelegate.account) || (layoutKey == k_layout_view_transfers) {
                     
                     if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
@@ -414,6 +414,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
+                
                 let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
                 

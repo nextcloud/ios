@@ -45,42 +45,7 @@ class NCTransfers: NCCollectionViewCommon  {
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
-        metadataPush = metadata
-        
-        if isEditMode {
-            if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                selectOcId.remove(at: index)
-            } else {
-                selectOcId.append(metadata.ocId)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            return
-        }
-        
-        if metadata.directory {
-            
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
-            let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-            
-            ncOffline.serverUrl = serverUrlPush
-            ncOffline.titleCurrentFolder = metadataPush!.fileNameView
-            
-            self.navigationController?.pushViewController(ncOffline, animated: true)
-            
-        } else {
-            
-            if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
-                performSegue(withIdentifier: "segueDetail", sender: self)
-            } else {
-                NCNetworking.shared.download(metadata: metadataPush!, selector: "") { (errorCode) in
-                    if errorCode == 0 {
-                        self.performSegue(withIdentifier: "segueDetail", sender: self)
-                    }
-                }
-            }
-        }
+        super.collectionView(collectionView, didSelectItemAt: indexPath)
     }
     
     // MARK: - NC API & Algorithm
