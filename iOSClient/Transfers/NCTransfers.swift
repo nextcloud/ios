@@ -42,6 +42,91 @@ class NCTransfers: NCCollectionViewCommon  {
         super.viewWillAppear(animated)
     }
     
+    // MARK: - NotificationCenter
+    
+    override func downloadStartFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        reloadDataSource()
+    }
+    
+    override func downloadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        reloadDataSource()
+    }
+    
+    override func downloadCancelFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        reloadDataSource()
+    }
+    
+    override func uploadStartFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+
+                if let row = dataSource?.addMetadata(metadata) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.insertItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
+                }
+            }
+        }
+    }
+    
+    override func uploadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let errorCode = userInfo["errorCode"] as? Int {
+                if errorCode == 0 {
+                    
+                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    }
+                    
+                } else {
+                    if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.reloadItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    }
+                }
+            }
+        }
+    }
+    
+    override func uploadCancelFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                    
+                if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
+                } else {
+                    self.reloadDataSource()
+                }
+            }
+        }
+    }
+    
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
