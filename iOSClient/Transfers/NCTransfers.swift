@@ -26,6 +26,8 @@ import NCCommunication
 
 class NCTransfers: NCCollectionViewCommon  {
     
+    var metadataTemp: tableMetadata?
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -149,6 +151,46 @@ class NCTransfers: NCCollectionViewCommon  {
         }))
        
         self.present(alertController, animated: true, completion: nil)
+    }
+    
+    override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+            metadataTemp = metadata
+            let touchPoint = gestureRecognizer.location(in: collectionView)
+            becomeFirstResponder()
+            let startTaskItem = UIMenuItem.init(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
+            UIMenuController.shared.menuItems = [startTaskItem]
+            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
+            UIMenuController.shared.setMenuVisible(true, animated: true)
+        }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    @objc func startTask(_ notification: Any) {
+        
+        guard let metadata = metadataTemp else { return }
+            
+        metadata.status = Int(k_metadataStatusInUpload)
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
+        NCNetworking.shared.upload(metadata: metadata) { (_, _) in }
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        
+        if action != #selector(startTask(_:)) { return false }
+        guard let metadata = metadataTemp else { return false }
+        if metadata.e2eEncrypted { return false }
+        
+        if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading {
+            return true
+        }
+        
+        return false
     }
     
     // MARK: - Collection View
