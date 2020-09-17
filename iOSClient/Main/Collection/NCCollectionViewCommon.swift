@@ -423,7 +423,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let totalBytes = userInfo["totalBytes"] as? Double ?? 0
                 let totalBytesExpected = userInfo["totalBytesExpected"] as? Double ?? 0
                 
-                // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+                appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
                 
                 if let index = dataSource?.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {

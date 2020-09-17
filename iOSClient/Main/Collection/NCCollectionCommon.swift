@@ -244,13 +244,47 @@ class NCCollectionCommon: NSObject {
             }
             
             // Transfer
+            var progress: Float = 0.0
+            var totalBytes: Double = 0.0
+            let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
+            if progressArray != nil && progressArray?.count == 3 {
+                progress = progressArray?.object(at: 0) as! Float
+                totalBytes = progressArray?.object(at: 1) as! Double
+            }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
                 cell.setButtonMore(named: "stop")
             } else {
                 cell.progressView.isHidden = true
-                cell.progressView.progress = 0.0
+                cell.progressView.progress = progress
                 cell.setButtonMore(named: "more")
+            }
+            // Write status on Label Info
+            switch metadata.status {
+            case Int(k_metadataStatusWaitDownload):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+                progress = 0.0
+                break
+            case Int(k_metadataStatusInDownload):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+                progress = 0.0
+                break
+            case Int(k_metadataStatusDownloading):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                break
+            case Int(k_metadataStatusWaitUpload):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+                progress = 0.0
+                break
+            case Int(k_metadataStatusInUpload):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+                progress = 0.0
+                break
+            case Int(k_metadataStatusUploading):
+                cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                break
+            default:
+                break
             }
             
             // Live Photo
