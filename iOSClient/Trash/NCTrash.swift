@@ -379,7 +379,12 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
         }
     }
+
+    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
     
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
 }
 
 // MARK: - Collection View

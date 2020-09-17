@@ -24,7 +24,7 @@
 import Foundation
 import UIKit
 
-class NCListCell: UICollectionViewCell, NCImageCellProtocol {
+class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
@@ -73,6 +73,18 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
 
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         
+        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
+        longPressedGesture.minimumPressDuration = 0.5
+        longPressedGesture.delegate = self
+        longPressedGesture.delaysTouchesBegan = true
+        self.addGestureRecognizer(longPressedGesture)
+        
+        let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
+        longPressedGestureMore.minimumPressDuration = 0.5
+        longPressedGestureMore.delegate = self
+        longPressedGestureMore.delaysTouchesBegan = true
+        buttonMore.addGestureRecognizer(longPressedGestureMore)
+        
         setButtonMore(named: "more")
     }
     
@@ -89,6 +101,16 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
         delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
+    @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state != .began { return }
+        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
+    }
+    
+    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state != .began { return }
+        delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
+    }
+    
     func setButtonMore(named: String) {
         namedButtonMore = named
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
@@ -98,4 +120,6 @@ class NCListCell: UICollectionViewCell, NCImageCellProtocol {
 protocol NCListCellDelegate {
     func tapShareListItem(with objectId: String, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any)
+    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
+    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

@@ -336,6 +336,18 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     func tapRichWorkspace(sender: Any) {
     }
+    
+    func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
+    
+    func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
+    
+    func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
+    
+    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
 }
 
 // MARK: - Collection View
