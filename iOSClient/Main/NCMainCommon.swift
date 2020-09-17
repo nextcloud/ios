@@ -93,17 +93,13 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             return
         }
         
-        let account = dic["account"] as? NSString ?? ""
+        let _ = dic["account"] as? NSString ?? ""
         let ocId = dic["ocId"] as? NSString ?? ""
         let serverUrl = dic["serverUrl"] as? String ?? ""
         let status = dic["status"] as? Int ?? Int(k_metadataStatusNormal)
         let progress = dic["progress"] as? CGFloat ?? 0
         let totalBytes = dic["totalBytes"] as? Double ?? 0
         let totalBytesExpected = dic["totalBytesExpected"] as? Double ?? 0
-        
-        if (account != appDelegate.account! as NSString) && !(viewController is CCTransfers) {
-            return
-        }
         
         if serverUrlViewController != nil && serverUrlViewController! != serverUrl {
             return

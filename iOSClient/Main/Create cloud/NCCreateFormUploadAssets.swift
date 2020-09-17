@@ -352,7 +352,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             let useFolderPhotoRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
             let useSubFolderRow: XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder: Bool = false
-            var livePhoto: Bool = false
             var metadatasMOV: [tableMetadata] = []
             var metadatasNOConflict: [tableMetadata] = []
             var metadatasUploadInConflict: [tableMetadata] = []
@@ -373,6 +372,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             for asset in self.assets {
                     
                 var serverUrl = self.serverUrl
+                var livePhoto: Bool = false
                 let fileName = CCUtility.createFileName(asset.value(forKey: "filename") as? String, fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
                 let assetDate = asset.creationDate ?? Date()
                 let dateFormatter = DateFormatter()
@@ -380,7 +380,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 // Detect LivePhoto Upload
                 if (asset.mediaSubtypes == PHAssetMediaSubtype.photoLive || asset.mediaSubtypes.rawValue == PHAssetMediaSubtype.photoLive.rawValue + PHAssetMediaSubtype.photoHDR.rawValue) && CCUtility.getLivePhoto() {
                     livePhoto = true
-                }
+                } 
                 
                 // Create serverUrl if use sub folder
                 if useSubFolder {

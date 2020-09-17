@@ -31,7 +31,6 @@
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCSettings.h"
-#import "CCTransfers.h"
 
 @class CCMore;
 @class NCMedia;
