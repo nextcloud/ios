@@ -131,6 +131,8 @@ class NCCollectionCommon: NSObject {
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
             
+            cell.progressView.progress = 0.0
+            
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
@@ -263,22 +265,18 @@ class NCCollectionCommon: NSObject {
             switch metadata.status {
             case Int(k_metadataStatusWaitDownload):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
-                progress = 0.0
                 break
             case Int(k_metadataStatusInDownload):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
-                progress = 0.0
                 break
             case Int(k_metadataStatusDownloading):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                 break
             case Int(k_metadataStatusWaitUpload):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
-                progress = 0.0
                 break
             case Int(k_metadataStatusInUpload):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
-                progress = 0.0
                 break
             case Int(k_metadataStatusUploading):
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
@@ -318,6 +316,8 @@ class NCCollectionCommon: NSObject {
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
             
+            cell.progressView.progress = 0.0
+
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
