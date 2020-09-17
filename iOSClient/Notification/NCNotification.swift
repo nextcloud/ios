@@ -78,7 +78,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: NCBrandColor.sharedInstance.graySoft)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: .gray)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {

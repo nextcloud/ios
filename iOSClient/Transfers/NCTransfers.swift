@@ -35,7 +35,7 @@ class NCTransfers: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
         layoutKey = k_layout_view_transfers
         enableSearchBar = false
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), width: 300, height: 300, color: .gray)
         DZNtitle = "_no_transfer_"
         DZNdescription = "_no_transfer_sub_"
     }
