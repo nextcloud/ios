@@ -38,18 +38,11 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    NSURL *rtfPath;
-    
-    //NSString * language = [[NSLocale preferredLanguages] objectAtIndex:0];
-    //if ([language isEqualToString:@"it"]) rtfPath = [[NSBundle mainBundle]  URLForResource:@"terminicondizioni_it" withExtension:@"rtf"];
-    //else rtfPath = [[NSBundle mainBundle]  URLForResource:@"terminicondizioni_en" withExtension:@"rtf"];
-    
-    rtfPath = [[NSBundle mainBundle]  URLForResource:@"Acknowledgements" withExtension:@"rtf"];
+    NSURL *rtfPath = [[NSBundle mainBundle]  URLForResource:@"Acknowledgements" withExtension:@"rtf"];
     
     NSAttributedString *attributedStringWithRtf = [[NSAttributedString alloc] initWithURL:rtfPath options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType} documentAttributes:nil error:nil];
     self.txtTermini.attributedText = attributedStringWithRtf;
     
-    self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"_acknowledgements_", nil);
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(cancelPressed)];
