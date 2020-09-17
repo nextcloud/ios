@@ -516,6 +516,8 @@ import Queuer
                         CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
+                    
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
                 
                 } else if errorCode == 401 || errorCode == 403 {
                     

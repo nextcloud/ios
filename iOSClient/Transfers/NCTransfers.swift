@@ -91,9 +91,12 @@ class NCTransfers: NCCollectionViewCommon  {
                         }, completion: { (_) in
                             self.collectionView?.reloadData()
                         })
+                    } else {
+                        reloadDataSource()
                     }
                     
-                } else {
+                } else if errorCode != NSURLErrorCancelled {
+                    
                     if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
@@ -101,6 +104,8 @@ class NCTransfers: NCCollectionViewCommon  {
                         }, completion: { (_) in
                             self.collectionView?.reloadData()
                         })
+                    } else {
+                        reloadDataSource()
                     }
                 }
             }
