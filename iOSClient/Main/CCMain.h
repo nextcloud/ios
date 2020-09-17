@@ -83,7 +83,5 @@
 - (void)minCharTextFieldDidChange:(UITextField *)sender;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 
-- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
-
 @end
 

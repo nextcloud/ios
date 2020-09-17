@@ -27,7 +27,7 @@
 #import "NCBridgeSwift.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
+@interface CCMain () <UITextViewDelegate, MGSwipeTableCellDelegate, NCSelectDelegate, UITextFieldDelegate, UIAdaptivePresentationControllerDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -814,139 +814,6 @@
     
     [self tableViewSelect:false];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Upload new Photos/Videos =====
-#pragma --------------------------------------------------------------------------------------------
-
--(void)dismissFormUploadAssets
-{
-}
-
-- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
-{
-    // if request create the folder for Auto Upload & the subfolders
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
-        if ([autoUploadPath isEqualToString:serverUrl]) {
-            if ([[NCNetworking shared] createFolderWithAssets:assets selector:selectorUploadFile useSubFolder:useSubFolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
-                [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
-                return;
-            }
-        }
-    
-        [self uploadFileAsset:assets serverUrl:serverUrl autoUploadPath:autoUploadPath useSubFolder:useSubFolder session:session];
-    });
-}
-
-- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
-{
-    NSMutableArray *metadatasNOConflict = [NSMutableArray new];
-    NSMutableArray *metadatasMOV = [NSMutableArray new];
-    NSMutableArray *metadatasUploadInConflict = [NSMutableArray new];
-
-    for (PHAsset *asset in assets) {
-        
-        BOOL livePhoto = false;
-        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
-        NSDate *assetDate = asset.creationDate;
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        
-        // Detect LivePhoto Upload
-        if ((asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive || asset.mediaSubtypes == PHAssetMediaSubtypePhotoLive+PHAssetMediaSubtypePhotoHDR) && CCUtility.getLivePhoto) {
-            livePhoto = true;
-        }
-        
-        // Create serverUrl if use sub folder
-        if (useSubFolder) {
-            
-            [formatter setDateFormat:@"yyyy"];
-            NSString *yearString = [formatter stringFromDate:assetDate];
-        
-            [formatter setDateFormat:@"MM"];
-            NSString *monthString = [formatter stringFromDate:assetDate];
-            
-            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
-        }
-        
-        // Check if is in upload
-        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", appDelegate.account, serverUrl, fileName] page:0 limit:0 sorted:@"fileName" ascending:NO];
-        if ([isRecordInSessions count] > 0)
-            continue;
-        
-        // Prepare record metadata
-        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
-        
-        metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-        metadataForUpload.session = session;
-        metadataForUpload.sessionSelector = selectorUploadFile;
-        metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
-        metadataForUpload.status = k_metadataStatusWaitUpload;
-                        
-        // Add Medtadata MOV LIVE PHOTO for upload
-        if (livePhoto) {
-                
-            NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
-            NSString *ocId = [[NSUUID UUID] UUIDString];
-            NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
-
-            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-            
-            [CCUtility extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
-                if (url != nil) {
-                    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
-                    
-                    tableMetadata *metadataMOVForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
-                    
-                    metadataForUpload.livePhoto = true;
-                    metadataMOVForUpload.livePhoto = true;
-                    
-                    metadataMOVForUpload.session = session;
-                    metadataMOVForUpload.sessionSelector = selectorUploadFile;
-                    metadataMOVForUpload.size = fileSize;
-                    metadataMOVForUpload.status = k_metadataStatusWaitUpload;
-                    metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
-
-                    [metadatasMOV addObject:metadataMOVForUpload];
-                }
-                
-                dispatch_semaphore_signal(semaphore);
-            }];
-            
-            while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
-                   [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
-        }
-        
-        if ([[NCUtility shared] getMetadataConflictWithAccount:appDelegate.account serverUrl:serverUrl fileName:fileName] != nil) {
-            [metadatasUploadInConflict addObject:metadataForUpload];
-        } else {
-            [metadatasNOConflict addObject:metadataForUpload];
-        }
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Verify if file(s) exists
-        if (metadatasUploadInConflict.count > 0) {
-            
-            NCCreateFormUploadConflict *conflict = [[UIStoryboard storyboardWithName:@"NCCreateFormUploadConflict" bundle:nil] instantiateInitialViewController];
-            conflict.serverUrl = self.serverUrl;
-            conflict.metadatasNOConflict = metadatasNOConflict;
-            conflict.metadatasMOV = metadatasMOV;
-            conflict.metadatasUploadInConflict = metadatasUploadInConflict;
-            
-            [self presentViewController:conflict animated:YES completion:nil];
-            
-        } else {
-            
-            [[NCManageDatabase sharedInstance] addMetadatas:metadatasNOConflict];
-            [[NCManageDatabase sharedInstance] addMetadatas:metadatasMOV];
-            
-            [[appDelegate networkingAutoUpload] startProcess];
-        }
-    });
-}
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====

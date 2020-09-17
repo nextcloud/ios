@@ -364,7 +364,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
-                if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) == false {
+                if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
                     return
                 }
@@ -410,7 +410,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 
                 if livePhoto {
                     
-                    let fileNameMove = (fileName as NSString).deletingPathExtension
+                    let fileNameMove = (fileName as NSString).deletingPathExtension + ".mov"
                     let ocId = NSUUID().uuidString
                     let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameMove)!
                     
