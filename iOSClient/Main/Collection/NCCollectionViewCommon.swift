@@ -415,6 +415,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String {
                 
+                let _ = userInfo["account"] as? String ?? ""
+                let _ = userInfo["serverUrl"] as? String ?? ""
                 let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
                 let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
