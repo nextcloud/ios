@@ -450,14 +450,6 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    //NSString *titleSection;
-    
-    //if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]])
-    //    titleSection = [_sectionDataSource.sections objectAtIndex:section];
-    
-    //if ([titleSection rangeOfString:@"upload"].location != NSNotFound && [titleSection rangeOfString:@"wwan"].location != NSNotFound && titleSection != nil) return 18.0f;
-    //else return 0.0f;
-    
     return 18.0f;
 }
 

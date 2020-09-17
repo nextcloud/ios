@@ -177,9 +177,6 @@ extension CCMain {
 
                             alertController.addTextField { (textField) in
                                 textField.text = metadata.fileNameView
-                                textField.delegate = self as? UITextFieldDelegate
-                                textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(_:)
-                                    ), for: UIControl.Event.editingChanged)
                             }
 
                             let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
@@ -192,7 +189,7 @@ extension CCMain {
                                     }
                                 }
                             })
-                            okAction.isEnabled = false
+
                             alertController.addAction(cancelAction)
                             alertController.addAction(okAction)
 
@@ -338,9 +335,6 @@ extension CCMain {
 
                         alertController.addTextField { (textField) in
                             textField.text = metadata.fileNameView
-                            textField.delegate = self as? UITextFieldDelegate
-                            textField.addTarget(self, action: #selector(self.minCharTextFieldDidChange(_:)
-                                ), for: UIControl.Event.editingChanged)
                         }
 
                         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
@@ -349,7 +343,7 @@ extension CCMain {
                             let fileNameNew = alertController.textFields![0].text
                             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in }
                         })
-                        okAction.isEnabled = false
+                        
                         alertController.addAction(cancelAction)
                         alertController.addAction(okAction)
 

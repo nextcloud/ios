@@ -80,7 +80,6 @@
 - (void)downloadSelectedFilesFolders;
 - (void)moveOpenWindow:(NSArray *)indexPaths;
 
-- (void)minCharTextFieldDidChange:(UITextField *)sender;
 - (void)actionDelete:(NSIndexPath *)indexPath;
 
 @end

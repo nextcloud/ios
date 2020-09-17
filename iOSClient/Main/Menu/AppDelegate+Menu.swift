@@ -138,7 +138,6 @@ extension AppDelegate {
                      let alertController = UIAlertController(title: NSLocalizedString("_create_folder_on_", comment: ""), message: nil, preferredStyle: .alert)
                     
                      alertController.addTextField { (textField) in
-                         //[textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                          textField.autocapitalizationType = UITextAutocapitalizationType.sentences
                      }
                     
@@ -153,7 +152,6 @@ extension AppDelegate {
                          }
                      })
                     
-                     //okAction.enabled = NO;
                      alertController.addAction(cancelAction)
                      alertController.addAction(okAction)
 

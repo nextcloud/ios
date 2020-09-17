@@ -593,27 +593,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Text Field =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)minCharTextFieldDidChange:(UITextField *)sender
-{
-    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
-    
-    if (alertController)
-    {
-        UITextField *fileName = alertController.textFields.firstObject;
-        UIAlertAction *okAction = alertController.actions.lastObject;
-        okAction.enabled = fileName.text.length > 0;
-    }
-}
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
-    [CCUtility selectFileNameFrom:textField];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Graphic Window =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1827,15 +1806,7 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    NSArray *sections = [sectionDataSource.sectionArrayRow allKeys];
-    NSString *sectionTitle = [sections objectAtIndex:section];
-    
-    if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"download"].location != NSNotFound) return 18.f;
-    if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"upload"].location != NSNotFound) return 18.f;
-    
-    if ([[CCUtility getGroupBySettings] isEqualToString:@"none"] && [sections count] <= 1) return 0.0f;
-    
-    return 20.f;
+    return 0.0f;
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -1843,7 +1814,7 @@
     float shift;
     UIVisualEffectView *visualEffectView;
     
-    NSString *titleSection;
+    NSString *titleSection = @"";
     
     if (![self indexPathIsValid:[NSIndexPath indexPathForRow:0 inSection:section]])
         return nil;
@@ -1853,11 +1824,6 @@
     
     if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]])
         titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
-    
-    if ([titleSection isEqualToString:@"_none_"]) titleSection = @"";
-    else if ([titleSection rangeOfString:@"download"].location != NSNotFound) titleSection = NSLocalizedString(@"_title_section_download_",nil);
-    else if ([titleSection rangeOfString:@"upload"].location != NSNotFound) titleSection = NSLocalizedString(@"_title_section_upload_",nil);
-    else titleSection = NSLocalizedString(titleSection,nil);
     
     // Format title
     UIVisualEffect *blurEffect;

@@ -188,15 +188,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - Utility
-    
-    @objc func minCharTextFieldDidChange(sender: UITextField) {
-        guard let alertController = self.presentedViewController as? UIAlertController else { return }
-        guard let password = alertController.textFields?.first else { return }
-        guard let ok = alertController.actions.last else { return }
-        ok.isEnabled =  password.text?.count ?? 0 >= 8
-    }
-    
     // MARK: - NotificationCenter
 
     @objc func changeTheming() {
