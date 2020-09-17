@@ -446,14 +446,16 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             // Verify if file(s) exists
             if metadatasUploadInConflict.count > 0 {
                 
-                if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    if let conflict = UIStoryboard.init(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                        
+                        conflict.serverUrl = self.serverUrl
+                        conflict.metadatasNOConflict = metadatasNOConflict
+                        conflict.metadatasMOV = metadatasMOV
+                        conflict.metadatasUploadInConflict = metadatasUploadInConflict
                     
-                    conflict.serverUrl = self.serverUrl
-                    conflict.metadatasNOConflict = metadatasNOConflict
-                    conflict.metadatasMOV = metadatasMOV
-                    conflict.metadatasUploadInConflict = metadatasUploadInConflict
-                
-                    self.appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                        self.appDelegate.window.rootViewController?.present(conflict, animated: true, completion: nil)
+                    }
                 }
                 
             } else {
@@ -464,7 +466,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 self.appDelegate.networkingAutoUpload.startProcess()
             }
         
-            self.dismiss(animated: true, completion: nil)
+            DispatchQueue.main.async {self.dismiss(animated: true, completion: nil)  }
         }
     }
     
