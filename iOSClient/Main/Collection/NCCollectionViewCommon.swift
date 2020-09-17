@@ -417,6 +417,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
+                let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
+                let totalBytes = userInfo["totalBytes"] as? Double ?? 0
+                let totalBytesExpected = userInfo["totalBytesExpected"] as? Double ?? 0
+                
+                // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
                 
                 if let index = dataSource?.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
@@ -426,6 +431,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
                                 cell.setButtonMore(named: "stop")
+                                if status == k_metadataStatusInDownload {
+                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                                } else if status == k_metadataStatusInUpload {
+                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                                }
                             }
                         } else if cell is NCGridCell {
                             let cell = cell as! NCGridCell
