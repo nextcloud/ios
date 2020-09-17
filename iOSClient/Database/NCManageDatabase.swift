@@ -1393,7 +1393,7 @@ class NCManageDatabase: NSObject {
                 addObject.url = externalSite.url
                 addObject.type = externalSite.type
            
-                realm.add(addObject, update: .all)
+                realm.add(addObject)
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")

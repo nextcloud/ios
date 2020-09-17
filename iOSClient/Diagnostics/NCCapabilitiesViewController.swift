@@ -224,7 +224,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusFileSharing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: false) {
+        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true) {
             statusExternalSite.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusExternalSite.text = NSLocalizedString("_not_available_", comment: "")
