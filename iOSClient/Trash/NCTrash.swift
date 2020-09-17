@@ -144,7 +144,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         let text = "\n"+NSLocalizedString("_trash_no_trash_", comment: "")
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
     
