@@ -1070,7 +1070,7 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, richWorkspace: String? = nil, account: String) {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, richWorkspace: String? = nil, creationDate: NSDate? = nil, account: String) {
         
         let realm = try! Realm()
 
@@ -1086,6 +1086,9 @@ class NCManageDatabase: NSObject {
                 }
                 
                 addObject.account = account
+                if let creationDate = creationDate {
+                    addObject.creationDate = creationDate
+                }
                 addObject.e2eEncrypted = encrypted
                 addObject.favorite = favorite
                 addObject.fileId = fileId
