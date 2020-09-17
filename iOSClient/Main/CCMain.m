@@ -1573,6 +1573,8 @@
 
 - (void)reloadDatasourceTransfer:(NSNotification *)notification
 {
+    if (self.view.window == nil) { return; }
+    
     NSDictionary *userInfo = notification.userInfo;
     tableMetadata *metadata = userInfo[@"metadata"];
     NSInteger errorCode = [userInfo[@"errorCode"] integerValue];
