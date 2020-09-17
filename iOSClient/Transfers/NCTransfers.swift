@@ -138,6 +138,10 @@ class NCTransfers: NCCollectionViewCommon  {
         super.collectionView(collectionView, didSelectItemAt: indexPath)
     }
     
+    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 0)
+    }
+    
     // MARK: - NC API & Algorithm
 
     override func reloadDataSource() {
