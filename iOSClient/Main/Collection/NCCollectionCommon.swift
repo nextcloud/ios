@@ -120,10 +120,13 @@ class NCCollectionCommon: NSObject {
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            
+            cell.imageSelect.image = nil
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
             cell.imageShared.image = nil
+            cell.imageMore.image = nil
             
             cell.imageItem.image = nil
             cell.imageItem.backgroundColor = nil
@@ -272,6 +275,8 @@ class NCCollectionCommon: NSObject {
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            
+            cell.imageSelect.image = nil
             cell.imageStatus.image = nil
             cell.imageLocal.image = nil
             cell.imageFavorite.image = nil
