@@ -42,6 +42,11 @@ class NCTransfers: NCCollectionViewCommon  {
         super.viewWillAppear(animated)
     }
     
+    override func setNavigationItem() {
+        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
+    }
+    
     // MARK: - NotificationCenter
     
     override func downloadStartFile(_ notification: NSNotification) {
