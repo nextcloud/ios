@@ -137,6 +137,20 @@ class NCTransfers: NCCollectionViewCommon  {
         }
     }
     
+    // MARK: TAP EVENT
+    
+    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
+      
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
+       
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { action in
+            NCMainCommon.shared.cancelAllTransfer()
+        }))
+       
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
