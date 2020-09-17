@@ -96,7 +96,7 @@ import Foundation
         for metadata in metadatasSourceSorted {
             
             // skipped livePhoto
-            if metadata.ext == "mov" && metadata.livePhoto {
+            if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue
             }
             
