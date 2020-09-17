@@ -121,6 +121,8 @@
 		F74AF3A7247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
 		F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
+		F74DE14325135B6800917068 /* NCTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74DE14125135B6800917068 /* NCTransfers.swift */; };
+		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
@@ -470,6 +472,8 @@
 		F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtilityFileSystem.swift; sourceTree = "<group>"; };
 		F74AFCE822E8B024003DE61F /* FSCalendar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FSCalendar.framework; path = Carthage/Build/iOS/FSCalendar.framework; sourceTree = "<group>"; };
 		F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenSSL.framework; path = Carthage/Build/iOS/OpenSSL.framework; sourceTree = "<group>"; };
+		F74DE14125135B6800917068 /* NCTransfers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTransfers.swift; sourceTree = "<group>"; };
+		F74DE14225135B6800917068 /* NCTransfers.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCTransfers.storyboard; sourceTree = "<group>"; };
 		F7501C302212E57400FB1415 /* NCMedia.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMedia.storyboard; sourceTree = "<group>"; };
 		F7501C312212E57400FB1415 /* NCMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
@@ -1380,6 +1384,8 @@
 		F7E9C41320F4CA870040CF18 /* Transfers */ = {
 			isa = PBXGroup;
 			children = (
+				F74DE14225135B6800917068 /* NCTransfers.storyboard */,
+				F74DE14125135B6800917068 /* NCTransfers.swift */,
 				F7E9C41520F4CA870040CF18 /* CCTransfers.h */,
 				F7E9C41820F4CA870040CF18 /* CCTransfers.m */,
 			);
@@ -1856,6 +1862,7 @@
 				F70006FA24164F8D00F214A5 /* NCViewerImageVideo.storyboard in Resources */,
 				F774DF101FCC26BE002AF9FC /* iTunesArtwork@2x.png in Resources */,
 				F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */,
+				F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */,
 				F774DF111FCC26BE002AF9FC /* iTunesArtwork@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2134,6 +2141,7 @@
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
 				F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */,
 				F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */,
+				F74DE14325135B6800917068 /* NCTransfers.swift in Sources */,
 				37C83A0D24532B7200618A3B /* AppDelegate+Swift.swift in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,

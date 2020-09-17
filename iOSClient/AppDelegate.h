@@ -36,6 +36,7 @@
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
+@class NCTransfers;
 @class NCFavorite;
 @class NCTrash;
 @class NCAppConfigView;
@@ -93,7 +94,7 @@
 @property (nonatomic, strong) NCFavorite *activeFavorite;
 @property (nonatomic, strong) NCMedia *activeMedia;
 @property (nonatomic, retain) NCDetailViewController *activeDetail;
-@property (nonatomic, retain) CCTransfers *activeTransfers;
+@property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;

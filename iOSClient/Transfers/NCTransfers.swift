@@ -1,8 +1,8 @@
 //
-//  NCOffline.swift
+//  NCTransfers.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 24/10/2018.
+//  Created by Marino Faggiana on 17/09/2020.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -24,35 +24,27 @@
 import Foundation
 import NCCommunication
 
-class NCOffline: NCCollectionViewCommon  {
+class NCTransfers: NCCollectionViewCommon  {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeOffline = self
-        titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
-        layoutKey = k_layout_view_offline
-        enableSearchBar = true
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
-        DZNtitle = "_files_no_files_"
-        DZNdescription = "_tutorial_offline_view_"
+        appDelegate.activeTransfers = self
+        titleCurrentFolder = NSLocalizedString("_transfers_", comment: "")
+        layoutKey = k_layout_view_transfers
+        enableSearchBar = false
+        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "load"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        DZNtitle = "_no_transfer_"
+        DZNdescription = "_no_transfer_sub_"
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
-        if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        } else {
-            appDelegate.activeServerUrl = self.serverUrl
-        }
-        
         super.viewWillAppear(animated)
     }
     
     // MARK: - Collection View
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        super.collectionView(collectionView, didSelectItemAt: indexPath)
         
         guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
         metadataPush = metadata
@@ -131,37 +123,10 @@ class NCOffline: NCCollectionViewCommon  {
         refreshControl.endRefreshing()
         collectionView.reloadData()
     }
-       
+    
     override func reloadDataSourceNetwork() {
         super.reloadDataSourceNetwork()
         
-        if isSearching {
-            networkSearch()
-            return
-        }
-                    
-        if serverUrl != "" {
-           
-            isReloadDataSourceNetworkInProgress = true
-            collectionView?.reloadData()
-            
-            NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory {
-                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
-                            }
-                        }
-                    }
-                }
-                self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
-            }
-            
-        } else {
-            self.reloadDataSource()
-        }
+        reloadDataSource()
     }
 }

@@ -276,6 +276,7 @@
 #define k_layout_view_offline                           @"LayoutOffline"
 #define k_layout_view_favorite                          @"LayoutFavorite"
 #define k_layout_view_main                              @"LayoutMain"
+#define k_layout_view_transfers                         @"LayoutTransfers"
 
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"

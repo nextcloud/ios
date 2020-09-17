@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -35,6 +36,7 @@
                                 <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="RbN-9l-HP2" firstAttribute="top" secondItem="UsN-KI-3bQ" secondAttribute="top" id="PQF-xh-bxZ"/>
@@ -42,7 +44,6 @@
                             <constraint firstItem="UsN-KI-3bQ" firstAttribute="bottom" secondItem="RbN-9l-HP2" secondAttribute="bottom" id="gMy-ww-Gd1"/>
                             <constraint firstItem="UsN-KI-3bQ" firstAttribute="trailing" secondItem="RbN-9l-HP2" secondAttribute="trailing" id="oal-6v-evn"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
@@ -52,7 +53,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="11143" y="1217"/>
+            <point key="canvasLocation" x="10545" y="1217"/>
         </scene>
         <!--NCMedia.storyboard-->
         <scene sceneID="udp-lL-CYh">
@@ -89,6 +90,7 @@
                                 </connections>
                             </textView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="vYq-of-LmL" firstAttribute="leading" secondItem="HYE-hK-m2I" secondAttribute="leadingMargin" constant="-13" id="RHX-O3-otO"/>
@@ -96,7 +98,6 @@
                             <constraint firstAttribute="trailingMargin" secondItem="vYq-of-LmL" secondAttribute="trailing" constant="-13" id="iao-EZ-391"/>
                             <constraint firstItem="vFx-Qx-nx8" firstAttribute="bottom" secondItem="vYq-of-LmL" secondAttribute="bottom" id="rjG-Mo-psH"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" id="NXp-TT-qTB"/>
@@ -107,7 +108,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TUv-7S-62D" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12847" y="1218"/>
+            <point key="canvasLocation" x="12154" y="1217"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="eDq-6m-h8d">
@@ -126,7 +127,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="12026" y="1218"/>
+            <point key="canvasLocation" x="11403" y="1217"/>
         </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -165,6 +166,7 @@
                                 <rect key="frame" x="0.0" y="88" width="414" height="808"/>
                             </imageView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="zlU-MP-ZVs" secondAttribute="trailing" id="GuY-bH-GIn"/>
@@ -172,7 +174,6 @@
                             <constraint firstItem="zlU-MP-ZVs" firstAttribute="leading" secondItem="3ph-Od-2hO" secondAttribute="leading" id="sVy-C6-hu1"/>
                             <constraint firstItem="zlU-MP-ZVs" firstAttribute="top" secondItem="3ph-Od-2hO" secondAttribute="top" id="tUS-Af-SE7"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="3ph-Od-2hO"/>
                     </view>
                     <navigationItem key="navigationItem" id="cJm-UN-Dvj" userLabel="Detail"/>
                     <connections>
@@ -287,13 +288,13 @@
                     <nil name="viewControllers"/>
                     <connections>
                         <segue destination="amx-XG-NId" kind="show" identifier="segueSettings" id="iJw-qx-dwJ"/>
-                        <segue destination="Gtp-25-3Em" kind="show" identifier="segueTransfers" id="OLL-6n-NHS"/>
                         <segue destination="7jW-Ey-7M7" kind="show" identifier="segueShares" id="EzC-w0-JAm"/>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
                         <segue destination="Frr-j9-xav" kind="relationship" relationship="rootViewController" id="1rp-YB-fT4"/>
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
                         <segue destination="yit-8P-Oea" kind="show" identifier="segueNotification" id="JSA-8l-ixD"/>
+                        <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -340,35 +341,15 @@
             </objects>
             <point key="canvasLocation" x="10896" y="516"/>
         </scene>
-        <!--Transfers-->
-        <scene sceneID="UaS-db-kwR">
+        <!--NCTransfers.storyboard-->
+        <scene sceneID="IDy-4E-Qqv">
             <objects>
-                <viewController storyboardIdentifier="CCTransfers" extendedLayoutIncludesOpaqueBars="YES" id="Gtp-25-3Em" customClass="CCTransfers" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="fak-dH-6Vp">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="pnc-dQ-cNG">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="Gtp-25-3Em" id="bzo-qN-Odm"/>
-                                    <outlet property="delegate" destination="Gtp-25-3Em" id="kun-RC-2pT"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="jsN-hz-vF5"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="aV2-3j-vnZ"/>
-                    <connections>
-                        <outlet property="tableView" destination="pnc-dQ-cNG" id="YDD-pc-NFL"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="zjX-ak-rF5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="NCTransfers" referencedIdentifier="NCTransfers.storyboard" id="2L6-L3-iRl" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="rgn-gS-Fb2"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9847" y="1218"/>
+            <point key="canvasLocation" x="10876" y="601"/>
         </scene>
         <!--Shares-->
         <scene sceneID="GFd-66-qSy">
@@ -388,8 +369,8 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="2pW-5T-ywS"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="Xn3-AA-DIm"/>
                     <connections>
@@ -398,7 +379,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z5g-OF-6jh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10484" y="1218"/>
+            <point key="canvasLocation" x="9900" y="1217"/>
         </scene>
         <!--Main-->
         <scene sceneID="5Py-sI-zil">
@@ -407,7 +388,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="idK-Vi-sZF">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="lCY-Ug-mrO">
                                 <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
@@ -452,7 +433,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aKC-5k-tLM">
                                 <rect key="frame" x="0.0" y="88" width="414" height="643"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <inset key="separatorInset" minX="56" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="xPg-6F-Qcc">
                                     <rect key="frame" x="0.0" y="123.5" width="414" height="44"/>
@@ -514,10 +495,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uGf-Fa-QQ3">
-                                        <rect key="frame" x="35" y="31" width="344" height="2"/>
+                                        <rect key="frame" x="35" y="31" width="344" height="4"/>
                                     </progressView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vfl-ZC-XFd">
-                                        <rect key="frame" x="35" y="35" width="344" height="20"/>
+                                        <rect key="frame" x="35" y="37" width="344" height="20"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="B11-kS-b2d"/>
@@ -542,6 +523,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="2rd-9k-q51"/>
                         <constraints>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="trailing" secondItem="hLP-ql-OiA" secondAttribute="trailing" id="09d-e0-Lbe"/>
                             <constraint firstItem="aKC-5k-tLM" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="VDo-ak-TEq"/>
@@ -551,7 +533,6 @@
                             <constraint firstItem="J2k-UZ-XQQ" firstAttribute="leading" secondItem="hLP-ql-OiA" secondAttribute="leading" id="j44-Hn-Qa3"/>
                             <constraint firstItem="J2k-UZ-XQQ" firstAttribute="top" secondItem="aKC-5k-tLM" secondAttribute="bottom" id="zy7-iS-wLE"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="2rd-9k-q51"/>
                     </view>
                     <navigationItem key="navigationItem" id="UOD-r3-Kgi"/>
                     <connections>
@@ -583,11 +564,19 @@
             <point key="canvasLocation" x="5670" y="-709"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="72f-jP-cei">
+            <size key="intrinsicContentSize" width="-1" height="83"/>
+        </designable>
+    </designables>
     <inferredMetricsTieBreakers>
         <segue reference="hse-Jl-nJQ"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
