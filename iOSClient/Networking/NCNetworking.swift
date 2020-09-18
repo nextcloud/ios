@@ -693,15 +693,21 @@ import Queuer
         
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
         
+        var counter = 0
         for metadata in metadatas {
-            
+            counter += 1
+
             if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
             }
             
             if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                
                 self.cancelTransferMetadata(metadata) {
-                    
+                    if counter == metadatas.count {
+                        completion()
+                    }
                 }
             }
         }
