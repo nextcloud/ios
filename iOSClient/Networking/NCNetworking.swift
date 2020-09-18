@@ -706,7 +706,9 @@ import Queuer
                 
                 self.cancelTransferMetadata(metadata) {
                     if counter == metadatas.count {
-                        completion()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            completion()
+                        }
                     }
                 }
             }
