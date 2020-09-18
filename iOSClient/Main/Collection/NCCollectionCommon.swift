@@ -250,8 +250,8 @@ class NCCollectionCommon: NSObject {
             var totalBytes: Double = 0.0
             let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
             if progressArray != nil && progressArray?.count == 3 {
-                progress = progressArray?.object(at: 0) as! Float
-                totalBytes = progressArray?.object(at: 1) as! Double
+                progress = progressArray?.object(at: 0) as? Float ?? 0
+                totalBytes = progressArray?.object(at: 1) as? Double ?? 0
             }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
