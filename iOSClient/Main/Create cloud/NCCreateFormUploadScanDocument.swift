@@ -85,8 +85,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         changeTheming()
         
-        let value = CCUtility.getTextRecognitionStatus()
-        SetTextRecognition(newValue: value)
+        if #available(iOS 13.0, *) {
+            let value = CCUtility.getTextRecognitionStatus()
+            SetTextRecognition(newValue: value)
+        }
     }
     
     @objc func changeTheming() {
