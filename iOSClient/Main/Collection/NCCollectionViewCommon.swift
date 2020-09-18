@@ -596,7 +596,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if namedButtonMore == "more" {
             toggleMoreMenu(viewController: tabBarController, metadata: metadata)
         } else if namedButtonMore == "stop" {
-            NCMainCommon.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
+            NCNetworking.shared.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
         }
     }
     
