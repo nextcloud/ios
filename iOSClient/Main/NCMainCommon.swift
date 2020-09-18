@@ -317,12 +317,10 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
             cell.labelTitle.text = metadata.fileNameView
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
-            //var totalBytesExpected : Double = 0
             let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
             if progressArray != nil && progressArray?.count == 3 {
-                progress = progressArray?.object(at: 0) as! CGFloat
-                totalBytes = progressArray?.object(at: 1) as! Double
-                //totalBytesExpected = progressArray?.object(at: 2) as! Double
+                progress = progressArray?.object(at: 0) as? CGFloat ?? 0
+                totalBytes = progressArray?.object(at: 1) as? Double ?? 0
             }
             
             // Write status on Label Info
