@@ -175,7 +175,6 @@
 #define selectorReadFile                                @"readFile"
 #define selectorListingFavorite                         @"listingFavorite"
 #define selectorLoadFileView                            @"loadFileView"
-#define selectorLoadFileViewFavorite                    @"loadFileViewFavorite"
 #define selectorLoadFileQuickLook                       @"loadFileQuickLook"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorLoadOffline                             @"loadOffline"

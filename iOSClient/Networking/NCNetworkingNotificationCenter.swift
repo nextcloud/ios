@@ -59,7 +59,7 @@ import Foundation
                         viewerQuickLook = NCViewerQuickLook.init()
                         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
                         
-                    case selectorLoadFileView, selectorLoadFileViewFavorite:
+                    case selectorLoadFileView:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                                                         
@@ -77,10 +77,12 @@ import Foundation
                                 
                             } else {
                                 
-                                if appDelegate.activeMain.view.window != nil && selector == selectorLoadFileView{
-                                    appDelegate.activeMain.shouldPerformSegue(metadata, selector: selector)
-                                } else if appDelegate.activeFavorite.view.window != nil && selector == selectorLoadFileViewFavorite{
-                                    appDelegate.activeFavorite.segue(metadata: metadata)
+                                if self.appDelegate.activeViewController is CCMain {
+                                    (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
+                                } else if self.appDelegate.activeViewController is NCFavorite {
+                                    (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+                                } else if self.appDelegate.activeViewController is NCOffline {
+                                    (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
                                 }
                             }
                         }

@@ -330,8 +330,13 @@ import NCCommunication
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
                             
-                            self.appDelegate.activeMain.readFileReloadFolder()
-                            self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                            if self.appDelegate.activeViewController is CCMain {
+                                (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
+                            } else if self.appDelegate.activeViewController is NCFavorite {
+                                (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+                            } else if self.appDelegate.activeViewController is NCOffline {
+                                (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
+                            }
                         })
                     }
                     
@@ -341,7 +346,6 @@ import NCCommunication
                    print("[LOG] It has been changed user during networking process, error.")
                 }
             }
-            
         }
         
         if self.editorId == k_editor_collabora {
@@ -354,8 +358,12 @@ import NCCommunication
                     
                         let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        if self.appDelegate.activeViewController is NCFavorite {
+                        if self.appDelegate.activeViewController is CCMain {
+                            (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
+                        } else if self.appDelegate.activeViewController is NCFavorite {
                             (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+                        } else if self.appDelegate.activeViewController is NCOffline {
+                            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
                         }
                    })
                    

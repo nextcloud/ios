@@ -83,7 +83,7 @@ class NCFavorite: NCCollectionViewCommon  {
             if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
                 performSegue(withIdentifier: "segueDetail", sender: self)
             } else {
-                NCNetworking.shared.download(metadata: metadataPush!, selector: selectorLoadFileViewFavorite) { (_) in }
+                NCNetworking.shared.download(metadata: metadataPush!, selector: selectorLoadFileView) { (_) in }
             }
         }
     }
