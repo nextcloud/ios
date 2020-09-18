@@ -878,14 +878,14 @@
     
     [[NCNetworking shared] readFileWithServerUrlFileName:self.serverUrl account:appDelegate.account completion:^(NSString *account, tableMetadata *metadata, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            // Rich Workspace
-            [[NCManageDatabase sharedInstance] setDirectoryWithRichWorkspace:metadata.richWorkspace serverUrl:self.serverUrl account:appDelegate.account];
-            if (![self.richWorkspaceText isEqualToString:metadata.richWorkspace]) {
-                self.richWorkspaceText = metadata.richWorkspace;
-            }
-            [self setTableViewHeader];
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, self.serverUrl]];
+            
+            // Rich Workspace
+            if (![self.richWorkspaceText isEqualToString:directory.richWorkspace]) {
+                self.richWorkspaceText = directory.richWorkspace;
+            }
+            [self setTableViewHeader];
             
             // Read folder: No record, Change etag or BLINK
             if ([sectionDataSource.allRecordsDataSource count] == 0 || [metadata.etag isEqualToString:directory.etag] == NO || self.blinkFileNamePath != nil) {
