@@ -69,16 +69,6 @@ extension CCMain {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_download_selected_files_folders_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    self.downloadSelectedFilesFolders()
-                }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
                 title: NSLocalizedString("_save_selected_files_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "saveSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in

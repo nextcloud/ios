@@ -778,24 +778,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadSelectedFilesFolders
-{
-    if (_isSelectedMode && [selectOcId count] == 0)
-        return;
-    
-    NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
-        
-    for (tableMetadata *metadata in selectedMetadatas) {
-        [[NCOperationQueue shared] synchronizationMetadata:metadata selector:selectorDownloadFile];
-    }
-    
-    [self tableViewSelect:false];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
 

@@ -77,7 +77,6 @@
 - (void)didSelectAll;
 - (void)deleteMetadatas;
 - (void)saveSelectedFiles;
-- (void)downloadSelectedFilesFolders;
 - (void)moveOpenWindow:(NSArray *)indexPaths;
 
 - (void)actionDelete:(NSIndexPath *)indexPath;
