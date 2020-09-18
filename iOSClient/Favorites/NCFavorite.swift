@@ -80,6 +80,29 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
+            if metadataFolder?.e2eEncrypted ?? false && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+                NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorE2EENotEnabled), forced: true)
+                return
+            }
+            
+            if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
+                if NCCommunication.shared.isNetworkReachable() {
+                    performSegue(withIdentifier: "segueDetail", sender: self)
+                } else {
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
+                }
+                return
+            }
+            
+            if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isRichDocument(metadata) {
+                if NCCommunication.shared.isNetworkReachable() {
+                    performSegue(withIdentifier: "segueDetail", sender: self)
+                } else {
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
+                }
+                return
+            }
+            
             if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
                 performSegue(withIdentifier: "segueDetail", sender: self)
             } else {
