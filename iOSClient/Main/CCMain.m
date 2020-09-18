@@ -731,7 +731,7 @@
             
             if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
-                [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorSaveAlbum setFavorite:false];
+                [[NCOperationQueue shared] downloadWithMetadata:metadata selector:selectorSaveAlbum setFavorite:false checkExistsFileSystem:true];
             }
         }
         

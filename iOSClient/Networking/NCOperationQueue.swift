@@ -52,13 +52,13 @@ import NCCommunication
     
     // Download file
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool, checkExistsFileSystem: Bool) {
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
             }
         }
-        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite))
+        downloadQueue.addOperation(NCOperationDownload.init(metadata: metadata, selector: selector, setFavorite: setFavorite, checkExistsFileSystem: checkExistsFileSystem))
     }
     @objc func downloadCancelAll() {
         downloadQueue.cancelAll()
@@ -181,17 +181,25 @@ class NCOperationDownload: ConcurrentOperation {
     var metadata: tableMetadata
     var selector: String
     var setFavorite: Bool
+    var checkExistsFileSystem: Bool
     
-    init(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+    init(metadata: tableMetadata, selector: String, setFavorite: Bool, checkExistsFileSystem: Bool) {
         self.metadata = tableMetadata.init(value: metadata)
         self.selector = selector
         self.setFavorite = setFavorite
+        self.checkExistsFileSystem = checkExistsFileSystem
     }
     
     override func start() {
         if isCancelled {
             self.finish()
         } else {
+            if checkExistsFileSystem {
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                    self.finish()
+                    return
+                }
+            }
             NCNetworking.shared.download(metadata: metadata, selector: self.selector, setFavorite: self.setFavorite) { (_) in
                 self.finish()
             }
@@ -308,7 +316,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     } else {
                                         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                         if localFile == nil || localFile?.etag != metadata.etag {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, checkExistsFileSystem: false)
                                         }
                                     }
                                 }
@@ -324,7 +332,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 }
                                 
                                 for metadata in metadatasChanged.metadatasLocalUpdate {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, checkExistsFileSystem: false)
                                 }
                             }
                             // Update etag directory
@@ -340,7 +348,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 if self.download {
                     let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if localFile == nil || localFile?.etag != metadata.etag {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, checkExistsFileSystem: false)
                     }
                 }
                 self.finish()
