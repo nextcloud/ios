@@ -132,7 +132,6 @@
                 <constraint firstItem="7Q9-Tv-9yo" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="-10" id="XbB-4a-WpA"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="m2p-oJ-j15" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Zyr-qM-9qP"/>
-                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="5" id="b6M-di-61w"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerX" secondItem="o4u-0K-Qpt" secondAttribute="centerX" id="fAq-0d-u57"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
@@ -143,6 +142,7 @@
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="qKl-4Y-m5t"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="sJp-0x-bdC"/>
+                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="45" id="tOD-Sd-Uhy"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerY" secondItem="o4u-0K-Qpt" secondAttribute="centerY" id="xnq-6u-TXH"/>
             </constraints>
             <size key="customSize" width="650" height="58"/>
@@ -160,6 +160,7 @@
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
                 <outlet property="progressView" destination="m2p-oJ-j15" id="yFv-KS-nEy"/>
                 <outlet property="separator" destination="Egg-cb-EhZ" id="uhq-Nc-z8K"/>
+                <outlet property="sharedLeftConstraint" destination="tOD-Sd-Uhy" id="JCh-1t-rwp"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>
