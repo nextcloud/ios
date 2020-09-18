@@ -733,6 +733,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return
         }
         
+        if metadata.e2eEncrypted && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
+            NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorE2EENotEnabled), forced: true)
+            return
+        }
+        
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
@@ -758,11 +763,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
         } else {
-            
-            if metadataFolder?.e2eEncrypted ?? false && !CCUtility.isEnd(toEndEnabled: appDelegate.account) {
-                NCContentPresenter.shared.messageNotification("_info_", description: "_e2e_goto_settings_for_enable_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorE2EENotEnabled), forced: true)
-                return
-            }
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
