@@ -35,7 +35,7 @@ class NCPhotosPickerViewController: NSObject {
     var singleSelectedMode = false
 
     @discardableResult
-    init (viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+    init(viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
         sourceViewController = viewController
         super.init()
         
@@ -66,7 +66,9 @@ class NCPhotosPickerViewController: NSObject {
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
         
-        configure.maxSelectedAssets = self.maxSelectedAssets
+        if maxSelectedAssets > 0 {
+            configure.maxSelectedAssets = maxSelectedAssets
+        }
         configure.selectedColor = NCBrandColor.sharedInstance.brandElement
         configure.singleSelectedMode = singleSelectedMode
         

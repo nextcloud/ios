@@ -329,6 +329,7 @@ import NCCommunication
                         
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
+                            
                             self.appDelegate.activeMain.readFileReloadFolder()
                             self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
                         })
@@ -353,7 +354,9 @@ import NCCommunication
                     
                         let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                       self.appDelegate.activeMain.shouldPerformSegue(metadata, selector: "")
+                        if self.appDelegate.activeViewController is NCFavorite {
+                            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+                        }
                    })
                    
                     

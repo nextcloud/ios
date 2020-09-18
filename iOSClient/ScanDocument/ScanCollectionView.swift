@@ -115,7 +115,7 @@ class DragDropViewController: UIViewController {
         if imagesDestination.count > 0 {
             
             var images: [UIImage] = []
-            var serverUrl = appDelegate.activeMain.serverUrl!
+            var serverUrl = appDelegate.activeServerUrl!
 
             for image in imagesDestination {
                 images.append(filter(image: image)!)

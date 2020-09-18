@@ -39,6 +39,7 @@ class NCFavorite: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         if serverUrl == "" {
             appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)

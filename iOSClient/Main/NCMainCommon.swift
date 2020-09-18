@@ -527,7 +527,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
-        viewController.setup(serverUrl: appDelegate.activeMain.serverUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     

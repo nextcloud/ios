@@ -56,7 +56,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_upload_photos_videos_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "file_photo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 100, singleSelectedMode: false)
+                    NCPhotosPickerViewController.init(viewController: appDelegate.window.rootViewController!, maxSelectedAssets: 0, singleSelectedMode: false)
                 }
             )
         )
@@ -81,7 +81,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_im_create_new_file", tableName: "IMLocalizable", bundle: Bundle.main, value: "", comment: ""),
                 icon: CCGraphics.scale(UIImage(named: "imagemeter"), to: CGSize(width: 25, height: 25), isAspectRation: true),
                 action: { menuAction in
-                    _ = IMCreate.init(serverUrl: appDelegate.activeMain.serverUrl, imagemeterViewerDelegate: NCNetworkingMain.sharedInstance)
+                    _ = IMCreate.init(serverUrl: appDelegate.activeServerUrl, imagemeterViewerDelegate: NCNetworkingMain.sharedInstance)
                 }
             )
         )
@@ -100,7 +100,7 @@ extension AppDelegate {
                     viewController.editorId = k_editor_text
                     viewController.creatorId = directEditingCreator.identifier
                     viewController.typeTemplate = k_template_document
-                    viewController.serverUrl = appDelegate.activeMain.serverUrl
+                    viewController.serverUrl = appDelegate.activeServerUrl
                     viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                     appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -195,7 +195,7 @@ extension AppDelegate {
                         viewController.editorId = k_editor_onlyoffice
                         viewController.creatorId = directEditingCreator.identifier
                         viewController.typeTemplate = k_template_document
-                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_document_", comment: "")
 
                         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -220,7 +220,7 @@ extension AppDelegate {
                         viewController.editorId = k_editor_onlyoffice
                         viewController.creatorId = directEditingCreator.identifier
                         viewController.typeTemplate = k_template_spreadsheet
-                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
                         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -245,7 +245,7 @@ extension AppDelegate {
                         viewController.editorId = k_editor_onlyoffice
                         viewController.creatorId = directEditingCreator.identifier
                         viewController.typeTemplate = k_template_presentation
-                        viewController.serverUrl = appDelegate.activeMain.serverUrl
+                        viewController.serverUrl = appDelegate.activeServerUrl
                         viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
                         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -269,7 +269,7 @@ extension AppDelegate {
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                             viewController.editorId = k_editor_collabora
                             viewController.typeTemplate = k_template_document
-                            viewController.serverUrl = appDelegate.activeMain.serverUrl
+                            viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_nextcloudtext_document_", comment: "")
 
                             appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -290,7 +290,7 @@ extension AppDelegate {
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                             viewController.editorId = k_editor_collabora
                             viewController.typeTemplate = k_template_spreadsheet
-                            viewController.serverUrl = appDelegate.activeMain.serverUrl
+                            viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_spreadsheet_", comment: "")
 
                             appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
@@ -311,7 +311,7 @@ extension AppDelegate {
                             let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadDocuments
                             viewController.editorId = k_editor_collabora
                             viewController.typeTemplate = k_template_presentation
-                            viewController.serverUrl = appDelegate.activeMain.serverUrl
+                            viewController.serverUrl = appDelegate.activeServerUrl
                             viewController.titleForm = NSLocalizedString("_create_new_presentation_", comment: "")
 
                             appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)

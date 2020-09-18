@@ -87,6 +87,7 @@
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
+@property (nonatomic, retain) id activeViewController;
 
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;

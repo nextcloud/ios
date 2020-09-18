@@ -256,6 +256,7 @@
     }
     
     appDelegate.activeServerUrl = self.serverUrl;
+    appDelegate.activeViewController = self;
 }
 
 - (void)viewDidAppear:(BOOL)animated
