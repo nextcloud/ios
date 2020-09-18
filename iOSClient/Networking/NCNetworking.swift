@@ -620,93 +620,89 @@ import Queuer
         })
     }
     
-    @objc func cancelUpload(ocId: String) {
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return }
-        guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
-        
-        if let request = uploadRequest[fileNameLocalPath] {
-            request.cancel()
-        } else {
-            CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        }
-        
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
-    }
-    
     //MARK: - Transfer (Download Upload)
     
-    @objc func cancelTransferMetadata(_ metadata: tableMetadata, uploadStatusForcedStart: Bool) {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, completion: @escaping ()->()) {
         
-        if metadata.session.count == 0 {
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
-            return
-        }
         let metadata = tableMetadata.init(value: metadata)
 
+        if metadata.session.count == 0 {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            completion()
+            return
+        }
+
         if metadata.session == NCCommunicationCommon.shared.sessionIdentifierDownload {
+            
             NCNetworking.shared.cancelDownload(ocId: metadata.ocId, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView)
-        } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-            NCNetworking.shared.cancelUpload(ocId: metadata.ocId)
-        } else {
+            completion()
+            return
+        }
         
-            var session: URLSession?
-            if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
-                session = NCNetworking.shared.sessionManagerBackground
-            } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
-                session = NCNetworking.shared.sessionManagerBackgroundWWan
-            } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
-                session = NCNetworking.shared.sessionManagerBackgroundExtension
+        if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
+            
+            guard let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) else { return }
+            
+            if let request = uploadRequest[fileNameLocalPath] {
+                request.cancel()
+            } else {
+                CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
             }
             
-            session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
-                
-                var cancel = false
-                
-                if metadata.session.count > 0 && metadata.session.contains("upload") {
-                    for task in uploadTasks {
-                        if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                            if uploadStatusForcedStart {
-                                metadata.status = Int(k_metadataStatusUploadForcedStart)
-                                NCManageDatabase.sharedInstance.addMetadata(metadata)
-                            }
-                            task.cancel()
-                            cancel = true
-                        }
-                    }
-                    if cancel == false {
-                        do {
-                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
-                        }
-                        catch { }
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":metadata.serverUrl])
-                        }
+            completion()
+            return
+        }
+        
+        var session: URLSession?
+        if metadata.session == NCNetworking.shared.sessionIdentifierBackground {
+            session = NCNetworking.shared.sessionManagerBackground
+        } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
+            session = NCNetworking.shared.sessionManagerBackgroundWWan
+        } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
+            session = NCNetworking.shared.sessionManagerBackgroundExtension
+        }
+        
+        session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
+            
+            var cancel = false
+            if metadata.session.count > 0 && metadata.session.contains("upload") {
+                for task in uploadTasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                        cancel = true
                     }
                 }
+                if cancel == false {
+                    do {
+                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
+                    }
+                    catch { }
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
+                }
             }
+            completion()
         }
     }
     
-    @objc func cancelAllTransfer(account: String) {
+    @objc func cancelAllTransfer(account: String, completion: @escaping ()->()) {
        
-        // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", account, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
         
         for metadata in metadatas {
             
-            // Modify
             if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
             }
             
-            // Cancel Task
             if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                self.cancelTransferMetadata(metadata, uploadStatusForcedStart: false)
+                self.cancelTransferMetadata(metadata) {
+                    
+                }
             }
         }
         

@@ -147,7 +147,9 @@ class NCTransfers: NCCollectionViewCommon  {
        
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { action in
-            NCNetworking.shared.cancelAllTransfer(account: self.appDelegate.account)
+            NCNetworking.shared.cancelAllTransfer(account: self.appDelegate.account) {
+                self.reloadDataSource()
+            }
         }))
        
         self.present(alertController, animated: true, completion: nil)

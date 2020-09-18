@@ -1107,7 +1107,7 @@
         tableMetadata *metadataSection = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (metadataSection) {
-            [[NCNetworking shared] cancelTransferMetadata:metadataSection uploadStatusForcedStart:false];
+            [[NCNetworking shared] cancelTransferMetadata:metadataSection completion:^{ }];
         }
     }
 }
@@ -1121,7 +1121,9 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         [NCUtility.shared startActivityIndicatorWithView:self.view bottom:0];
-        [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account];
+        [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account completion:^{
+            [self reloadDatasource:self.serverUrl ocId:nil];
+        }];
         [NCUtility.shared stopActivityIndicator];
     }]];
     

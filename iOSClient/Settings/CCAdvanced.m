@@ -316,7 +316,7 @@
 {
     [appDelegate maintenanceMode:YES];
     
-    [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account];
+    [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account completion:^{ }];
     [[NCOperationQueue shared] cancelAllQueue];
 
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
