@@ -65,7 +65,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                        <rect key="frame" x="510" y="1" width="40" height="58"/>
+                        <rect key="frame" x="515" y="1" width="40" height="58"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="58" id="WOg-y5-5UA"/>
@@ -76,10 +76,10 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
-                        <rect key="frame" x="515" y="15" width="30" height="30"/>
+                        <rect key="frame" x="522.5" y="17.5" width="25" height="25"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="30" id="Cvy-nZ-zyD"/>
-                            <constraint firstAttribute="width" constant="30" id="jfe-Fg-vA8"/>
+                            <constraint firstAttribute="height" constant="25" id="Cvy-nZ-zyD"/>
+                            <constraint firstAttribute="width" constant="25" id="jfe-Fg-vA8"/>
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
@@ -93,10 +93,10 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-                        <rect key="frame" x="565" y="15" width="30" height="30"/>
+                        <rect key="frame" x="567.5" y="17.5" width="25" height="25"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="30" id="05P-NL-pd8"/>
-                            <constraint firstAttribute="height" constant="30" id="Jet-eo-x1M" userLabel="height = 20"/>
+                            <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>
+                            <constraint firstAttribute="height" constant="25" id="Jet-eo-x1M" userLabel="height = 20"/>
                         </constraints>
                     </imageView>
                     <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m2p-oJ-j15">
@@ -132,7 +132,7 @@
                 <constraint firstItem="7Q9-Tv-9yo" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="-10" id="XbB-4a-WpA"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="m2p-oJ-j15" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Zyr-qM-9qP"/>
-                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="10" id="b6M-di-61w"/>
+                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="5" id="b6M-di-61w"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerX" secondItem="o4u-0K-Qpt" secondAttribute="centerX" id="fAq-0d-u57"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
