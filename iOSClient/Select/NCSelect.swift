@@ -469,7 +469,6 @@ extension NCSelect: UICollectionViewDataSource {
         } else {
             let cell = cell as! NCListCell
             cell.imageMore.isHidden = true
-            cell.sharedLeftConstraint.constant = 15
             
             return cell
         }
