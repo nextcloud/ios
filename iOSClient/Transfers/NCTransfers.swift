@@ -77,7 +77,7 @@ class NCTransfers: NCCollectionViewCommon  {
                     collectionView?.performBatchUpdates({
                         collectionView?.insertItems(at: [indexPath])
                     }, completion: { (_) in
-                        self.collectionView?.reloadData()
+                        self.reloadDataSource()
                     })
                 }
             }
