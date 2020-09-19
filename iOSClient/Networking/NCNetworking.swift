@@ -348,7 +348,7 @@ import Queuer
                 }
                        
                 fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(extractMetadata.ocId, fileNameView: extractMetadata.fileNameView)
-                CCUtility.moveFile(atPath: fileNamePath, toPath: fileNameLocalPath)
+                NCUtilityFileSystem.shared.moveFileInBackground(atPath: fileNamePath!, toPath: fileNameLocalPath)
 
                 NCManageDatabase.sharedInstance.addMetadata(extractMetadata)
                
@@ -462,8 +462,8 @@ import Queuer
                 
                 let metadata = tableMetadata.init(value: metadata)
                
-                CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
-                    
+                NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+               
                 metadata.uploadDate = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 metadata.ocId = ocId!
