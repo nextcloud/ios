@@ -83,11 +83,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, sender: sender)
     }
     
-    func setButtonMore(named: String) {
-        namedButtonMore = named
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
-    }
-    
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
@@ -96,6 +91,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         delegate?.longPressGridItem(with: objectId, gestureRecognizer: gestureRecognizer)
+    }
+    
+    func setButtonMore(named: String) {
+        namedButtonMore = named
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+    }
+    
+    func hideButtonMore() {
+        buttonMore.isHidden = true
     }
 }
 

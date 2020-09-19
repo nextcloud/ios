@@ -115,6 +115,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         namedButtonMore = named
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
     }
+    
+    func hideButtonMore() {
+        imageMore.isHidden = true
+        sharedLeftConstraint.constant = 5
+    }
 }
 
 protocol NCListCellDelegate {

@@ -463,14 +463,11 @@ extension NCSelect: UICollectionViewDataSource {
         
         if layout == k_layout_grid {
             let cell = cell as! NCGridCell
-            cell.buttonMore.isHidden = true
-            
+            cell.hideButtonMore()
             return cell
         } else {
             let cell = cell as! NCListCell
-            cell.imageMore.isHidden = true
-            cell.sharedLeftConstraint.constant = 5
-            
+            cell.hideButtonMore()
             return cell
         }
     }
