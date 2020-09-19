@@ -286,8 +286,8 @@ import Alamofire
                         guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
                         let metadata = tableMetadata.init(value: metadataTemp)
                         
-                        CCUtility.moveFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath:  CCUtility.getDirectoryProviderStorageOcId(ocId))
-                            
+                        NCUtilityFileSystem.shared.moveFileInBackground(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId))
+                        
                         metadata.date = date ?? NSDate()
                         metadata.etag = etag ?? ""
                         metadata.ocId = ocId!
