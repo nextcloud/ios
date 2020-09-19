@@ -955,7 +955,7 @@ static NSString *_defaultService;
 
 #pragma mark -
 
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
 - (void)sharedPasswordWithCompletion:(void (^)(NSString *account, NSString *password, NSError *error))completion
 {
     NSString *domain = self.server.host;
@@ -1119,7 +1119,7 @@ static NSString *_defaultService;
         if (_server.host) {
             query[(__bridge __strong id)kSecAttrServer] = _server.host;
         }
-        if (_server.port) {
+        if (_server.port != nil) {
             query[(__bridge __strong id)kSecAttrPort] = _server.port;
         }
         CFTypeRef protocolTypeObject = [self protocolTypeObject];
