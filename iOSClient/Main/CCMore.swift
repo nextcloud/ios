@@ -133,6 +133,20 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             functionMenu.append(item)
         }
 
+        // ITEM : Settings
+        item = NCCommunicationExternalSite()
+        item.name = "_settings_"
+        item.icon = "settings"
+        item.url = "segueSettings"
+        settingsMenu.append(item)
+
+        if (quotaMenu.count > 0) {
+            let item = quotaMenu[0]
+            labelQuotaExternalSite.text = item.name
+        }
+        
+        changeUserProfile()
+
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.account) {
@@ -152,23 +166,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                         quotaMenu.append(item)
                     }
                 }
+                tableView.reloadData()
+            } else {
+                tableView.reloadData()
             }
+        } else {
+            tableView.reloadData()
         }
-
-        // ITEM : Settings
-        item = NCCommunicationExternalSite()
-        item.name = "_settings_"
-        item.icon = "settings"
-        item.url = "segueSettings"
-        settingsMenu.append(item)
-
-        if (quotaMenu.count > 0) {
-            let item = quotaMenu[0]
-            labelQuotaExternalSite.text = item.name
-        }
-
-        changeUserProfile()
-        tableView.reloadData()
     }
 
     @objc func changeTheming() {
@@ -207,7 +211,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let quotaUsed: String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
-        tableView.reloadData()
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
