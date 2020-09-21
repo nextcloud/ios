@@ -891,7 +891,7 @@
         return;
     }
         
-    [[NCCommunication shared] searchLiteralWithServerUrl:appDelegate.urlBase depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil user:appDelegate.user timeout:120 completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
+    [[NCCommunication shared] searchLiteralWithServerUrl:appDelegate.urlBase depth:@"infinity" literal:_searchFileName showHiddenFiles:[CCUtility getShowHiddenFiles] customUserAgent:nil addCustomHeaders:nil timeout:120 completionHandler:^(NSString *account, NSArray *files, NSInteger errorCode, NSString *errorDescription) {
         
          if (errorCode == 0 && [account isEqualToString:appDelegate.account] && files != nil) {
              

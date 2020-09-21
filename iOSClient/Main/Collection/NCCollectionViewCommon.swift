@@ -120,6 +120,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             registerForPreviewing(with: self, sourceView: view)
         }
         
+        // Long Press on CollectionView
+        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(gestureRecognizer:)))
+        longPressedGesture.minimumPressDuration = 0.5
+        longPressedGesture.delegate = self
+        longPressedGesture.delaysTouchesBegan = true
+        collectionView.addGestureRecognizer(longPressedGesture)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         
@@ -456,7 +463,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
         
-    // MARK: DZNEmpty
+    // MARK: - DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
@@ -503,7 +510,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return true
     }
     
-    // MARK: SEARCH
+    // MARK: - SEARCH
     
     func updateSearchResults(for searchController: UISearchController) {
 
@@ -527,7 +534,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
     
-    // MARK: TAP EVENT
+    // MARK: - TAP EVENT
     
     @objc func tapSelect(sender: Any) {
         
@@ -628,7 +635,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
     }
     
-    // MARK: SEGUE
+    @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state != .began { return }
+    
+        self.becomeFirstResponder()
+        let pasteboard = UIPasteboard.general
+        let type = pasteboard.types
+        
+        print(type)
+        
+            
+//            if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
+                
+//                UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
+//                UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
+//                UIMenuController.shared.setMenuVisible(true, animated:true)
+//            }
+    }
+    
+    // MARK: - COPY/PASTE
+    
+    // MARK: - SEGUE
     
     @objc func segue(metadata: tableMetadata) {
         self.metadataPush = metadata
