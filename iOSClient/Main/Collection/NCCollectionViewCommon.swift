@@ -638,22 +638,44 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
     
-        self.becomeFirstResponder()
-        let pasteboard = UIPasteboard.general
-        let type = pasteboard.types
-        
-        print(type)
-        
-            
-//            if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
-                
-//                UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
-//                UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
-//                UIMenuController.shared.setMenuVisible(true, animated:true)
-//            }
+        //let type = pasteboard.types
+        var title = "_paste_file_"
+    
+        if UIPasteboard.general.items.count > 0 {
+            if UIPasteboard.general.items.count > 1 {
+                title = "_paste_files_"
+            }
+            let touchPoint = gestureRecognizer.location(in: collectionView)
+            becomeFirstResponder()
+            UIMenuController.shared.menuItems = [UIMenuItem.init(title: NSLocalizedString(title, comment: ""), action: #selector(pasteFiles(_:)))]
+            UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
+            UIMenuController.shared.setMenuVisible(true, animated: true)
+        }
     }
     
     // MARK: - COPY/PASTE
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    @objc func pasteFiles(_ notification: Any) {
+        
+        for item in UIPasteboard.general.items {
+            for object in item {
+                let objctType = object.key
+                let objectData = object.value
+                if UTTypeConformsTo(objctType as CFString, kUTTypeImage) && objectData is UIImage {
+                    let fileName = CCUtility.createFileName("image.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+                    do {
+                        try (objectData as? UIImage)?.pngData()?.write(to: URL(fileURLWithPath: fileName))
+                    } catch {
+                        
+                    }
+                }
+            }
+        }
+    }
     
     // MARK: - SEGUE
     
