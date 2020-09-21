@@ -219,7 +219,7 @@ import Foundation
         }
     }
     
-    func numberOfItemsInSection(section: Int) -> Int {
+    func numberOfItems() -> Int {
         
         return self.metadatas.count
     }
