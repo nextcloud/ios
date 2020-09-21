@@ -124,6 +124,8 @@ import Foundation
         self.metadatas = metadatasTemp
     }
         
+    // MARK: -
+
     func getFilesInformation() -> (directories: Int,  files: Int, size: Double) {
 
         var directories: Int = 0
@@ -206,7 +208,10 @@ import Foundation
         return nil
     }
     
-    // MARK: -
+    func numberOfItems() -> Int {
+        
+        return self.metadatas.count
+    }
     
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
         
@@ -217,10 +222,5 @@ import Foundation
         } else {
             return self.metadatas[row]
         }
-    }
-    
-    func numberOfItems() -> Int {
-        
-        return self.metadatas.count
     }
 }
