@@ -892,7 +892,7 @@
         if (isTooLight) {
             NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:10];
         } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:25];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:40];
         }
     
     } else {
@@ -903,7 +903,7 @@
         if (isTooLight) {
             NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:10];
         } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:25];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:40];
         } else {
             NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
         }
