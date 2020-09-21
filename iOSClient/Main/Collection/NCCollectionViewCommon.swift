@@ -637,6 +637,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
+        if serverUrl == "" { return }
     
         //let type = pasteboard.types
         var title = "_paste_file_"
