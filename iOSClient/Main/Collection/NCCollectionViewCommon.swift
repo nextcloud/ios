@@ -666,9 +666,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let objctType = object.key
                 let objectData = object.value
                 if UTTypeConformsTo(objctType as CFString, kUTTypeImage) && objectData is UIImage {
-                    let fileName = CCUtility.createFileName("image.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+                    let fileName = CCUtility.createFileName("image.jpg", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
                     do {
-                        try (objectData as? UIImage)?.pngData()?.write(to: URL(fileURLWithPath: fileName))
+                        try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: fileName))
                     } catch {
                         
                     }
