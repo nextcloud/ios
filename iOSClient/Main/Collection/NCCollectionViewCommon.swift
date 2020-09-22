@@ -638,16 +638,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
-    
-        var title = "_paste_file_"
-    
+        
         if UIPasteboard.general.items.count > 0 {
-            if UIPasteboard.general.items.count > 1 {
-                title = "_paste_files_"
-            }
+            
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
-            UIMenuController.shared.menuItems = [UIMenuItem.init(title: NSLocalizedString(title, comment: ""), action: #selector(pasteFiles(_:)))]
+            UIMenuController.shared.menuItems = [UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:)))]
             UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
             UIMenuController.shared.setMenuVisible(true, animated: true)
         }
