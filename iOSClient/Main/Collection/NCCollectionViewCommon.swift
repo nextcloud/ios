@@ -663,34 +663,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         for item in UIPasteboard.general.items {
             for object in item {
-                let objctType = object.key
-                let objectData = object.value
-                if objectData is UIImage { uploadPasteFile(name: "photo", ext: "jpg", objctType: objctType, objectData: objectData) }
-                else if UTTypeConformsTo(objctType as CFString, kUTTypeMovie) { uploadPasteFile(name: "video", ext: "mov", objctType: objctType, objectData: objectData) }
-                else if UTTypeConformsTo(objctType as CFString, kUTTypePDF) { uploadPasteFile(name: "document", ext: "pdf", objctType: objctType, objectData: objectData) }
+                let contentType = object.key
+                let data = object.value
+                let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
+                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
+                    uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, data: data)
+                }
             }
         }
     }
     
-    private func uploadPasteFile(name: String, ext: String, objctType: String, objectData: Any) {
+    private func uploadPasteFile(fileName: String, ext: String, contentType: String, data: Any) {
         do {
-            let fileNameView = CCUtility.createFileNameDate(name, extension: ext)!
+            let fileNameView = CCUtility.createFileNameDate(fileName, extension: ext)!
             let ocId = UUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
             
-            if objectData is UIImage {
-                try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
-            } else if objectData is Data {
-                try (objectData as? Data)?.write(to: URL(fileURLWithPath: filePath))
+            if data is UIImage {
+                try (data as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+            } else if data is Data {
+                try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
             }
             
-            let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: objctType, livePhoto: false)
+            let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(filePath: filePath))
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-            
         } catch { }
     }
     
