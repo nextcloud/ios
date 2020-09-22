@@ -462,8 +462,10 @@
                         [metadataFull addObject:metadataMOVForUpload];
                                                 
                         // Update database Auto Upload
-                        if ([selector isEqualToString:selectorUploadAutoUpload])
+                        if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@", metadataMOVForUpload.fileName]];
                             [[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+                        }
                     }
                     
                     dispatch_semaphore_signal(semaphore);
@@ -500,6 +502,7 @@
 {
     @synchronized(self) {
         
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@ with Identifier %@", metadata.fileName, metadata.assetLocalIdentifier]];
         [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
         // Add asset in table Photo Library
