@@ -653,7 +653,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - COPY/PASTE
+    // MARK: - PASTE
     
     override var canBecomeFirstResponder: Bool {
         return true
@@ -666,7 +666,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let objctType = object.key
                 let objectData = object.value
                 if objectData is UIImage { uploadPasteFile(name: "photo", ext: "jpg", objctType: objctType, objectData: objectData) }
-                if UTTypeConformsTo(objctType as CFString, kUTTypeMovie) { uploadPasteFile(name: "video", ext: "mov", objctType: objctType, objectData: objectData)  }
+                else if UTTypeConformsTo(objctType as CFString, kUTTypeMovie) { uploadPasteFile(name: "video", ext: "mov", objctType: objctType, objectData: objectData) }
+                else if UTTypeConformsTo(objctType as CFString, kUTTypePDF) { uploadPasteFile(name: "document", ext: "pdf", objctType: objctType, objectData: objectData) }
             }
         }
     }
