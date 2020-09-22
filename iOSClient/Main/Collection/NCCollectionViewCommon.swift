@@ -665,18 +665,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             for object in item {
                 let objctType = object.key
                 let objectData = object.value
-                if UTTypeConformsTo(objctType as CFString, kUTTypeImage) && objectData is UIImage { uploadPasteFile(name: "photo", extension: "jpg", objctType: objctType, objectData: objectData) }
+                if objectData is UIImage { uploadPasteFile(name: "photo", ext: "jpg", objctType: objctType, objectData: objectData) } // if UTTypeConformsTo(objctType as CFString, kUTTypeImage)
             }
         }
     }
     
-    private func uploadPasteFile(name: String, extension: String, objctType: String, objectData: Any) {
+    private func uploadPasteFile(name: String, ext: String, objctType: String, objectData: Any) {
         do {
-            let fileNameView = CCUtility.createFileNameDate("photo", extension: "jpg")!
+            let fileNameView = CCUtility.createFileNameDate(name, extension: ext)!
             let ocId = UUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
-            try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
-                                    
+            
+            if objectData is UIImage {
+                try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+            }
+            
             let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: objctType, livePhoto: false)
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
