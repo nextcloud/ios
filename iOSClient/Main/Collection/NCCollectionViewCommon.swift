@@ -639,7 +639,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
     
-        //let type = pasteboard.types
         var title = "_paste_file_"
     
         if UIPasteboard.general.items.count > 0 {
@@ -666,16 +665,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             for object in item {
                 let objctType = object.key
                 let objectData = object.value
-                if UTTypeConformsTo(objctType as CFString, kUTTypeImage) && objectData is UIImage {
-                    let fileName = CCUtility.createFileName("image.jpg", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-                    do {
-                        try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: fileName))
-                    } catch {
-                        
-                    }
-                }
+                if UTTypeConformsTo(objctType as CFString, kUTTypeImage) && objectData is UIImage { uploadPasteFile(name: "photo", extension: "jpg", objctType: objctType, objectData: objectData) }
             }
         }
+    }
+    
+    private func uploadPasteFile(name: String, extension: String, objctType: String, objectData: Any) {
+        do {
+            let fileNameView = CCUtility.createFileNameDate("photo", extension: "jpg")!
+            let ocId = UUID().uuidString
+            let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
+            try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+                                    
+            let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: objctType, livePhoto: false)
+            metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+            metadataForUpload.sessionSelector = selectorUploadFile
+            metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(filePath: filePath))
+            metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+            
+        } catch { }
     }
     
     // MARK: - SEGUE
