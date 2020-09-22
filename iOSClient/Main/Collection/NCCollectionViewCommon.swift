@@ -665,7 +665,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             for object in item {
                 let objctType = object.key
                 let objectData = object.value
-                if objectData is UIImage { uploadPasteFile(name: "photo", ext: "jpg", objctType: objctType, objectData: objectData) } // if UTTypeConformsTo(objctType as CFString, kUTTypeImage)
+                if objectData is UIImage { uploadPasteFile(name: "photo", ext: "jpg", objctType: objctType, objectData: objectData) }
+                if UTTypeConformsTo(objctType as CFString, kUTTypeMovie) { uploadPasteFile(name: "video", ext: "mov", objctType: objctType, objectData: objectData)  }
             }
         }
     }
@@ -678,6 +679,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             if objectData is UIImage {
                 try (objectData as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
+            } else if objectData is Data {
+                try (objectData as? Data)?.write(to: URL(fileURLWithPath: filePath))
             }
             
             let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: objctType, livePhoto: false)

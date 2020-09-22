@@ -18,7 +18,6 @@ github "getsentry/sentry-cocoa"
 github "FabrizioBrancati/Queuer"
 github "xmartlabs/XLForm" ~> 4.1
 github "AssistoLab/DropDown" "v2.3.13"
-github "realm/realm-cocoa" "v5.4.3"
 
 github "https://github.com/marinofaggiana/KTVHTTPCache" "2.0.2"
 github "https://github.com/marinofaggiana/TOPasscodeViewController" "0.0.7"
