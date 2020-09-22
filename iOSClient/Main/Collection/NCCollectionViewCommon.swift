@@ -661,12 +661,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func pasteFiles(_ notification: Any) {
         
+        var listData: [String] = []
+        
         for item in UIPasteboard.general.items {
             for object in item {
                 let contentType = object.key
                 let data = object.value
+                if data is String {
+                    if listData.contains(data as! String) {
+                        continue
+                    } else {
+                        listData.append(data as! String)
+                    }
+                }
                 let type = NCCommunicationCommon.shared.convertUTItoResultType(fileUTI: contentType as CFString)
-                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue {
+                if type.resultTypeFile != NCCommunicationCommon.typeFile.unknow.rawValue && type.resultExtension != "" {
                     uploadPasteFile(fileName: type.resultFilename, ext: type.resultExtension, contentType: contentType, data: data)
                 }
             }
@@ -675,7 +684,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     private func uploadPasteFile(fileName: String, ext: String, contentType: String, data: Any) {
         do {
-            let fileNameView = CCUtility.createFileNameDate(fileName, extension: ext)!
+            let fileNameView = fileName + "_" + CCUtility.getIncrementalNumber() + "." + ext
             let ocId = UUID().uuidString
             let filePath = CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)!
             
@@ -683,6 +692,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 try (data as? UIImage)?.jpegData(compressionQuality: 1)?.write(to: URL(fileURLWithPath: filePath))
             } else if data is Data {
                 try (data as? Data)?.write(to: URL(fileURLWithPath: filePath))
+            } else if data is String {
+                try (data as? String)?.write(to: URL(fileURLWithPath: filePath), atomically: true, encoding: .utf8)
+            } else {
+                return
             }
             
             let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)

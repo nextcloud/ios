@@ -152,7 +152,7 @@
     number++;
     if (number >= 9999) number = 1;
     
-    [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber"];
+    [UICKeyChainStore setString:[NSString stringWithFormat:@"%ld", number] forKey:@"incrementalnumber" service:k_serviceShareKeyChain];
     
     return [NSString stringWithFormat:@"%04ld", number];
 }
