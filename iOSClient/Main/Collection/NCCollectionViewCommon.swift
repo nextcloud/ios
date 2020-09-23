@@ -655,12 +655,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         becomeFirstResponder()
         
-        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:))))
+        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
         
         if metadata != nil {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLook(_:))))
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_copy_file_", comment: ""), action: #selector(copyFileMenu(_:))))
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLookMenu(_:))))
             if !NCBrandOptions.sharedInstance.disable_openin_file {
-                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_in_", comment: ""), action: #selector(openIn(_:))))
+                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_in_", comment: ""), action: #selector(openInMenu(_:))))
             }
         }
         
@@ -671,17 +672,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - PASTE / QUICKLOOK
+    // MARK: - Menu Item
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         
-        if (#selector(pasteFiles(_:)) == action) {
+        if (#selector(pasteFilesMenu(_:)) == action) {
             if UIPasteboard.general.items.count > 0 {
                 return true
             }
         }
         
-        if (#selector(openQuickLook(_:)) == action || #selector(openIn(_:)) == action) {
+        if (#selector(openQuickLookMenu(_:)) == action || #selector(openInMenu(_:)) == action || #selector(copyFileMenu(_:)) == action) {
             guard let metadata = metadataTouch else { return false }
             if !metadata.directory && metadata.status == k_metadataStatusNormal {
                 return true
@@ -691,7 +692,32 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return false
     }
     
-    @objc func pasteFiles(_ notification: Any) {
+    @objc func copyFileMenu(_ notification: Any) {
+        var metadatas: [tableMetadata] = []
+        
+        if isEditMode {
+            for ocId in selectOcId {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    metadatas.append(metadata)
+                }
+            }
+        } else {
+            guard let metadata = metadataTouch else { return }
+            metadatas.append(metadata)
+        }
+        
+        for metadata in metadatas {
+            do {
+                var items = UIPasteboard.general.items
+                let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
+                items.append([k_metadataKeyedUnarchiver:data])
+            } catch {
+                print("error")
+            }
+        }
+    }
+    
+    @objc func pasteFilesMenu(_ notification: Any) {
         
         var listData: [String] = []
         
@@ -739,7 +765,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } catch { }
     }
     
-    @objc func openQuickLook(_ notification: Any) {
+    @objc func openQuickLookMenu(_ notification: Any) {
         guard let metadata = metadataTouch else { return }
                 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
@@ -749,7 +775,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func openIn(_ notification: Any) {
+    @objc func openInMenu(_ notification: Any) {
         guard let metadata = metadataTouch else { return }
                 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
