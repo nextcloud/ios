@@ -728,7 +728,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let contentType = object.key
                 let data = object.value
                 if contentType == k_metadataKeyedUnarchiver {
-                    print("")
+                    do {
+                        if let ocId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data as! Data) as? String{
+                            uploadPasteOcId(ocId)
+                        }
+                    } catch {
+                        print("error")
+                    }
                     continue
                 }
                 if data is String {
@@ -769,6 +775,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
         } catch { }
+    }
+    
+    private func uploadPasteOcId(_ ocId: String) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                let fileNameView = NCUtility.shared.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: appDelegate.account)
+                let ocId = NSUUID().uuidString
+                
+                CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
+                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                
+                metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
+                metadataForUpload.sessionSelector = selectorUploadFile
+                metadataForUpload.size = metadata.size
+                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                
+                NCManageDatabase.sharedInstance.addMetadata(metadataForUpload) 
+            }
+        }
     }
     
     @objc func openQuickLookMenu(_ notification: Any) {
