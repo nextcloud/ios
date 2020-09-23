@@ -98,7 +98,11 @@ class NCOffline: NCCollectionViewCommon  {
             return
         }
                     
-        if serverUrl != "" {
+        if serverUrl == "" {
+            
+            self.reloadDataSource()
+            
+        } else {
            
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
@@ -117,9 +121,6 @@ class NCOffline: NCCollectionViewCommon  {
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
-            
-        } else {
-            self.reloadDataSource()
         }
     }
 }
