@@ -800,7 +800,7 @@ extension NCMedia {
                         let predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicate, self.predicate!])
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
-                        let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
+                        let updateMetadatas = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false, addExistsInLocal: false, addCompareEtagLocal: false)
                         if updateMetadatas.metadatasUpdate.count > 0 {
                             self.reloadDataSource()
                         }
