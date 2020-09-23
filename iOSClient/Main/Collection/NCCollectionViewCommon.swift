@@ -188,6 +188,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
     func setNavigationItem() {
         if isEditMode {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "navigationMore"), style: .plain, target: self, action:#selector(tapSelectMenu(sender:)))
@@ -722,11 +726,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             NCNetworking.shared.download(metadata: metadata, selector: selectorLoadFileQuickLook) { (_) in }
         }
-    }
-    
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
