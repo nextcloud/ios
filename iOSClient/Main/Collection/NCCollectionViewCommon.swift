@@ -796,6 +796,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
     }
+    
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
+            if errorCode == 0 {
+                let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                if forced || directory?.etag != metadata?.etag {
+                    NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+                        if errorCode == 0 {
+                            self.metadataFolder = metadataFolder
+                        }
+                        completion(metadatas, errorCode, errorDescription)
+                    }
+                } else {
+                    completion(nil, 0, "")
+                }
+            } else {
+               completion(nil, errorCode, errorDescription)
+            }
+        }
+    }
 }
 
 // MARK: - 3D Touch peek and pop

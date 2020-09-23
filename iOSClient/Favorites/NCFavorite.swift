@@ -108,33 +108,19 @@ class NCFavorite: NCCollectionViewCommon  {
             
         } else {
             
-            NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
-                    if forced || directory?.etag != metadata?.etag {
-                        NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
-                            if errorCode == 0 {
-                                for metadata in metadatas ?? [] {
-                                    if !metadata.directory && CCUtility.getFavoriteOffline() {
-                                        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                                        if localFile == nil || localFile?.etag != metadata.etag {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
-                                        }
-                                    }
-                                }
-                                self.metadataFolder = metadataFolder
+                    for metadata in metadatas ?? [] {
+                        if !metadata.directory {
+                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                            if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
                             }
-                            self.isReloadDataSourceNetworkInProgress = false
-                            self.reloadDataSource()
                         }
-                    } else {
-                        self.isReloadDataSourceNetworkInProgress = false
-                        self.reloadDataSource()
                     }
-                } else {
-                    self.isReloadDataSourceNetworkInProgress = false
-                    self.reloadDataSource()
                 }
+                self.isReloadDataSourceNetworkInProgress = false
+                self.reloadDataSource()
             }
         }
     }

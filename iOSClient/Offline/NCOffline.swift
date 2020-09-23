@@ -103,7 +103,7 @@ class NCOffline: NCCollectionViewCommon  {
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
             
-            NCNetworking.shared.readFolder(serverUrl: serverUrl, account: appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
