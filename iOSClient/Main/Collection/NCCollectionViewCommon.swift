@@ -717,7 +717,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     print("error")
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selectorLoadCopy, "errorCode": 0, "errorDescription": "" ])
+                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadCopy, setFavorite: false) { (_) in }
             }
         }
         
