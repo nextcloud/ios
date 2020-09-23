@@ -659,6 +659,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if metadata != nil {
             listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLook(_:))))
+            if !NCBrandOptions.sharedInstance.disable_openin_file {
+                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_in_", comment: ""), action: #selector(openIn(_:))))
+            }
         }
         
         if listMenuItems.count > 0 {
@@ -669,6 +672,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     // MARK: - PASTE / QUICKLOOK
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        
+        if (#selector(pasteFiles(_:)) == action) {
+            if UIPasteboard.general.items.count > 0 {
+                return true
+            }
+        }
+        
+        if (#selector(openQuickLook(_:)) == action || #selector(openIn(_:)) == action) {
+            guard let metadata = metadataTouch else { return false }
+            if !metadata.directory && metadata.status == k_metadataStatusNormal {
+                return true
+            }
+        }
+
+        return false
+    }
     
     @objc func pasteFiles(_ notification: Any) {
         
@@ -728,22 +749,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        
-        if (#selector(pasteFiles(_:)) == action) {
-            if UIPasteboard.general.items.count > 0 {
-                return true
-            }
+    @objc func openIn(_ notification: Any) {
+        guard let metadata = metadataTouch else { return }
+                
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selectorOpenIn, "errorCode": 0, "errorDescription": "" ])
+        } else {
+            NCNetworking.shared.download(metadata: metadata, selector: selectorOpenIn) { (_) in }
         }
-        
-        if (#selector(openQuickLook(_:)) == action) {
-            guard let metadata = metadataTouch else { return false }
-            if !metadata.directory && metadata.status == k_metadataStatusNormal {
-                return true
-            }
-        }
-
-        return false
     }
     
     // MARK: - SEGUE
