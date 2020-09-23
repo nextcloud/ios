@@ -769,11 +769,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             
             let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
+            
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(filePath: filePath))
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+            
             NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+            
         } catch { }
     }
     
@@ -791,7 +794,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 metadataForUpload.size = metadata.size
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
-                NCManageDatabase.sharedInstance.addMetadata(metadataForUpload) 
+                NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
             }
         }
     }
