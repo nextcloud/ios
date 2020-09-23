@@ -694,7 +694,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func copyFileMenu(_ notification: Any) {
         var metadatas: [tableMetadata] = []
-        var items = UIPasteboard.general.items
+        var items = [[String : Any]]()
 
         if isEditMode {
             for ocId in selectOcId {
