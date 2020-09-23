@@ -694,7 +694,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func copyFileMenu(_ notification: Any) {
         var metadatas: [tableMetadata] = []
-        
+        var items = [[String : Any]]()
+
         if isEditMode {
             for ocId in selectOcId {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
@@ -705,16 +706,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             guard let metadata = metadataTouch else { return }
             metadatas.append(metadata)
         }
-        
+                
         for metadata in metadatas {
             do {
-                var items = UIPasteboard.general.items
                 let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
                 items.append([k_metadataKeyedUnarchiver:data])
             } catch {
                 print("error")
             }
         }
+        
+        UIPasteboard.general.setItems(items, options: [:])
     }
     
     @objc func pasteFilesMenu(_ notification: Any) {
@@ -725,6 +727,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             for object in item {
                 let contentType = object.key
                 let data = object.value
+                if contentType == k_metadataKeyedUnarchiver {
+                    print("")
+                    continue
+                }
                 if data is String {
                     if listData.contains(data as! String) {
                         continue
