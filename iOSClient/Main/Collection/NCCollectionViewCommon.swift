@@ -722,6 +722,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         UIPasteboard.general.setItems(items, options: [:])
+        
+        if isEditMode {
+            tapSelect(sender: self)
+        }
     }
     
     @objc func pasteFilesMenu(_ notification: Any) {
