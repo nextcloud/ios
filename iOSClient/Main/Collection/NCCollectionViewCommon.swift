@@ -39,7 +39,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var selectOcId: [String] = []
     internal var metadatasSource: [tableMetadata] = []
     internal var metadataFolder: tableMetadata?
-    internal var metadataPush: tableMetadata?
+    internal var metadataTouch: tableMetadata?
     internal var dataSource: NCDataSource?
     internal var richWorkspaceText: String?
         
@@ -639,21 +639,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
         
+        //guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
+        var listMenuItems: [UIMenuItem] = []
+        
+        becomeFirstResponder()
+        
         if UIPasteboard.general.items.count > 0 {
-            
-            let touchPoint = gestureRecognizer.location(in: collectionView)
-            becomeFirstResponder()
-            UIMenuController.shared.menuItems = [UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:)))]
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:))))
+        }
+        
+        let touchPoint = gestureRecognizer.location(in: collectionView)
+        if let indexPath = collectionView.indexPathForItem(at: touchPoint) {
+            if let metadata = dataSource?.cellForItemAt(indexPath: indexPath) {
+                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLook(_:))))
+                metadataTouch = metadata
+            }
+        }
+        
+        if listMenuItems.count > 0 {
+            UIMenuController.shared.menuItems = listMenuItems
             UIMenuController.shared.setTargetRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0), in: collectionView)
             UIMenuController.shared.setMenuVisible(true, animated: true)
         }
     }
     
-    // MARK: - PASTE
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
-    }
+    // MARK: - PASTE / QUICKLOOK
     
     @objc func pasteFiles(_ notification: Any) {
         
@@ -703,10 +713,42 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } catch { }
     }
     
+    @objc func openQuickLook(_ notification: Any) {
+        guard let metadata = metadataTouch else { return }
+        
+        let selector = "selectorLoadFileQuickLook"
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+            
+        } else {
+            
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+        }
+    }
+    
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        
+        if (#selector(openQuickLook(_:)) == action) {
+            guard let metadata = metadataTouch else { return false }
+            if metadata.directory || metadata.status != k_metadataStatusNormal {
+                return false
+            }
+        }
+
+        return true
+    }
+    
     // MARK: - SEGUE
     
     @objc func segue(metadata: tableMetadata) {
-        self.metadataPush = metadata
+        self.metadataTouch = metadata
         performSegue(withIdentifier: "segueDetail", sender: self)
     }
         
@@ -722,7 +764,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-                segueViewController.metadata = metadataPush
+                segueViewController.metadata = metadataTouch
             }
         }
     }
@@ -797,7 +839,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
-        metadataPush = metadata
+        metadataTouch = metadata
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -816,14 +858,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         if metadata.directory {
             
-            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataPush!.serverUrl, addFileName: metadataPush!.fileName) else { return }
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
             
             if layoutKey == k_layout_view_favorite {
             
                 let ncFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
             
                 ncFavorite.serverUrl = serverUrlPush
-                ncFavorite.titleCurrentFolder = metadataPush!.fileNameView
+                ncFavorite.titleCurrentFolder = metadataTouch!.fileNameView
             
                 self.navigationController?.pushViewController(ncFavorite, animated: true)
             }
@@ -833,7 +875,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
                 
                 ncOffline.serverUrl = serverUrlPush
-                ncOffline.titleCurrentFolder = metadataPush!.fileNameView
+                ncOffline.titleCurrentFolder = metadataTouch!.fileNameView
                 
                 self.navigationController?.pushViewController(ncOffline, animated: true)
             }
@@ -858,10 +900,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
-            if CCUtility.fileProviderStorageExists(metadataPush?.ocId, fileNameView: metadataPush?.fileNameView) {
+            if CCUtility.fileProviderStorageExists(metadataTouch?.ocId, fileNameView: metadataTouch?.fileNameView) {
                 performSegue(withIdentifier: "segueDetail", sender: self)
             } else {
-                NCNetworking.shared.download(metadata: metadataPush!, selector: selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
             }
         }
     }

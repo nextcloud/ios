@@ -66,7 +66,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var serverUrlPush = ""
-    private var metadataPush: tableMetadata?
+    private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
     
     private var isEditMode = false
@@ -374,7 +374,7 @@ extension NCSelect: UICollectionViewDelegate {
             guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
 
             self.serverUrlPush = serverUrlPush
-            self.metadataPush = metadata
+            self.metadataTouch = metadata
             
             visualController.delegate = delegate
             visualController.hideButtonCreateFolder = hideButtonCreateFolder
@@ -390,7 +390,7 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.overwrite = overwrite
             visualController.array = array
 
-            visualController.titleCurrentFolder = metadataPush!.fileNameView
+            visualController.titleCurrentFolder = metadataTouch!.fileNameView
             visualController.serverUrl = serverUrlPush
                    
             self.navigationController?.pushViewController(visualController, animated: true)

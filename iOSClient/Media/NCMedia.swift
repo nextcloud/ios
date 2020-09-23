@@ -34,7 +34,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     public var metadatas: [tableMetadata] = []
-    private var metadataPush: tableMetadata?
+    private var metadataTouch: tableMetadata?
     private var account: String = ""
 
     private var predicateDefault: NSPredicate?
@@ -456,7 +456,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
-                segueViewController.metadata = metadataPush
+                segueViewController.metadata = metadataTouch
                 segueViewController.metadatas = metadatas
                 segueViewController.mediaFilterImage = true
             }
@@ -500,7 +500,7 @@ extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let metadata = metadatas[indexPath.row]
-        metadataPush = metadata
+        metadataTouch = metadata
         
         if isEditMode {
             if let index = selectocId.firstIndex(of: metadata.ocId) {
