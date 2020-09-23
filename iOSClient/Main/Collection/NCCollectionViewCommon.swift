@@ -644,9 +644,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         becomeFirstResponder()
         
-        if UIPasteboard.general.items.count > 0 {
-            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:))))
-        }
+        listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:))))
         
         let touchPoint = gestureRecognizer.location(in: collectionView)
         if let indexPath = collectionView.indexPathForItem(at: touchPoint) {
@@ -735,14 +733,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         
+        if (#selector(pasteFiles(_:)) == action) {
+            if UIPasteboard.general.items.count > 0 {
+                return true
+            }
+        }
+        
         if (#selector(openQuickLook(_:)) == action) {
             guard let metadata = metadataTouch else { return false }
-            if metadata.directory || metadata.status != k_metadataStatusNormal {
-                return false
+            if !metadata.directory && metadata.status == k_metadataStatusNormal {
+                return true
             }
         }
 
-        return true
+        return false
     }
     
     // MARK: - SEGUE
