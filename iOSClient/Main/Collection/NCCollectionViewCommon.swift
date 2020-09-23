@@ -109,7 +109,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
-        refreshControl.addTarget(self, action: #selector(reloadDataSourceNetwork), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self
@@ -777,7 +777,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         richWorkspaceText = directory?.richWorkspace
     }
     @objc func reloadDataSource(_ notification: NSNotification) { }
-    @objc func reloadDataSourceNetwork() { }
+    @objc func reloadDataSourceNetwork(forced: Bool = false) { }
+    @objc func reloadDataSourceNetworkRefreshControl() {
+        reloadDataSourceNetwork(forced: true)
+    }
     @objc func networkSearch() {
         if literalSearch?.count ?? 0 > 1 {
         

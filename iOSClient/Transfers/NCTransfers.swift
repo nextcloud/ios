@@ -219,8 +219,8 @@ class NCTransfers: NCCollectionViewCommon  {
         collectionView.reloadData()
     }
     
-    override func reloadDataSourceNetwork() {
-        super.reloadDataSourceNetwork()
+    override func reloadDataSourceNetwork(forced: Bool = false) {
+        super.reloadDataSourceNetwork(forced: forced)
         
         reloadDataSource()
     }
