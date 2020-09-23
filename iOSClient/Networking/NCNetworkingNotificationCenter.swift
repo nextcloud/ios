@@ -100,7 +100,16 @@ import Foundation
                         
                     case selectorLoadCopy:
                         
-                        appDelegate.activeMain.copyFile(toPasteboard: metadata)
+                        var items = UIPasteboard.general.items
+                        
+                        do {
+                            let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
+                            items.append([k_metadataKeyedUnarchiver:data])
+                        } catch {
+                            print("error")
+                        }
+                        
+                        UIPasteboard.general.setItems(items, options: [:])
                         
                     case selectorLoadOffline:
                         

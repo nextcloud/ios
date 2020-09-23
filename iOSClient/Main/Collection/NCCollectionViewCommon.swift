@@ -694,7 +694,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func copyFileMenu(_ notification: Any) {
         var metadatas: [tableMetadata] = []
-        var items = [[String : Any]]()
+        var items = UIPasteboard.general.items
 
         if isEditMode {
             for ocId in selectOcId {
@@ -708,11 +708,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
                 
         for metadata in metadatas {
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                items.append([k_metadataKeyedUnarchiver:data])
-            } catch {
-                print("error")
+            
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                do {
+                    let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
+                    items.append([k_metadataKeyedUnarchiver:data])
+                } catch {
+                    print("error")
+                }
+            } else {
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selectorLoadCopy, "errorCode": 0, "errorDescription": "" ])
             }
         }
         
