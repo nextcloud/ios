@@ -459,14 +459,11 @@
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
-                        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-                            [metadataFull addObject:metadataMOVForUpload];
-                        }
-                        
-                        if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@", metadataMOVForUpload.fileName]];
+                        [metadataFull addObject:metadataMOVForUpload];
+                                                
+                        // Update database Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUpload])
                             [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataMOVForUpload];
-                        }
                     }
                     
                     dispatch_semaphore_signal(semaphore);
@@ -476,19 +473,13 @@
                        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
             }
             
-            if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-                [metadataFull addObject:metadataForUpload];
-            }
+            [metadataFull addObject:metadataForUpload];
                        
+            // Update database Auto Upload
             if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                
-                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@ with Identifier %@", metadataForUpload.fileName, metadataForUpload.assetLocalIdentifier]];
-                [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataForUpload];
-                
-                // Add asset in table Photo Library
-                if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-                    (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.account];
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+                });
             }
         }
     }
@@ -503,6 +494,19 @@
         // START
         [[appDelegate networkingAutoUpload] startProcess];
     });
+}
+
+- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
+{
+    @synchronized(self) {
+        
+        [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadata];
+        
+        // Add asset in table Photo Library
+        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
+            (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.account];
+        }
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
