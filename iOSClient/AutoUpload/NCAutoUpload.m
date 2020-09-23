@@ -459,12 +459,13 @@
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
-                        [metadataFull addObject:metadataMOVForUpload];
-                                                
-                        // Update database Auto Upload
+                        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                            [metadataFull addObject:metadataMOVForUpload];
+                        }
+                        
                         if ([selector isEqualToString:selectorUploadAutoUpload]) {
                             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@", metadataMOVForUpload.fileName]];
-                            [[NCManageDatabase sharedInstance] addMetadata:metadataMOVForUpload];
+                            [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataMOVForUpload];
                         }
                     }
                     
@@ -475,13 +476,19 @@
                        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
             }
             
-            [metadataFull addObject:metadataForUpload];
+            if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                [metadataFull addObject:metadataForUpload];
+            }
                        
-            // Update database Auto Upload
             if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
-                });
+                
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@ with Identifier %@", metadataForUpload.fileName, metadataForUpload.assetLocalIdentifier]];
+                [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataForUpload];
+                
+                // Add asset in table Photo Library
+                if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
+                    (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.account];
+                }
             }
         }
     }
@@ -496,20 +503,6 @@
         // START
         [[appDelegate networkingAutoUpload] startProcess];
     });
-}
-
-- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
-{
-    @synchronized(self) {
-        
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"AutoUpload Photo Library added file %@ with Identifier %@", metadata.fileName, metadata.assetLocalIdentifier]];
-        [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-        // Add asset in table Photo Library
-        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-            (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset] account:appDelegate.account];
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

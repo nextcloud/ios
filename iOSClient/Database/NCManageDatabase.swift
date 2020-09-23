@@ -1847,6 +1847,24 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func addMetadataForAutoUpload(_ metadata: tableMetadata) {
+
+        let realm = try! Realm()
+        realm.refresh()
+        
+        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session == %@", metadata.account, metadata.serverUrl, metadata.fileName, metadata.session)).first  != nil {
+            return
+        }
+
+        do {
+            try realm.safeWrite {
+                realm.add(metadata, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     @objc func renameMetadata(fileNameTo: String, ocId: String) {
         
         let realm = try! Realm()
