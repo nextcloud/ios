@@ -121,7 +121,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         // Long Press on CollectionView
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(gestureRecognizer:)))
+        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(gestureRecognizer:metadata:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
@@ -624,9 +624,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+            longPressCollecationView(gestureRecognizer: gestureRecognizer, metadata: metadata)
+        }
     }
     
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+            longPressCollecationView(gestureRecognizer: gestureRecognizer, metadata: metadata)
+        }
     }
     
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -635,23 +641,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
     }
     
-    @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer) {
+    @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer, metadata: tableMetadata?) {
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
         
-        //guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         var listMenuItems: [UIMenuItem] = []
+        let touchPoint = gestureRecognizer.location(in: collectionView)
+        metadataTouch = metadata
         
         becomeFirstResponder()
         
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFiles(_:))))
         
-        let touchPoint = gestureRecognizer.location(in: collectionView)
-        if let indexPath = collectionView.indexPathForItem(at: touchPoint) {
-            if let metadata = dataSource?.cellForItemAt(indexPath: indexPath) {
-                listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLook(_:))))
-                metadataTouch = metadata
-            }
+        if metadata != nil {
+            listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLook(_:))))
         }
         
         if listMenuItems.count > 0 {
@@ -713,16 +716,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     @objc func openQuickLook(_ notification: Any) {
         guard let metadata = metadataTouch else { return }
-        
-        let selector = "selectorLoadFileQuickLook"
-        
+                
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selector, "errorCode": 0, "errorDescription": "" ])
-            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selectorLoadFileQuickLook, "errorCode": 0, "errorDescription": "" ])
         } else {
-            
-            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+            NCNetworking.shared.download(metadata: metadata, selector: selectorLoadFileQuickLook) { (_) in }
         }
     }
     
