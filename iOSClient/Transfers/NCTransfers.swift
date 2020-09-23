@@ -166,11 +166,9 @@ class NCTransfers: NCCollectionViewCommon  {
             UIMenuController.shared.setMenuVisible(true, animated: true)
         }
     }
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
-    }
-    
+  
+    override func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer, metadata: tableMetadata?) { }
+  
     @objc func startTask(_ notification: Any) {
         
         guard let metadata = metadataTemp else { return }
