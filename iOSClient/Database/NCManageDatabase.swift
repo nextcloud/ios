@@ -1882,7 +1882,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
+    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
         
         let realm = try! Realm()
         var ocIdsUdate : [String] = []
@@ -1909,7 +1909,10 @@ class NCManageDatabase: NSObject {
                     
                     if let result = metadatasResult.first(where: { $0.ocId == metadata.ocId }) {
                         // update
-                        if result.status == k_metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.livePhoto != metadata.livePhoto || result.permissions != metadata.permissions) {
+                        if result.status == k_metadataStatusNormal && (result.etag != metadata.etag || result.fileNameView != metadata.fileNameView || result.date != metadata.date || result.permissions != metadata.permissions) {
+                            ocIdsUdate.append(metadata.ocId)
+                            realm.add(metadata, update: .all)
+                        } else if result.status == k_metadataStatusNormal && addCompareLivePhoto && result.livePhoto != metadata.livePhoto {
                             ocIdsUdate.append(metadata.ocId)
                             realm.add(metadata, update: .all)
                         }

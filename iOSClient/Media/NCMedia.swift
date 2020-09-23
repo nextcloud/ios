@@ -696,7 +696,7 @@ extension NCMedia {
         }
     }
     
-    private func searchOldPhotoVideo(value: Int = -30, limit: Int = 100) {
+    private func searchOldPhotoVideo(value: Int = -30, limit: Int = 300) {
         
         if oldInProgress { return }
         else { oldInProgress = true }
@@ -732,9 +732,9 @@ extension NCMedia {
                         let predicateDate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                         let predicateResult = NSCompoundPredicate.init(andPredicateWithSubpredicates:[predicateDate, self.predicateDefault!])
                         let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicateResult)
-                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addExistsInLocal: false, addCompareEtagLocal: false)
+                        let metadatasChanged = NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult, addCompareLivePhoto: false, addExistsInLocal: false, addCompareEtagLocal: false)
                         
-                        if metadatasChanged.metadatasUpdate.count < limit {
+                        if metadatasChanged.metadatasUpdate.count == 0 {
                             
                             self.researchOldPhotoVideo(value: value, limit: limit, withElseReloadDataSource: true)
                             
@@ -769,7 +769,7 @@ extension NCMedia {
         }
     }
     
-    @objc func searchNewPhotoVideo(limit: Int = 100) {
+    @objc func searchNewPhotoVideo(limit: Int = 300) {
         
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
