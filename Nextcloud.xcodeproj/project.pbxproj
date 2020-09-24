@@ -82,6 +82,10 @@
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
+		F7250C76251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */; };
+		F7250C77251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */; };
+		F7250C78251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */; };
+		F7250C79251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
@@ -427,6 +431,7 @@
 		F722814223C8C34500C41898 /* NCRichWorkspace.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCRichWorkspace.xib; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
+		F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDatabaseJSON.swift; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F728B2BB23E83AD200E12DA0 /* Notification_Service_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Notification_Service_Extension.plist; sourceTree = "<group>"; };
@@ -1200,6 +1205,7 @@
 				F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */,
 				F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */,
 				F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */,
+				F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -1920,6 +1926,7 @@
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
 				F73D5E4A246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
+				F7250C79251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */,
 				F74AF3A7247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				2CB7D1CA23E2EDCB00376EF9 /* NCPushNotificationEncryption.m in Sources */,
 				F782FDC424E6933900666099 /* NCUtility.swift in Sources */,
@@ -1946,6 +1953,7 @@
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
+				F7250C77251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */,
 				F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */,
@@ -1959,6 +1967,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
+				F7250C78251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */,
 				F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */,
 				F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */,
 				F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
@@ -1988,6 +1997,7 @@
 				F7E09CE323E3088000FB3E9E /* NCMainRefreshControl.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
+				F7250C76251C95B4005CF12F /* NCDatabaseJSON.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
 				37C83A0F24532BA600618A3B /* CCMain+Swift.swift in Sources */,

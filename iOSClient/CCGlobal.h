@@ -81,6 +81,9 @@
 #define k_databaseDefault                               @"nextcloud.realm"
 #define k_databaseSchemaVersion                         143
 
+// Database JSON
+#define k_databaseDefaultJSON                           @"nextcloud.json"
+
 // Intro selector
 #define k_intro_login                                   0
 #define k_intro_signup                                  1
