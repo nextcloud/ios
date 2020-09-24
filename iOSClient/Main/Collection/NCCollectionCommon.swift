@@ -120,6 +120,7 @@ class NCCollectionCommon: NSObject {
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
             cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil

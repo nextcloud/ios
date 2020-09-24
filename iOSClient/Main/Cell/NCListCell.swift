@@ -70,8 +70,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
 
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
-        
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
