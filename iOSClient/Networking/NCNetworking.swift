@@ -612,6 +612,7 @@ import Queuer
                 for task in tasks {
                     listOcId.append(task.description)
                 }
+                completion(listOcId)
             })
         })
     }
