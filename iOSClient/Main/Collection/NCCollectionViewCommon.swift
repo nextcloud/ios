@@ -1136,7 +1136,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         
-        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: metadata.serverUrl, isEditMode: isEditMode, isFolderEncrypted: isEncryptedFolder,selectocId: selectOcId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self, dataSource: dataSource)
+        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: metadata.serverUrl, isEditMode: isEditMode, isEncryptedFolder: isEncryptedFolder, selectocId: selectOcId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self, dataSource: dataSource)
         
         return cell
     }
