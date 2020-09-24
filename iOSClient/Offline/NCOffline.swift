@@ -49,7 +49,7 @@ class NCOffline: NCCollectionViewCommon  {
         super.viewWillAppear(animated)
     }
     
-    // MARK: - NC API & Algorithm
+    // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource() {
         super.reloadDataSource()

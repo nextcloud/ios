@@ -203,7 +203,7 @@ class NCTransfers: NCCollectionViewCommon  {
         return CGSize(width: collectionView.frame.width, height: 0)
     }
     
-    // MARK: - NC API & Algorithm
+    // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource() {
         super.reloadDataSource()

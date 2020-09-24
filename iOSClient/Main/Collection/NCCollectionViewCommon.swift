@@ -157,10 +157,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         self.navigationItem.title = titleCurrentFolder
                 
-        // get auto upload folder
-        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
@@ -853,11 +849,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - NC API & Algorithm
+    // MARK: - DataSource + NC Endpoint
     
     @objc func reloadDataSource() {
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
+        
+        // get auto upload folder
+        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
     }
     @objc func reloadDataSource(_ notification: NSNotification) { }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
