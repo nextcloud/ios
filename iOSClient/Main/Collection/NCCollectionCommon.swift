@@ -290,6 +290,9 @@ class NCCollectionCommon: NSObject {
                 cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
             }
             
+            // Button Share
+            cell.hideButtonShare(status: metadata.e2eEncrypted)
+            
             // Remove last separator
             if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
                 cell.separator.isHidden = true

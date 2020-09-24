@@ -39,6 +39,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var imageShared: UIImageView!
+    @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var sharedLeftConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
@@ -61,9 +62,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
 
     override func awakeFromNib() {
         super.awakeFromNib()
-       
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
-        
+               
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
         
@@ -119,6 +118,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     func hideButtonMore() {
         imageMore.isHidden = true
         sharedLeftConstraint.constant = 5
+    }
+    
+    func hideButtonShare(status: Bool) {
+        imageShared.isHidden = status
+        buttonShared.isHidden = status
     }
 }
 

@@ -129,16 +129,18 @@ extension NCCollectionViewCommon {
         }
 
         // All
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_details_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
-                }
+        if !metadata.e2eEncrypted {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_details_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    }
+                )
             )
-        )
-
+        }
+        
         if !metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file {
             actions.append(
                 NCMenuAction(

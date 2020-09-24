@@ -148,6 +148,7 @@
             <size key="customSize" width="650" height="58"/>
             <connections>
                 <outlet property="buttonMore" destination="yhy-xd-w5C" id="agm-M9-xtq"/>
+                <outlet property="buttonShared" destination="o4u-0K-Qpt" id="5hT-Su-kWL"/>
                 <outlet property="imageFavorite" destination="C4K-Nv-phA" id="3nc-zz-N5c"/>
                 <outlet property="imageItem" destination="w2m-Vw-hpd" id="iY5-ed-crD"/>
                 <outlet property="imageItemLeftConstraint" destination="mBb-ff-7HD" id="fsR-5N-1NC"/>
