@@ -89,10 +89,10 @@
 @property (nonatomic, retain) NSString *activeServerUrl;
 @property (nonatomic, retain) id activeViewController;
 
-@property (nonatomic, strong) CCMain *activeMain;
-@property (nonatomic, strong) CCMain *homeMain;
-@property (nonatomic, strong) NCFavorite *activeFavorite;
-@property (nonatomic, strong) NCMedia *activeMedia;
+@property (nonatomic, retain) CCMain *activeMain;
+@property (nonatomic, retain) CCMain *homeMain;
+@property (nonatomic, retain) NCFavorite *activeFavorite;
+@property (nonatomic, retain) NCMedia *activeMedia;
 @property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
