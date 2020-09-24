@@ -206,6 +206,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func initializeMain() {
         self.navigationController?.popToRootViewController(animated: false)
+        appDelegate.listFavoriteVC.removeAllObjects()
+        appDelegate.listOfflineVC.removeAllObjects()
     }
     
     @objc func changeTheming() {
