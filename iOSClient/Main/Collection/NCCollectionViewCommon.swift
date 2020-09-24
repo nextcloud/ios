@@ -218,7 +218,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
-        reloadDataSource()
+        reloadDataSourceNetwork(forced: true)
     }
     
     @objc func deleteFile(_ notification: NSNotification) {
