@@ -1554,14 +1554,14 @@
 {
     NSString *home = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
         
-    if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
-        
-        return false;
-        
-    } else if (e2eEncrypted) {
-        
+    if (e2eEncrypted) {
+    
         return true;
         
+    } else if ([serverUrl isEqualToString:home] || [serverUrl isEqualToString:@".."]) {
+        
+        return false;
+
     } else {
        
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];

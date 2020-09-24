@@ -49,7 +49,7 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
@@ -130,7 +130,7 @@ extension NCCollectionViewCommon {
         }
 
         // All
-        if !metadata.e2eEncrypted {
+        if !isFolderEncrypted { {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
