@@ -48,12 +48,13 @@ extension NCCollectionViewCommon {
     private func initMenuMore(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let serverUrl = metadata.serverUrl+"/"+metadata.fileName
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
         if metadata.directory {
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!)) {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
                 isOffline = directory.offline
             }
         } else {
@@ -107,13 +108,13 @@ extension NCCollectionViewCommon {
                     action: { menuAction in
                         if isOffline {
                             if metadata.directory {
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: false, account: self.appDelegate.account)
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
                             } else {
                                 NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
                             }
                         } else {
                             if metadata.directory {
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!, offline: true, account: self.appDelegate.account)
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
                                 NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
                             } else {
                                 NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
@@ -224,7 +225,6 @@ extension NCCollectionViewCommon {
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                                 NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
                                 NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
@@ -248,7 +248,6 @@ extension NCCollectionViewCommon {
                     action: { menuAction in
                         NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
                             if errorCode == 0 {
-                                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                                 NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
                                 NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
                                 NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
