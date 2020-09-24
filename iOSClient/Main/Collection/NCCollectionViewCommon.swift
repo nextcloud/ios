@@ -127,6 +127,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
         
+        // Notification
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         
