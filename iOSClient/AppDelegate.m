@@ -108,7 +108,9 @@
 
     self.listProgressMetadata = [NSMutableDictionary new];
     self.listMainVC = [NSMutableDictionary new];
-   
+    self.listFavoriteVC = [NSMutableDictionary new];
+    self.listOfflineVC = [NSMutableDictionary new];
+
     // Push Notification
     [application registerForRemoteNotifications];
     

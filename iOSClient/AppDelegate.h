@@ -104,6 +104,9 @@
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
+@property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;
+@property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
+
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
 @property (nonatomic) UIUserInterfaceStyle preferredUserInterfaceStyle API_AVAILABLE(ios(12.0));

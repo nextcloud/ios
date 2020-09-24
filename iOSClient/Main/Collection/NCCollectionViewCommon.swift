@@ -129,6 +129,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.addGestureRecognizer(longPressedGesture)
         
         // Notification
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         
@@ -202,6 +204,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     // MARK: - NotificationCenter
 
+    @objc func initializeMain() {
+        self.navigationController?.popToRootViewController(animated: false)
+    }
+    
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
@@ -972,24 +978,50 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
             
+            // FAVORITE
             if layoutKey == k_layout_view_favorite {
             
-                let ncFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
-            
-                ncFavorite.serverUrl = serverUrlPush
-                ncFavorite.titleCurrentFolder = metadataTouch!.fileNameView
-            
-                self.navigationController?.pushViewController(ncFavorite, animated: true)
+                if let viewController = appDelegate.listFavoriteVC.value(forKey: serverUrlPush) {
+                    guard let vcFavorite = (viewController as? NCFavorite) else { return }
+                    
+                    if vcFavorite.isViewLoaded {
+                        self.navigationController?.pushViewController(vcFavorite, animated: true)
+                    }
+
+                } else {
+                                        
+                    let vcFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
+                
+                    vcFavorite.serverUrl = serverUrlPush
+                    vcFavorite.titleCurrentFolder = metadataTouch!.fileNameView
+                
+                    appDelegate.listFavoriteVC.setValue(vcFavorite, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcFavorite, animated: true)
+                }
             }
             
+            // OFFLINE
             if layoutKey == k_layout_view_offline {
                 
-                let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-                
-                ncOffline.serverUrl = serverUrlPush
-                ncOffline.titleCurrentFolder = metadataTouch!.fileNameView
-                
-                self.navigationController?.pushViewController(ncOffline, animated: true)
+                if let viewController = appDelegate.listOfflineVC.value(forKey: serverUrlPush) {
+                    guard let vcOffline = (viewController as? NCOffline) else { return }
+                    
+                    if vcOffline.isViewLoaded {
+                        self.navigationController?.pushViewController(vcOffline, animated: true)
+                    }
+                    
+                } else {
+                    
+                    let vcOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+                    
+                    vcOffline.serverUrl = serverUrlPush
+                    vcOffline.titleCurrentFolder = metadataTouch!.fileNameView
+                    
+                    appDelegate.listOfflineVC.setValue(vcOffline, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcOffline, animated: true)
+                }
             }
             
         } else {
