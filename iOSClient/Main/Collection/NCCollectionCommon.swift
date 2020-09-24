@@ -83,7 +83,7 @@ class NCCollectionCommon: NSObject {
     
     // MARK: -
     
-    func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
+    func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, isEncryptedFolder: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
         
         var tableShare: tableShare?
         
@@ -289,6 +289,13 @@ class NCCollectionCommon: NSObject {
             // Live Photo
             if metadata.livePhoto {
                 cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
+            }
+            
+            // E2EE
+            if metadata.e2eEncrypted || isEncryptedFolder {
+                cell.hideButtonShare(true)
+            } else {
+                cell.hideButtonShare(false)
             }
             
             // Remove last separator

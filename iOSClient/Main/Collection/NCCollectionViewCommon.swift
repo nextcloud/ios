@@ -35,6 +35,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
+    internal var isEncryptedFolder = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
     internal var metadatasSource: [tableMetadata] = []
@@ -875,6 +876,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
+        // E2EE
+        isEncryptedFolder = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, account: appDelegate.account, urlBase: appDelegate.urlBase)
+
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
@@ -1132,7 +1136,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         
         let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         
-        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: metadata.serverUrl, isEditMode: isEditMode, selectocId: selectOcId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self, dataSource: dataSource)
+        NCCollectionCommon.shared.cellForItemAt(indexPath: indexPath, collectionView: collectionView, cell: cell, metadata: metadata, metadataFolder: metadataFolder, serverUrl: metadata.serverUrl, isEditMode: isEditMode, isFolderEncrypted: isEncryptedFolder,selectocId: selectOcId, autoUploadFileName: autoUploadFileName, autoUploadDirectory: autoUploadDirectory, hideButtonMore: false, downloadThumbnail: true, shares: shares, source: self, dataSource: dataSource)
         
         return cell
     }

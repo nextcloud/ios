@@ -118,7 +118,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         sharedLeftConstraint.constant = 5
     }
     
-    func hideButtonShare(status: Bool) {
+    func hideButtonShare(_ status: Bool) {
         imageShared.isHidden = status
         buttonShared.isHidden = status
     }
