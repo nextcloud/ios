@@ -74,6 +74,7 @@ import Queuer
         return session
     }()
     
+#if EXTENSION
     @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
         configuration.allowsCellularAccess = true
@@ -85,6 +86,7 @@ import Queuer
         let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
         return session
     }()
+#endif
     
     //MARK: - init
     
@@ -567,9 +569,7 @@ import Queuer
                 session = self.sessionManagerBackground
             } else if metadata.session == sessionIdentifierBackgroundWWan {
                 session = self.sessionManagerBackgroundWWan
-            } else if metadata.session == sessionIdentifierBackgroundExtension {
-                session = self.sessionManagerBackgroundExtension
-            }
+            } 
             
             var taskUpload: URLSessionTask?
             
@@ -610,12 +610,6 @@ import Queuer
                 for task in tasks {
                     listOcId.append(task.description)
                 }
-                self.sessionManagerBackgroundExtension.getAllTasks(completionHandler: { (tasks) in
-                    for task in tasks {
-                        listOcId.append(task.description)
-                    }
-                    completion(listOcId)
-                })
             })
         })
     }
@@ -660,8 +654,6 @@ import Queuer
             session = NCNetworking.shared.sessionManagerBackground
         } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
             session = NCNetworking.shared.sessionManagerBackgroundWWan
-        } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
-            session = NCNetworking.shared.sessionManagerBackgroundExtension
         }
         
         session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
