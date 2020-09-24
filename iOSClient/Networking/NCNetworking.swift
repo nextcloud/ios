@@ -74,7 +74,7 @@ import Queuer
         return session
     }()
     
-#if EXTENSION
+    #if EXTENSION
     @objc public lazy var sessionManagerBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackgroundExtension)
         configuration.allowsCellularAccess = true
@@ -86,7 +86,7 @@ import Queuer
         let session = URLSession(configuration: configuration, delegate: NCCommunicationBackground.shared, delegateQueue: OperationQueue.main)
         return session
     }()
-#endif
+    #endif
     
     //MARK: - init
     
@@ -95,7 +95,9 @@ import Queuer
         
         _ = sessionManagerBackground
         _ = sessionManagerBackgroundWWan
+        #if EXTENSION
         _ = sessionIdentifierBackgroundExtension
+        #endif
     }
     
     //MARK: - Communication Delegate
@@ -569,7 +571,7 @@ import Queuer
                 session = self.sessionManagerBackground
             } else if metadata.session == sessionIdentifierBackgroundWWan {
                 session = self.sessionManagerBackgroundWWan
-            } 
+            }
             
             var taskUpload: URLSessionTask?
             
