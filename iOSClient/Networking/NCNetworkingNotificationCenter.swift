@@ -103,8 +103,8 @@ import Foundation
                         var items = UIPasteboard.general.items
                         
                         do {
-                            let data = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
-                            items.append([k_metadataKeyedUnarchiver:data])
+                            let etagPasteboard = try NSKeyedArchiver.archivedData(withRootObject: metadata.ocId, requiringSecureCoding: false)
+                            items.append([k_metadataKeyedUnarchiver:etagPasteboard])
                         } catch {
                             print("error")
                         }
