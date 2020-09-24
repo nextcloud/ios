@@ -121,7 +121,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         // Long Press on CollectionView
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(gestureRecognizer:metadata:)))
+        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
@@ -629,13 +629,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
-            longPressCollecationView(gestureRecognizer: gestureRecognizer, metadata: metadata)
+            metadataTouch = metadata
+            longPressCollecationView(gestureRecognizer)
         }
     }
     
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
-            longPressCollecationView(gestureRecognizer: gestureRecognizer, metadata: metadata)
+            metadataTouch = metadata
+            longPressCollecationView(gestureRecognizer)
         }
     }
     
@@ -645,19 +647,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
     }
     
-    @objc func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer, metadata: tableMetadata?) {
+    @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
         
         var listMenuItems: [UIMenuItem] = []
         let touchPoint = gestureRecognizer.location(in: collectionView)
-        metadataTouch = metadata
         
         becomeFirstResponder()
         
         listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
         
-        if metadata != nil {
+        if metadataTouch != nil {
             listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_copy_file_", comment: ""), action: #selector(copyFileMenu(_:))))
             listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLookMenu(_:))))
             if !NCBrandOptions.sharedInstance.disable_openin_file {

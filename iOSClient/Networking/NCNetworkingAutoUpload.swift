@@ -90,6 +90,11 @@ class NCNetworkingAutoUpload: NSObject {
                             continue
                         }
                         
+                        // Session Extension ? skipped
+                        if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundExtension {
+                            continue
+                        }
+                        
                         if CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase) {
                             if UIApplication.shared.applicationState == .background { break }
                             maxConcurrentOperationUpload = 1

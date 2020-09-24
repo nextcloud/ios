@@ -167,7 +167,7 @@ class NCTransfers: NCCollectionViewCommon  {
         }
     }
   
-    override func longPressCollecationView(gestureRecognizer: UILongPressGestureRecognizer, metadata: tableMetadata?) { }
+    override func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) { }
   
     @objc func startTask(_ notification: Any) {
         
