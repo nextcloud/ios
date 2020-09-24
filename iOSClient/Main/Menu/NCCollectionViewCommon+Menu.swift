@@ -24,6 +24,7 @@
 //
 
 import FloatingPanel
+import NCCommunication
 
 extension NCCollectionViewCommon {
 
@@ -47,7 +48,8 @@ extension NCCollectionViewCommon {
     private func initMenuMore(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)        
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl+"/"+metadata.fileName, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
         if metadata.directory {
@@ -149,37 +151,38 @@ extension NCCollectionViewCommon {
             )
         }
         
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_rename_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
-                    
-                    alertController.addTextField { (textField) in
-                        textField.text = metadata.fileNameView
-                    }
+        if !isFolderEncrypted {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_rename_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+                        
+                        alertController.addTextField { (textField) in
+                            textField.text = metadata.fileNameView
+                        }
 
-                    let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+                        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
 
-                    let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                        if let fileNameNew = alertController.textFields?.first?.text {
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
-                                if errorCode != 0 {
-                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                            if let fileNameNew = alertController.textFields?.first?.text {
+                                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew, urlBase: appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
+                                    if errorCode != 0 {
+                                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                    }
                                 }
                             }
-                        }
-                    })
+                        })
 
-                    alertController.addAction(cancelAction)
-                    alertController.addAction(okAction)
+                        alertController.addAction(cancelAction)
+                        alertController.addAction(okAction)
 
-                    self.present(alertController, animated: true, completion: nil)
-                }
+                        self.present(alertController, animated: true, completion: nil)
+                    }
+                )
             )
-        )
-        
+        }
 
         if !isFolderEncrypted && serverUrl != "" {
             actions.append(
@@ -210,7 +213,54 @@ extension NCCollectionViewCommon {
                 }
             )
         )
-
+        
+        if !metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: false) { (account, errorCode, errorDescription) in
+                            if errorCode == 0 {
+                                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: true, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: true)
+                                
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                            } else {
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                            }
+                        }
+                    }
+                )
+            )
+        }
+        
+        
+        if metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "lock"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCommunication.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { (account, errorCode, errorDescription) in
+                            if errorCode == 0 {
+                                let serverUrl = self.serverUrl + "/" + metadata.fileName
+                                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, serverUrlTo: nil, etag: nil, ocId: nil, fileId: nil, encrypted: false, richWorkspace: nil, account: metadata.account)
+                                NCManageDatabase.sharedInstance.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+                                
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
+                            } else {
+                                NCContentPresenter.shared.messageNotification(NSLocalizedString("_e2e_error_delete_mark_folder_", comment: ""), description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: .error, errorCode: errorCode)
+                            }
+                        }
+                    }
+                )
+            )
+        }
+        
         return actions
     }
     
