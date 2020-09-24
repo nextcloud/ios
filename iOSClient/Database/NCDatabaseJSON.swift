@@ -40,12 +40,13 @@ class NCDatabaseJSON: NSObject {
             
         }
         
+        /*
         do {
             //let data = try Data(contentsOf: databaseUrl)
         } catch {
                    // handle error
         }
-        
+        */
 //        if let dataFromString = jsonString.data(using: .utf8, allowLossyConversion: false) {
 //            let json = JSON(data: dataFromString)
 //        }

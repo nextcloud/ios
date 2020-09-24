@@ -23,12 +23,11 @@
 
 import Foundation
 
-@objc class NCNetworkingNotificationCenter: NSObject {
+@objc class NCNetworkingNotificationCenter: NSObject, UIDocumentInteractionControllerDelegate {
     @objc public static let shared: NCNetworkingNotificationCenter = {
         let instance = NCNetworkingNotificationCenter()
         
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
-
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         
         return instance
@@ -36,6 +35,7 @@ import Foundation
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerQuickLook: NCViewerQuickLook?
+    var docController: UIDocumentInteractionController?
     
     //MARK: - Download
 
@@ -65,15 +65,15 @@ import Foundation
                                                         
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
-                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
+                                openIn(fileURL: fileURL, selector: selector)
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
+                                openIn(fileURL: fileURL, selector: selector)
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
-                                NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
+                                openIn(fileURL: fileURL, selector: selector)
                                 
                             } else {
                                 
@@ -91,7 +91,7 @@ import Foundation
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
-                            NCMainCommon.shared.openIn(fileURL: fileURL, selector: selector)
+                            openIn(fileURL: fileURL, selector: selector)
                         }
                         
                     case selectorSaveAlbum:
@@ -141,6 +141,25 @@ import Foundation
         }
     }
     
+    func openIn(fileURL: URL, selector: String?) {
+        
+        docController = UIDocumentInteractionController(url: fileURL)
+        docController?.delegate = self
+        
+        if selector == selectorOpenInDetail {
+            guard let barButtonItem = appDelegate.activeDetail.navigationItem.rightBarButtonItem else { return }
+            guard let buttonItemView = barButtonItem.value(forKey: "view") as? UIView else { return }
+            
+            docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
+            
+        } else {
+            guard let splitViewController = appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
+                return }
+    
+            docController?.presentOptionsMenu(from: frame, in: view, animated: true)
+        }
+    }
+    
     //MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -158,6 +177,5 @@ import Foundation
             }
         }
     }
-    
 }
 

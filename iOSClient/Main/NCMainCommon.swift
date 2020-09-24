@@ -28,7 +28,7 @@ import NCCommunication
 
 //MARK: - Main Common
 
-class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentInteractionControllerDelegate {
+class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate {
     @objc static let shared: NCMainCommon = {
         let instance = NCMainCommon()
         instance.createImagesThemingColor()
@@ -36,7 +36,6 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
     }()
     
     var metadataEditPhoto: tableMetadata?
-    var docController: UIDocumentInteractionController?
 
     //MARK: -
     
@@ -468,25 +467,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate, UIDocumentI
 
     //MARK: - OpenIn
     
-    func openIn(fileURL: URL, selector: String?) {
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        docController = UIDocumentInteractionController(url: fileURL)
-        docController?.delegate = self
-        
-        if selector == selectorOpenInDetail {
-            guard let barButtonItem = appDelegate.activeDetail.navigationItem.rightBarButtonItem else { return }
-            guard let buttonItemView = barButtonItem.value(forKey: "view") as? UIView else { return }
-            
-            docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
-            
-        } else {
-            guard let splitViewController = appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
-                return }
     
-            docController?.presentOptionsMenu(from: frame, in: view, animated: true)
-        }
-    }
     
     //MARK: - OpenShare
     
