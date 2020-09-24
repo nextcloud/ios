@@ -29,28 +29,20 @@
 // to     : brand-Swift.h
 //
 #if !defined(EXTENSION)
-
-    #import "Nextcloud-Swift.h"
-
+#import "Nextcloud-Swift.h"
 #endif
 
 // Nextcloud Share
 #if defined(EXTENSION_SHARE)
-
-    #import "Share-Swift.h"
-
+#import "Share-Swift.h"
 #endif
 
 // Nextcloud File Provider Extension
 #if defined(EXTENSION_FILE_PROVIDER_EXTENSION)
-
-    #import "File_Provider_Extension-Swift.h"
-
+#import "File_Provider_Extension-Swift.h"
 #endif
 
 // Nextcloud Notification Service Extension
 #if defined(EXTENSION_NOTIFICATION_SERVICE)
-
-    #import "Notification_Service_Extension-Swift.h"
-
+#import "Notification_Service_Extension-Swift.h"
 #endif
