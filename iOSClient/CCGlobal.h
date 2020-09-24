@@ -325,6 +325,7 @@
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
 #define k_notificationCenter_reloadMediaDataSource      @"reloadMediaDataSource"
 #define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
+#define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
 
 #define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: metadata
 #define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
