@@ -88,6 +88,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.dimsBackgroundDuringPresentation = false
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
+            navigationItem.hidesSearchBarWhenScrolling = false
         }
         
         // Cell
