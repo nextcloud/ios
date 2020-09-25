@@ -85,10 +85,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
             searchController?.searchResultsUpdater = self
-            self.navigationItem.searchController = searchController
             searchController?.dimsBackgroundDuringPresentation = false
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
+            navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = false
         }
         
