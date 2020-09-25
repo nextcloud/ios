@@ -68,7 +68,11 @@ extension NCCollectionViewCommon {
             iconHeader = icon
         } else {
             if metadata.directory {
-                iconHeader = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+                if metadata.e2eEncrypted {
+                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderEncryptedImage
+                } else {
+                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderImage
+                }
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
             }
@@ -85,21 +89,19 @@ extension NCCollectionViewCommon {
         //
         // FAVORITE
         //
-        if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
-            actions.append(
-                NCMenuAction(
-                    title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
-                    action: { menuAction in
-                        NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
-                            if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                            }
+        actions.append(
+            NCMenuAction(
+                title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
+                action: { menuAction in
+                    NCNetworking.shared.favoriteMetadata(metadata, urlBase: appDelegate.urlBase) { (errorCode, errorDescription) in
+                        if errorCode != 0 {
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                         }
                     }
-                )
+                }
             )
-        }
+        )
         
         //
         // DETAIL
