@@ -46,6 +46,7 @@ extension NCCollectionViewCommon {
     }
     
     private func initMenuMore(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
+        
         var actions = [NCMenuAction]()
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let serverUrl = metadata.serverUrl+"/"+metadata.fileName
