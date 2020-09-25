@@ -82,7 +82,9 @@ extension NCCollectionViewCommon {
             )
         )
 
-        // Favorite
+        //
+        // FAVORITE
+        //
         if (layoutKey == k_layout_view_favorite && serverUrl == "") || (layoutKey != k_layout_view_favorite) {
             actions.append(
                 NCMenuAction(
@@ -99,38 +101,10 @@ extension NCCollectionViewCommon {
             )
         }
         
-        // Offline
-        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == "" || (layoutKey != k_layout_view_offline)) {
-            actions.append(
-                NCMenuAction(
-                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        if isOffline {
-                            if metadata.directory {
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
-                            } else {
-                                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
-                            }
-                        } else {
-                            if metadata.directory {
-                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
-                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
-                            } else {
-                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
-                                if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
-                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
-                                }
-                            }
-                        }
-                        self.reloadDataSource()
-                    }
-                )
-            )
-        }
-
-        // All
-        if !isFolderEncrypted { {
+        //
+        // DETAIL
+        //
+        if !isFolderEncrypted {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -142,6 +116,9 @@ extension NCCollectionViewCommon {
             )
         }
         
+        //
+        // OPEN IN
+        //
         if !metadata.directory && !NCBrandOptions.sharedInstance.disable_openin_file {
             actions.append(
                 NCMenuAction(
@@ -154,7 +131,10 @@ extension NCCollectionViewCommon {
             )
         }
         
-        if !isFolderEncrypted {
+        //
+        // RENAME
+        //
+        if !(isFolderEncrypted && metadata.serverUrl == serverUrlHome) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -187,6 +167,9 @@ extension NCCollectionViewCommon {
             )
         }
 
+        //
+        // COPY - MOVE
+        //
         if !isFolderEncrypted && serverUrl != "" {
             actions.append(
                 NCMenuAction(
@@ -199,6 +182,41 @@ extension NCCollectionViewCommon {
             )
         }
         
+        //
+        // OFFLINE
+        //
+        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == "" || (layoutKey != k_layout_view_offline)) {
+            actions.append(
+                NCMenuAction(
+                    title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        if isOffline {
+                            if metadata.directory {
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: false, account: self.appDelegate.account)
+                            } else {
+                                NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: false)
+                            }
+                        } else {
+                            if metadata.directory {
+                                NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl, offline: true, account: self.appDelegate.account)
+                                NCOperationQueue.shared.synchronizationMetadata(metadata, selector: selectorDownloadAllFile)
+                            } else {
+                                NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
+                                if let metadataLivePhoto = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
+                                    NCNetworking.shared.download(metadata: metadataLivePhoto, selector: selectorLoadOffline) { (_) in }
+                                }
+                            }
+                        }
+                        self.reloadDataSource()
+                    }
+                )
+            )
+        }
+        
+        //
+        // DELETE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
@@ -217,6 +235,9 @@ extension NCCollectionViewCommon {
             )
         )
         
+        //
+        // SET FOLDER E2EE
+        //
         if !metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
             actions.append(
                 NCMenuAction(
@@ -239,7 +260,9 @@ extension NCCollectionViewCommon {
             )
         }
         
-        
+        //
+        // UNSET FOLDER E2EE
+        //
         if metadata.e2eEncrypted && metadata.directory && CCUtility.isEnd(toEndEnabled: appDelegate.account) && metadata.serverUrl == serverUrlHome {
             actions.append(
                 NCMenuAction(
