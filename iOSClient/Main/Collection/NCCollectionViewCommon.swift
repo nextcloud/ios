@@ -218,6 +218,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         self.navigationController?.popToRootViewController(animated: false)
+        appDelegate.listFilesVC.removeAllObjects()
         appDelegate.listFavoriteVC.removeAllObjects()
         appDelegate.listOfflineVC.removeAllObjects()
         
@@ -502,7 +503,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         
         if searchController?.isActive ?? false {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
         }
         
         return DZNimage
@@ -1006,6 +1007,30 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             
             guard let serverUrlPush = CCUtility.stringAppendServerUrl(metadataTouch!.serverUrl, addFileName: metadataTouch!.fileName) else { return }
+            
+            // FILES
+            if layoutKey == k_layout_view_files {
+                
+                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
+                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                    
+                    if vcFiles.isViewLoaded {
+                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    }
+                    
+                } else {
+                    
+                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    
+                    vcFiles.isRoot = false
+                    vcFiles.serverUrl = serverUrlPush
+                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    
+                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                }
+            }
             
             // FAVORITE
             if layoutKey == k_layout_view_favorite {

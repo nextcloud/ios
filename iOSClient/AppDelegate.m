@@ -110,6 +110,7 @@
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
 
     self.listProgressMetadata = [NSMutableDictionary new];
+    self.listFilesVC = [NSMutableDictionary new];
     self.listMainVC = [NSMutableDictionary new];
     self.listFavoriteVC = [NSMutableDictionary new];
     self.listOfflineVC = [NSMutableDictionary new];

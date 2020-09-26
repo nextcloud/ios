@@ -32,6 +32,7 @@
 #import "CCMain.h"
 #import "CCSettings.h"
 
+@class NCFiles;
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
@@ -91,6 +92,8 @@
 
 @property (nonatomic, retain) CCMain *activeMain;
 @property (nonatomic, retain) CCMain *homeMain;
+
+@property (nonatomic, retain) NCFiles *activeFiles;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCMedia *activeMedia;
 @property (nonatomic, retain) NCDetailViewController *activeDetail;
@@ -104,6 +107,7 @@
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
+@property (nonatomic, strong) NSMutableDictionary *listFilesVC;
 @property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
 
