@@ -364,13 +364,6 @@
 #pragma mark ===== Initialization =====
 #pragma --------------------------------------------------------------------------------------------
 
-//
-// Callers :
-//
-// ChangeDefaultAccount (delegate)
-// Split : inizialize
-// Settings Advanced : removeAllFiles
-//
 - (void)initializeMain:(NSNotification *)notification
 {    
     // test

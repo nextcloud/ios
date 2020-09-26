@@ -880,6 +880,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource + NC Endpoint
     
     @objc func reloadDataSource() {
+        if appDelegate.account.count == 0 { return }
+        
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
@@ -896,6 +898,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSourceNetwork(forced: true)
     }
     @objc func networkSearch() {
+        if appDelegate.account.count == 0 { return }
+        
         if literalSearch?.count ?? 0 > 1 {
         
             isReloadDataSourceNetworkInProgress = true
