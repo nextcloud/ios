@@ -209,15 +209,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func initializeMain() {
         
-        if isRoot && layoutKey == k_layout_view_files && appDelegate.account.count > 0 {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-            reloadDataSourceNetwork(forced: true)
-        }
-        
         if searchController?.isActive ?? false {
             searchController?.isActive = false
         }
         
+        if isRoot && layoutKey == k_layout_view_files && appDelegate.account.count > 0 {
+            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            reloadDataSourceNetwork(forced: true)
+        }
+                
         self.navigationController?.popToRootViewController(animated: false)
         appDelegate.listFilesVC.removeAllObjects()
         appDelegate.listFavoriteVC.removeAllObjects()
