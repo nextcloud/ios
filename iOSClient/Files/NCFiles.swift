@@ -39,7 +39,7 @@ class NCFiles: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        appDelegate.activeServerUrl = self.serverUrl
+        appDelegate.activeServerUrl = serverUrl
         super.viewWillAppear(animated)
     }
     
