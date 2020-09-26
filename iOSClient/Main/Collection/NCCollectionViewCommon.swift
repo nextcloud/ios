@@ -932,7 +932,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+    @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
             if errorCode == 0 {
                 let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
@@ -941,13 +941,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         if errorCode == 0 {
                             self.metadataFolder = metadataFolder
                         }
-                        completion(metadatas, errorCode, errorDescription)
+                        completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                     }
                 } else {
-                    completion(nil, 0, "")
+                    completion(nil, nil, 0, "")
                 }
             } else {
-               completion(nil, errorCode, errorDescription)
+               completion(nil, nil, errorCode, errorDescription)
             }
         }
     }

@@ -31,8 +31,6 @@ class NCCollectionCommon: NSObject {
         return instance
     }()
     
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
     struct NCCollectionCommonImages {
         static var cellSharedImage = UIImage()
         static var cellCanShareImage = UIImage()
@@ -86,6 +84,7 @@ class NCCollectionCommon: NSObject {
     func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, isEncryptedFolder: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
         
         var tableShare: tableShare?
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         
         // Share
         if shares != nil {
@@ -222,7 +221,7 @@ class NCCollectionCommon: NSObject {
                     cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                 } else {
                     NCCommunication.shared.downloadAvatar(userID: metadata.ownerId, fileNameLocalPath: fileNameSource, size: Int(k_avatar_size)) { (account, data, errorCode, errorMessage) in
-                        if errorCode == 0 && account == self.appDelegate.account {
+                        if errorCode == 0 && account == appDelegate.account {
                             cell.imageShared.image = NCUtility.shared.createAvatar(fileNameSource: fileNameSource, fileNameSourceAvatar: fileNameSourceAvatar)
                         }
                     }

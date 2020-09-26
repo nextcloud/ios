@@ -96,7 +96,7 @@ class NCOffline: NCCollectionViewCommon  {
             isReloadDataSourceNetworkInProgress = true
             collectionView?.reloadData()
             
-            networkReadFolder(forced: forced) { (metadatas, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
@@ -108,7 +108,9 @@ class NCOffline: NCCollectionViewCommon  {
                     }
                 }
                 self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
+                if metadatasUpdate?.count ?? 0 > 0 {
+                    self.reloadDataSource()
+                }
             }
         }
     }
