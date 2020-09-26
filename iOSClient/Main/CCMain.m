@@ -391,29 +391,6 @@
         // Remove search mode
         [self cancelSearchBar];
         
-        // Clear error certificate
-        [CCUtility setCertificateError:appDelegate.account error:NO];
-        
-        // Setting Theming
-        [appDelegate settingThemingColorBrand];
-        
-        // Detail
-        // If AVPlayer in play -> Stop
-        if (appDelegate.player != nil && appDelegate.player.rate != 0) {
-            [appDelegate.player pause];
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
-                        
-        // Not Photos Video in library ? then align and Init Auto Upload
-        NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", appDelegate.account]];
-        if ([recordsPhotoLibrary count] == 0) {
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-        }
-        [[NCAutoUpload sharedInstance] initStateAutoUpload];
-        
-        [[NCCommunicationCommon shared] writeLog:@"Request Service Server Nextcloud"];
-        [[NCService shared] startRequestServicesServer];
-                
         // Read this folder
         [self readFileReloadFolder];
                 
@@ -421,16 +398,6 @@
         
         // reload datasource
         [self reloadDatasource:_serverUrl ocId:nil];
-    }
-    
-    // Registeration push notification
-    [appDelegate pushNotification];
-    
-    // Registeration domain File Provider
-    if (k_fileProvider_domain) {
-        [FileProviderDomain.sharedInstance registerDomain];
-    } else {
-        [FileProviderDomain.sharedInstance removeAllDomain];
     }
 }
 

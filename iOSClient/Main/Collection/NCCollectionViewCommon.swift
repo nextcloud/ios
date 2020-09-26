@@ -207,9 +207,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func initializeMain() {
+        
+        if searchController?.isActive ?? false {
+            searchController?.isActive = false
+        }
+        
         self.navigationController?.popToRootViewController(animated: false)
         appDelegate.listFavoriteVC.removeAllObjects()
         appDelegate.listOfflineVC.removeAllObjects()
+        
+        reloadDataSource()
     }
     
     @objc func changeTheming() {

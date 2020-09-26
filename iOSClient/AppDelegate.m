@@ -80,6 +80,9 @@
         [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Start session with level %lu %@", (unsigned long)logLevel, versionNextcloudiOS]];
     }
     
+    //
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:k_notificationCenter_initializeMain object:nil];
+    
     // Set account, if no exists clear all
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     if (tableAccount == nil) {
@@ -271,6 +274,49 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
     [[NCCommunicationCommon shared] writeLog:@"bye bye"];
+}
+
+// NotificationCenter
+- (void)initializeMain:(NSNotification *)notification
+{
+    if (self.account.length == 0) return;
+    
+    // Clear error certificate
+    [CCUtility setCertificateError:self.account error:NO];
+    
+    // Setting Theming
+    [self settingThemingColorBrand];
+    
+    // If AVPlayer in play -> Stop
+    if (self.player != nil && self.player.rate != 0) {
+        [self.player pause];
+    }
+    
+    // close detail
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
+    
+    // Not Photos Video in library ? then align and Init Auto Upload
+    NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", self.account]];
+    if ([recordsPhotoLibrary count] == 0) {
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+    }
+    
+    // Start Auto Upload
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    
+    // Start services
+    [[NCCommunicationCommon shared] writeLog:@"Request Service Server Nextcloud"];
+    [[NCService shared] startRequestServicesServer];
+    
+    // Registeration push notification
+    [self pushNotification];
+    
+    // Registeration domain File Provider
+    if (k_fileProvider_domain) {
+        [FileProviderDomain.sharedInstance registerDomain];
+    } else {
+        [FileProviderDomain.sharedInstance removeAllDomain];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
