@@ -209,8 +209,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func initializeMain() {
         
-        if isRoot {
-            print("root")
+        if isRoot && layoutKey == k_layout_view_files && appDelegate.account.count > 0 {
+            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            reloadDataSourceNetwork(forced: true)
         }
         
         if searchController?.isActive ?? false {
