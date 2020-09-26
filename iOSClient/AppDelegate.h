@@ -91,8 +91,6 @@
 @property (nonatomic, retain) id activeViewController;
 
 @property (nonatomic, retain) CCMain *activeMain;
-@property (nonatomic, retain) CCMain *homeMain;
-
 @property (nonatomic, retain) NCFiles *activeFiles;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCMedia *activeMedia;

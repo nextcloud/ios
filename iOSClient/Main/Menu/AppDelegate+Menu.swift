@@ -113,7 +113,7 @@ extension AppDelegate {
                 title: NSLocalizedString("_scans_document_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+                    NCCreateScanDocument.sharedInstance.openScannerDocument()
                 }
             )
         )

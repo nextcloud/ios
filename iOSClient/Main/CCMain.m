@@ -373,7 +373,6 @@
     if ([appDelegate.listMainVC count] == 0 || _isRoot) {
         
         // This is Root home main add list
-        appDelegate.homeMain = self;
         _isRoot = YES;
         _serverUrl = [[NCUtility shared] getHomeServerWithUrlBase:appDelegate.urlBase account:appDelegate.account];
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];

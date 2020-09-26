@@ -748,9 +748,9 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewController: UIViewController?
     
-    func openScannerDocument(viewController: UIViewController) {
+    func openScannerDocument() {
         
-        self.viewController = viewController
+        self.viewController = self.appDelegate.window.rootViewController
         
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
