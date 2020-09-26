@@ -159,6 +159,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        if serverUrl == "" {
+            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        } else {
+            appDelegate.activeServerUrl = serverUrl
+        }
+        
         appDelegate.activeViewController = self
         
         self.navigationItem.title = titleCurrentFolder
@@ -213,11 +219,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.isActive = false
         }
         
-        if isRoot && layoutKey == k_layout_view_files {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-            reloadDataSourceNetwork(forced: true)
-        }
-        
+        // set active serverUrl
         if self.view?.window != nil {
             if serverUrl == "" {
                 appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)

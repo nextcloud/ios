@@ -40,10 +40,6 @@ class NCTransfers: NCCollectionViewCommon  {
         DZNdescription = "_no_transfer_sub_"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     override func setNavigationItem() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil

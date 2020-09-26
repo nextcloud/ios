@@ -38,18 +38,6 @@ class NCFavorite: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_favorite_view_"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        } else {
-            appDelegate.activeServerUrl = serverUrl
-        }
-        
-        super.viewWillAppear(animated)
-    }
-    
     // MARK: - DataSource + NC Endpoint
     
     override func reloadDataSource() {

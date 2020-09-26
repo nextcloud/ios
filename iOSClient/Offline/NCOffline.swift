@@ -38,17 +38,6 @@ class NCOffline: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_offline_view_"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        
-        if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        } else {
-            appDelegate.activeServerUrl = serverUrl
-        }
-        
-        super.viewWillAppear(animated)
-    }
-    
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource() {
