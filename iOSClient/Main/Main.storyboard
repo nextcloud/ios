@@ -132,7 +132,7 @@
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
-                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="CCMainTabBarController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="NCMainTabBarController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>
