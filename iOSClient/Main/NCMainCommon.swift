@@ -28,7 +28,7 @@ import NCCommunication
 
 //MARK: - Main Common
 
-class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate {
+class NCMainCommon: NSObject {
     @objc static let shared: NCMainCommon = {
         let instance = NCMainCommon()
         instance.createImagesThemingColor()
@@ -450,40 +450,7 @@ class NCMainCommon: NSObject, NCAudioRecorderViewControllerDelegate {
         
         return true
     }
-    
-    
-
    
-    
-    //MARK: - NCAudioRecorder
-    
-    func startAudioRecorder() {
-    
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
-        let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
-    
-        viewController.delegate = self
-        viewController.createRecorder(fileName: fileName)
-        viewController.modalTransitionStyle = .crossDissolve
-        viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-    
-        appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
-    }
-    
-    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-        
-        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        
-        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
-        viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
-        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
-    }
-    
-    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
-    }
 }
     
 //MARK: - Main TabBarController

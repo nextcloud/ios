@@ -26,7 +26,7 @@
 import FloatingPanel
 import NCCommunication
 
-extension AppDelegate {
+extension AppDelegate: NCAudioRecorderViewControllerDelegate {
     
     @objc public func showMenuIn(viewController: UIViewController) {
         
@@ -123,7 +123,16 @@ extension AppDelegate {
                 title: NSLocalizedString("_create_voice_memo_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "microphone"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCMainCommon.shared.startAudioRecorder()
+                    
+                    let fileName = CCUtility.createFileNameDate(NSLocalizedString("_voice_memo_filename_", comment: ""), extension: "m4a")!
+                    let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as! NCAudioRecorderViewController
+                
+                    viewController.delegate = self
+                    viewController.createRecorder(fileName: fileName)
+                    viewController.modalTransitionStyle = .crossDissolve
+                    viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                
+                    appDelegate.window.rootViewController?.present(viewController, animated: true, completion: nil)
                 }
             )
         )
@@ -323,4 +332,17 @@ extension AppDelegate {
 
         return actions
     }
+    
+    func didFinishRecording(_ viewController: NCAudioRecorderViewController, fileName: String) {
+        
+        guard let navigationController = UIStoryboard(name: "NCCreateFormUploadVoiceNote", bundle: nil).instantiateInitialViewController() else { return }
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        let viewController = (navigationController as! UINavigationController).topViewController as! NCCreateFormUploadVoiceNote
+        viewController.setup(serverUrl: appDelegate.activeServerUrl, fileNamePath: NSTemporaryDirectory() + fileName, fileName: fileName)
+        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+    }
+    
+    func didFinishWithoutRecording(_ viewController: NCAudioRecorderViewController, fileName: String) { }
 }
