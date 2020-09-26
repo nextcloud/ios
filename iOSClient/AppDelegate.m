@@ -964,6 +964,7 @@
     [NCBrandColor.sharedInstance setDarkMode];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[NCMainCommon shared] createImagesThemingColor];
+        [[NCCollectionCommon shared] createImagesThemingColor];
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
     });
 }
