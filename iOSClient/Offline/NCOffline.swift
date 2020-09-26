@@ -43,7 +43,7 @@ class NCOffline: NCCollectionViewCommon  {
         if serverUrl == "" {
             appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         } else {
-            appDelegate.activeServerUrl = self.serverUrl
+            appDelegate.activeServerUrl = serverUrl
         }
         
         super.viewWillAppear(animated)

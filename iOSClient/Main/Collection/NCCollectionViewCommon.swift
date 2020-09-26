@@ -28,14 +28,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
     
-    @objc var serverUrl: String = ""
-    @objc var isRoot: Bool = true
-    
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-       
+    internal var serverUrl: String = ""
+    internal var isRoot: Bool = true
     internal var isEncryptedFolder = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -208,16 +207,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func initializeMain() {
+        if appDelegate.account.count == 0 { return }
         
         if searchController?.isActive ?? false {
             searchController?.isActive = false
         }
         
-        if isRoot && layoutKey == k_layout_view_files && appDelegate.account.count > 0 {
+        if isRoot && layoutKey == k_layout_view_files {
             serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
             reloadDataSourceNetwork(forced: true)
         }
-                
+        
+        if self.view?.window != nil {
+            if serverUrl == "" {
+                appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+            } else {
+                appDelegate.activeServerUrl = serverUrl
+            }
+        }
+        
         self.navigationController?.popToRootViewController(animated: false)
         appDelegate.listFilesVC.removeAllObjects()
         appDelegate.listFavoriteVC.removeAllObjects()
