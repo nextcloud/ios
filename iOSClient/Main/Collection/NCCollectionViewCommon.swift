@@ -32,7 +32,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     
     @objc var serverUrl: String = ""
-        
+    @objc var isRoot: Bool = true
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
        
     internal var isEncryptedFolder = false
@@ -207,6 +208,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func initializeMain() {
+        
+        if isRoot {
+            print("root")
+        }
         
         if searchController?.isActive ?? false {
             searchController?.isActive = false
@@ -1016,6 +1021,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                         
                     let vcFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
                 
+                    vcFavorite.isRoot = false
                     vcFavorite.serverUrl = serverUrlPush
                     vcFavorite.titleCurrentFolder = metadataTouch!.fileNameView
                 
@@ -1039,6 +1045,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     
                     let vcOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
                     
+                    vcOffline.isRoot = false
                     vcOffline.serverUrl = serverUrlPush
                     vcOffline.titleCurrentFolder = metadataTouch!.fileNameView
                     
