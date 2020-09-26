@@ -57,7 +57,7 @@ import Foundation
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
                         viewerQuickLook = NCViewerQuickLook.init()
-                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
+                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
                         
                     case selectorLoadFileView:
                         
@@ -77,8 +77,8 @@ import Foundation
                                 
                             } else {
                                 
-                                if self.appDelegate.activeViewController is CCMain {
-                                    (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
+                                if self.appDelegate.activeViewController is NCFiles {
+                                    (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
                                 } else if self.appDelegate.activeViewController is NCFavorite {
                                     (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
                                 } else if self.appDelegate.activeViewController is NCOffline {
@@ -93,10 +93,6 @@ import Foundation
                             
                             openIn(fileURL: fileURL, selector: selector)
                         }
-                        
-                    case selectorSaveAlbum:
-                        
-                        appDelegate.activeMain.save(toPhotoAlbum: metadata)
                         
                     case selectorLoadCopy:
                         

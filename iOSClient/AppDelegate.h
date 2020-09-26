@@ -29,8 +29,8 @@
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "CCUtility.h"
-#import "CCMain.h"
 #import "CCSettings.h"
+#import "CCLogin.h"
 
 @class NCFiles;
 @class CCMore;
@@ -90,7 +90,6 @@
 @property (nonatomic, retain) NSString *activeServerUrl;
 @property (nonatomic, retain) id activeViewController;
 
-@property (nonatomic, retain) CCMain *activeMain;
 @property (nonatomic, retain) NCFiles *activeFiles;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCMedia *activeMedia;

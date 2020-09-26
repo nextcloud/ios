@@ -183,7 +183,6 @@
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenInDetail                            @"openInDetail"
-#define selectorSaveAlbum                               @"saveAlbum"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"

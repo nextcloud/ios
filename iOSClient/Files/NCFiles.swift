@@ -38,6 +38,15 @@ class NCFiles: NCCollectionViewCommon  {
         DZNdescription = "_no_file_pull_down_"
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if isRoot  {
+            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        }
+        
+        super.viewWillAppear(animated)
+    }
+    
     // MARK: - NotificationCenter
     
     override func initializeMain() {

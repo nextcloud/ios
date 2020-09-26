@@ -23,7 +23,6 @@
 
 #import "CCSettings.h"
 #import "AppDelegate.h"
-#import "CCMain.h"
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"
 #import "NCManageEndToEndEncryption.h"

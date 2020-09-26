@@ -87,7 +87,7 @@
     
     if (self.showShare) {
         UIPreviewAction *item = [UIPreviewAction actionWithTitle:NSLocalizedString(@"_share_", nil) style:UIPreviewActionStyleDefault handler:^(UIPreviewAction *action,  UIViewController *previewViewController) {
-            [[NCNetworkingNotificationCenter shared] openShareWithViewController:appDelegate.activeMain metadata:self.metadata indexPage:2];
+            [[NCNetworkingNotificationCenter shared] openShareWithViewController:appDelegate.activeFiles metadata:self.metadata indexPage:2];
         }];
         [items addObject:item];
     }

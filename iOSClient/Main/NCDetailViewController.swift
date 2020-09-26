@@ -537,7 +537,7 @@ class NCDetailViewController: UIViewController {
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
         viewerQuickLook = NCViewerQuickLook.init()
-        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.unload(checkWindow: false)

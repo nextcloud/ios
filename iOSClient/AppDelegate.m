@@ -23,7 +23,6 @@
 
 #import "AppDelegate.h"
 #import "CCGraphics.h"
-#import "CCMain.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "NCPushNotificationEncryption.h"
@@ -221,7 +220,7 @@
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // Read active directory
-    [self.activeMain readFileReloadFolder];
+    [self.activeFiles reloadDataSourceNetworkWithForced:false];
     
     // Required unsubscribing / subscribing
     [self pushNotification];
@@ -908,10 +907,10 @@
     if (self.maintenanceMode)
         return;
     
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeMain.serverUrl]];
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeServerUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
-        UIViewController *vc = _activeMain.splitViewController.viewControllers[0];
+        UIViewController *vc = self.activeFiles.splitViewController.viewControllers[0];
         [self showMenuInViewController: vc];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
@@ -963,7 +962,6 @@
         
     [NCBrandColor.sharedInstance setDarkMode];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[NCMainCommon shared] createImagesThemingColor];
         [[NCCollectionCommon shared] createImagesThemingColor];
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
     });
@@ -1070,7 +1068,7 @@
     NSString *scheme = url.scheme;
 
     dispatch_time_t timer = 0;
-    if (self.activeMain == nil) timer = 1;
+    if (self.activeFiles == nil) timer = 1;
 
     if ([scheme isEqualToString:@"nextcloud"]) {
         
@@ -1146,7 +1144,7 @@
                                         
                                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                             
-                                            [self.activeMain.navigationController popToRootViewControllerAnimated:NO];
+                                            [self.activeFiles.navigationController popToRootViewControllerAnimated:NO];
                                             
                                             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
                                                 
@@ -1159,15 +1157,15 @@
                                                     NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
                                                     NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
                                                     tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase: @"" url:@"" contentType:@"" livePhoto:false];
-                                                    [self.activeMain performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
+//                                                    [self.activeFiles performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
                                                     
                                                 } else {
                                                     
                                                     // Reload folder
                                                     NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
                                                     
-                                                    self.activeMain.blinkFileNamePath = fileNamePath;
-                                                    [self.activeMain readFolder:serverUrl];
+//                                                    self.activeMain.blinkFileNamePath = fileNamePath;
+//                                                    [self.activeMain readFolder:serverUrl];
                                                 }
                                             });
                                         });

@@ -208,13 +208,13 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" largeTitles="YES" id="cj6-rT-wnB">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="DGE-qR-SnB" kind="relationship" relationship="rootViewController" id="Zy5-nA-QZa"/>
+                        <segue destination="fdj-aV-gGf" kind="relationship" relationship="rootViewController" id="mIO-J3-3uM"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -227,8 +227,8 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="MJw-Bn-5le">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="MJw-Bn-5le">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -246,8 +246,8 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" userLabel="Media" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -265,8 +265,8 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="jCU-so-Np6">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -281,8 +281,8 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="yVo-p8-ApS">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="yVo-p8-ApS">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -381,37 +381,15 @@
             </objects>
             <point key="canvasLocation" x="9900" y="1217"/>
         </scene>
-        <!--Main-->
-        <scene sceneID="5Py-sI-zil">
+        <!--NCFiles.storyboard-->
+        <scene sceneID="xwl-IR-lkD">
             <objects>
-                <tableViewController storyboardIdentifier="CCMain" extendedLayoutIncludesOpaqueBars="YES" id="DGE-qR-SnB" customClass="CCMain" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="idK-Vi-sZF">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="lCY-Ug-mrO">
-                                <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="lCY-Ug-mrO" id="ZmT-UI-0kb">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="DGE-qR-SnB" id="gUu-C3-ycj"/>
-                            <outlet property="delegate" destination="DGE-qR-SnB" id="Q2x-eV-dQq"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="EkG-fE-q92"/>
-                    <connections>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="hse-Jl-nJQ"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Bg4-W5-lB8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="NCFiles" referencedIdentifier="NCFiles.storyboard" id="fdj-aV-gGf" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Jvo-0f-hQ4"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vst-OD-Y5z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5214" y="1217"/>
+            <point key="canvasLocation" x="5214" y="899"/>
         </scene>
         <!--NCFavorite.storyboard-->
         <scene sceneID="zqD-Jj-h2w">
@@ -569,9 +547,6 @@
             <size key="intrinsicContentSize" width="-1" height="83"/>
         </designable>
     </designables>
-    <inferredMetricsTieBreakers>
-        <segue reference="hse-Jl-nJQ"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>

@@ -26,13 +26,14 @@ import QuickLook
 
 @objc class NCViewerQuickLook: NSObject, QLPreviewControllerDelegate, QLPreviewControllerDataSource {
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let previewController = QLPreviewController()
     var previewItems: [PreviewItem] = []
     var viewController: UIViewController?
         
-    @objc func quickLook(url: URL, viewController: UIViewController) {
+    @objc func quickLook(url: URL) {
         
-        self.viewController = viewController
+        self.viewController = appDelegate.window.rootViewController
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             
