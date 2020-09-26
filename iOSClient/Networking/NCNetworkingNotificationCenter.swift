@@ -160,6 +160,30 @@ import Foundation
         }
     }
     
+    @objc func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
+        
+        let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let shareViewController = shareNavigationController.topViewController as! NCSharePaging
+        
+        shareViewController.metadata = metadata
+        shareViewController.indexPage = indexPage
+        
+        shareNavigationController.modalPresentationStyle = .formSheet
+        ViewController.present(shareNavigationController, animated: true, completion: nil)
+    }
+        
+    @objc func downloadOpen(metadata: tableMetadata, selector: String) {
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+                                    
+        } else {
+            
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+        }
+    }
+    
     //MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {

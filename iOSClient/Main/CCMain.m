@@ -1092,7 +1092,7 @@
     tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase: appDelegate.urlBase]) {
-        [[NCMainCommon shared] openShareWithViewController:self metadata:metadata indexPage:1];
+        [[NCNetworkingNotificationCenter shared] openShareWithViewController:self metadata:metadata indexPage:1];
     }
 }
 
@@ -1104,7 +1104,7 @@
     tableMetadata *metadata = [[NCMainCommon shared] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata && ![CCUtility isFolderEncrypted:self.serverUrl e2eEncrypted:metadata.e2eEncrypted account:appDelegate.account urlBase:appDelegate.urlBase]) {
-        [[NCMainCommon shared] openShareWithViewController:self metadata:metadata indexPage:2];
+        [[NCNetworkingNotificationCenter shared] openShareWithViewController:self metadata:metadata indexPage:2];
     }
 }
 
@@ -1343,14 +1343,14 @@
 
 - (void)openinTouchFile:(id)sender
 {
-    [[NCMainCommon shared] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
+    [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorOpenIn];
 }
 
 /************************************ OPEN QUICK LOOK ******************************/
 
 - (void)openQuickLookTouch:(id)sender
 {
-    [[NCMainCommon shared] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
+    [[NCNetworkingNotificationCenter shared] downloadOpenWithMetadata:self.metadata selector:selectorLoadFileQuickLook];
 }
 
 /************************************ PASTE ************************************/

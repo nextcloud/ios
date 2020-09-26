@@ -637,7 +637,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapShareListItem(with objectId: String, sender: Any) {
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
-        NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
+        NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
         
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
