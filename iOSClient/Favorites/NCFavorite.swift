@@ -90,7 +90,8 @@ class NCFavorite: NCCollectionViewCommon  {
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
-                self.searchController?.isActive = false
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
@@ -108,7 +109,8 @@ class NCFavorite: NCCollectionViewCommon  {
                         }
                     }
                 }
-                self.searchController?.isActive = false
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 if metadatasUpdate?.count ?? 0 > 0 {
                     self.reloadDataSource()

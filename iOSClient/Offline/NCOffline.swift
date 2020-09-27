@@ -107,7 +107,8 @@ class NCOffline: NCCollectionViewCommon  {
                         }
                     }
                 }
-                self.searchController?.isActive = false
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 if metadatasUpdate?.count ?? 0 > 0 {
                     self.reloadDataSource()
