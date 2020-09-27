@@ -92,6 +92,7 @@ class NCFiles: NCCollectionViewCommon  {
         collectionView?.reloadData()
                
         networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
+            self.searchController?.isActive = false
             if errorCode == 0 {
                 for metadata in metadatas ?? [] {
                     if !metadata.directory {
@@ -102,6 +103,7 @@ class NCFiles: NCCollectionViewCommon  {
                     }
                 }
             }
+            self.searchController?.isActive = false
             self.isReloadDataSourceNetworkInProgress = false
             if metadatasUpdate?.count ?? 0 > 0 {
                 self.reloadDataSource()

@@ -927,25 +927,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if self.searchController?.isActive ?? false && errorCode == 0 {
                     self.metadatasSource = metadatas!
                 }
+                self.searchController?.isActive = false
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
+        } else {
+            self.searchController?.isActive = false
         }
     }
     
     @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
+        
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
+            
             if errorCode == 0 {
+                
                 let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                
                 if forced || directory?.etag != metadata?.etag {
+                    
                     NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
+                        
                         if errorCode == 0 {
                             self.metadataFolder = metadataFolder
+                            
                             // E2EE
                             if let metadataFolder = metadataFolder {
                                 if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
+                                    
                                     NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
                                         if errorCode == 0 && e2eMetadata != nil {
+                                            
                                             if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
                                                 
                                                 NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
@@ -954,11 +966,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                             
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                         }
+                                        completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                                     }
+                                } else {
+                                    completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                                 }
+                            } else {
+                                completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                             }
+                        } else {
+                            completion(nil, nil, errorCode, errorDescription)
                         }
-                        completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                     }
                 } else {
                     completion(nil, nil, 0, "")
