@@ -962,11 +962,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                             if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
                                                 
                                                 NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
+                                            } else {
+                                                self.reloadDataSource()
                                             }
+                                            
                                         } else if errorCode != 404 {
                                             
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                         }
+                                        
                                         completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                                     }
                                 } else {
