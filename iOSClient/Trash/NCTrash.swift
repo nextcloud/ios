@@ -95,7 +95,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -172,7 +172,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             layout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -183,7 +183,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 })
             })
             layout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
         }
     }
     
@@ -570,7 +570,7 @@ extension NCTrash {
         var sort: String
         var ascending: Bool
         
-        (layout, sort, ascending, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, sort, ascending, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         
         datasource.removeAll()
         

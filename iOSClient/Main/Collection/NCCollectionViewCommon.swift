@@ -168,7 +168,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         self.navigationItem.title = titleCurrentFolder
                 
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -600,7 +600,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 })
             })
             layout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: layoutKey, layout: layout)
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -611,7 +611,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 })
             })
             layout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: layoutKey, layout: layout)
+            NCUtility.shared.setLayoutForView(key: layoutKey, serverUrl: serverUrl, layout: layout)
         }
     }
     

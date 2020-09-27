@@ -46,7 +46,7 @@ class NCSortMenu: NSObject {
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl ?? "")
 
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
@@ -75,7 +75,7 @@ class NCSortMenu: NSObject {
         
         self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: key, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl ?? "", layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
         
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
     }

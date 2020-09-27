@@ -47,7 +47,7 @@ class NCFavorite: NCCollectionViewCommon  {
         var ascending: Bool
         var directoryOnTop: Bool
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         
         if !isSearching {
        

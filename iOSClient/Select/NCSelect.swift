@@ -177,7 +177,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -301,7 +301,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             layout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: keyLayout, layout: layout)
+            NCUtility.shared.setLayoutForView(key: keyLayout, serverUrl: serverUrl, layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -312,7 +312,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
                 })
             })
             layout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: keyLayout, layout: layout)
+            NCUtility.shared.setLayoutForView(key: keyLayout, serverUrl: serverUrl, layout: layout)
         }
     }
     
@@ -506,7 +506,7 @@ extension NCSelect {
         var ascending: Bool
         var directoryOnTop: Bool
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
         
         if serverUrl == "" {
             

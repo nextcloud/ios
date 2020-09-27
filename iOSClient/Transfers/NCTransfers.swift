@@ -204,7 +204,7 @@ class NCTransfers: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
         
         metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: "sessionTaskIdentifier", ascending: true, directoryOnTop: false, filterLivePhoto: false)
