@@ -35,7 +35,8 @@ class NCDetailViewController: UIViewController {
     @objc var metadata: tableMetadata?
     @objc var selector: String?
     @objc var mediaFilterImage: Bool = false
-    
+    @objc var layoutKey = ""
+
     @objc var viewerImageViewController: NCViewerImageViewController?
     @objc var metadatas: [tableMetadata] = []
     
@@ -553,7 +554,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         closeAllSubView()
         
-        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage) { (metadatas) in
+        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage, layoutKey: layoutKey) { (metadatas) in
             
             guard let metadatas = metadatas else {
                 self.viewUnload()

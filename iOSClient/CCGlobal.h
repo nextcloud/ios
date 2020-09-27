@@ -278,6 +278,7 @@
 #define k_layout_view_favorite                          @"LayoutFavorite"
 #define k_layout_view_files                             @"LayoutFiles"
 #define k_layout_view_transfers                         @"LayoutTransfers"
+#define k_layout_view_media                             @"LayoutMedia"
 
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"

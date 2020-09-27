@@ -459,6 +459,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                 segueViewController.metadata = metadataTouch
                 segueViewController.metadatas = metadatas
                 segueViewController.mediaFilterImage = true
+                segueViewController.layoutKey = k_layout_view_media
             }
         }
     }

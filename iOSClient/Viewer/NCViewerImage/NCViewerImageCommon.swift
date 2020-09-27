@@ -42,7 +42,7 @@ class NCViewerImageCommon: NSObject {
         NCViewerImageCommon.offOutlineImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "offOutlineImage"), width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.width, color: NCBrandColor.sharedInstance.brandElement)
     }
     
-    func getMetadatasDatasource(metadata: tableMetadata?, mediaDatasorce: Bool, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+    func getMetadatasDatasource(metadata: tableMetadata?, mediaDatasorce: Bool, layoutKey: String, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         guard let metadata = metadata else {
             completion(nil)
             return
@@ -52,7 +52,7 @@ class NCViewerImageCommon: NSObject {
                 completion(metadatas)
             }
         } else {
-            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: NCUtility.shared.getSortedForView(key: k_layout_view_files, serverUrl: metadata.serverUrl), ascending: NCUtility.shared.getAscendingForView(key: k_layout_view_files, serverUrl: metadata.serverUrl))
+            let metadatas = NCManageDatabase.sharedInstance.getMetadatasViewer(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (typeFile == %@ || typeFile == %@ || typeFile == %@)", metadata.account, metadata.serverUrl, k_metadataTypeFile_image, k_metadataTypeFile_video, k_metadataTypeFile_audio), sorted: NCUtility.shared.getSortedForView(key: layoutKey, serverUrl: metadata.serverUrl), ascending: NCUtility.shared.getAscendingForView(key: layoutKey, serverUrl: metadata.serverUrl))
             completion(metadatas)
         }
     }
