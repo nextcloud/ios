@@ -110,7 +110,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.addSubview(refreshControl)
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // empty Data Source
