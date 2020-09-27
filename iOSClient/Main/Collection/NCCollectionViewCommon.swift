@@ -941,6 +941,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     NCNetworking.shared.readFolder(serverUrl: self.serverUrl, account: self.appDelegate.account) { (account, metadataFolder, metadatas, metadatasUpdate, metadatasLocalUpdate, errorCode, errorDescription) in
                         if errorCode == 0 {
                             self.metadataFolder = metadataFolder
+                            // E2EE
+                            if let metadataFolder = metadataFolder {
+                                if metadataFolder.e2eEncrypted && CCUtility.isEnd(toEndEnabled: self.appDelegate.account) {
+                                    NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
+                                        if errorCode == 0 && e2eMetadata != nil {
+                                            if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
+                                                
+                                                NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
+                                            }
+                                        } else if errorCode != 404 {
+                                            
+                                            NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
+                                        }
+                                    }
+                                }
+                            }
                         }
                         completion(metadatas, metadatasUpdate, errorCode, errorDescription)
                     }
