@@ -910,8 +910,7 @@
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeServerUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
-        UIViewController *vc = self.activeFiles.splitViewController.viewControllers[0];
-        [self showMenuInViewController: vc];
+        [self showMenuInViewController:self.window.rootViewController];
     } else {
         [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
     }
