@@ -927,11 +927,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if self.searchController?.isActive ?? false && errorCode == 0 {
                     self.metadatasSource = metadatas!
                 }
-                self.searchController?.isActive = false
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
-        } 
+        } else {
+            self.refreshControl.endRefreshing()
+        }
     }
     
     @objc func networkReadFolder(forced: Bool, completion: @escaping(_ metadatas: [tableMetadata]?, _ metadatasUpdate: [tableMetadata]?, _ errorCode: Int, _ errorDescription: String)->()) {
