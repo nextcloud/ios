@@ -229,6 +229,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         self.navigationController?.popToRootViewController(animated: false)
+        
         appDelegate.listFilesVC.removeAllObjects()
         appDelegate.listFavoriteVC.removeAllObjects()
         appDelegate.listOfflineVC.removeAllObjects()
