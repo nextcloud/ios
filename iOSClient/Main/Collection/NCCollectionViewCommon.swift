@@ -517,12 +517,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
         }
         
+        if isReloadDataSourceNetworkInProgress {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+        }
+        
         return DZNimage
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         
         var text = "\n"+NSLocalizedString(DZNtitle, comment: "")
+        
+        if isReloadDataSourceNetworkInProgress {
+            text = "\n"+NSLocalizedString("_request_in_progress_", comment: "")
+        }
         
         if searchController?.isActive ?? false {
             if isReloadDataSourceNetworkInProgress {
@@ -539,6 +547,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         
         var text = "\n"+NSLocalizedString(DZNdescription, comment: "")
+        
+        if isReloadDataSourceNetworkInProgress {
+            text = ""
+        }
         
         if searchController?.isActive ?? false {
             text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
