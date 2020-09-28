@@ -508,7 +508,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             } else {
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, nil)
             }
-            let context = UIGraphicsGetCurrentContext()
             var fontColor = UIColor.clear
             #if targetEnvironment(simulator)
             fontColor = UIColor.red
@@ -519,12 +518,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 image = changeImageFromQuality(image, dpiQuality: dpiQuality)
                 image = changeCompressionImage(image, dpiQuality: dpiQuality)
                 
+                let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+                
                 if #available(iOS 13.0, *) {
                     
                     if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                         
-                        UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                        UIImageView.init(image:image).layer.render(in: context!)
+                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                        image.draw(in: bounds)
 
                         let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
                         
@@ -557,14 +558,14 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                         
                     } else {
                         
-                        UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                        UIImageView.init(image:image).layer.render(in: context!)
+                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                        image.draw(in: bounds)
                     }
                     
                 } else {
                     
-                    UIGraphicsBeginPDFPageWithInfo(CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height), nil)
-                    UIImageView.init(image:image).layer.render(in: context!)
+                    UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                    image.draw(in: bounds)
                 }
             }
             

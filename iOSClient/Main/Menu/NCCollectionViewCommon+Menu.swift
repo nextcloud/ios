@@ -188,7 +188,7 @@ extension NCCollectionViewCommon {
         //
         // OFFLINE
         //
-        if !isFolderEncrypted && (layoutKey == k_layout_view_offline && serverUrl == "" || (layoutKey != k_layout_view_offline)) {
+        if !isFolderEncrypted {
             actions.append(
                 NCMenuAction(
                     title: isOffline ? NSLocalizedString("_remove_available_offline_", comment: "") :  NSLocalizedString("_set_available_offline_", comment: ""),
