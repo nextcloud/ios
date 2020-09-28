@@ -190,27 +190,6 @@ class NCUtility: NSObject {
         return ascending
     }
     
-    @objc func getGroupByForView(key: String, serverUrl: String) -> (String) {
-        
-        var groupBy: String
-        (_, _, _, groupBy, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return groupBy
-    }
-    
-    @objc func getDirectoryOnTopForView(key: String, serverUrl: String) -> (Bool) {
-        
-        var directoryOnTop: Bool
-        (_, _, _, _, directoryOnTop, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return directoryOnTop
-    }
-    
-    @objc func getTitleButtonForView(key: String, serverUrl: String) -> (String) {
-        
-        var titleButton: String
-        (_, _, _, _, _, titleButton, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
-        return titleButton
-    }
-    
     func getLayoutForView(key: String, serverUrl: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         let key = key + serverUrl
