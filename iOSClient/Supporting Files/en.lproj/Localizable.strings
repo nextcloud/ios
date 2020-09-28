@@ -138,6 +138,8 @@
 "_now_"                     = "Now";
 "_wait_"                    = "Please wait...";
 "_attention_"               = "Attention";
+"_recent_"                  = "Recent";
+"_view_in_folder_"          = "View in folder";
 
 // App
 
