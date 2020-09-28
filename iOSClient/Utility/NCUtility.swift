@@ -150,9 +150,13 @@ class NCUtility: NSObject {
     func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton + "|" + "\(itemForLine)"
-        let key = key + serverUrl
+        var keyStore = key
         
-        UICKeyChainStore.setString(string, forKey: key, service: k_serviceShareKeyChain)
+        if serverUrl != "" {
+            keyStore = serverUrl
+        }
+        
+        UICKeyChainStore.setString(string, forKey: keyStore, service: k_serviceShareKeyChain)
     }
     
     func setLayoutForView(key: String, serverUrl: String, layout: String) {
@@ -192,9 +196,13 @@ class NCUtility: NSObject {
     
     func getLayoutForView(key: String, serverUrl: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
-        let key = key + serverUrl
+        var keyStore = key
         
-        guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
+        if serverUrl != "" {
+            keyStore = serverUrl
+        }
+        
+        guard let string = UICKeyChainStore.string(forKey: keyStore, service: k_serviceShareKeyChain) else {
             setLayoutForView(key: key, serverUrl: serverUrl, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
             return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
         }
@@ -209,6 +217,7 @@ class NCUtility: NSObject {
         }
         
         setLayoutForView(key: key, serverUrl: serverUrl, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        
         return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
     }
         
