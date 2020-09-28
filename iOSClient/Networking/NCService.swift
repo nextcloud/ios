@@ -160,7 +160,7 @@ class NCService: NSObject {
             
                 // File Sharing
                 let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
-                if (isFilesSharingEnabled && self.appDelegate.activeFiles != nil) {
+                if isFilesSharingEnabled {
                     NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
                         if errorCode == 0 {
                             NCManageDatabase.sharedInstance.deleteTableShare(account: account)
