@@ -1143,9 +1143,28 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
-            // RECENT
+            // RECENT ( for push use Files ... he he he )
             if layoutKey == k_layout_view_recent {
                 
+                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
+                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                    
+                    if vcFiles.isViewLoaded {
+                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    }
+                    
+                } else {
+                    
+                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    
+                    vcFiles.isRoot = false
+                    vcFiles.serverUrl = serverUrlPush
+                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    
+                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                }
             }
             
         } else {
