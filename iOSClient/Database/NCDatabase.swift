@@ -359,17 +359,6 @@ class tablePhotoLibrary: Object {
     }
 }
 
-class tableRecent: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var ocId = ""
-    
-    override static func primaryKey() -> String {
-        return "ocId"
-    }
-}
-
 class tableShare: Object {
     
     @objc dynamic var account = ""

@@ -210,7 +210,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
-        self.clearTable(tableRecent.self, account: account)
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
@@ -2359,46 +2358,6 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
         
         return Array(results.map { tablePhotoLibrary.init(value:$0) })
-    }
-    
-    //MARK: -
-    //MARK: Table Recent
-    
-    @objc func addRecent(_ account: String, ocId: String, date: NSDate) {
-
-        let realm = try! Realm()
-
-        do {
-            try realm.safeWrite {
-                let addObject = tableRecent()
-            
-                addObject.account = account
-                addObject.ocId = ocId
-                addObject.date = date
-                
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    
-    func getRecent(_ account: String) -> [tableMetadata] {
-        
-        let realm = try! Realm()
-        var metadatas: [tableMetadata] = []
-        
-        let results = realm.objects(tableRecent.self).filter("account == %@", account).sorted(byKeyPath: "date", ascending: false)
-        for result in results {
-            if let metadata = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, result.ocId).first {
-                metadatas.append(tableMetadata.init(value: metadata))
-                if metadatas.count == 100 {
-                    break
-                }
-            }
-        }
-
-        return metadatas
     }
     
     //MARK: -

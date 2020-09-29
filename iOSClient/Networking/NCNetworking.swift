@@ -268,7 +268,6 @@ import Queuer
                
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 
                 #if !EXTENSION
                 if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -494,7 +493,6 @@ import Queuer
                 }
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-                NCManageDatabase.sharedInstance.addRecent(tableAccount.account, ocId: ocId!, date: date ?? NSDate())
                 
                 #if !EXTENSION
                 self.getOcIdInBackgroundSession { (listOcId) in
@@ -838,7 +836,6 @@ import Queuer
                         
                             NCManageDatabase.sharedInstance.addMetadata(metadata)
                             NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadata.richWorkspace, account: account)
-                            NCManageDatabase.sharedInstance.addRecent(account, ocId: metadata.ocId, date: metadata.date)
                         }
                         
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
@@ -1003,7 +1000,6 @@ import Queuer
             if errorCode == 0 && metadata.account == account {
                 
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
-                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 
                 #if !EXTENSION
                 if favorite {
@@ -1103,7 +1099,6 @@ import Queuer
             if errorCode == 0 {
                         
                 NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
-                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                         
                 if metadata.directory {
                             
@@ -1171,7 +1166,6 @@ import Queuer
                 
                 NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
                 guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
-                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew])
                 
@@ -1213,7 +1207,6 @@ import Queuer
                    
             if errorCode == 0 {
                 
-                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo])
             }
             
