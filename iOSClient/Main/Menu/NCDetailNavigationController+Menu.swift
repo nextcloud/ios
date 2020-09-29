@@ -155,7 +155,6 @@ extension NCDetailNavigationController {
                     viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
                     viewController.isButtonDone1Hide = false
                     viewController.isOverwriteHide = false
-                    viewController.keyLayout = k_layout_view_move
                     
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                     self.present(navigationController, animated: true, completion: nil)

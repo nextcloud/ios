@@ -253,7 +253,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                         viewController.hideButtonCreateFolder = true
                         viewController.includeDirectoryE2EEncryption = false
                         viewController.includeImages = false
-                        viewController.keyLayout = k_layout_view_move
                         viewController.selectFile = false
                         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         viewController.type = "mediaFolder"

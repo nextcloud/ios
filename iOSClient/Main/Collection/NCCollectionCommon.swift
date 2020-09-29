@@ -533,7 +533,6 @@ extension NCCollectionCommon: NCSelectDelegate {
         vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
         vc.isButtonDone1Hide = false
         vc.isOverwriteHide = false
-        vc.keyLayout = k_layout_view_move
         vc.array = array
         
         navigationController.modalPresentationStyle = .fullScreen

@@ -56,7 +56,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     @objc var titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
     @objc var isButtonDone1Hide = true
     @objc var isOverwriteHide = true
-    @objc var keyLayout = k_layout_view_move
     @objc var array: [Any] = []
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
@@ -65,6 +64,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    private let keyLayout = k_layout_view_move
     private var serverUrlPush = ""
     private var metadataTouch: tableMetadata?
     private var metadataFolder = tableMetadata()
@@ -384,7 +384,6 @@ extension NCSelect: UICollectionViewDelegate {
             visualController.type = type
             visualController.titleButtonDone = titleButtonDone
             visualController.titleButtonDone1 = titleButtonDone1
-            visualController.keyLayout = keyLayout
             visualController.isButtonDone1Hide = isButtonDone1Hide
             visualController.isOverwriteHide = isOverwriteHide
             visualController.overwrite = overwrite
