@@ -2383,6 +2383,21 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func getRecent(_ account: String) -> [tableMetadata] {
+        
+        let realm = try! Realm()
+        var metadatas: [tableMetadata] = []
+        
+        let results = realm.objects(tableRecent.self).filter("account == %@", account).sorted(byKeyPath: "date", ascending: false)
+        for result in results {
+            if let metadata = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, result.ocId).first {
+                metadatas.append(tableMetadata.init(value: metadata))
+            }
+        }
+
+        return metadatas
+    }
+    
     //MARK: -
     //MARK: Table Share
     
