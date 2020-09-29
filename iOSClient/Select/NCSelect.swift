@@ -172,6 +172,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         if hideButtonCreateFolder {
             buttonCreateFolder.isHidden = true
         }
+        
+        // set the serverUrl
+        if serverUrl == "" {
+            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        }
                 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -506,11 +511,6 @@ extension NCSelect {
         var directoryOnTop: Bool
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
-        
-        if serverUrl == "" {
-            
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        }
         
         if includeDirectoryE2EEncryption {
             
