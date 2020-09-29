@@ -268,6 +268,7 @@ import Queuer
                
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: "", sessionError: "", sessionSelector: selector, sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal), etag: etag, setFavorite: setFavorite)
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 
                 #if !EXTENSION
                 if let result = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -1002,6 +1003,7 @@ import Queuer
             if errorCode == 0 && metadata.account == account {
                 
                 NCManageDatabase.sharedInstance.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite)
+                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 
                 #if !EXTENSION
                 if favorite {
@@ -1100,6 +1102,7 @@ import Queuer
             if errorCode == 0 {
                         
                 NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
+                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                         
                 if metadata.directory {
                             
@@ -1167,6 +1170,7 @@ import Queuer
                 
                 NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
                 guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
+                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
 
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew])
                 
@@ -1208,6 +1212,7 @@ import Queuer
                    
             if errorCode == 0 {
                 
+                NCManageDatabase.sharedInstance.addRecent(metadata.account, ocId: metadata.ocId, date: NSDate())
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo])
             }
             
