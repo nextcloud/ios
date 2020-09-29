@@ -2392,6 +2392,9 @@ class NCManageDatabase: NSObject {
         for result in results {
             if let metadata = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, result.ocId).first {
                 metadatas.append(tableMetadata.init(value: metadata))
+                if metadatas.count == 100 {
+                    break
+                }
             }
         }
 
