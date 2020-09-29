@@ -34,7 +34,7 @@ class NCRecent: NCCollectionViewCommon  {
         enableSearchBar = true
         DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
         DZNtitle = "_files_no_files_"
-        DZNdescription = "_no_file_pull_down_"
+        DZNdescription = ""
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,11 +52,19 @@ class NCRecent: NCCollectionViewCommon  {
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
         
-        metadatasSource = NCManageDatabase.sharedInstance.getRecent(appDelegate.account)
+        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", appDelegate.account), limit: 100, sorted: "date", ascending: true)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
+    }
+    
+    override func reloadDataSourceNetwork(forced: Bool = false) {
+        super.reloadDataSourceNetwork(forced: forced)
+        
+        self.refreshControl.endRefreshing()
+        self.isReloadDataSourceNetworkInProgress = false
+        self.reloadDataSource()
     }
 }
 
