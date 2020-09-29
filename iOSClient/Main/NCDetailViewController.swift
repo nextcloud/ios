@@ -436,6 +436,7 @@ class NCDetailViewController: UIViewController {
                 }
                     
                 viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+                self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
 
                 return
             }
