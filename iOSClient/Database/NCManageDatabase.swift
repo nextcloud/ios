@@ -1070,7 +1070,7 @@ class NCManageDatabase: NSObject {
         return tableDirectory.init(value: directory)
     }
     
-    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, richWorkspace: String? = nil, creationDate: NSDate? = nil, account: String) {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, serverUrl: String, richWorkspace: String? = nil, account: String) {
         
         let realm = try! Realm()
 
@@ -1086,9 +1086,6 @@ class NCManageDatabase: NSObject {
                 }
                 
                 addObject.account = account
-                if let creationDate = creationDate {
-                    addObject.creationDate = creationDate
-                }
                 addObject.e2eEncrypted = encrypted
                 addObject.favorite = favorite
                 addObject.fileId = fileId
@@ -1572,20 +1569,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(ocId: String, lastAccessDate: Date) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                result?.lastAccessDate = lastAccessDate as NSDate
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-
     //MARK: -
     //MARK: Table Metadata
     

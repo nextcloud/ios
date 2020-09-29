@@ -205,7 +205,6 @@ class tableDirectEditingEditors: Object {
 class tableDirectory: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var creationDate: NSDate? = nil
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
@@ -286,7 +285,6 @@ class tableLocalFile: Object {
     @objc dynamic var exifLongitude = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileName = ""
-    @objc dynamic var lastAccessDate: NSDate? = nil
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
@@ -358,6 +356,17 @@ class tablePhotoLibrary: Object {
 
     override static func primaryKey() -> String {
         return "idAsset"
+    }
+}
+
+class tableRecent: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var ocId = ""
+    
+    override static func primaryKey() -> String {
+        return "ocId"
     }
 }
 
