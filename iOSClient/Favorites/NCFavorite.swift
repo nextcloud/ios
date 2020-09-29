@@ -112,9 +112,7 @@ class NCFavorite: NCCollectionViewCommon  {
                 
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                if metadatasUpdate?.count ?? 0 > 0 {
-                    self.reloadDataSource()
-                }
+                self.reloadDataSource()
             }
         }
     }
