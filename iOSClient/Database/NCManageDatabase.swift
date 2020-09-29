@@ -210,6 +210,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
+        self.clearTable(tableRecent.self, account: account)
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
@@ -2339,6 +2340,28 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
         
         return Array(results.map { tablePhotoLibrary.init(value:$0) })
+    }
+    
+    //MARK: -
+    //MARK: Table Recent
+    
+    @objc func addRecent(_ account: String, ocId: String, date: NSDate) {
+
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                let addObject = tableRecent()
+            
+                addObject.account = account
+                addObject.ocId = ocId
+                addObject.date = date
+                
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
     }
     
     //MARK: -

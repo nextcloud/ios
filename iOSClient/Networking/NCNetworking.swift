@@ -493,6 +493,7 @@ import Queuer
                 }
                 NCManageDatabase.sharedInstance.addMetadata(metadata)
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                NCManageDatabase.sharedInstance.addRecent(tableAccount.account, ocId: ocId!, date: date ?? NSDate())
                 
                 #if !EXTENSION
                 self.getOcIdInBackgroundSession { (listOcId) in
@@ -836,6 +837,7 @@ import Queuer
                         
                             NCManageDatabase.sharedInstance.addMetadata(metadata)
                             NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: fileNameFolderUrl, richWorkspace: metadata.richWorkspace, account: account)
+                            NCManageDatabase.sharedInstance.addRecent(account, ocId: metadata.ocId, date: metadata.date)
                         }
                         
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
