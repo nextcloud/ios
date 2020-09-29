@@ -1143,6 +1143,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
+            // RECENT
+            if layoutKey == k_layout_view_recent {
+                
+            }
+            
         } else {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
