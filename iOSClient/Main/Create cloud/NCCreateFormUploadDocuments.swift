@@ -329,13 +329,7 @@ import NCCommunication
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
                             
-                            if self.appDelegate.activeViewController is NCFiles {
-                                (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
-                            } else if self.appDelegate.activeViewController is NCFavorite {
-                                (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                            } else if self.appDelegate.activeViewController is NCOffline {
-                                (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                            }
+                            NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
                         })
                     }
                     
@@ -357,13 +351,7 @@ import NCCommunication
                     
                         let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        if self.appDelegate.activeViewController is NCFiles {
-                            (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
-                        } else if self.appDelegate.activeViewController is NCFavorite {
-                            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                        } else if self.appDelegate.activeViewController is NCOffline {
-                            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                        }
+                        NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
                    })
                    
                     

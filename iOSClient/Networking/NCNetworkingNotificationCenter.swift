@@ -77,13 +77,7 @@ import Foundation
                                 
                             } else {
                                 
-                                if self.appDelegate.activeViewController is NCFiles {
-                                    (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
-                                } else if self.appDelegate.activeViewController is NCFavorite {
-                                    (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                                } else if self.appDelegate.activeViewController is NCOffline {
-                                    (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                                }
+                                segueMetadata(metadata)
                             }
                         }
                         
@@ -177,6 +171,18 @@ import Foundation
         } else {
             
             NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+        }
+    }
+    
+    @objc func segueMetadata(_ metadata: tableMetadata) {
+        if self.appDelegate.activeViewController is NCFiles {
+            (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCFavorite {
+            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCOffline {
+            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCRecent {
+            (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
         }
     }
     

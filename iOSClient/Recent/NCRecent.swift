@@ -29,6 +29,7 @@ class NCRecent: NCCollectionViewCommon  {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
+        appDelegate.activeRecent = self
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = k_layout_view_recent
         enableSearchBar = true
