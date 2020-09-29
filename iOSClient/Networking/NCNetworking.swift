@@ -1026,6 +1026,7 @@ import Queuer
         NCCommunication.shared.listingFavorites(showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
             if errorCode == 0 {
                 NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (_, _, metadatas) in
+                    NCManageDatabase.sharedInstance.updateMetadatasFavorite(account: account, metadatas: metadatas)
                     if selector != selectorListingFavorite {
                         #if !EXTENSION
                         for metadata in metadatas {
