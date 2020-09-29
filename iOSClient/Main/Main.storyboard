@@ -129,15 +129,15 @@
             </objects>
             <point key="canvasLocation" x="11403" y="1217"/>
         </scene>
-        <!--Main Tab Bar Controller-->
+        <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
-                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" customClass="NCMainTabBarController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="FkP-Lh-8zt" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>
                     </navigationItem>
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei" customClass="NCMainTabBar" customModule="Nextcloud" customModuleProvider="target">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -295,6 +295,7 @@
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
                         <segue destination="yit-8P-Oea" kind="show" identifier="segueNotification" id="JSA-8l-ixD"/>
                         <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
+                        <segue destination="zzk-gS-FKl" kind="showDetail" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -309,7 +310,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WGZ-c6-AXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10870" y="228"/>
+            <point key="canvasLocation" x="10836" y="35"/>
         </scene>
         <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
@@ -319,7 +320,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10876" y="327"/>
+            <point key="canvasLocation" x="10841" y="135"/>
         </scene>
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
@@ -329,7 +330,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10878" y="425"/>
+            <point key="canvasLocation" x="10844" y="232"/>
         </scene>
         <!--NCNotification.storyboard-->
         <scene sceneID="1sy-aN-34T">
@@ -339,7 +340,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10896" y="516"/>
+            <point key="canvasLocation" x="10862" y="323"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -349,7 +350,15 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10876" y="601"/>
+            <point key="canvasLocation" x="10841" y="408"/>
+        </scene>
+        <!--NCRecent.storyboard-->
+        <scene sceneID="nO2-dy-n7J">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCRecent" referencedIdentifier="NCRecent.storyboard" id="zzk-gS-FKl" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10831" y="502"/>
         </scene>
         <!--Shares-->
         <scene sceneID="GFd-66-qSy">
@@ -542,11 +551,6 @@
             <point key="canvasLocation" x="5670" y="-709"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="72f-jP-cei">
-            <size key="intrinsicContentSize" width="-1" height="83"/>
-        </designable>
-    </designables>
     <resources>
         <image name="logo" width="223" height="157.5"/>
         <image name="tabBarPlus" width="80" height="80"/>

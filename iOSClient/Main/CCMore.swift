@@ -87,6 +87,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.url = "segueTransfers"
         functionMenu.append(item)
 
+        // ITEM : Recent
+        item = NCCommunicationExternalSite()
+        item.name = "_recent_"
+        item.icon = "recent"
+        item.url = "segueRecent"
+        functionMenu.append(item)
+        
         // ITEM : Notification
         item = NCCommunicationExternalSite()
         item.name = "_notification_"

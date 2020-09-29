@@ -143,6 +143,8 @@
 		F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F765608A23BF80A400765969 /* SwiftEntryKit.framework */; };
 		F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
 		F765609023BF813600765969 /* NCContentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765608E23BF813500765969 /* NCContentPresenter.swift */; };
+		F765F73125237E3F00391DBE /* NCRecent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F765F72F25237E3F00391DBE /* NCRecent.swift */; };
+		F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F765F73025237E3F00391DBE /* NCRecent.storyboard */; };
 		F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76673EE22C901F6007ED366 /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EC22C901F5007ED366 /* FileProviderDomain.swift */; };
 		F76673F022C90434007ED366 /* FileProviderUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76673EF22C90433007ED366 /* FileProviderUtility.swift */; };
@@ -292,7 +294,6 @@
 		F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */; };
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
-		F7ECFB7E251F67E500EDBC17 /* NCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECFB7D251F67E500EDBC17 /* NCMainTabBarController.swift */; };
 		F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */; };
 		F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
@@ -493,6 +494,8 @@
 		F765608623BF806C00765969 /* QuickLayout.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLayout.framework; path = Carthage/Build/iOS/QuickLayout.framework; sourceTree = "<group>"; };
 		F765608A23BF80A400765969 /* SwiftEntryKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftEntryKit.framework; path = Carthage/Build/iOS/SwiftEntryKit.framework; sourceTree = "<group>"; };
 		F765608E23BF813500765969 /* NCContentPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCContentPresenter.swift; sourceTree = "<group>"; };
+		F765F72F25237E3F00391DBE /* NCRecent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCRecent.swift; sourceTree = "<group>"; };
+		F765F73025237E3F00391DBE /* NCRecent.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCRecent.storyboard; sourceTree = "<group>"; };
 		F76673EC22C901F5007ED366 /* FileProviderDomain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderDomain.swift; sourceTree = "<group>"; };
 		F76673EF22C90433007ED366 /* FileProviderUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderUtility.swift; sourceTree = "<group>"; };
 		F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBar.swift; sourceTree = "<group>"; };
@@ -695,7 +698,6 @@
 		F7E45E6D21E75BF200579249 /* ja-JP */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "ja-JP"; path = "ja-JP.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7E4D9C322ED929B003675FD /* NCShareComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareComments.swift; sourceTree = "<group>"; };
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
-		F7ECFB7D251F67E500EDBC17 /* NCMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainTabBarController.swift; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMediaCommandView.xib; sourceTree = "<group>"; };
 		F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspace.swift; sourceTree = "<group>"; };
@@ -816,7 +818,6 @@
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */,
 				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
-				F7ECFB7D251F67E500EDBC17 /* NCMainTabBarController.swift */,
 				F710D1F824057C9D00A6033D /* NCDetailViewController.swift */,
 				F7E09CE223E3087F00FB3E9E /* NCMainRefreshControl.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
@@ -989,6 +990,15 @@
 				F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */,
 			);
 			path = Section;
+			sourceTree = "<group>";
+		};
+		F765F72E25237E3F00391DBE /* Recent */ = {
+			isa = PBXGroup;
+			children = (
+				F765F72F25237E3F00391DBE /* NCRecent.swift */,
+				F765F73025237E3F00391DBE /* NCRecent.storyboard */,
+			);
+			path = Recent;
 			sourceTree = "<group>";
 		};
 		F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */ = {
@@ -1427,6 +1437,7 @@
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7381ED9218218A4000B1560 /* Offline */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
+				F765F72E25237E3F00391DBE /* Recent */,
 				F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */,
 				F758B41E212C516300515F55 /* ScanDocument */,
 				F7FE125B1BAC03FB0041924B /* Security */,
@@ -1798,6 +1809,7 @@
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
+				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
@@ -2056,6 +2068,7 @@
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
+				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
@@ -2089,7 +2102,6 @@
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
-				F7ECFB7E251F67E500EDBC17 /* NCMainTabBarController.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
