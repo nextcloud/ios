@@ -26,7 +26,6 @@ import Foundation
 class NCDataSource: NSObject {
     
     public var metadatas: [tableMetadata] = []
-    public var metadataPreview: [String:String] = [:]
     public var metadataLocalImage: [String:String] = [:]
     
     private var sort: String = ""
@@ -100,11 +99,6 @@ class NCDataSource: NSObject {
             // skipped livePhoto
             if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue
-            }
-            
-            // Preview
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-                metadataPreview[metadata.ocId] = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             }
             
             // is Local / offline

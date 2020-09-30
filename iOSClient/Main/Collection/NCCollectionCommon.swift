@@ -32,6 +32,8 @@ class NCCollectionCommon: NSObject {
     }()
     
     struct NCCollectionCommonImages {
+        static var cellFileImage = UIImage()
+
         static var cellSharedImage = UIImage()
         static var cellCanShareImage = UIImage()
         static var cellShareByLinkImage = UIImage()
@@ -59,6 +61,7 @@ class NCCollectionCommon: NSObject {
     // MARK: -
     
     @objc func createImagesThemingColor() {
+        NCCollectionCommonImages.cellFileImage = UIImage.init(named: "file")!
         NCCollectionCommonImages.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.textView)
         NCCollectionCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
         NCCollectionCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
@@ -164,11 +167,10 @@ class NCCollectionCommon: NSObject {
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
+                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
                 }
                 
             } else {
-                
                 
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -179,20 +181,19 @@ class NCCollectionCommon: NSObject {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = UIImage.init(named: "file")
+                            cell.imageItem.image = NCCollectionCommonImages.cellFileImage
                         }
                     }
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                 
-                //  image local
+                // image local
                 if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
                     cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
                 } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
                     cell.imageLocal.image = NCCollectionCommonImages.cellLocal
                 }
-                
             }
             
             // image Favorite
@@ -349,7 +350,7 @@ class NCCollectionCommon: NSObject {
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = UIImage.init(named: "offlineFlag")
+                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
                 }
                 
             } else {
@@ -363,16 +364,16 @@ class NCCollectionCommon: NSObject {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = UIImage.init(named: "file")
+                            cell.imageItem.image = NCCollectionCommonImages.cellFileImage
                         }
                     }
                 }
                 
                 // image Local
-                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                    if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-                    else { cell.imageLocal.image = UIImage.init(named: "local") }
+                if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
+                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
+                    cell.imageLocal.image = NCCollectionCommonImages.cellLocal
                 }
             }
             
