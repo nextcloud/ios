@@ -63,10 +63,6 @@ class NCRecent: NCCollectionViewCommon  {
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
         
-        guard let href = NCCommunicationCommon.shared.encodeString("/files/" + appDelegate.userID) else {
-            return
-        }
-        
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -121,7 +117,7 @@ class NCRecent: NCCollectionViewCommon  {
         </d:searchrequest>
         """
         
-        let requestBody = String(format: requestBodyRecent, href)
+        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID)
         
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
@@ -131,7 +127,7 @@ class NCRecent: NCCollectionViewCommon  {
             self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false
             self.reloadDataSource()
-        }        
+        }
     }
 }
 
