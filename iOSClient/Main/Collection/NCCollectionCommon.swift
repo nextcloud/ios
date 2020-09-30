@@ -39,6 +39,8 @@ class NCCollectionCommon: NSObject {
         static var cellMoreImage = UIImage()
         static var cellCommentImage = UIImage()
         static var cellLivePhotoImage = UIImage()
+        static var cellOfflineFlag = UIImage()
+        static var cellLocal = UIImage()
 
         static var cellFolderEncryptedImage = UIImage()
         static var cellFolderSharedWithMeImage = UIImage()
@@ -64,7 +66,9 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
         NCCollectionCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
         NCCollectionCommonImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.textView)
-        
+        NCCollectionCommonImages.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
+        NCCollectionCommonImages.cellLocal = UIImage.init(named: "local")!
+            
         NCCollectionCommonImages.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
@@ -81,7 +85,7 @@ class NCCollectionCommon: NSObject {
     
     // MARK: -
     
-    func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, isEncryptedFolder: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource?) {
+    func cellForItemAt(indexPath: IndexPath, collectionView: UICollectionView, cell: UICollectionViewCell, metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, isEditMode: Bool, isEncryptedFolder: Bool, selectocId: [String], autoUploadFileName: String, autoUploadDirectory: String, hideButtonMore: Bool, downloadThumbnail: Bool, shares: [tableShare]?, source: UIViewController, dataSource: NCDataSource) {
         
         var tableShare: tableShare?
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -165,6 +169,7 @@ class NCCollectionCommon: NSObject {
                 
             } else {
                 
+                
                 if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
                     cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
                 } else {
@@ -182,18 +187,12 @@ class NCCollectionCommon: NSObject {
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                 
                 //  image local
-                let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
-                if size > 0 {
-                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    if tableLocalFile == nil && size == metadata.size {
-                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                    }
-                    if tableLocalFile?.offline ?? false {
-                        cell.imageLocal.image = UIImage.init(named: "offlineFlag")
-                    } else{
-                        cell.imageLocal.image = UIImage.init(named: "local")
-                    }
+                if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
+                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
+                    cell.imageLocal.image = NCCollectionCommonImages.cellLocal
                 }
+                
             }
             
             // image Favorite

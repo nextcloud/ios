@@ -74,7 +74,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var selectocId: [String] = []
     private var overwrite = false
     
-    private var dataSource: NCDataSource?
+    private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
 
     private var layout = ""
@@ -361,7 +361,7 @@ extension NCSelect: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         
         if isEditMode {
             if let index = selectocId.firstIndex(of: metadata.ocId) {
@@ -422,7 +422,7 @@ extension NCSelect: UICollectionViewDataSource {
             }
             
             header.delegate = self
-            header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
+            header.setStatusButton(count: dataSource.metadatas.count)
             header.setTitleSorted(datasourceTitleButton: titleButton)
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
@@ -433,8 +433,8 @@ extension NCSelect: UICollectionViewDataSource {
             
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
             
-            let info = dataSource?.getFilesInformation()
-            footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
+            let info = dataSource.getFilesInformation()
+            footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
             
             return footer
         }
@@ -446,14 +446,14 @@ extension NCSelect: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource?.numberOfItems() ?? 0
+        return dataSource.numberOfItems()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: UICollectionViewCell
         
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         

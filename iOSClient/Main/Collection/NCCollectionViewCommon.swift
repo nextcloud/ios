@@ -41,7 +41,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var metadatasSource: [tableMetadata] = []
     internal var metadataFolder: tableMetadata?
     internal var metadataTouch: tableMetadata?
-    internal var dataSource: NCDataSource?
+    internal var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
         
     internal var layout = ""
@@ -253,12 +253,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool {
                 
                 if onlyLocal {
-                    if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.reloadItems(at: [indexPath])
                     }
                 } else {
-                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -278,7 +278,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
                 
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -287,7 +287,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         })
                     }
                 } else if metadataNew.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource?.addMetadata(metadataNew) {
+                    if let row = dataSource.addMetadata(metadataNew) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.insertItems(at: [indexPath])
@@ -318,7 +318,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 
-                if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.reloadItems(at: [indexPath])
@@ -336,7 +336,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource?.addMetadata(metadata) {
+                    if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.insertItems(at: [indexPath])
@@ -356,7 +356,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                if dataSource?.getIndexMetadata(ocId: metadata.ocId) != nil {
+                if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
                     self.reloadDataSource()
                 }
             }
@@ -369,7 +369,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 
-                if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.reloadItems(at: [indexPath])
                 }
@@ -383,7 +383,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
                 
-               if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+               if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                    let indexPath = IndexPath(row: row, section: 0)
                    collectionView?.reloadItems(at: [indexPath])
                }
@@ -397,7 +397,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                
-                if let row = dataSource?.reloadMetadata(ocId: metadata.ocId) {
+                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.reloadItems(at: [indexPath])
                 }
@@ -412,7 +412,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     
-                    if let row = dataSource?.addMetadata(metadata) {
+                    if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.insertItems(at: [indexPath])
@@ -432,7 +432,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                    
-                    dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
+                    dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
                     collectionView?.reloadData()
                 }
             }
@@ -446,7 +446,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     
-                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -477,7 +477,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
                 
-                if let index = dataSource?.getIndexMetadata(ocId: ocId) {
+                if let index = dataSource.getIndexMetadata(ocId: ocId) {
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
                         if cell is NCListCell {
                             let cell = cell as! NCListCell
@@ -893,7 +893,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         let photoDataSource: NSMutableArray = []
         
-        for metadata in (dataSource?.metadatas ?? [tableMetadata]()) {
+        for metadata in (dataSource.metadatas) {
             if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
                 photoDataSource.add(metadata)
             }
@@ -1013,7 +1013,7 @@ extension NCCollectionViewCommon: UIViewControllerPreviewingDelegate {
         
         guard let point = collectionView?.convert(location, from: collectionView?.superview) else { return nil }
         guard let indexPath = collectionView?.indexPathForItem(at: point) else { return nil }
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return nil }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
         guard let viewController = UIStoryboard(name: "CCPeekPop", bundle: nil).instantiateViewController(withIdentifier: "PeekPopImagePreview") as? CCPeekPop else { return nil }
 
         viewController.metadata = metadata
@@ -1049,7 +1049,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         metadataTouch = metadata
         
         if isEditMode {
@@ -1221,7 +1221,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             header.delegate = self
             header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
-            header.setStatusButton(count: dataSource?.metadatas.count ?? 0)
+            header.setStatusButton(count: dataSource.metadatas.count)
             header.setTitleSorted(datasourceTitleButton: titleButton)
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
             header.setRichWorkspaceText(richWorkspaceText: richWorkspaceText)
@@ -1232,8 +1232,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCSectionFooter
             
-            let info = dataSource?.getFilesInformation()
-            footer.setTitleLabel(directories: info?.directories ?? 0, files: info?.files ?? 0, size: info?.size ?? 0)
+            let info = dataSource.getFilesInformation()
+            footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size )
             
             return footer
         }
@@ -1244,14 +1244,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource?.numberOfItems() ?? 0
+        return dataSource.numberOfItems()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: UICollectionViewCell
         
-        guard let metadata = dataSource?.cellForItemAt(indexPath: indexPath) else {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         

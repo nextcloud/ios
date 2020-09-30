@@ -68,7 +68,7 @@ class NCTransfers: NCCollectionViewCommon  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
 
-                if let row = dataSource?.addMetadata(metadata) {
+                if let row = dataSource.addMetadata(metadata) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.insertItems(at: [indexPath])
@@ -87,7 +87,7 @@ class NCTransfers: NCCollectionViewCommon  {
             if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 {
                     
-                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -100,7 +100,7 @@ class NCTransfers: NCCollectionViewCommon  {
                     
                 } else if errorCode != NSURLErrorCancelled {
                     
-                    if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
+                    if let row = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.reloadItems(at: [indexPath])
@@ -121,7 +121,7 @@ class NCTransfers: NCCollectionViewCommon  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                     
-                if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])

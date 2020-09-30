@@ -23,10 +23,12 @@
 
 import Foundation
 
-@objc class NCDataSource: NSObject {
+class NCDataSource: NSObject {
     
-    @objc var metadatas: [tableMetadata] = []
-
+    public var metadatas: [tableMetadata] = []
+    public var metadataPreview: [String:String] = [:]
+    public var metadataLocalImage: [String:String] = [:]
+    
     private var sort: String = ""
     private var ascending: Bool = true
     private var directoryOnTop: Bool = true
@@ -36,7 +38,7 @@ import Foundation
         super.init()
     }
     
-    @objc init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
+    init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         
         self.sort = sort
@@ -98,6 +100,27 @@ import Foundation
             // skipped livePhoto
             if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue
+            }
+            
+            // Preview
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                metadataPreview[metadata.ocId] = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+            }
+            
+            // is Local / offline
+            if !metadata.directory {
+                let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+                if size > 0 {
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    if tableLocalFile == nil && size == metadata.size {
+                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                    }
+                    if tableLocalFile?.offline ?? false {
+                        metadataLocalImage[metadata.ocId] = "offlineFlag"
+                    } else {
+                        metadataLocalImage[metadata.ocId] = "local"
+                    }
+                }
             }
             
             if metadata.directory && directoryOnTop {
