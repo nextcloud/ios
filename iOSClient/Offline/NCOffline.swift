@@ -72,15 +72,15 @@ class NCOffline: NCCollectionViewCommon  {
                     ocIds.append(file.ocId)
                 }
                
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds))
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds), page: 0, limit: 0, sorted: sort, ascending: ascending)
                 
             } else {
                
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
             }
         }
         
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, sorting: true, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()

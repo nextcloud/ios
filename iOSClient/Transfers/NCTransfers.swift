@@ -207,7 +207,7 @@ class NCTransfers: NCCollectionViewCommon  {
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
         
         metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: "sessionTaskIdentifier", ascending: true, sorting: false, directoryOnTop: false, filterLivePhoto: false)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: false, filterLivePhoto: false)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()

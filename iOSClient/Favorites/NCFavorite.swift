@@ -65,7 +65,7 @@ class NCFavorite: NCCollectionViewCommon  {
             }
         }
         
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, sorting: false, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
