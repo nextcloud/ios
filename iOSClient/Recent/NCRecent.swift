@@ -63,6 +63,11 @@ class NCRecent: NCCollectionViewCommon  {
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
         
+        if isSearching {
+            networkSearch()
+            return
+        }
+        
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -119,7 +124,7 @@ class NCRecent: NCCollectionViewCommon  {
             </d:order>
         </d:orderby>
         <d:limit>
-            <d:nresults>100</d:nresults>
+            <d:nresults>10</d:nresults>
         </d:limit>
         </d:basicsearch>
         </d:searchrequest>
@@ -136,8 +141,15 @@ class NCRecent: NCCollectionViewCommon  {
         
         NCCommunication.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
             
-            let directoryMetadatas = NCManageDatabase.sharedInstance.addMetadatas(files: files, account: account)
-            for metadata in directoryMetadatas {
+            NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                
+                // Update sub directories
+                for metadata in metadatasFolder {
+                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                    NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                }
+                
+                NCManageDatabase.sharedInstance.addMetadatas(metadatas)
             }
             
             self.refreshControl.endRefreshing()
