@@ -61,6 +61,11 @@ class NCRecent: NCCollectionViewCommon  {
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
         
+        if isSearching {
+            networkSearch()
+            return
+        }
+        
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
