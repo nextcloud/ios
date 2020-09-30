@@ -1726,11 +1726,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {
+    @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) -> [tableMetadata] {
     
-        guard let files = files else { return }
+        guard let files = files else { return [] }
         
         let realm = try! Realm()
+        var directoryMetadata: [tableMetadata] = []
         
         do {
             try realm.safeWrite {
@@ -1778,11 +1779,17 @@ class NCManageDatabase: NSObject {
                     metadata.urlBase = file.urlBase
                     
                     realm.add(metadata, update: .all)
+                    
+                    if metadata.directory {
+                        directoryMetadata.append(tableMetadata.init(value: metadata))
+                    }
                 }
             }
         } catch let error {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
+        
+        return directoryMetadata
     }
     
     @objc func deleteMetadata(predicate: NSPredicate) {

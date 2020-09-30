@@ -125,14 +125,20 @@ class NCRecent: NCCollectionViewCommon  {
         </d:searchrequest>
         """
         
-        guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
-        let lessDateString = NCCommunicationCommon.shared.convertDate( format: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID)
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale.init(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        let lessDateString = dateFormatter.string(from: Date())
+        let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID, lessDateString)
         
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
         
         NCCommunication.shared.searchBodyRequest(serverUrl: appDelegate.urlBase, requestBody: requestBody, showHiddenFiles: CCUtility.getShowHiddenFiles()) { (account, files, errorCode, errorDescription) in
+            
+            let directoryMetadatas = NCManageDatabase.sharedInstance.addMetadatas(files: files, account: account)
+            for metadata in directoryMetadatas {
+            }
             
             self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false
