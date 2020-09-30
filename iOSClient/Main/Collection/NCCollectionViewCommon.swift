@@ -922,7 +922,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
     }
-    @objc func reloadDataSource(_ notification: NSNotification) { }
+    @objc func reloadDataSource(_ notification: NSNotification) {
+        
+    }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
     @objc func reloadDataSourceNetworkRefreshControl() {
         reloadDataSourceNetwork(forced: true)
