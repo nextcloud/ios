@@ -32,14 +32,16 @@ class NCRecent: NCCollectionViewCommon  {
         appDelegate.activeRecent = self
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = k_layout_view_recent
-        enableSearchBar = true
+        enableSearchBar = false
         DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
         DZNtitle = "_files_no_files_"
         DZNdescription = ""
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    // MARK: - Collection View
+    
+    override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 0)
     }
     
     // MARK: - DataSource + NC Endpoint
@@ -47,14 +49,10 @@ class NCRecent: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
-        
-        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", appDelegate.account), limit: 100, sorted: "date", ascending: true)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
+
+        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: "date", ascending: false, directoryOnTop: false, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
@@ -62,11 +60,6 @@ class NCRecent: NCCollectionViewCommon  {
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
-        
-        if isSearching {
-            networkSearch()
-            return
-        }
         
         let requestBodyRecent =
         """
