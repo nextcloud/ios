@@ -102,6 +102,14 @@ class NCRecent: NCCollectionViewCommon  {
                 <d:depth>infinity</d:depth>
             </d:scope>
         </d:from>
+        <d:where>
+            <d:lt>
+                <d:prop>
+                    <d:getlastmodified/>
+                </d:prop>
+                <d:literal>%@</d:literal>
+            </d:lt>
+        </d:where>
         <d:orderby>
             <d:order>
                 <d:prop>
@@ -110,13 +118,15 @@ class NCRecent: NCCollectionViewCommon  {
                 <d:descending/>
             </d:order>
         </d:orderby>
-            <d:limit>
-                <d:nresults>100</d:nresults>
-            </d:limit>
+        <d:limit>
+            <d:nresults>100</d:nresults>
+        </d:limit>
         </d:basicsearch>
         </d:searchrequest>
         """
         
+        guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
+        let lessDateString = NCCommunicationCommon.shared.convertDate( format: "yyyy-MM-dd'T'HH:mm:ssZZZZZ")
         let requestBody = String(format: requestBodyRecent, "/files/"+appDelegate.userID)
         
         isReloadDataSourceNetworkInProgress = true
