@@ -47,11 +47,11 @@ class NCDataSource: NSObject {
     // MARK: -
     
     private func createMetadatas(metadatasSource: [tableMetadata]) {
-        
-        var metadatasFavorite: [tableMetadata] = []
-        var metadatasTemp: [tableMetadata] = []
-        var numDirectory: Int = 0
-        var numDirectoryFavorite:Int = 0
+                
+        var metadataFavoriteDirectory: [tableMetadata] = []
+        var metadataFavoriteFile: [tableMetadata] = []
+        var metadataDirectory: [tableMetadata] = []
+        var metadataFile: [tableMetadata] = []
 
         /*
         Initialize datasource
@@ -79,29 +79,25 @@ class NCDataSource: NSObject {
                     }
                 }
             }
-            
-            if metadata.directory && directoryOnTop {
-                if metadata.favorite {
-                    metadatasTemp.insert(metadata, at: numDirectoryFavorite)
-                    numDirectoryFavorite += 1
-                    numDirectory += 1
+               
+            // Organized the metadata
+            if metadata.favorite {
+                if metadata.directory {
+                    metadataFavoriteDirectory.append(metadata)
                 } else {
-                    metadatasTemp.insert(metadata, at: numDirectory)
-                    numDirectory += 1
+                    metadataFavoriteFile.append(metadata)
                 }
+            } else if  metadata.directory && directoryOnTop {
+                metadataDirectory.append(metadata)
             } else {
-                if metadata.favorite && directoryOnTop {
-                    metadatasFavorite.append(metadata)
-                } else {
-                    metadatasTemp.append(metadata)
-                }
+                metadataFile.append(metadata)
             }
         }
-        if directoryOnTop && metadatasFavorite.count > 0 {
-            metadatasTemp.insert(contentsOf: metadatasFavorite, at: numDirectory)
-        }
         
-        self.metadatas = metadatasTemp
+        metadatas += metadataFavoriteDirectory
+        metadatas += metadataFavoriteFile
+        metadatas += metadataDirectory
+        metadatas += metadataFile
     }
         
     // MARK: -
