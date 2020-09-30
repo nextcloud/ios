@@ -191,6 +191,15 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as? String == "paste" {
                 self.paste(self)
             }
+            
+            if (message.body as? String)?.hasPrefix("HYPERLINK") != nil {
+                if let messageBodyItem = (message.body as? String)?.components(separatedBy: " ") {
+                    if messageBodyItem.count >= 2 {
+                        let url = URL(fileURLWithPath: messageBodyItem[1])
+                        UIApplication.shared.open(url, options: [:]) { (_) in }
+                    }
+                }
+            }
         }
     }
     
