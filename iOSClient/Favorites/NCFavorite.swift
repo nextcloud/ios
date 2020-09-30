@@ -38,6 +38,13 @@ class NCFavorite: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_favorite_view_"
     }
     
+    // MARK: - NotificationCenter
+    
+    override func reloadDataSource(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        reloadDataSource()
+    }
+    
     // MARK: - DataSource + NC Endpoint
     
     override func reloadDataSource() {

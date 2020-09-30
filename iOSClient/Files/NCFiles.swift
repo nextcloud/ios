@@ -58,6 +58,11 @@ class NCFiles: NCCollectionViewCommon  {
         
         super.initializeMain()
     }
+        
+    override func reloadDataSource(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        reloadDataSource()
+    }
     
     // MARK: - DataSource + NC Endpoint
     
