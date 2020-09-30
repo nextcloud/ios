@@ -1726,65 +1726,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func addMetadatas(files: [NCCommunicationFile]?, account: String) {
-    
-        guard let files = files else { return }
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.safeWrite {
-                for file in files {
-                    
-                    let metadata = tableMetadata()
-                    
-                    metadata.account = account
-                    metadata.commentsUnread = file.commentsUnread
-                    metadata.contentType = file.contentType
-                    if let date = file.creationDate {
-                        metadata.creationDate = date
-                    } else {
-                        metadata.creationDate = file.date
-                    }
-                    metadata.date = file.date
-                    metadata.directory = file.directory
-                    metadata.e2eEncrypted = file.e2eEncrypted
-                    metadata.etag = file.etag
-                    metadata.ext = file.ext
-                    metadata.favorite = file.favorite
-                    metadata.fileId = file.fileId
-                    metadata.fileName = file.fileName
-                    metadata.fileNameView = file.fileName
-                    metadata.fileNameWithoutExt = file.fileNameWithoutExt
-                    metadata.hasPreview = file.hasPreview
-                    metadata.iconName = file.iconName
-                    metadata.livePhoto = file.livePhoto
-                    metadata.mountType = file.mountType
-                    metadata.ocId = file.ocId
-                    metadata.ownerId = file.ownerId
-                    metadata.ownerDisplayName = file.ownerDisplayName
-                    metadata.permissions = file.permissions
-                    metadata.quotaUsedBytes = file.quotaUsedBytes
-                    metadata.quotaAvailableBytes = file.quotaAvailableBytes
-                    metadata.resourceType = file.resourceType
-                    metadata.serverUrl = file.serverUrl
-                    metadata.size = file.size
-                    metadata.typeFile = file.typeFile
-                    if let date = file.uploadDate {
-                        metadata.uploadDate = date
-                    } else {
-                        metadata.uploadDate = file.date
-                    }
-                    metadata.urlBase = file.urlBase
-                    
-                    realm.add(metadata, update: .all)
-                }
-            }
-        } catch let error {
-            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
-        }
-    }
-    
     @objc func deleteMetadata(predicate: NSPredicate) {
                 
         let realm = try! Realm()
