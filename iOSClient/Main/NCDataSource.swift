@@ -30,6 +30,7 @@ class NCDataSource: NSObject {
     
     private var sort: String = ""
     private var ascending: Bool = true
+    private var sorting: Bool = true
     private var directoryOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     
@@ -37,11 +38,12 @@ class NCDataSource: NSObject {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
+    init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, sorting: Bool, directoryOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         
         self.sort = sort
         self.ascending = ascending
+        self.sorting = sorting
         self.directoryOnTop = directoryOnTop
         self.filterLivePhoto = filterLivePhoto
         
@@ -52,6 +54,7 @@ class NCDataSource: NSObject {
     
     private func createMetadatas(metadatasSource: [tableMetadata]) {
         
+        var metadatasSourceSorted: [tableMetadata] = []
         var metadatasFavorite: [tableMetadata] = []
         var metadatasTemp: [tableMetadata] = []
         var numDirectory: Int = 0
@@ -61,33 +64,37 @@ class NCDataSource: NSObject {
         Metadata order
         */
         
-        let metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
-            if sort == "date" {
-                if ascending {
-                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
+        if sorting {
+            metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
+                if sort == "date" {
+                    if ascending {
+                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
+                    } else {
+                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
+                    }
+                } else if sort == "sessionTaskIdentifier" {
+                    if ascending {
+                        return obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier
+                    } else {
+                        return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
+                    }
+                } else if sort == "size" {
+                    if ascending {
+                        return obj1.size > obj2.size
+                    } else {
+                        return obj1.size < obj2.size
+                    }
                 } else {
-                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
-                }
-            } else if sort == "sessionTaskIdentifier" {
-                if ascending {
-                    return obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier
-                } else {
-                    return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
-                }
-            } else if sort == "size" {
-                if ascending {
-                    return obj1.size > obj2.size
-                } else {
-                    return obj1.size < obj2.size
-                }
-            } else {
-                let range = Range(NSMakeRange(0, obj1.fileNameView.count), in: obj1.fileNameView)
-                if ascending {
-                    return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedAscending
-                } else {
-                    return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedDescending
+                    let range = Range(NSMakeRange(0, obj1.fileNameView.count), in: obj1.fileNameView)
+                    if ascending {
+                        return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedAscending
+                    } else {
+                        return obj1.fileNameView.compare(obj2.fileNameView, options: .caseInsensitive, range: range, locale: .current) == ComparisonResult.orderedDescending
+                    }
                 }
             }
+        } else {
+            metadatasSourceSorted = metadatasSource
         }
         
         /*
