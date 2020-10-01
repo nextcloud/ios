@@ -95,11 +95,14 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         if fileName != nil {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, serverUrl, fileName!)) {
                 if let row = dataSource.getIndexMetadata(ocId: metadata.ocId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: true)
-                        if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
-                            NCUtility.shared.blink(cell: cell)
-                            self.fileName = nil
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIView.animate(withDuration: 0.3) {
+                            self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
+                        } completion: { (_) in
+                            if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
+                                NCUtility.shared.blink(cell: cell)
+                                self.fileName = nil
+                            }
                         }
                     }
                 }
