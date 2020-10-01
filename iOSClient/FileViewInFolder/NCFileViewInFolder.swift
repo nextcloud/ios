@@ -33,7 +33,6 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         super.init(coder: aDecoder)
         
         appDelegate.activeFileViewInFolder = self
-        titleCurrentFolder = ""
         layoutKey = k_layout_view_viewInFolder
         enableSearchBar = false
         DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
@@ -98,7 +97,10 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                 if let row = dataSource.getIndexMetadata(ocId: metadata.ocId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: true)
-                        self.fileName = nil
+                        if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
+                            NCUtility.shared.blink(cell: cell)
+                            self.fileName = nil
+                        }
                     }
                 }
             }
