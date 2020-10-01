@@ -68,7 +68,7 @@ class NCSortMenu: NSObject {
         case "date":
             titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
         case "size":
-            titleButton = ascending ? "_sorted_by_size_largest_" : "_sorted_by_size_smallest_"
+            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
         default:
             break
         }
