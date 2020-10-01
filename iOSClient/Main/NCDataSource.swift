@@ -26,8 +26,9 @@ import Foundation
 class NCDataSource: NSObject {
     
     public var metadatas: [tableMetadata] = []
+    public var metadataShare: [String:tableShare] = [:]
     public var metadataLocalImage: [String:String] = [:]
-    
+
     private var directoryOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     
@@ -53,15 +54,17 @@ class NCDataSource: NSObject {
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
 
-        /*
-        Initialize datasource
-        */
-        
         for metadata in metadatasSource {
             
             // skipped livePhoto
             if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue
+            }
+            
+            // share
+            let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            if shares.count > 0 {
+                metadataShare[metadata.ocId] = shares.first
             }
             
             // is Local / offline

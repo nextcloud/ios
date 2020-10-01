@@ -1250,28 +1250,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            return UICollectionViewCell()
         }
         
-        // Share
-        let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         var tableShare: tableShare?
-        for share in shares {
-            if share.fileName == metadata.fileName {
-                tableShare = share
-                break
-            }
-        }
+        var isShare = false
+        var isMounted = false
         
         // Download preview
         NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
         
-        var isShare = false
-        var isMounted = false
-        
         if metadataFolder != nil {
             isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+        }
+        
+        if dataSource.metadataShare[metadata.ocId] != nil {
+            tableShare = dataSource.metadataShare[metadata.ocId]
         }
         
         // LAYOUT LIST
@@ -1305,9 +1300,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.imageItem.image = NCCollectionCommon.images.cellFolderEncryptedImage
                 } else if isShare {
                     cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType != 3) {
+                } else if (tableShare != nil && tableShare?.shareType != 3) {
                     cell.imageItem.image = NCCollectionCommon.images.cellFolderSharedWithMeImage
-                } else if (tableShare != nil && tableShare!.shareType == 3) {
+                } else if (tableShare != nil && tableShare?.shareType == 3) {
                     cell.imageItem.image = NCCollectionCommon.images.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
                     cell.imageItem.image = NCCollectionCommon.images.cellFolderGroupImage
@@ -1363,9 +1358,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // Share image
             if (isShare) {
                 cell.imageShared.image = NCCollectionCommon.images.cellSharedImage
-            } else if (tableShare != nil && tableShare!.shareType == 3) {
+            } else if (tableShare != nil && tableShare?.shareType == 3) {
                 cell.imageShared.image = NCCollectionCommon.images.cellShareByLinkImage
-            } else if (tableShare != nil && tableShare!.shareType != 3) {
+            } else if (tableShare != nil && tableShare?.shareType != 3) {
                 cell.imageShared.image = NCCollectionCommon.images.cellSharedImage
             } else {
                 cell.imageShared.image = NCCollectionCommon.images.cellCanShareImage
