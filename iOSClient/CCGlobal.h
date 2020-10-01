@@ -277,6 +277,7 @@
 #define k_layout_view_offline                           @"LayoutOffline"
 #define k_layout_view_favorite                          @"LayoutFavorite"
 #define k_layout_view_files                             @"LayoutFiles"
+#define k_layout_view_viewInFolder                      @"ViewInFolder"
 #define k_layout_view_transfers                         @"LayoutTransfers"
 #define k_layout_view_media                             @"LayoutMedia"
 #define k_layout_view_recent                            @"LayoutRecent"
