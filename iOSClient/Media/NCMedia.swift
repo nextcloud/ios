@@ -578,7 +578,6 @@ extension NCMedia: UICollectionViewDataSource {
         }
         cell.date = metadata.date as Date
 
-        // image status
         if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             cell.imageStatus.image = cacheImages.cellPlayImage
         } else if metadata.livePhoto && livePhoto {
