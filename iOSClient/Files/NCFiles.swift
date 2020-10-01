@@ -110,7 +110,11 @@ class NCFiles: NCCollectionViewCommon  {
             
             self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false
-            self.reloadDataSource()
+            if metadatasUpdate?.count ?? 0 > 0 {
+                self.reloadDataSource()
+            } else {
+                self.collectionView?.reloadData()
+            }
         }
     }
 }
