@@ -112,7 +112,7 @@ class NCDataSource: NSObject {
         var files: Int = 0
         var size: Double = 0
 
-        for metadata in self.metadatas {
+        for metadata in metadatas {
             if metadata.directory {
                 directories += 1
             } else {
@@ -127,7 +127,7 @@ class NCDataSource: NSObject {
     func deleteMetadata(ocId: String) -> Int? {
         
         if let index = self.getIndexMetadata(ocId: ocId) {
-            self.metadatas.remove(at: index)
+            metadatas.remove(at: index)
             return index
         }
         
@@ -147,7 +147,7 @@ class NCDataSource: NSObject {
         
         if index != nil {
             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                self.metadatas[index!] = metadata
+                metadatas[index!] = metadata
             } 
         }
         
@@ -168,7 +168,7 @@ class NCDataSource: NSObject {
         }
         
         // Append & rebuild
-        self.metadatas.append(metadata)
+        metadatas.append(metadata)
         createMetadatas(metadatasSource: metadatas)
         
         return getIndexMetadata(ocId: metadata.ocId)
@@ -190,17 +190,17 @@ class NCDataSource: NSObject {
     
     func numberOfItems() -> Int {
         
-        return self.metadatas.count
+        return metadatas.count
     }
     
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
         
         let row = indexPath.row
         
-        if row > self.metadatas.count - 1 {
+        if row > metadatas.count - 1 {
             return nil
         } else {
-            return self.metadatas[row]
+            return metadatas[row]
         }
     }
 }
