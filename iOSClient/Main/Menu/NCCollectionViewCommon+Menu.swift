@@ -218,6 +218,21 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // VIEW IN FOLDER
+        //
+        if layoutKey == k_layout_view_recent {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         actions.append(

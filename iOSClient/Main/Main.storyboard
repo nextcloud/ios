@@ -295,7 +295,7 @@
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
                         <segue destination="yit-8P-Oea" kind="show" identifier="segueNotification" id="JSA-8l-ixD"/>
                         <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
-                        <segue destination="zzk-gS-FKl" kind="showDetail" identifier="segueRecent" id="Snj-Bw-Ce2"/>
+                        <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -355,7 +355,9 @@
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
             <objects>
-                <viewControllerPlaceholder storyboardName="NCRecent" referencedIdentifier="NCRecent.storyboard" id="zzk-gS-FKl" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="NCRecent" referencedIdentifier="NCRecent.storyboard" id="zzk-gS-FKl" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="9Kb-01-l1b"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10831" y="502"/>
