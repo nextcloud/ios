@@ -41,8 +41,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
-        self.navigationItem.title = serverUrl
+                
+        self.navigationItem.title = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
                 
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
@@ -91,7 +91,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         refreshControl.endRefreshing()
         collectionView.reloadData()
         
-        // Lamps file
+        // Blink file
         if fileName != nil {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, serverUrl, fileName!)) {
                 if let row = dataSource.getIndexMetadata(ocId: metadata.ocId) {
