@@ -53,7 +53,7 @@ class NCDataSource: NSObject {
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
-
+        
         for metadata in metadatasSource {
             
             // skipped livePhoto
@@ -97,6 +97,7 @@ class NCDataSource: NSObject {
             }
         }
         
+        metadatas.removeAll()
         metadatas += metadataFavoriteDirectory
         metadatas += metadataFavoriteFile
         metadatas += metadataDirectory
