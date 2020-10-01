@@ -1248,17 +1248,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell: UICollectionViewCell
-        
+                
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
-        }
-        
-        if layout == k_layout_grid {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
-        } else {
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
         // Share
@@ -1282,11 +1274,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
         }
         
-        if cell is NCListCell {
+        if layout == k_layout_list {
             
-            let cell = cell as! NCListCell
-           
-            cell.delegate = self as NCListCellDelegate
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            cell.delegate = self
             
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
@@ -1470,11 +1461,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.separator.isHidden = false
             }
             
-        } else if cell is NCGridCell {
+            return cell
+        }
+        
+        if layout == k_layout_grid {
             
-            let cell = cell as! NCGridCell
-
-            cell.delegate = self as NCGridCellDelegate
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+            cell.delegate = self
             
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
@@ -1576,9 +1569,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.livePhoto {
                 cell.imageStatus.image = NCCollectionCommon.images.cellLivePhotoImage
             }
+            
+            return cell
         }
         
-        return cell
+        return UICollectionViewCell()
     }
 }
 
