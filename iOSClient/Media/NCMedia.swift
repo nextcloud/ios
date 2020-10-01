@@ -585,11 +585,6 @@ extension NCMedia: UICollectionViewDataSource {
             cell.imageStatus.image = cacheImages.cellLivePhotoImage
         }
         
-        // image Favorite
-        if metadata.favorite {
-            cell.imageFavorite.image = cacheImages.cellFavouriteImage
-        }
-        
         if isEditMode {
             cell.imageSelect.isHidden = false
             if selectocId.contains(metadata.ocId) {
