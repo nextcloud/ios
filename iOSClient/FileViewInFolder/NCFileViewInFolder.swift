@@ -27,6 +27,7 @@ import NCCommunication
 class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var isRoot: Bool = true
+    internal var fileName: String?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -40,9 +41,35 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         DZNdescription = "_no_file_pull_down_"
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        appDelegate.activeViewController = self
+        
+        self.navigationItem.title = titleCurrentFolder
+                
+        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
+        gridLayout.itemForLine = CGFloat(itemForLine)
+        
+        if layout == k_layout_list {
+            collectionView?.collectionViewLayout = listLayout
+        } else {
+            collectionView?.collectionViewLayout = gridLayout
+        }
+
+        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))
+       
+        reloadDataSource()
+    }
+    
     override func reloadDataSource(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         reloadDataSource()
+    }
+    
+    @objc func tapClose(sender: Any) {
+        dismiss(animated: true, completion: nil)
     }
     
     // MARK: - DataSource + NC Endpoint

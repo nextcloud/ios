@@ -51,8 +51,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
         
-    private var listLayout: NCListLayout!
-    private var gridLayout: NCGridLayout!
+    internal var listLayout: NCListLayout!
+    internal var gridLayout: NCGridLayout!
             
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
