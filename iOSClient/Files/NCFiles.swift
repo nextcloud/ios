@@ -26,6 +26,8 @@ import NCCommunication
 
 class NCFiles: NCCollectionViewCommon  {
     
+    internal var moveToOcId: String?
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -82,10 +84,18 @@ class NCFiles: NCCollectionViewCommon  {
             }
         }
         
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
+        
+        // Aumomatic move to
+        if moveToOcId != nil {
+            if let row = dataSource.getIndexMetadata(ocId: moveToOcId!) {
+                collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: true)
+                moveToOcId = nil
+            }
+        }
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
