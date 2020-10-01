@@ -34,7 +34,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var searchController: UISearchController?
     
     internal var serverUrl: String = ""
-    internal var isRoot: Bool = true
     internal var isEncryptedFolder = false
     internal var isEditMode = false
     internal var selectOcId: [String] = []
@@ -1109,7 +1108,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                         
                     let vcFavorite:NCFavorite = UIStoryboard(name: "NCFavorite", bundle: nil).instantiateInitialViewController() as! NCFavorite
                 
-                    vcFavorite.isRoot = false
                     vcFavorite.serverUrl = serverUrlPush
                     vcFavorite.titleCurrentFolder = metadataTouch!.fileNameView
                 
@@ -1133,7 +1131,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     
                     let vcOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
                     
-                    vcOffline.isRoot = false
                     vcOffline.serverUrl = serverUrlPush
                     vcOffline.titleCurrentFolder = metadataTouch!.fileNameView
                     

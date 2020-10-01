@@ -123,12 +123,14 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         viewController.present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func openFilesViewController(serverUrl: String, fileName: String) {
+    @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-        let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+        let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
         let navigationController = UINavigationController.init(rootViewController: viewController)
+
+        viewController.serverUrl = serverUrl
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)

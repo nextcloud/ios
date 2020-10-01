@@ -1125,7 +1125,7 @@
                             serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
                         }
                         
-                        [[NCCollectionCommon shared] openFilesViewControllerWithServerUrl:serverUrl fileName:fileName];
+                        [[NCCollectionCommon shared] openFileViewInFolderWithServerUrl:serverUrl fileName:fileName];
                    
                     } else {
                         

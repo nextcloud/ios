@@ -33,6 +33,7 @@
 #import "CCLogin.h"
 
 @class NCFiles;
+@class NCFileViewInFolder;
 @class NCRecent;
 @class CCMore;
 @class NCMedia;
@@ -92,6 +93,7 @@
 @property (nonatomic, retain) id activeViewController;
 
 @property (nonatomic, retain) NCFiles *activeFiles;
+@property (nonatomic, retain) NCFileViewInFolder *activeFileViewInFolder;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCRecent *activeRecent;
 @property (nonatomic, retain) NCMedia *activeMedia;

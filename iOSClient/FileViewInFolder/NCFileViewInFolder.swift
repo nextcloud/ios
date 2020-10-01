@@ -1,8 +1,8 @@
 //
-//  NCFiles.swift
+//  NCFileViewInFolder.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 26/09/2020.
+//  Created by Marino Faggiana on 01/10/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -24,14 +24,14 @@
 import Foundation
 import NCCommunication
 
-class NCFiles: NCCollectionViewCommon  {
+class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var isRoot: Bool = true
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        appDelegate.activeFiles = self
+        appDelegate.activeFileViewInFolder = self
         titleCurrentFolder =  NCBrandOptions.sharedInstance.brand
         layoutKey = k_layout_view_files
         enableSearchBar = true
@@ -40,27 +40,6 @@ class NCFiles: NCCollectionViewCommon  {
         DZNdescription = "_no_file_pull_down_"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        
-        if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        }
-        
-        super.viewWillAppear(animated)
-    }
-    
-    // MARK: - NotificationCenter
-    
-    override func initializeMain() {
-        
-        if isRoot {
-            serverUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-            reloadDataSourceNetwork(forced: true)
-        }
-        
-        super.initializeMain()
-    }
-        
     override func reloadDataSource(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         reloadDataSource()
