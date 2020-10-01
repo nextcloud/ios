@@ -37,6 +37,7 @@ class NCCollectionCommon: NSObject {
         static var cellSharedImage = UIImage()
         static var cellCanShareImage = UIImage()
         static var cellShareByLinkImage = UIImage()
+        
         static var cellFavouriteImage = UIImage()
         static var cellCommentImage = UIImage()
         static var cellLivePhotoImage = UIImage()
@@ -56,20 +57,20 @@ class NCCollectionCommon: NSObject {
         
         static var cellButtonMore = UIImage()
         static var cellButtonStop = UIImage()
-
-        static var cellPlayImage = UIImage()
     }
     
     // MARK: -
     
     @objc func createImagesThemingColor() {
         NCCollectionCommonImages.cellFileImage = UIImage.init(named: "file")!
-        NCCollectionCommonImages.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.textView)
-        NCCollectionCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
-        NCCollectionCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
-        NCCollectionCommonImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
-        NCCollectionCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
-        NCCollectionCommonImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.textView)
+        
+        NCCollectionCommonImages.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        NCCollectionCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        NCCollectionCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        
+        NCCollectionCommonImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite)
+        NCCollectionCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        NCCollectionCommonImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView)
         NCCollectionCommonImages.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
         NCCollectionCommonImages.cellLocal = UIImage.init(named: "local")!
             
@@ -81,13 +82,11 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         
-        NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
+        NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
         
-        NCCollectionCommonImages.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-        NCCollectionCommonImages.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-
-        NCCollectionCommonImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
+        NCCollectionCommonImages.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        NCCollectionCommonImages.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
     }
     
     // MARK: -
