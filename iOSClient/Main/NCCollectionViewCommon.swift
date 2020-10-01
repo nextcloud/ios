@@ -1274,6 +1274,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
         }
         
+        // LAYOUT LIST
+        
         if layout == k_layout_list {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
@@ -1463,6 +1465,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             return cell
         }
+        
+        // LAYOUT GRID
         
         if layout == k_layout_grid {
             
