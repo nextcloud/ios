@@ -1065,9 +1065,8 @@
         return YES;
     
     NSString *scheme = url.scheme;
-
-    dispatch_time_t timer = 0;
-    if (self.activeFiles == nil) timer = 1;
+    NSString *fileName;
+    NSString *serverUrl;
 
     if ([scheme isEqualToString:@"nextcloud"]) {
                 
@@ -1112,7 +1111,21 @@
                     
                     if (matchedAccount) {
                         
-                    
+                        NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:self.account];
+                        //NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, path];
+
+                        if ([path containsString:@"/"]) {
+
+                            fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
+                            
+                        } else {
+                            
+                            fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                            serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
+                        }
+                        
+                        [[NCCollectionCommon shared] openFilesViewControllerWithServerUrl:serverUrl fileName:fileName];
                    
                     } else {
                         
@@ -1151,7 +1164,7 @@
                 if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
                     UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
                     
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                         [navigationControllerMaster presentViewController:uploadNavigationViewController animated:YES completion:nil];
                     });
                 }

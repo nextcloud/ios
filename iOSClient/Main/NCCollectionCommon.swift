@@ -122,6 +122,17 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         navigationController.modalPresentationStyle = .fullScreen
         viewController.present(navigationController, animated: true, completion: nil)
     }
+    
+    @objc func openFilesViewController(serverUrl: String, fileName: String) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+        let viewController = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+        let navigationController = UINavigationController.init(rootViewController: viewController)
+        
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
+    }
 }
 
 // MARK: - List Layout
