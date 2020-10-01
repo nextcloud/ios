@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -66,10 +66,11 @@
                         </constraints>
                     </imageView>
                     <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JQo-Vc-Ejk">
-                        <rect key="frame" x="5" y="258" width="210" height="2"/>
+                        <rect key="frame" x="5" y="256" width="210" height="4"/>
                     </progressView>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <constraints>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
                 <constraint firstItem="AYs-f2-vve" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-20" id="3e3-0A-NSl"/>
@@ -92,7 +93,6 @@
                 <constraint firstItem="JQo-Vc-Ejk" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="wiV-1m-wt8"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="JQo-Vc-Ejk" secondAttribute="bottom" constant="5" id="zV9-iQ-Zm5"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="260"/>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>

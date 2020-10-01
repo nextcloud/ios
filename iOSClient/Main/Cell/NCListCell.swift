@@ -108,7 +108,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
-        buttonMore.setImage(image, for: .normal)
+        imageMore.image = image
     }
     
     func hideButtonMore() {
