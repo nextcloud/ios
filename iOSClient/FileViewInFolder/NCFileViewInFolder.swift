@@ -33,20 +33,17 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         super.init(coder: aDecoder)
         
         appDelegate.activeFileViewInFolder = self
-        titleCurrentFolder =  NCBrandOptions.sharedInstance.brand
+        titleCurrentFolder = ""
         layoutKey = k_layout_view_files
-        enableSearchBar = true
+        enableSearchBar = false
         DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
         DZNtitle = "_files_no_files_"
         DZNdescription = "_no_file_pull_down_"
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        appDelegate.activeViewController = self
         
-        self.navigationItem.title = titleCurrentFolder
+        self.navigationItem.title = serverUrl
                 
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
@@ -57,10 +54,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             collectionView?.collectionViewLayout = gridLayout
         }
 
-        self.navigationItem.rightBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))
-       
-        reloadDataSource()
+        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
     }
     
     override func reloadDataSource(_ notification: NSNotification) {
@@ -96,6 +91,18 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
+        
+        // Lamps file
+        if fileName != nil {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, serverUrl, fileName!)) {
+                if let row = dataSource.getIndexMetadata(ocId: metadata.ocId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: true)
+                        self.fileName = nil
+                    }
+                }
+            }
+        }
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
@@ -123,11 +130,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             
             self.refreshControl.endRefreshing()
             self.isReloadDataSourceNetworkInProgress = false
-            if metadatasUpdate?.count ?? 0 > 0 {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+            self.reloadDataSource()
         }
     }
 }
