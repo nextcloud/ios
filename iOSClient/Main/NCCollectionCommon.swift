@@ -31,7 +31,7 @@ class NCCollectionCommon: NSObject {
         return instance
     }()
     
-    struct NCCollectionCommonImages {
+    struct images {
         static var cellFileImage = UIImage()
 
         static var cellSharedImage = UIImage()
@@ -62,31 +62,31 @@ class NCCollectionCommon: NSObject {
     // MARK: -
     
     @objc func createImagesThemingColor() {
-        NCCollectionCommonImages.cellFileImage = UIImage.init(named: "file")!
+        images.cellFileImage = UIImage.init(named: "file")!
         
-        NCCollectionCommonImages.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        NCCollectionCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        NCCollectionCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellSharedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
         
-        NCCollectionCommonImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite)
-        NCCollectionCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        NCCollectionCommonImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView)
-        NCCollectionCommonImages.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
-        NCCollectionCommonImages.cellLocal = UIImage.init(named: "local")!
+        images.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite)
+        images.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView)
+        images.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
+        images.cellLocal = UIImage.init(named: "local")!
             
-        NCCollectionCommonImages.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderGroupImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_group"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderEncryptedImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderSharedWithMeImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderPublicImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderGroupImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_group"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderExternalImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         
-        NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
-        NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
         
-        NCCollectionCommonImages.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
-        NCCollectionCommonImages.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
+        images.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
     }
     
     // MARK: -
@@ -146,21 +146,21 @@ class NCCollectionCommon: NSObject {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderEncryptedImage
+                    cell.imageItem.image = images.cellFolderEncryptedImage
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderSharedWithMeImage
+                    cell.imageItem.image = images.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderSharedWithMeImage
+                    cell.imageItem.image = images.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderPublicImage
+                    cell.imageItem.image = images.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderGroupImage
+                    cell.imageItem.image = images.cellFolderGroupImage
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderExternalImage
+                    cell.imageItem.image = images.cellFolderExternalImage
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderAutomaticUploadImage
+                    cell.imageItem.image = images.cellFolderAutomaticUploadImage
                 } else {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderImage
+                    cell.imageItem.image = images.cellFolderImage
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
@@ -170,7 +170,7 @@ class NCCollectionCommon: NSObject {
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                    cell.imageLocal.image = images.cellOfflineFlag
                 }
                 
             } else {
@@ -184,7 +184,7 @@ class NCCollectionCommon: NSObject {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommonImages.cellFileImage
+                            cell.imageItem.image = images.cellFileImage
                         }
                     }
                 }
@@ -193,26 +193,26 @@ class NCCollectionCommon: NSObject {
                 
                 // image local
                 if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                    cell.imageLocal.image = images.cellOfflineFlag
                 } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellLocal
+                    cell.imageLocal.image = images.cellLocal
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommonImages.cellFavouriteImage
+                cell.imageFavorite.image = images.cellFavouriteImage
             }
             
             // Share image
             if (isShare) {
-                cell.imageShared.image = NCCollectionCommonImages.cellSharedImage
+                cell.imageShared.image = images.cellSharedImage
             } else if (tableShare != nil && tableShare!.shareType == 3) {
-                cell.imageShared.image = NCCollectionCommonImages.cellShareByLinkImage
+                cell.imageShared.image = images.cellShareByLinkImage
             } else if (tableShare != nil && tableShare!.shareType != 3) {
-                cell.imageShared.image = NCCollectionCommonImages.cellSharedImage
+                cell.imageShared.image = images.cellSharedImage
             } else {
-                cell.imageShared.image = NCCollectionCommonImages.cellCanShareImage
+                cell.imageShared.image = images.cellCanShareImage
             }
             if metadata.ownerId.count > 0 && metadata.ownerId != appDelegate.userID {
                 // Load avatar
@@ -236,10 +236,10 @@ class NCCollectionCommon: NSObject {
                 cell.imageSelect.isHidden = false
                 
                 if selectocId.contains(metadata.ocId) {
-                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedYes
+                    cell.imageSelect.image = images.cellCheckedYes
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedNo
+                    cell.imageSelect.image = images.cellCheckedNo
                     cell.backgroundView = nil
                 }
             } else {
@@ -258,11 +258,11 @@ class NCCollectionCommon: NSObject {
             }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommonImages.cellButtonStop)
+                cell.setButtonMore(named: k_buttonMoreStop, image: images.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = progress
-                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommonImages.cellButtonMore)
+                cell.setButtonMore(named: k_buttonMoreMore, image: images.cellButtonMore)
             }
             // Write status on Label Info
             switch metadata.status {
@@ -290,7 +290,7 @@ class NCCollectionCommon: NSObject {
             
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
+                cell.imageStatus.image = images.cellLivePhotoImage
             }
             
             // E2EE
@@ -331,21 +331,21 @@ class NCCollectionCommon: NSObject {
             if metadata.directory {
                 
                 if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderEncryptedImage
+                    cell.imageItem.image = images.cellFolderEncryptedImage
                 } else if isShare {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderSharedWithMeImage
+                    cell.imageItem.image = images.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType != 3) {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderSharedWithMeImage
+                    cell.imageItem.image = images.cellFolderSharedWithMeImage
                 } else if (tableShare != nil && tableShare!.shareType == 3) {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderPublicImage
+                    cell.imageItem.image = images.cellFolderPublicImage
                 } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderGroupImage
+                    cell.imageItem.image = images.cellFolderGroupImage
                 } else if isMounted {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderExternalImage
+                    cell.imageItem.image = images.cellFolderExternalImage
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderAutomaticUploadImage
+                    cell.imageItem.image = images.cellFolderAutomaticUploadImage
                 } else {
-                    cell.imageItem.image = NCCollectionCommonImages.cellFolderImage
+                    cell.imageItem.image = images.cellFolderImage
                 }
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
@@ -353,7 +353,7 @@ class NCCollectionCommon: NSObject {
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                    cell.imageLocal.image = images.cellOfflineFlag
                 }
                 
             } else {
@@ -367,31 +367,31 @@ class NCCollectionCommon: NSObject {
                         if metadata.iconName.count > 0 {
                             cell.imageItem.image = UIImage.init(named: metadata.iconName)
                         } else {
-                            cell.imageItem.image = NCCollectionCommonImages.cellFileImage
+                            cell.imageItem.image = images.cellFileImage
                         }
                     }
                 }
                 
                 // image Local
                 if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellOfflineFlag
+                    cell.imageLocal.image = images.cellOfflineFlag
                 } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
-                    cell.imageLocal.image = NCCollectionCommonImages.cellLocal
+                    cell.imageLocal.image = images.cellLocal
                 }
             }
             
             // image Favorite
             if metadata.favorite {
-                cell.imageFavorite.image = NCCollectionCommonImages.cellFavouriteImage
+                cell.imageFavorite.image = images.cellFavouriteImage
             }
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectocId.contains(metadata.ocId) {
-                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedYes
+                    cell.imageSelect.image = images.cellCheckedYes
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
-                    cell.imageSelect.image = NCCollectionCommonImages.cellCheckedNo
+                    cell.imageSelect.image = images.cellCheckedNo
                     cell.backgroundView = nil
                 }
             } else {
@@ -402,16 +402,16 @@ class NCCollectionCommon: NSObject {
             // Transfer
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommonImages.cellButtonStop)
+                cell.setButtonMore(named: k_buttonMoreStop, image: images.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
-                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommonImages.cellButtonMore)
+                cell.setButtonMore(named: k_buttonMoreMore, image: images.cellButtonMore)
             }
             
             // Live Photo
             if metadata.livePhoto {
-                cell.imageStatus.image = NCCollectionCommonImages.cellLivePhotoImage
+                cell.imageStatus.image = images.cellLivePhotoImage
             }
         }
     }

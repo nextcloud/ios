@@ -70,9 +70,9 @@ extension NCCollectionViewCommon {
         } else {
             if metadata.directory {
                 if metadata.e2eEncrypted {
-                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderEncryptedImage
+                    iconHeader = NCCollectionCommon.images.cellFolderEncryptedImage
                 } else {
-                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderImage
+                    iconHeader = NCCollectionCommon.images.cellFolderImage
                 }
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
