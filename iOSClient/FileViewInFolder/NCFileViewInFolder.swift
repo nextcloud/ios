@@ -69,7 +69,9 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     }
     
     @objc func tapClose(sender: Any) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: true) {
+            self.appDelegate.activeFileViewInFolder = nil
+        }
     }
     
     // MARK: - DataSource + NC Endpoint
