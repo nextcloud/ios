@@ -1070,125 +1070,65 @@
     if (self.activeFiles == nil) timer = 1;
 
     if ([scheme isEqualToString:@"nextcloud"]) {
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        
-            NSString *action = url.host;
-            if ([action isEqualToString:@"open-file"]) {
-                NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
-                NSArray *queryItems = urlComponents.queryItems;
-                NSString *user = [CCUtility valueForKey:@"user" fromQueryItems:queryItems];
-                NSString *path = [CCUtility valueForKey:@"path" fromQueryItems:queryItems];
-                NSString *link = [CCUtility valueForKey:@"link" fromQueryItems:queryItems];
-                tableAccount *matchedAccount = nil;
-
-                // verify parameter
-                if (user.length == 0 || path.length == 0 || [[NSURL URLWithString:link] host].length == 0) {
-                    
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_error_parameter_schema_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                    
-                    [alertController addAction:okAction];
-                    [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
-                    
-                } else {
                 
-                    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-                    if (account) {
-                        NSURL *accountURL = [NSURL URLWithString:account.urlBase];
-                        NSString *accountUser = account.user;
-                        if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
-                            matchedAccount = account;
-                        } else {
-                            NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
-                            for (tableAccount *account in accounts) {
-                                NSURL *accountURL = [NSURL URLWithString:account.urlBase];
-                                NSString *accountUser = account.user;
-                                if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
-                                    matchedAccount = [[NCManageDatabase sharedInstance] setAccountActive:account.account];
-                                    [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
-                                    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-                                }
+        NSString *action = url.host;
+        if ([action isEqualToString:@"open-file"]) {
+            NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+            NSArray *queryItems = urlComponents.queryItems;
+            NSString *user = [CCUtility valueForKey:@"user" fromQueryItems:queryItems];
+            NSString *path = [CCUtility valueForKey:@"path" fromQueryItems:queryItems];
+            NSString *link = [CCUtility valueForKey:@"link" fromQueryItems:queryItems];
+            tableAccount *matchedAccount = nil;
+
+            // verify parameter
+            if (user.length == 0 || path.length == 0 || [[NSURL URLWithString:link] host].length == 0) {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_error_parameter_schema_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
+                
+            } else {
+            
+                tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+                if (account) {
+                    NSURL *accountURL = [NSURL URLWithString:account.urlBase];
+                    NSString *accountUser = account.user;
+                    if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
+                        matchedAccount = account;
+                    } else {
+                        NSArray *accounts = [[NCManageDatabase sharedInstance] getAllAccount];
+                        for (tableAccount *account in accounts) {
+                            NSURL *accountURL = [NSURL URLWithString:account.urlBase];
+                            NSString *accountUser = account.user;
+                            if ([link containsString:accountURL.host] && [user isEqualToString:accountUser]) {
+                                matchedAccount = [[NCManageDatabase sharedInstance] setAccountActive:account.account];
+                                [self settingAccount:matchedAccount.account urlBase:matchedAccount.urlBase user:matchedAccount.user userID:matchedAccount.userID password:[CCUtility getPassword:matchedAccount.account]];
+                                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
                             }
                         }
+                    }
+                    
+                    if (matchedAccount) {
                         
-                        if (matchedAccount) {
-                            
-                            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                                    UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                        
-                                        if (splitViewController.isCollapsed) {
-                                                        
-                                            [navigationControllerMaster popToRootViewControllerAnimated:false];
-                                            UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                                            if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                                                UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                                                if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                                    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                                        [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
-                                                    }
-                                                }
-                                            }
-                                            
-                                        } else {
-                                        
-                                            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                                [tabBarController setSelectedIndex: k_tabBarApplicationIndexFile];
-                                            }
-                                        }
-                                        
-                                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                            
-                                            [self.activeFiles.navigationController popToRootViewControllerAnimated:NO];
-                                            
-                                            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-                                                
-                                                NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:self.account];
-                                                NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, path];
-                                                
-                                                if ([path containsString:@"/"]) {
-                                                    
-                                                    // Push
-                                                    NSString *fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
-                                                    NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
-                                                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:matchedAccount.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase: @"" url:@"" contentType:@"" livePhoto:false];
-//                                                    [self.activeFiles performSegueDirectoryWithMetadata:metadata blinkFileNamePath:fileNamePath];
-                                                    
-                                                } else {
-                                                    
-                                                    // Reload folder
-                                                    NSString *serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
-                                                    
-//                                                    self.activeMain.blinkFileNamePath = fileNamePath;
-//                                                    [self.activeMain readFolder:serverUrl];
-                                                }
-                                            });
-                                        });
-                                    }
-                                }
-                            }
-                       
-                        } else {
-                            
-                            NSString *domain = [[NSURL URLWithString:link] host];
-                            NSString *fileName = [path lastPathComponent];
-                            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_not_available_", nil), user, domain, fileName];
-                            
-                            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-                            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                            
-                            [alertController addAction:okAction];
-                            [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
-                        }
+                    
+                   
+                    } else {
+                        
+                        NSString *domain = [[NSURL URLWithString:link] host];
+                        NSString *fileName = [path lastPathComponent];
+                        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_not_available_", nil), user, domain, fileName];
+                        
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                        [alertController addAction:okAction];
+                        [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
                     }
                 }
             }
-        });
-        
+        }
         return YES;
     }
     
