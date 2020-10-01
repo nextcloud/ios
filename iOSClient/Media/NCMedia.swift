@@ -573,7 +573,7 @@ extension NCMedia: UICollectionViewDataSource {
             if metadata.iconName.count > 0 {
                 cell.imageItem.image = UIImage.init(named: metadata.iconName)
             } else {
-                cell.imageItem.image = UIImage.init(named: "file")
+                cell.imageItem.image = NCCollectionCommon.images.cellFileImage 
             }
         }
         cell.date = metadata.date as Date
@@ -583,13 +583,6 @@ extension NCMedia: UICollectionViewDataSource {
             cell.imageStatus.image = cacheImages.cellPlayImage
         } else if metadata.livePhoto && livePhoto {
             cell.imageStatus.image = cacheImages.cellLivePhotoImage
-        }
-        
-        // image Local
-        let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-            else { cell.imageLocal.image = UIImage.init(named: "local") }
         }
         
         // image Favorite
