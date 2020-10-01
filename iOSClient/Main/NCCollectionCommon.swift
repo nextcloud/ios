@@ -38,7 +38,6 @@ class NCCollectionCommon: NSObject {
         static var cellCanShareImage = UIImage()
         static var cellShareByLinkImage = UIImage()
         static var cellFavouriteImage = UIImage()
-        static var cellMoreImage = UIImage()
         static var cellCommentImage = UIImage()
         static var cellLivePhotoImage = UIImage()
         static var cellOfflineFlag = UIImage()
@@ -54,6 +53,9 @@ class NCCollectionCommon: NSObject {
         
         static var cellCheckedYes = UIImage()
         static var cellCheckedNo = UIImage()
+        
+        static var cellButtonMore = UIImage()
+        static var cellButtonStop = UIImage()
 
         static var cellPlayImage = UIImage()
     }
@@ -66,7 +68,6 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellCanShareImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
         NCCollectionCommonImages.cellShareByLinkImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), width: 100, height: 100, color: NCBrandColor.sharedInstance.optionItem)
         NCCollectionCommonImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
-        NCCollectionCommonImages.cellMoreImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
         NCCollectionCommonImages.cellCommentImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "comment"), width: 30, height: 30, color: NCBrandColor.sharedInstance.graySoft)
         NCCollectionCommonImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: NCBrandColor.sharedInstance.textView)
         NCCollectionCommonImages.cellOfflineFlag = UIImage.init(named: "offlineFlag")!
@@ -83,6 +84,9 @@ class NCCollectionCommon: NSObject {
         NCCollectionCommonImages.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 100, height: 100, color: NCBrandColor.sharedInstance.brandElement)
         NCCollectionCommonImages.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 100, height: 100, color: NCBrandColor.sharedInstance.graySoft)
         
+        NCCollectionCommonImages.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        NCCollectionCommonImages.cellButtonStop = CCGraphics.changeThemingColorImage(UIImage.init(named: "stop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+
         NCCollectionCommonImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
     }
     
@@ -255,11 +259,11 @@ class NCCollectionCommon: NSObject {
             }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: "stop")
+                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommonImages.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = progress
-                cell.setButtonMore(named: "more")
+                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommonImages.cellButtonMore)
             }
             // Write status on Label Info
             switch metadata.status {
@@ -399,11 +403,11 @@ class NCCollectionCommon: NSObject {
             // Transfer
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
-                cell.setButtonMore(named: "stop")
+                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommonImages.cellButtonStop)
             } else {
                 cell.progressView.isHidden = true
                 cell.progressView.progress = 0.0
-                cell.setButtonMore(named: "more")
+                cell.setButtonMore(named: k_buttonMoreMore, image: NCCollectionCommonImages.cellButtonMore)
             }
             
             // Live Photo

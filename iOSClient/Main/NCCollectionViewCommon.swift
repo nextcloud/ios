@@ -484,7 +484,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
-                                cell.setButtonMore(named: "stop")
+                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.NCCollectionCommonImages.cellButtonStop)
                                 if status == k_metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                                 } else if status == k_metadataStatusInUpload {
@@ -496,7 +496,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             if progress > 0 {
                                 cell.progressView.isHidden = false
                                 cell.progressView.progress = progress
-                                cell.setButtonMore(named: "stop")
+                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.NCCollectionCommonImages.cellButtonStop)
                             }
                         }
                     }
@@ -657,9 +657,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
         guard let tabBarController = self.tabBarController else { return }
 
-        if namedButtonMore == "more" {
+        if namedButtonMore == k_buttonMoreMore {
             toggleMoreMenu(viewController: tabBarController, metadata: metadata)
-        } else if namedButtonMore == "stop" {
+        } else if namedButtonMore == k_buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }
     }

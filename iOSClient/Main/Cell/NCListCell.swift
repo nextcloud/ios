@@ -80,9 +80,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         longPressedGestureMore.minimumPressDuration = 0.5
         longPressedGestureMore.delegate = self
         longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)
-        
-        setButtonMore(named: "more")
+        buttonMore.addGestureRecognizer(longPressedGestureMore)        
     }
     
     override func prepareForReuse() {
@@ -108,9 +106,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     
-    func setButtonMore(named: String) {
+    func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
-        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        buttonMore.setImage(image, for: .normal)
     }
     
     func hideButtonMore() {

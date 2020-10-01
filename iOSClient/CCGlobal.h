@@ -281,6 +281,10 @@
 #define k_layout_view_media                             @"LayoutMedia"
 #define k_layout_view_recent                            @"LayoutRecent"
 
+// Button Type in Cell list/grid
+#define k_buttonMoreMore                                @"more"
+#define k_buttonMoreStop                                @"stop"
+
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"
 
