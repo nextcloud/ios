@@ -77,6 +77,9 @@ class NCFiles: NCCollectionViewCommon  {
         
         if !isSearching {
             metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
+            if metadataFolder == nil {
+                metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: appDelegate.account, urlBase: appDelegate.urlBase, serverUrl:  serverUrl)
+            }
         }
         
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)

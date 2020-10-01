@@ -2116,6 +2116,27 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
+    @objc func getMetadataFolder(account: String, urlBase: String, serverUrl: String) -> tableMetadata? {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        var serverUrl = serverUrl
+        var fileName = ""
+        
+        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account)
+        if serverUrlHome == serverUrl {
+            fileName = "."
+            serverUrl = ".."
+        } else {
+            fileName = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: urlBase)
+            serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+        }
+        
+        guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
+        
+        return tableMetadata.init(value: result)
+    }
+    
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
         
         var listIdentifierRank: [String: NSNumber] = [:]
