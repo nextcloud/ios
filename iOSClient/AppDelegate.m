@@ -1119,7 +1119,6 @@
                     if (matchedAccount) {
                         
                         NSString *webDAV = [[NCUtility shared] getWebDAVWithAccount:self.account];
-                        //NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, path];
 
                         if ([path containsString:@"/"]) {
 
