@@ -1123,7 +1123,7 @@
 
                         if ([path containsString:@"/"]) {
 
-                            fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                            fileName = [path lastPathComponent];
                             serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:[NSString stringWithFormat:@"%@/%@/%@", matchedAccount.urlBase, webDAV, [path stringByDeletingLastPathComponent]]];
                             
                         } else {
