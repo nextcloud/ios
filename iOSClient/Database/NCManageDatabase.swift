@@ -1776,7 +1776,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session == %@", metadata.account, metadata.serverUrl, metadata.fileName, metadata.session)).first  != nil {
+        if realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)).first  != nil {
             return
         }
 
