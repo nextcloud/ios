@@ -75,6 +75,9 @@ extension NCDetailNavigationController {
             titleOffline = NSLocalizedString("_remove_available_offline_", comment: "")
         }
         
+        //
+        // FAVORITE
+        //
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
@@ -89,6 +92,9 @@ extension NCDetailNavigationController {
             )
         )
         
+        //
+        // DETAIL
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
@@ -99,6 +105,9 @@ extension NCDetailNavigationController {
             )
         )
         
+        //
+        // OPEN IN
+        //
         if metadata.session == "" {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
@@ -110,6 +119,9 @@ extension NCDetailNavigationController {
             )
         }
         
+        //
+        // RENAME
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_rename_", comment: ""),
@@ -135,6 +147,9 @@ extension NCDetailNavigationController {
             )
         )
         
+        //
+        // COPY - MOVE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_move_or_copy_", comment: ""),
@@ -162,6 +177,9 @@ extension NCDetailNavigationController {
             )
         )
         
+        //
+        // OFFLINE
+        //
         if metadata.session == "" {
             actions.append(
                 NCMenuAction(
@@ -179,6 +197,24 @@ extension NCDetailNavigationController {
             )
         }
         
+        //
+        // VIEW IN FOLDER
+        //
+        if appDelegate.activeFileViewInFolder == nil {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    }
+                )
+            )
+        }
+        
+        //
+        // DELETE
+        //
         actions.append(
             NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
                          icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
@@ -202,8 +238,9 @@ extension NCDetailNavigationController {
             )
         )
         
+        //
         // PDF
-        
+        //
         if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
@@ -215,8 +252,9 @@ extension NCDetailNavigationController {
             )
         }
         
+        //
         // IMAGE - VIDEO - AUDIO
-        
+        //
         if metadata.session == "" {
             if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
                 actions.append(
@@ -244,9 +282,10 @@ extension NCDetailNavigationController {
                 }
             }
         }
-                
+         
+        //
         // CLOSE
-        
+        //
         actions.append(
             NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
