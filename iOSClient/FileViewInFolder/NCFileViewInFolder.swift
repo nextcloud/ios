@@ -63,13 +63,6 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
     }
     
-    // MARK: - NotificationCenter
-
-    override func reloadDataSource(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
-        reloadDataSource()
-    }
-    
     // MARK: - TAP EVENT
 
     @objc func tapClose(sender: Any) {

@@ -242,6 +242,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
     }
     
+    @objc func reloadDataSource(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        reloadDataSource()
+    }
+    
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
@@ -923,7 +929,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
     }
-    @objc func reloadDataSource(_ notification: NSNotification) { }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
     @objc func reloadDataSourceNetworkRefreshControl() {
         reloadDataSourceNetwork(forced: true)

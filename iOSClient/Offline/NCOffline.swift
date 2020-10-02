@@ -38,13 +38,6 @@ class NCOffline: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_offline_view_"
     }
     
-    // MARK: - NotificationCenter
-    
-    override func reloadDataSource(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
-        reloadDataSource()
-    }
-    
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource() {
