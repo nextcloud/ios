@@ -82,7 +82,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         images.cellFolderAutomaticUploadImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         images.cellFolderImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 600, height: 600, color: NCBrandColor.sharedInstance.brandElement)
         
-        images.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+        images.cellCheckedYes = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), width: 50, height: 50, color: .gray)
         images.cellCheckedNo = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
         
         images.cellButtonMore = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.graySoft)
