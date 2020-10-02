@@ -80,7 +80,7 @@ class NCOffline: NCCollectionViewCommon  {
             }
         }
         
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()

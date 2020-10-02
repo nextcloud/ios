@@ -30,16 +30,18 @@ class NCDataSource: NSObject {
     public var metadataLocalImage: [String:String] = [:]
 
     private var directoryOnTop: Bool = true
+    private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
     
     override init() {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], directoryOnTop: Bool, filterLivePhoto: Bool) {
+    init(metadatasSource: [tableMetadata], directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         
         self.directoryOnTop = directoryOnTop
+        self.favoriteOnTop = favoriteOnTop
         self.filterLivePhoto = filterLivePhoto
         
         createMetadatas(metadatasSource: metadatasSource)
@@ -84,7 +86,7 @@ class NCDataSource: NSObject {
             }
                
             // Organized the metadata
-            if metadata.favorite {
+            if metadata.favorite && favoriteOnTop {
                 if metadata.directory {
                     metadataFavoriteDirectory.append(metadata)
                 } else {

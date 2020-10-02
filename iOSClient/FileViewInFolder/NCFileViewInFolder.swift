@@ -90,7 +90,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             }
         }
         
-        dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, filterLivePhoto: true)
+        dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
