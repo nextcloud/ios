@@ -654,10 +654,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, sender: Any) {
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
-        guard let tabBarController = self.tabBarController else { return }
 
         if namedButtonMore == k_buttonMoreMore {
-            toggleMoreMenu(viewController: tabBarController, metadata: metadata)
+            toggleMoreMenu(viewController: self, metadata: metadata)
         } else if namedButtonMore == k_buttonMoreStop {
             NCNetworking.shared.cancelTransferMetadata(metadata) { }
         }

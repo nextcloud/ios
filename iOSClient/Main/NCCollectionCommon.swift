@@ -133,7 +133,6 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         viewController.serverUrl = serverUrl
         viewController.fileName = fileName
         
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
 }
