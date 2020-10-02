@@ -26,7 +26,6 @@ import NCCommunication
 
 class NCFileViewInFolder: NCCollectionViewCommon  {
     
-    internal var isRoot: Bool = true
     internal var fileName: String?
 
     required init?(coder aDecoder: NSCoder) {

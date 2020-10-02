@@ -1163,6 +1163,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
+            if layoutKey == k_layout_view_viewInFolder {
+                
+                let vcFileViewInFolder:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
+                
+                vcFileViewInFolder.serverUrl = serverUrlPush
+                vcFileViewInFolder.titleCurrentFolder = metadataTouch!.fileNameView
+                                
+                self.navigationController?.pushViewController(vcFileViewInFolder, animated: true)
+            }
+            
         } else {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
@@ -1187,6 +1197,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 performSegue(withIdentifier: "segueDetail", sender: self)
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
+            }
+            
+            if layoutKey == k_layout_view_viewInFolder {
+                dismiss(animated: true) {
+                    self.appDelegate.activeFileViewInFolder = nil
+                }
             }
         }
     }
