@@ -55,9 +55,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
-    
-    private var listOcIdReadFileForMedia: [String] = []
-    
+        
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
@@ -71,7 +69,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
 
         appDelegate.activeMedia = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadMediaDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
@@ -543,10 +540,6 @@ extension NCMedia: UICollectionViewDataSource {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
-            if !listOcIdReadFileForMedia.contains(metadata.ocId) {
-                NCOperationQueue.shared.readFileForMedia(metadata: metadata)
-                listOcIdReadFileForMedia.append(metadata.ocId)
-            }
         }
     }
     
@@ -554,7 +547,6 @@ extension NCMedia: UICollectionViewDataSource {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
             NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
-            NCOperationQueue.shared.cancelReadFileForMedia(metadata: metadata)
         }
     }
 

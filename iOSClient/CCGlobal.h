@@ -329,7 +329,6 @@
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_reloadMediaDataSource      @"reloadMediaDataSource"
 #define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
 #define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
 

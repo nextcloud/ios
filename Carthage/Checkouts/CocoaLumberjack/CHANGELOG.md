@@ -1,8 +1,18 @@
-## [3.7.0 - Xcode 12 on ???, 2020](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.7.0)
+## [3.7.1 - Xcode 12 on ???, 2020](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.7.0)
 
 ### Public
 
-- _PLEASE REPLACE WITH FIRST ENTRY_
+- _TBD_
+
+## [3.7.0 - Xcode 12 on Oct 2nd, 2020](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.7.0)
+
+### Public
+
+- **Breaking change**: Dropped support for iOS 8 (#1153)
+- Update SPM tools-version to 5.3 to enable Swift 5.3 support (#1148)
+- Add backend for swift-log (#1164)
+- Specify CocoaPods version to ensure `swift_version` attribute works (#1167)
+- Simplify `DDLogFileManager` callbacks for archived log files (#1166)
 
 ## [3.6.2 - Xcode 11.6 on July 31st, 2020](https://github.com/CocoaLumberjack/CocoaLumberjack/releases/tag/3.6.2)
 
