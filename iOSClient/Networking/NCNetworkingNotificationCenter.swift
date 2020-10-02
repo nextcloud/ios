@@ -183,6 +183,8 @@ import Foundation
             (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
         } else if self.appDelegate.activeViewController is NCRecent {
             (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCFileViewInFolder {
+            (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
         }
     }
     

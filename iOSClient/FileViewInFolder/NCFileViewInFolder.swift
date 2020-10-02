@@ -47,6 +47,8 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             self.navigationItem.title = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
         }
         
+        appDelegate.activeViewController = self
+        
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         

@@ -1198,12 +1198,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
             }
-            
-            if layoutKey == k_layout_view_viewInFolder {
-                dismiss(animated: true) {
-                    self.appDelegate.activeFileViewInFolder = nil
-                }
-            }
         }
     }
     
