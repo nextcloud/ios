@@ -1597,11 +1597,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-        if richWorkspaceText?.count ?? 0 == 0 {
-            headerRichWorkspaceHeight = 0
-        } else {
-            headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
-        }
+        headerRichWorkspaceHeight = 0
+        
+        if let richWorkspaceText = richWorkspaceText {
+            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
+            if trimmed.count > 0 {
+                headerRichWorkspaceHeight = UIScreen.main.bounds.size.height / 4
+            }
+        } 
         
         return CGSize(width: collectionView.frame.width, height: headerHeight + headerRichWorkspaceHeight)
     }
