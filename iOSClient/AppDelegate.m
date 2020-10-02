@@ -205,7 +205,7 @@
     if (self.activeFileViewInFolder != nil ) {
         [self.activeFileViewInFolder dismissViewControllerAnimated:false completion:^{
             self.activeFileViewInFolder = nil;
-        }];        
+        }];
     }
     
     [self updateApplicationIconBadgeNumber];
@@ -1128,7 +1128,7 @@
                             
                         } else {
                             
-                            fileName = [[path stringByDeletingLastPathComponent] lastPathComponent];
+                            fileName = path;
                             serverUrl = [NSString stringWithFormat:@"%@/%@", matchedAccount.urlBase, webDAV];
                         }
                         
