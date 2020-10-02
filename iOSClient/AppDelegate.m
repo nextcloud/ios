@@ -200,7 +200,14 @@
     // Test Maintenance
     if (self.account.length == 0 || self.maintenanceMode)
         return;
-        
+    
+    // Dismiss FileViewInFolder
+    if (self.activeFileViewInFolder != nil ) {
+        [self.activeFileViewInFolder dismissViewControllerAnimated:false completion:^{
+            self.activeFileViewInFolder = nil;
+        }];        
+    }
+    
     [self updateApplicationIconBadgeNumber];
 }
 

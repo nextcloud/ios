@@ -47,6 +47,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             self.navigationItem.title = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
         }
         
+        presentationController?.delegate = self
         appDelegate.activeViewController = self
         
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
@@ -62,11 +63,15 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
     }
     
+    // MARK: - NotificationCenter
+
     override func reloadDataSource(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         reloadDataSource()
     }
     
+    // MARK: - TAP EVENT
+
     @objc func tapClose(sender: Any) {
         dismiss(animated: true) {
             self.appDelegate.activeFileViewInFolder = nil
@@ -142,6 +147,12 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             self.isReloadDataSourceNetworkInProgress = false
             self.reloadDataSource()
         }
+    }
+}
+
+extension NCFileViewInFolder: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        self.appDelegate.activeFileViewInFolder = nil
     }
 }
 

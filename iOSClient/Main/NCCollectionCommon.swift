@@ -132,6 +132,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
 
         viewController.serverUrl = serverUrl
         viewController.fileName = fileName
+                
+        navigationController.presentationController?.delegate = viewController
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
