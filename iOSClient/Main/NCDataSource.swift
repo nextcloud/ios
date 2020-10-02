@@ -58,6 +58,11 @@ class NCDataSource: NSObject {
         
         for metadata in metadatasSource {
             
+            // skipped the root file
+            if metadata.fileName == "." || metadata.serverUrl == ".." {
+                continue
+            }
+            
             // skipped livePhoto
             if metadata.ext == "mov" && metadata.livePhoto && filterLivePhoto {
                 continue

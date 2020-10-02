@@ -52,7 +52,7 @@ class NCRecent: NCCollectionViewCommon  {
         (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
 
         metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: false, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: false, favoriteOnTop: false, filterLivePhoto: true)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()
