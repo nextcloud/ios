@@ -70,7 +70,7 @@
     [[NCCommunicationCommon shared] setupWithUserAgent:[CCUtility getUserAgent]];
     
     NSInteger logLevel = [CCUtility getLogLevel];
-    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
+    [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
     NSString *versionApp = [NSString stringWithFormat:@"%@.%@", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"], [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
     NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
     if (isSimulatorOrTestFlight) {
