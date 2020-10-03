@@ -132,7 +132,7 @@ class DragDropViewController: UIViewController {
     
     @IBAction func add(sender: UIButton) {
         
-        NCCreateScanDocument.sharedInstance.openScannerDocument()
+        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self)
     }
     
     @IBAction func transferDown(sender: UIButton) {
