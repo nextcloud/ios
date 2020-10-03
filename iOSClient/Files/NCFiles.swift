@@ -72,17 +72,22 @@ class NCFiles: NCCollectionViewCommon  {
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
         
-        if !isSearching {
-            metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
-            if metadataFolder == nil {
-                metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: appDelegate.account, urlBase: appDelegate.urlBase, serverUrl:  serverUrl)
+        DispatchQueue.global().async {
+                        
+            if !self.isSearching {
+                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
+                if self.metadataFolder == nil {
+                    self.metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                }
+            }
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
             }
         }
-        
-        dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {

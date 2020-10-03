@@ -177,10 +177,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         setNavigationItem()
-        
-        if dataSource.metadatas.count == 0 {
-            reloadDataSource()
-        } 
+        reloadDataSource()
     }
         
     override func viewDidAppear(_ animated: Bool) {
