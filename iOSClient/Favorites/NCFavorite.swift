@@ -43,25 +43,24 @@ class NCFavorite: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        
-        if !isSearching {
-       
-            if serverUrl == "" {
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account), page: 0, limit: 0, sorted: sort, ascending: ascending)
-            } else {
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
+        DispatchQueue.global().async {
+            
+            if !self.isSearching {
+           
+                if self.serverUrl == "" {
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                } else {
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                }
+            }
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
             }
         }
-        
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {

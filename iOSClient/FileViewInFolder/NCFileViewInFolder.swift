@@ -76,35 +76,35 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        
-        if !isSearching {
-            metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
-            if metadataFolder == nil {
-                metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: appDelegate.account, urlBase: appDelegate.urlBase, serverUrl:  serverUrl)
+        DispatchQueue.global().async {
+            
+            if !self.isSearching {
+                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                if self.metadataFolder == nil {
+                    self.metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
+                }
             }
-        }
-        
-        dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
-        
-        // Blink file
-        if fileName != nil {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, serverUrl, fileName!)) {
-                if let row = dataSource.getIndexMetadata(ocId: metadata.ocId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        UIView.animate(withDuration: 0.3) {
-                            self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
-                        } completion: { (_) in
-                            if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
-                                NCUtility.shared.blink(cell: cell)
-                                self.fileName = nil
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+            
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+                
+                // Blink file
+                if self.fileName != nil {
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, self.serverUrl, self.fileName!)) {
+                        if let row = self.dataSource.getIndexMetadata(ocId: metadata.ocId) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                UIView.animate(withDuration: 0.3) {
+                                    self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
+                                } completion: { (_) in
+                                    if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
+                                        NCUtility.shared.blink(cell: cell)
+                                        self.fileName = nil
+                                    }
+                                }
                             }
                         }
                     }

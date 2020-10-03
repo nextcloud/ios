@@ -44,6 +44,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var richWorkspaceText: String?
         
     internal var layout = ""
+    internal var sort: String = ""
+    internal var ascending: Bool = true
+    internal var directoryOnTop: Bool = true
     internal var groupBy = ""
     internal var titleButton = ""
     internal var itemForLine = 0
@@ -918,6 +921,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSource() {
         if appDelegate.account.count == 0 { return }
         
+        // Get richWorkspace Text
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
@@ -927,6 +931,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        
+        // get layout for view
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
     }
     @objc func reloadDataSourceNetwork(forced: Bool = false) { }
     @objc func reloadDataSourceNetworkRefreshControl() {

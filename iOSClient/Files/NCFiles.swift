@@ -66,22 +66,16 @@ class NCFiles: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-        
         DispatchQueue.global().async {
                         
             if !self.isSearching {
-                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
+                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
                 if self.metadataFolder == nil {
                     self.metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
                 }
             }
             
-            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
             
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()

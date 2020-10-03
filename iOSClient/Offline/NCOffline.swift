@@ -42,41 +42,41 @@ class NCOffline: NCCollectionViewCommon  {
 
     override func reloadDataSource() {
         super.reloadDataSource()
-        
-        var ocIds: [String] = []
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-           
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
-
-        if !isSearching {
+              
+        DispatchQueue.global().async {
             
-            if serverUrl == "" {
-               
-                if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "serverUrl", ascending: true) {
-                    for directory: tableDirectory in directories {
-                        ocIds.append(directory.ocId)
-                    }
-                }
-               
-                let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.account), sorted: "fileName", ascending: true)
-                for file: tableLocalFile in files {
-                    ocIds.append(file.ocId)
-                }
-               
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", appDelegate.account, ocIds), page: 0, limit: 0, sorted: sort, ascending: ascending)
+            var ocIds: [String] = []
+            
+            if !self.isSearching {
                 
-            } else {
-               
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl), page: 0, limit: 0, sorted: sort, ascending: ascending)
+                if self.serverUrl == "" {
+                   
+                    if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
+                        for directory: tableDirectory in directories {
+                            ocIds.append(directory.ocId)
+                        }
+                    }
+                   
+                    let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
+                    for file: tableLocalFile in files {
+                        ocIds.append(file.ocId)
+                    }
+                   
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                    
+                } else {
+                   
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                }
+            }
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
             }
         }
-        
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
     }
        
     override func reloadDataSourceNetwork(forced: Bool = false) {

@@ -49,13 +49,16 @@ class NCRecent: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: "")
-
-        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: false, favoriteOnTop: false, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
+        DispatchQueue.global().async {
+            
+            self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, directoryOnTop: false, favoriteOnTop: false, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
+            }
+        }
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
