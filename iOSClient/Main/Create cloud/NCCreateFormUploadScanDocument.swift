@@ -502,6 +502,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         if fileType == "PDF" {
             
             let pdfData = NSMutableData()
+            //let pageSize = CGSize(width: 595.2, height: 841.8)
+            
             if password.count > 0 {
                 let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String : password, kCGPDFContextOwnerPassword as String : password]
                 UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, info)
