@@ -39,6 +39,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     private var datasource: [tableTrash] = []
     
+    private var sort: String = ""
+    private var ascending: Bool = true
+    private var directoryOnTop: Bool = true
     private var layout = ""
     private var groupBy = "none"
     private var titleButton = ""
@@ -95,7 +98,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -567,10 +570,7 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        var sort: String
-        var ascending: Bool
-        
-        (layout, sort, ascending, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         
         datasource.removeAll()
         

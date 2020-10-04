@@ -77,6 +77,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
 
+    private var sort: String = ""
+    private var ascending: Bool = true
+    private var directoryOnTop: Bool = true
     private var layout = ""
     private var groupBy = ""
     private var titleButton = ""
@@ -182,7 +185,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout,serverUrl: serverUrl)
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -723,9 +726,6 @@ extension NCSelect {
     @objc func loadDatasource(withLoadFolder: Bool) {
         
         var predicate: NSPredicate?
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
         
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: keyLayout, serverUrl: serverUrl)
         
@@ -747,7 +747,7 @@ extension NCSelect {
         }
         
         let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, page: 0, limit: 0, sorted: sort, ascending: ascending)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         if withLoadFolder {
             loadFolder()

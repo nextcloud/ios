@@ -29,6 +29,8 @@ class NCDataSource: NSObject {
     public var metadataShare: [String:tableShare] = [:]
     public var metadataLocalImage: [String:String] = [:]
 
+    private var ascending: Bool = true
+    private var sort: String = ""
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
     private var filterLivePhoto: Bool = true
@@ -37,9 +39,11 @@ class NCDataSource: NSObject {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
         super.init()
         
+        self.sort = sort
+        self.ascending = ascending
         self.directoryOnTop = directoryOnTop
         self.favoriteOnTop = favoriteOnTop
         self.filterLivePhoto = filterLivePhoto
@@ -51,12 +55,25 @@ class NCDataSource: NSObject {
     
     private func createMetadatas(metadatasSource: [tableMetadata]) {
                 
+        var metadatasSourceSorted: [tableMetadata] = []
         var metadataFavoriteDirectory: [tableMetadata] = []
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
         
-        for metadata in metadatasSource {
+        if sort == "fileName" || sort == "fileNameView" {
+            metadatasSourceSorted = metadatasSource.sorted { (metadata1:tableMetadata, metadata2:tableMetadata) -> Bool in
+                if ascending {
+                    return metadata1.fileNameView.localizedStandardCompare(metadata2.fileNameView) == ComparisonResult.orderedAscending
+                } else {
+                    return metadata1.fileNameView.localizedStandardCompare(metadata2.fileNameView) == ComparisonResult.orderedDescending
+                }
+            }
+        } else {
+            metadatasSourceSorted = metadatasSource
+        }
+        
+        for metadata in metadatasSourceSorted {
             
             // skipped the root file
             if metadata.fileName == "." || metadata.serverUrl == ".." {
