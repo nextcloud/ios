@@ -659,6 +659,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
+        let maxHeight: Float = 595.2        // A4
+        let maxWidth: Float = 841.8         // A4
 
         switch dpiQuality {
         case typeDpiQuality.low:
@@ -671,8 +673,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         var actualHeight = Float(image.size.height)
         var actualWidth = Float(image.size.width)
-        let maxHeight: Float = 595.2        // A4
-        let maxWidth: Float = 841.8         // A4
         var imgRatio: Float = actualWidth / actualHeight
         let maxRatio: Float = maxWidth / maxHeight
 
@@ -701,7 +701,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         let img = UIGraphicsGetImageFromCurrentImageContext()
         let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
         UIGraphicsEndImageContext()
-        return UIImage(data: imageData!) ?? UIImage()
+        return UIImage(data: imageData!) ?? image
     }
     
     func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
