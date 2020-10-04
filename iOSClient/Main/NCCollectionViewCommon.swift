@@ -263,10 +263,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let metadata = userInfo["metadata"] as? tableMetadata, let onlyLocal = userInfo["onlyLocal"] as? Bool {
                 
                 if onlyLocal {
-                    if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.reloadItems(at: [indexPath])
-                    }
+                   reloadDataSource()
                 } else {
                     if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
