@@ -91,21 +91,25 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     
     // MARK: - NCSelect + Delegate
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
-        if (serverUrl != nil && array.count > 0) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+        if (serverUrl != nil && items.count > 0) {
             var move = true
             if buttonType == "done1" { move = false }
             
-            for metadata in array as! [tableMetadata] {
+            for metadata in items as! [tableMetadata] {
                 NCOperationQueue.shared.copyMove(metadata: metadata, serverUrl: serverUrl!, overwrite: overwrite, move: move)
             }
         }
     }
 
-    func openSelectView(viewController: UIViewController, array: [Any]) {
+    func openSelectView(viewController: UIViewController, items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let vc = navigationController.topViewController as! NCSelect
+        var copyItems: [Any] = []
+        for item in items {
+            copyItems.append(item)
+        }
         
         vc.delegate = self
         vc.hideButtonCreateFolder = false
@@ -117,7 +121,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
         vc.isButtonDone1Hide = false
         vc.isOverwriteHide = false
-        vc.array = array
+        vc.items = copyItems
         
         navigationController.modalPresentationStyle = .fullScreen
         viewController.present(navigationController, animated: true, completion: nil)

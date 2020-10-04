@@ -831,7 +831,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
 
 extension NCDetailViewController: NCSelectDelegate {
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         if let metadata = self.metadata, let serverUrl = serverUrl {
             if buttonType == "done" {
                 NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
