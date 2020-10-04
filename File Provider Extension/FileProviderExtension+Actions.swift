@@ -214,7 +214,7 @@ extension FileProviderExtension {
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
                 
             } else {
@@ -264,7 +264,7 @@ extension FileProviderExtension {
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
+                    let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                     
                     fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                     fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
