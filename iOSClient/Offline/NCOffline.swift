@@ -110,7 +110,7 @@ class NCOffline: NCCollectionViewCommon  {
                 
                 self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                if metadatasUpdate?.count ?? 0 > 0 {
+                if metadatasUpdate?.count ?? 0 > 0 || forced {
                     self.reloadDataSource()
                 } else {
                     self.collectionView?.reloadData()
