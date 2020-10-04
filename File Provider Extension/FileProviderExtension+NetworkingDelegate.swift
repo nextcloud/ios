@@ -45,10 +45,8 @@ extension FileProviderExtension: NCNetworkingDelegate {
             
             // New file
             if ocId != ocIdTemp {
-                
                 fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
                         
             metadata.fileName = fileName
@@ -78,6 +76,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
             fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            
             fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             
         } else {
