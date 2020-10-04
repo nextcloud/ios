@@ -41,7 +41,7 @@ Easy starting points are also reviewing [pull requests](https://github.com/nextc
 
 #### Dependencies
 
-After forking the repository you have to build the dependecies. Dependencies are managed with Carthage. 
+After forking a repository you have to build the dependencies. Dependencies are managed with Carthage. 
 Run
 
 ```
@@ -55,7 +55,7 @@ to fetch and compile the dependencies.
 
 Nextcloud enforces the [Developer Certificate of Origin (DCO)](https://developercertificate.org/) on Pull Requests. It requires your commit messages to contain a Signed-off-by line with an email address that matches your GitHub account.
 
-##### How to Signoff
+##### How to Sign off
 
 The DCO is a way for contributors to certify that they wrote or otherwise have the right to submit the code they are contributing by adding a Signed-off-by line to commit messages.
 
@@ -73,6 +73,6 @@ If you need assistance or want to ask a question about the iOS app, you are welc
 
 ## TestFlight 
 
-Do you want try the last version in development of Nextcloud iOS ? Simple, follow this simple step
+Do you want to try the latest version in development of Nextcloud iOS ? Simple, follow this simple step
 
 [Apple TestFlight](https://testflight.apple.com/join/GjNbfo2a)
