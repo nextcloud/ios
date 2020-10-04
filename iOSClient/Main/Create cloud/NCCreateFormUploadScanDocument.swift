@@ -502,7 +502,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         if fileType == "PDF" {
             
             let pdfData = NSMutableData()
-            //let pageSize = CGSize(width: 595.2, height: 841.8)
             
             if password.count > 0 {
                 let info: [AnyHashable: Any] = [kCGPDFContextUserPassword as String : password, kCGPDFContextOwnerPassword as String : password]
@@ -517,7 +516,6 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             for var image in self.arrayImages {
                 
-                image = changeImageFromQuality(image, dpiQuality: dpiQuality)
                 image = changeCompressionImage(image, dpiQuality: dpiQuality)
                 
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
@@ -582,7 +580,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         if fileType == "JPG" {
             
-            let image =  changeImageFromQuality(self.arrayImages[0], dpiQuality: dpiQuality)
+            let image = changeCompressionImage(self.arrayImages[0], dpiQuality: dpiQuality)
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCUtility.shared.stopActivityIndicator()
@@ -658,33 +656,10 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    func changeImageFromQuality(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
-        
-        let imageWidthInPixels = image.size.width * image.scale
-        let imageHeightInPixels = image.size.height * image.scale
-        
-        switch dpiQuality {
-        case typeDpiQuality.low:                        // 72 DPI
-            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-                return CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
-            }
-        case typeDpiQuality.medium:                     // 150 DPI
-            if imageWidthInPixels > 1240 || imageHeightInPixels > 1754  {
-                return CCGraphics.scale(image, to: CGSize(width: 1240, height: 1754), isAspectRation: true)
-            }
-        case typeDpiQuality.hight:                      // 200 DPI
-            if imageWidthInPixels > 1654 || imageHeightInPixels > 2339  {
-                return CCGraphics.scale(image, to: CGSize(width: 1654, height: 2339), isAspectRation: true)
-            }
-        }
-        
-        return image
-    }
-    
     func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        
+
         switch dpiQuality {
         case typeDpiQuality.low:
             compressionQuality = 0.1
@@ -694,10 +669,39 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             compressionQuality = 0.9
         }
         
-        guard let data = image.jpegData(compressionQuality: compressionQuality) else { return image }
-        guard let imageCompressed = UIImage.init(data: data) else { return image }
+        var actualHeight = Float(image.size.height)
+        var actualWidth = Float(image.size.width)
+        let maxHeight: Float = 595.2        // A4
+        let maxWidth: Float = 841.8         // A4
+        var imgRatio: Float = actualWidth / actualHeight
+        let maxRatio: Float = maxWidth / maxHeight
+
+        if actualHeight > maxHeight || actualWidth > maxWidth {
+            if imgRatio < maxRatio {
+                //adjust width according to maxHeight
+                imgRatio = maxHeight / actualHeight
+                actualWidth = imgRatio * actualWidth
+                actualHeight = maxHeight
+            }
+            else if imgRatio > maxRatio {
+                //adjust height according to maxWidth
+                imgRatio = maxWidth / actualWidth
+                actualHeight = imgRatio * actualHeight
+                actualWidth = maxWidth
+            }
+            else {
+                actualHeight = maxHeight
+                actualWidth = maxWidth
+            }
+        }
         
-        return imageCompressed
+        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
+        UIGraphicsBeginImageContext(rect.size)
+        image.draw(in: rect)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
+        UIGraphicsEndImageContext()
+        return UIImage(data: imageData!) ?? UIImage()
     }
     
     func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
