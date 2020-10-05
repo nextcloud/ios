@@ -65,7 +65,7 @@ class NCDataSource: NSObject {
         Metadata order
         */
         
-        if sort != "none" {
+        if sort != "none" && sort != "" {
             metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
                 if sort == "date" {
                     if ascending {
