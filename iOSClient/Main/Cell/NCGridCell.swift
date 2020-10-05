@@ -36,6 +36,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
 
+    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var progressView: UIProgressView!
 
     var filePreviewImageView : UIImageView {
@@ -54,6 +55,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+        
+        imageVisualEffect.layer.cornerRadius = 6
+        imageVisualEffect.clipsToBounds = true
         
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)

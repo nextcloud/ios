@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -49,7 +47,7 @@
                             <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </view>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <blurEffect style="extraLight"/>
                     </visualEffectView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
@@ -61,6 +59,7 @@
                     </imageView>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <constraints>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="r1K-4X-gNd" secondAttribute="trailing" id="1Hu-GT-dJv"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
@@ -79,7 +78,6 @@
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-20" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-20" id="upV-Ov-WWd"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="260"/>
             <connections>
                 <outlet property="imageFavorite" destination="AYs-f2-vve" id="UeH-R7-bZr"/>

@@ -1573,14 +1573,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageSelect.isHidden = false
                 if selectOcId.contains(metadata.ocId) {
                     cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                    cell.imageVisualEffect.isHidden = false
+                    cell.imageVisualEffect.alpha = 0.4
                 } else {
                     cell.imageSelect.image = NCCollectionCommon.images.cellCheckedNo
-                    cell.backgroundView = nil
+                    cell.imageVisualEffect.isHidden = true
                 }
             } else {
                 cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.imageVisualEffect.isHidden = true
             }
             
             // Transfer
