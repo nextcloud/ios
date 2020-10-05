@@ -48,7 +48,7 @@ class NCNetworkingAutoUpload: NSObject {
 
         var counterUpload: Int = 0
         var sizeUpload = 0
-        var maxConcurrentOperationUpload = Int(k_maxConcurrentOperation)
+        var maxConcurrentOperationUpload = 5
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
         
         if appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode {

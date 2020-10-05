@@ -46,7 +46,6 @@
 //#endif
 
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
-
 #endif
 
 // Directory on Group
@@ -93,12 +92,6 @@
 #define k_login_Add_Forced                              1
 #define k_login_Add_SignUp                              2
 
-// define Nextcloud IOS
-#define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
-
-// serverUrl root
-#define k_serverUrl_root                                @".."
-
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
 #define k_permission_can_share                          @"R"
@@ -113,11 +106,6 @@
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
-
-// TaskStatus
-#define k_taskStatusCancel                              -1
-#define k_taskStatusResume                              -2
-#define k_taskStatusSuspend                             -3
 
 // Metadata : Status
 //
@@ -148,10 +136,6 @@
 #define k_timerUpdateApplicationIconBadgeNumber         5
 #define k_timerErrorNetworking                          3
 
-// ConcurrentOperation
-#define k_maxHTTPConnectionsPerHost                     5
-#define k_maxConcurrentOperation                        5
-
 // Max Size Operation
 #define k_maxSizeOperationUpload                        524288000   // 500 MB
 
@@ -167,10 +151,6 @@
 #define k_CCErrorOffline                                -99994
 #define k_CCErrorCharactersForbidden                    -99993
 #define k_CCErrorCreationFile                           -99992
-
-
-// Search
-#define k_minCharsSearch                                2
 
 // Selector
 #define selectorDownloadFile                            @"downloadFile"
@@ -315,6 +295,7 @@
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
 #define k_nextcloud_version_19_0                        19
+#define k_nextcloud_version_20_0                        20
 
 // Notification Center
 
