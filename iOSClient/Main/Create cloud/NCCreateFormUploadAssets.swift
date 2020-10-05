@@ -395,7 +395,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 }
                 
                 // Check if is in upload
-                let isRecordInSessions = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
+                let isRecordInSessions = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
                 if isRecordInSessions.count > 0 {
                     continue
                 }

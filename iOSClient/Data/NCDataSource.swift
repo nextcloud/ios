@@ -71,12 +71,6 @@ class NCDataSource: NSObject {
                 } else {
                     return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
                 }
-            } else if sort == "sessionTaskIdentifier" {
-                if ascending {
-                    return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
-                } else {
-                    return obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier
-                }
             } else if sort == "size" {
                 if ascending {
                     return obj1.size < obj2.size

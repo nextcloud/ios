@@ -51,7 +51,7 @@ class NCRecent: NCCollectionViewCommon  {
         
         DispatchQueue.global().async {
             
-            self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+            self.metadatasSource = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort: self.sort, ascending: self.ascending, directoryOnTop: false, favoriteOnTop: false, filterLivePhoto: true)
             
             DispatchQueue.main.async {

@@ -204,7 +204,7 @@ class NCTransfers: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
                 
-        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        metadatasSource = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: false, favoriteOnTop: false, filterLivePhoto: false)
         
         refreshControl.endRefreshing()

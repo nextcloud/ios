@@ -77,7 +77,7 @@ class NCNetworkingAutoUpload: NSObject {
                     } else {
                         predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
                     }
-                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                    let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NCCommunicationCommon.shared.writeLog("PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
                     }
