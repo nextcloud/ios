@@ -79,7 +79,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         DispatchQueue.global().async {
             
             if !self.isSearching {
-                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl), page: 0, limit: 0, sorted: self.sort, ascending: self.ascending)
+                self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 if self.metadataFolder == nil {
                     self.metadataFolder = NCManageDatabase.sharedInstance.getMetadataFolder(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, serverUrl:  self.serverUrl)
                 }

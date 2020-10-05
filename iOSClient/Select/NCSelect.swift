@@ -746,7 +746,7 @@ extension NCSelect {
             }
         }
         
-        let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, page: 0, limit: 0, sorted: sort, ascending: ascending)
+        let metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!)
         self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
         
         if withLoadFolder {

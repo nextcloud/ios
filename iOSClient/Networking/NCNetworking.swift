@@ -686,7 +686,7 @@ import Queuer
        
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "status == %d OR status == %d", account, k_metadataStatusWaitUpload, k_metadataStatusUploadError))
         
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal), sorted: "fileName", ascending: true)
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status != %d", k_metadataStatusNormal))
         
         var counter = 0
         for metadata in metadatas {
