@@ -39,7 +39,7 @@ class NCDataSource: NSObject {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(metadatasSource: [tableMetadata], sort: String = "none", ascending: Bool = false, directoryOnTop: Bool = false, favoriteOnTop: Bool = false, filterLivePhoto: Bool = false) {
         super.init()
         
         self.sort = sort
@@ -55,6 +55,7 @@ class NCDataSource: NSObject {
     
     private func createMetadatas(metadatasSource: [tableMetadata]) {
                 
+        var metadatasSourceSorted: [tableMetadata] = []
         var metadataFavoriteDirectory: [tableMetadata] = []
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
@@ -64,26 +65,30 @@ class NCDataSource: NSObject {
         Metadata order
         */
         
-        let metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
-            if sort == "date" {
-                if ascending {
-                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
+        if sort != "none" {
+            metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
+                if sort == "date" {
+                    if ascending {
+                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
+                    } else {
+                        return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
+                    }
+                } else if sort == "size" {
+                    if ascending {
+                        return obj1.size < obj2.size
+                    } else {
+                        return obj1.size > obj2.size
+                    }
                 } else {
-                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
-                }
-            } else if sort == "size" {
-                if ascending {
-                    return obj1.size < obj2.size
-                } else {
-                    return obj1.size > obj2.size
-                }
-            } else {
-                if ascending {
-                    return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedAscending
-                } else {
-                    return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedDescending
+                    if ascending {
+                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedAscending
+                    } else {
+                        return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedDescending
+                    }
                 }
             }
+        } else {
+            metadatasSourceSorted = metadatasSource
         }
         
         /*
