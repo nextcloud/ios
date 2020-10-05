@@ -2064,6 +2064,16 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableMetadata.self).filter(predicate)
+
+        return Array(results.map { tableMetadata.init(value:$0) })
+    }
+    
     @objc func getMetadatas(predicate: NSPredicate, page: Int = 0, limit: Int = 0, sorted: String = "fileName", ascending: Bool = false) -> [tableMetadata] {
         
         let realm = try! Realm()

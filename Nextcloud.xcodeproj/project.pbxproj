@@ -819,7 +819,6 @@
 				F755E6452525946C008DAB45 /* NCCollectionCommon.swift */,
 				F755E6442525946C008DAB45 /* NCCollectionViewCommon.swift */,
 				F73F537E1E929C8500F8678D /* CCMore.swift */,
-				F7C1EEA425053A9C00866ACC /* NCDataSource.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */,
 				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
@@ -1197,15 +1196,16 @@
 			path = languages;
 			sourceTree = "<group>";
 		};
-		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
+		F7BAAD951ED5A63D00B7EAD4 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				F7C1EEA425053A9C00866ACC /* NCDataSource.swift */,
 				F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */,
 				F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */,
 				F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */,
 				F7250C75251C95B4005CF12F /* NCDatabaseJSON.swift */,
 			);
-			path = Database;
+			path = Data;
 			sourceTree = "<group>";
 		};
 		F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */ = {
@@ -1431,7 +1431,7 @@
 				F7E0E1DA22327885006B0911 /* AudioRecorder */,
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
-				F7BAAD951ED5A63D00B7EAD4 /* Database */,
+				F7BAAD951ED5A63D00B7EAD4 /* Data */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7725A5D251F33BB00D125E0 /* Files */,

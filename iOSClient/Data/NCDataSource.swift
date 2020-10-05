@@ -55,23 +55,46 @@ class NCDataSource: NSObject {
     
     private func createMetadatas(metadatasSource: [tableMetadata]) {
                 
-        var metadatasSourceSorted: [tableMetadata] = []
         var metadataFavoriteDirectory: [tableMetadata] = []
         var metadataFavoriteFile: [tableMetadata] = []
         var metadataDirectory: [tableMetadata] = []
         var metadataFile: [tableMetadata] = []
         
-        if sort == "fileName" || sort == "fileNameView" {
-            metadatasSourceSorted = metadatasSource.sorted { (metadata1:tableMetadata, metadata2:tableMetadata) -> Bool in
+        /*
+        Metadata order
+        */
+        
+        let metadatasSourceSorted = metadatasSource.sorted { (obj1:tableMetadata, obj2:tableMetadata) -> Bool in
+            if sort == "date" {
                 if ascending {
-                    return metadata1.fileNameView.localizedStandardCompare(metadata2.fileNameView) == ComparisonResult.orderedAscending
+                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedAscending
                 } else {
-                    return metadata1.fileNameView.localizedStandardCompare(metadata2.fileNameView) == ComparisonResult.orderedDescending
+                    return obj1.date.compare(obj2.date as Date) == ComparisonResult.orderedDescending
+                }
+            } else if sort == "sessionTaskIdentifier" {
+                if ascending {
+                    return obj1.sessionTaskIdentifier < obj2.sessionTaskIdentifier
+                } else {
+                    return obj1.sessionTaskIdentifier > obj2.sessionTaskIdentifier
+                }
+            } else if sort == "size" {
+                if ascending {
+                    return obj1.size < obj2.size
+                } else {
+                    return obj1.size > obj2.size
+                }
+            } else {
+                if ascending {
+                    return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedAscending
+                } else {
+                    return obj1.fileNameView.localizedStandardCompare(obj2.fileNameView) == ComparisonResult.orderedDescending
                 }
             }
-        } else {
-            metadatasSourceSorted = metadatasSource
         }
+        
+        /*
+        Initialize datasource
+        */
         
         for metadata in metadatasSourceSorted {
             
