@@ -1576,7 +1576,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.imageVisualEffect.isHidden = false
                     cell.imageVisualEffect.alpha = 0.4
                 } else {
-                    cell.imageSelect.image = NCCollectionCommon.images.cellCheckedNo
+                    cell.imageSelect.isHidden = true
                     cell.imageVisualEffect.isHidden = true
                 }
             } else {

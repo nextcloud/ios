@@ -579,7 +579,7 @@ extension NCMedia: UICollectionViewDataSource {
         if isEditMode {
             cell.imageSelect.isHidden = false
             if selectocId.contains(metadata.ocId) {
-                cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
+                cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
                 cell.imageVisualEffect.isHidden = false
                 cell.imageVisualEffect.alpha = 0.4
             } else {
