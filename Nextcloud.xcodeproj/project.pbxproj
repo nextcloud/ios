@@ -1028,8 +1028,8 @@
 		F7725A5D251F33BB00D125E0 /* Files */ = {
 			isa = PBXGroup;
 			children = (
-				F7725A5E251F33BB00D125E0 /* NCFiles.swift */,
 				F7725A5F251F33BB00D125E0 /* NCFiles.storyboard */,
+				F7725A5E251F33BB00D125E0 /* NCFiles.swift */,
 			);
 			path = Files;
 			sourceTree = "<group>";

@@ -1228,6 +1228,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
 
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }        
+        NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if kind == UICollectionView.elementKindSectionHeader {
@@ -1278,10 +1288,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var tableShare: tableShare?
         var isShare = false
         var isMounted = false
-        
-        // Download preview
-        NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: appDelegate.urlBase, view: collectionView, indexPath: indexPath)
-        
+                
         if metadataFolder != nil {
             isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
