@@ -39,7 +39,7 @@ class NCDataSource: NSObject {
         super.init()
     }
     
-    init(metadatasSource: [tableMetadata], sort: String = "none", ascending: Bool = false, directoryOnTop: Bool = false, favoriteOnTop: Bool = false, filterLivePhoto: Bool = false) {
+    init(metadatasSource: [tableMetadata], sort: String = "", ascending: Bool = false, directoryOnTop: Bool = false, favoriteOnTop: Bool = false, filterLivePhoto: Bool = false) {
         super.init()
         
         self.sort = sort
