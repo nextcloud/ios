@@ -93,10 +93,11 @@ import Queuer
     override init() {
         super.init()
         
-        _ = sessionManagerBackground
-        _ = sessionManagerBackgroundWWan
         #if EXTENSION
         _ = sessionIdentifierBackgroundExtension
+        #else
+        _ = sessionManagerBackground
+        _ = sessionManagerBackgroundWWan
         #endif
     }
     
