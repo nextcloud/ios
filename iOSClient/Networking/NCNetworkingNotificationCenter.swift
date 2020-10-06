@@ -113,7 +113,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == 404 || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
+                    if (errorCode == k_CCErrorResourceNotFound || errorCode == k_CCErrorBadServerResponse) {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))

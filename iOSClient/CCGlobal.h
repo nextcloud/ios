@@ -143,6 +143,10 @@
 #define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
+#define k_CCErrorBadRequest                             400
+#define k_CCErrorResourceNotFound                       404
+#define k_CCErrorConflict                               409
+#define k_CCErrorBadServerResponse                      -1011
 #define k_CCErrorInternalError                          -99999
 #define k_CCErrorFileNotSaved                           -99998
 #define k_CCErrorDecodeMetadata                         -99997

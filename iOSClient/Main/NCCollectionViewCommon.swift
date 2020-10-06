@@ -979,7 +979,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                 self.reloadDataSource()
                                             }
                                             
-                                        } else if errorCode != 404 {
+                                        } else if errorCode != k_CCErrorResourceNotFound {
                                             
                                             NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                         }
