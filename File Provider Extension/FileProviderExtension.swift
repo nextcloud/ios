@@ -60,6 +60,8 @@ class FileProviderExtension: NSFileProviderExtension {
         
         // Create directory File Provider Storage
         CCUtility.getDirectoryProviderStorage()
+        
+        _ = NCNetworking.shared.sessionManagerBackgroundExtension
     }
     
     // MARK: - Enumeration
