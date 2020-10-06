@@ -61,7 +61,7 @@ class FileProviderExtension: NSFileProviderExtension {
         // Create directory File Provider Storage
         CCUtility.getDirectoryProviderStorage()
         // Configure URLSession
-        _ = NCNetworking.shared.sessionManagerBackgroundExtension
+        //_ = NCNetworking.shared.sessionManagerBackgroundExtension
     }
     
     // MARK: - Enumeration
@@ -383,7 +383,7 @@ class FileProviderExtension: NSFileProviderExtension {
                     NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 
                 // Signal update
                 fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
