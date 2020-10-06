@@ -227,7 +227,7 @@
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // Read active directory
-    [self.activeFiles reloadDataSourceNetworkWithForced:true];
+    [self.activeFiles reloadDataSourceNetworkWithForced:false];
     
     // Required unsubscribing / subscribing
     [self pushNotification];
