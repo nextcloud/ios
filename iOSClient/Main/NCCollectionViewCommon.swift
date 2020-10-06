@@ -313,7 +313,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let serverUrlTo = userInfo["serverUrlTo"] as? String {
                 if serverUrlTo == self.serverUrl {
-                    self.reloadDataSource()
+                    reloadDataSource()
                 }
             }
         }
@@ -322,19 +322,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                
-                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                    let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.performBatchUpdates({
-                        collectionView?.reloadItems(at: [indexPath])
-                    }, completion: { (_) in
-                        self.collectionView?.reloadData()
-                    })
-                }
-            }
-        }
+        reloadDataSource()
     }
     
     @objc func createFolder(_ notification: NSNotification) {
@@ -354,7 +342,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             }
         } else {
-            self.reloadDataSourceNetwork()
+            reloadDataSourceNetwork()
         }
     }
     
@@ -364,7 +352,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
-                    self.reloadDataSource()
+                    reloadDataSource()
                 }
             }
         }
