@@ -384,6 +384,12 @@ class FileProviderExtension: NSFileProviderExtension {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                
+                // Signal update
+                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                
                 completionHandler(item, nil)
             }
         }
