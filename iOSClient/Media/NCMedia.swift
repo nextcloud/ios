@@ -46,7 +46,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private var filterTypeFileImage = false
     private var filterTypeFileVideo = false
             
-    private let kMaxImageGrid: CGFloat = 6
+    private let kMaxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
     private var oldInProgress = false
