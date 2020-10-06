@@ -785,6 +785,9 @@ import Queuer
                     }
                     
                     NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                    
+                    let metadatas = Array(metadatas.map { tableMetadata.init(value:$0) })
+                    
                     completion(account, metadatas, errorCode, errorDescription)
                 }
                 
