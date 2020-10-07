@@ -264,6 +264,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 
                 if onlyLocal {
                    reloadDataSource()
+                } else if metadata.fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
+                    self.reloadDataSourceNetwork(forced: true)
                 } else {
                     if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
