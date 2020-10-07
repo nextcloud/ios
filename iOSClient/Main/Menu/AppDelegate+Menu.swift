@@ -176,7 +176,7 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "addFolderInfo"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
-                        if let viewController = appDelegate.window.rootViewController {
+                        if let viewController = self.activeViewController {
                             if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, appDelegate.activeServerUrl, k_fileNameRichWorkspace.lowercased())) == nil {
                                 richWorkspaceCommon.createViewerNextcloudText(serverUrl: appDelegate.activeServerUrl, viewController: viewController)
                             } else {

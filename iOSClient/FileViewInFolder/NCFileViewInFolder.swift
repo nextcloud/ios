@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCFileViewInFolder: NCCollectionViewCommon  {
+class NCFileViewInFolder: NCCollectionViewCommon, UIAdaptivePresentationControllerDelegate  {
     
     internal var fileName: String?
 
@@ -61,6 +61,10 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
 
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
+    }
+    
+    public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        self.appDelegate.activeFileViewInFolder = nil
     }
     
     // MARK: - TAP EVENT
@@ -140,12 +144,6 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
             self.isReloadDataSourceNetworkInProgress = false
             self.reloadDataSource()
         }
-    }
-}
-
-extension NCFileViewInFolder: UIAdaptivePresentationControllerDelegate {
-    public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        self.appDelegate.activeFileViewInFolder = nil
     }
 }
 

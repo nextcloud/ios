@@ -90,7 +90,7 @@
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
-@property (nonatomic, retain) id activeViewController;
+@property (nonatomic, retain) UIViewController *activeViewController;
 
 @property (nonatomic, retain) NCFiles *activeFiles;
 @property (nonatomic, retain) NCFileViewInFolder *activeFileViewInFolder;
