@@ -260,7 +260,7 @@ extension FileProviderExtension {
                     metadata.favorite = favorite
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
                     
-                    let item = fileProviderData.sharedInstance.signalEnumerator(metadata: metadata)
+                    let item = fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
                     
                 } else {
@@ -273,7 +273,7 @@ extension FileProviderExtension {
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                     
-                    let item = fileProviderData.sharedInstance.signalEnumerator(metadata: metadata)
+                    let item = fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }
             }
@@ -292,12 +292,7 @@ extension FileProviderExtension {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(ocId, tagIOS: tagData, account: account)
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        let item = fileProviderData.sharedInstance.signalEnumerator(metadata: metadata)
+        let item = fileProviderData.sharedInstance.signalEnumerator(ocId: ocId)
         completionHandler(item, nil)
     }
     

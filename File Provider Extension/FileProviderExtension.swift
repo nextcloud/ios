@@ -245,7 +245,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 self.outstandingSessionTasks[url] = task
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
                 
-                fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, delete: true, update: true)
+                fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true, update: true)
             }
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
@@ -277,7 +277,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             
-            fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, delete: true, update: true)
+            fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true, update: true)
         }
     }
     

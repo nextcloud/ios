@@ -43,7 +43,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             // New file
             if ocId != ocIdTemp {
                 // Signal update
-                fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, delete: true)
+                fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true)
             }
                         
             metadata.fileName = fileName
@@ -71,7 +71,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             }
             
             // Signal update
-            fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, update: true)
+            fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
             
         } else {
            
