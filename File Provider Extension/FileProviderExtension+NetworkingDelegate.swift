@@ -70,13 +70,13 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 CCUtility.copyFile(atPath: atPath, toPath: toPath)
             }
             
-            // Signal update
             fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
             
         } else {
-           
-            // Error
-            NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocIdTemp, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
+            
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            
+            fileProviderData.sharedInstance.signalEnumerator(ocId: ocIdTemp, delete: true)
         }
     }
 }
