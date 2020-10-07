@@ -41,7 +41,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private var predicate: NSPredicate?
 
     private var isEditMode = false
-    private var selectocId: [String] = []
+    private var selectOcId: [String] = []
     
     private var filterTypeFileImage = false
     private var filterTypeFileVideo = false
@@ -307,19 +307,44 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.isEditMode = false
-                        self.selectocId.removeAll()
+                        self.selectOcId.removeAll()
                         self.reloadDataThenPerform { }
                     }
                 )
             )
             
+            //
+            // COPY - MOVE
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        var meradatasSelect = [tableMetadata]()
+                        for ocId in self.selectOcId {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                meradatasSelect.append(metadata)
+                            }
+                        }
+                        if meradatasSelect.count > 0 {
+                            NCCollectionCommon.shared.openSelectView(viewController: self, items: meradatasSelect)
+                        }
+                    }
+                )
+            )
+            
+            //
+            // DELETE
+            //
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                     action: { menuAction in
                         self.isEditMode = false
-                        for ocId in self.selectocId {
+                        for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
@@ -500,10 +525,10 @@ extension NCMedia: UICollectionViewDelegate {
         metadataTouch = metadata
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: metadata.ocId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: metadata.ocId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(metadata.ocId)
+                selectOcId.append(metadata.ocId)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -578,7 +603,7 @@ extension NCMedia: UICollectionViewDataSource {
         
         if isEditMode {
             cell.imageSelect.isHidden = false
-            if selectocId.contains(metadata.ocId) {
+            if selectOcId.contains(metadata.ocId) {
                 cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
                 cell.imageVisualEffect.isHidden = false
                 cell.imageVisualEffect.alpha = 0.4

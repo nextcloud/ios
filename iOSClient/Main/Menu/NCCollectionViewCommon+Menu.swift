@@ -333,6 +333,9 @@ extension NCCollectionViewCommon {
             )
         )
         
+        //
+        // COPY - MOVE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
@@ -352,6 +355,9 @@ extension NCCollectionViewCommon {
             )
         )
         
+        //
+        // DELETE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),

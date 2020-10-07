@@ -71,7 +71,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     
     private var isEditMode = false
     private var networkInProgress = false
-    private var selectocId: [String] = []
+    private var selectOcId: [String] = []
     private var overwrite = false
     
     private var dataSource = NCDataSource()
@@ -365,10 +365,10 @@ extension NCSelect: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: metadata.ocId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: metadata.ocId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(metadata.ocId)
+                selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
             return

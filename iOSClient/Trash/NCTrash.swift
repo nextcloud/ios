@@ -35,7 +35,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var isEditMode = false
-    private var selectocId: [String] = []
+    private var selectOcId: [String] = []
     
     private var datasource: [tableTrash] = []
     
@@ -209,11 +209,11 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            for ocId in self.selectocId {
+                            for ocId in self.selectOcId {
                                 self.deleteItem(with: ocId)
                             }
                             self.isEditMode = false
-                            self.selectocId.removeAll()
+                            self.selectOcId.removeAll()
                             self.collectionView.reloadData()
                         }))
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
@@ -399,10 +399,10 @@ extension NCTrash: UICollectionViewDelegate {
         let tableTrash = datasource[indexPath.item]
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: tableTrash.fileId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: tableTrash.fileId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(tableTrash.fileId)
+                selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -503,7 +503,7 @@ extension NCTrash: UICollectionViewDataSource {
                 cell.imageItemLeftConstraint.constant = 45
                 cell.imageSelect.isHidden = false
                 
-                if selectocId.contains(tableTrash.fileId) {
+                if selectOcId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
@@ -537,7 +537,7 @@ extension NCTrash: UICollectionViewDataSource {
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectocId.contains(tableTrash.fileId) {
+                if selectOcId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
                 } else {
