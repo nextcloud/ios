@@ -154,20 +154,45 @@ class fileProviderData: NSObject {
     
     // MARK: -
 
-    // Convinent method to signal the enumeration for containers.
-    //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
-                
-        currentAnchor += 1
+    @discardableResult
+    func signalEnumerator(metadata: tableMetadata, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
         
-        for containerItemIdentifier in containerItemIdentifiers {
-            
-            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+        let metadata = tableMetadata.init(value: metadata)
+        
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else { return nil }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+        
+        if delete {
+            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+        }
+        
+        if update {
+            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        
+        if !update && !delete {
+            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        
+        if update || delete {
+            currentAnchor += 1
+            NSFileProviderManager.default.signalEnumerator(for: parentItemIdentifier) { error in
                 if let error = error {
-                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                    print("SignalEnumerator returned error: \(error)")
                 }
             }
         }
+        
+        NSFileProviderManager.default.signalEnumerator(for: .workingSet) { error in
+            if let error = error {
+                print("SignalEnumerator returned error: \(error)")
+            }
+        }
+        
+        return item
     }
     
     /*

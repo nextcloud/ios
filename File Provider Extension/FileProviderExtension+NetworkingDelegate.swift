@@ -40,13 +40,10 @@ extension FileProviderExtension: NCNetworkingDelegate {
         
         if errorCode == 0 {
             
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else { return }
-            var item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-            
             // New file
             if ocId != ocIdTemp {
-                fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                // Signal update
+                fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, delete: true)
             }
                         
             metadata.fileName = fileName
@@ -74,11 +71,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             }
             
             // Signal update
-            item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            
-            fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            fileProviderData.sharedInstance.signalEnumerator(metadata: metadata, update: true)
             
         } else {
            
