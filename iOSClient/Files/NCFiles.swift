@@ -49,6 +49,12 @@ class NCFiles: NCCollectionViewCommon  {
         super.viewWillAppear(animated)
     }
     
+    public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        if presentationController.presentedViewController is NCViewerRichWorkspaceWebView {
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_closeRichWorkspaceWebView, userInfo: nil)
+        }
+    }
+    
     // MARK: - NotificationCenter
     
     override func initializeMain() {
