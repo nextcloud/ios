@@ -1179,6 +1179,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         } else {
             
+            if metadata.typeFile == k_metadataTypeFile_video {
+                performSegue(withIdentifier: "segueDetail", sender: self)
+                return
+            }
+            
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
                     performSegue(withIdentifier: "segueDetail", sender: self)
