@@ -227,16 +227,13 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
+        // Update status
+        NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
+        fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
+        
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
-            if var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) {
-                metadata = tableMetadata.init(value: metadata)
-                metadata.status = Int(k_metadataStatusDownloading)
-                NCManageDatabase.sharedInstance.addMetadata(metadata)
-            }
-            
             downloadRequest = request
-            self.outstandingSessionTasks[url] = task
             
         }, progressHandler: { (progress) in
             
@@ -244,8 +241,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 task = downloadRequest?.task
                 self.outstandingSessionTasks[url] = task
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
-                
-                fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true, update: true)
             }
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
@@ -268,6 +263,12 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 completionHandler(nil)
                 
+            } else if errorCode == 200 {
+                
+                NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusNormal))
+                
+                completionHandler(nil)
+
             } else {
                 
                 metadata.status = Int(k_metadataStatusDownloadError)
@@ -277,7 +278,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             
-            fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true, update: true)
+            fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
         }
     }
     

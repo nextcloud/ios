@@ -1919,6 +1919,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
         
         let realm = try! Realm()
