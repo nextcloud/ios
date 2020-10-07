@@ -351,12 +351,12 @@
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if (newAssetToUpload == nil || [newAssetToUpload count] == 0) {
         
-        [[NCCommunicationCommon shared] writeLog:@"Auto upload, no new assets found"];
+        [[NCCommunicationCommon shared] writeLog:@"Automatic upload, no new assets found"];
         return;
         
     } else {
         
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Auto upload, new %lu assets found", (unsigned long)[newAssetToUpload count]]];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload, new %lu assets found", (unsigned long)[newAssetToUpload count]]];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -462,8 +462,10 @@
                         [metadataFull addObject:metadataMOVForUpload];
                                                 
                         // Update database Auto Upload
-                        if ([selector isEqualToString:selectorUploadAutoUpload])
+                        if ([selector isEqualToString:selectorUploadAutoUpload]) {
                             [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadataMOVForUpload];
+                            [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added Live Photo %@ (%llu bytes)", fileNameMove, fileSize]];
+                        }
                     }
                     
                     dispatch_semaphore_signal(semaphore);
@@ -501,6 +503,7 @@
     @synchronized(self) {
         
         [[NCManageDatabase sharedInstance] addMetadataForAutoUpload:metadata];
+        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
         
         // Add asset in table Photo Library
         if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
