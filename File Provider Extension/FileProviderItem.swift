@@ -107,7 +107,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloading: Bool {
-        if metadata.status == Int(k_metadataStatusInDownload) {
+        if metadata.status == Int(k_metadataStatusDownloading) {
             return true
         } else {
             return false
@@ -123,15 +123,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var isUploaded: Bool {
-        if metadata.status == Int(k_metadataStatusInUpload) {
-            return false
-        } else {
+        if metadata.status == Int(k_metadataStatusNormal) {
             return true
+        } else {
+            return false
         }
     }
     
     var isUploading: Bool {
-        if metadata.status == Int(k_metadataStatusInUpload) {
+        if metadata.status == Int(k_metadataStatusUploading) {
             return true
         } else {
             return false
