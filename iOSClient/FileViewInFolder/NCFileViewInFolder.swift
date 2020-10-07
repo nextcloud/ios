@@ -62,11 +62,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(tapClose(sender:)))       
     }
-    
-    public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        appDelegate.activeFileViewInFolder = nil
-    }
-    
+
     // MARK: - TAP EVENT
 
     @objc func tapClose(sender: Any) {

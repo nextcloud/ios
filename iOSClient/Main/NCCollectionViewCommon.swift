@@ -136,7 +136,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_changeStatusFolderE2EE), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_closeRichWorkspaceWebView), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: k_notificationCenter_closeRichWorkspaceWebView), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
@@ -190,6 +190,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSourceNetwork()
     }
         
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        let viewController = presentationController.presentedViewController
+        if viewController is NCViewerRichWorkspaceWebView {
+            closeRichWorkspaceWebView()
+        } else if viewController is UINavigationController {
+            if (viewController as! UINavigationController).topViewController is NCFileViewInFolder {
+                appDelegate.activeFileViewInFolder = nil
+            }
+        }
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
@@ -257,7 +268,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
     
-    @objc func closeRichWorkspaceWebView(_ notification: NSNotification) {
+    @objc func closeRichWorkspaceWebView() {
         if self.view?.window == nil { return }
         
         reloadDataSourceNetwork()
