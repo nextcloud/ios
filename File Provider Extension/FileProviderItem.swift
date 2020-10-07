@@ -51,7 +51,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var creationDate: Date? {
-        return metadata.date as Date
+        return metadata.creationDate as Date
     }
     
     var lastUsedDate: Date? {
