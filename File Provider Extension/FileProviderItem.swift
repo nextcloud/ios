@@ -99,7 +99,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloaded: Bool {
-        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             return true
         } else {
             return false
@@ -123,7 +123,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var isUploaded: Bool {
-        if metadata.status == Int(k_metadataStatusNormal) {
+        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
             return true
         } else {
             return false
