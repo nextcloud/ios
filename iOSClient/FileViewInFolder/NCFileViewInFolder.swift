@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCFileViewInFolder: NCCollectionViewCommon, UIAdaptivePresentationControllerDelegate  {
+class NCFileViewInFolder: NCCollectionViewCommon  {
     
     internal var fileName: String?
 
@@ -64,7 +64,7 @@ class NCFileViewInFolder: NCCollectionViewCommon, UIAdaptivePresentationControll
     }
     
     public func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-        self.appDelegate.activeFileViewInFolder = nil
+        appDelegate.activeFileViewInFolder = nil
     }
     
     // MARK: - TAP EVENT
