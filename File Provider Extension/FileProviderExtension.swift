@@ -71,7 +71,7 @@ class FileProviderExtension: NSFileProviderExtension {
         var maybeEnumerator: NSFileProviderEnumerator? = nil
         
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
+            if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             }
         }
@@ -213,7 +213,7 @@ class FileProviderExtension: NSFileProviderExtension {
         fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -329,7 +329,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 var error: NSError?
                 
                 // NCCommunication
-                let account = fileProviderData.sharedInstance.setupAccount(domain: self.domain?.identifier.rawValue, providerExtension: self)
+                let account = fileProviderData.sharedInstance.setupAccount(domain: self.domain, providerExtension: self)
                 if account == nil {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return

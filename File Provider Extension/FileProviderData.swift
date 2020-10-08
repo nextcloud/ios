@@ -59,7 +59,7 @@ class fileProviderData: NSObject {
     
     // MARK: - 
     
-    func setupAccount(domain: String?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
                 
         if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
             return nil
@@ -90,7 +90,7 @@ class fileProviderData: NSObject {
             guard let url = NSURL(string: accountActive.urlBase) else { continue }
             guard let host = url.host else { continue }
             let accountDomain = accountActive.userID + " (" + host + ")"
-            if accountDomain == domain {
+            if accountDomain == domain!.identifier.rawValue {
                 
                 let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 let webDav = NCUtility.shared.getWebDAV(account: accountActive.account)

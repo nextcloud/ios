@@ -45,7 +45,7 @@ extension FileProviderExtension {
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     
                 // NCCommunication
-                if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
+                if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
                     completionHandler(nil)
                 }
                 NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: Int(k_sizeIcon), heightPreview: Int(k_sizeIcon)) { (account, data, errorCode, errorDescription) in
