@@ -301,6 +301,7 @@ import Queuer
 
     @objc func upload(metadata: tableMetadata, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->())  {
            
+        let metadata = tableMetadata.init(value: metadata)
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             
@@ -334,12 +335,12 @@ import Queuer
            
             if e2eEncrypted {
                 #if !EXTENSION
-                NCNetworkingE2EE.shared.upload(metadata: metadata, account: account, completion: completion)
+                NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
                 #endif
             } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                uploadFile(metadata: metadata, account: account, completion: completion)
+                uploadFile(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
             } else {
-                uploadFileInBackground(metadata: metadata, account: account, completion: completion)
+                uploadFileInBackground(metadata: tableMetadata.init(value: metadata), account: account, completion: completion)
             }
            
         } else {
@@ -359,12 +360,12 @@ import Queuer
                
                 if e2eEncrypted {
                     #if !EXTENSION
-                    NCNetworkingE2EE.shared.upload(metadata: extractMetadata, account: account, completion: completion)
+                    NCNetworkingE2EE.shared.upload(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                     #endif
                 } else if metadata.session == NCCommunicationCommon.shared.sessionIdentifierUpload {
-                    self.uploadFile(metadata: extractMetadata, account: account, completion: completion)
+                    self.uploadFile(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                 } else {
-                    self.uploadFileInBackground(metadata: extractMetadata, account: account, completion: completion)
+                    self.uploadFileInBackground(metadata: tableMetadata.init(value: extractMetadata), account: account, completion: completion)
                 }
             }
         }
@@ -372,7 +373,6 @@ import Queuer
     
     private func uploadFile(metadata: tableMetadata, account: tableAccount, completion: @escaping (_ errorCode: Int, _ errorDescription: String)->()) {
         
-        let metadata = tableMetadata.init(value: metadata)
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
         var task: URLSessionTask?
