@@ -43,7 +43,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        listLayout.itemHeight = 115
+        listLayout.itemHeight = 105
     }
     
     override func viewWillAppear(_ animated: Bool) {
