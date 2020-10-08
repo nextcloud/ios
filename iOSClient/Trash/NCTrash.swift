@@ -567,25 +567,28 @@ extension NCTrash {
         }
         
         datasource = tashItems
+        collectionView.reloadData()
         
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
-            // GoTo ocId
-            if self.blinkFileId != nil {
-                for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileId.contains(self.blinkFileId!) {
-                        let indexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.blinkFileId = nil
-                            NCUtility.shared.blink(cell: self.collectionView.cellForItem(at: indexPath))
+        if self.blinkFileId != nil {
+            for item in 0...self.datasource.count-1 {
+                if self.datasource[item].fileId.contains(self.blinkFileId!) {
+                    let indexPath = IndexPath(item: item, section: 0)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIView.animate(withDuration: 0.3) {
+                            self.collectionView.scrollToItem(at:indexPath, at: .centeredVertically, animated: false)
+                        } completion: { (_) in
+                            if let cell = self.collectionView.cellForItem(at: indexPath) {
+                                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.5)
+                                UIView.animate(withDuration: 2) {
+                                    cell.backgroundColor = .clear
+                                    self.blinkFileId = nil
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-        collectionView.reloadData()
-        CATransaction.commit()
     }
     
     @objc func loadListingTrash() {

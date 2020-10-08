@@ -351,22 +351,6 @@ class NCUtility: NSObject {
         return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
     
-    @objc func blink(cell: AnyObject?) {
-        DispatchQueue.main.async {
-            if let cell = cell as? UITableViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
-                UIView.animate(withDuration: 2) {
-                    cell.backgroundColor = .clear
-                }
-            } else if let cell = cell as? UICollectionViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
-                UIView.animate(withDuration: 2) {
-                    cell.backgroundColor = .clear
-                }
-            }
-        }
-    }
-        
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
