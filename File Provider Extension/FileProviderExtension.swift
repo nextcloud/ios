@@ -140,7 +140,7 @@ class FileProviderExtension: NSFileProviderExtension {
         
         // in this implementation, all paths are structured as <base storage directory>/<item identifier>/<item file name>
         
-        let manager = NSFileProviderManager.default
+        let manager = fileProviderData.sharedInstance.fileProviderManager
         var url = manager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
         if item.typeIdentifier == (kUTTypeFolder as String) {
@@ -226,7 +226,8 @@ class FileProviderExtension: NSFileProviderExtension {
             if task == nil && downloadRequest?.task != nil {
                 task = downloadRequest?.task
                 self.outstandingSessionTasks[url] = task
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
+                
+                fileProviderData.sharedInstance.fileProviderManager.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             }
             
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
@@ -290,7 +291,7 @@ class FileProviderExtension: NSFileProviderExtension {
         
         if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: metadata.ocId, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
             
-            NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { (error) in }
+            fileProviderData.sharedInstance.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { (error) in }
         }
     }
     
@@ -378,7 +379,8 @@ class FileProviderExtension: NSFileProviderExtension {
                 if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
                     
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
-                    NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
+                    
+                    fileProviderData.sharedInstance.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { (error) in }
                 }
                 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)

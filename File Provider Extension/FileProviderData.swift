@@ -29,6 +29,9 @@ class fileProviderData: NSObject {
         return instance
     }()
         
+    var domain: NSFileProviderDomain?
+    var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
+    
     var account = ""
     var accountUrlBase = ""
     var homeServerUrl = ""
@@ -63,6 +66,13 @@ class fileProviderData: NSObject {
                 
         if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
             return nil
+        }
+        
+        self.domain = domain
+        if domain != nil {
+            if let fileProviderManager = NSFileProviderManager.init(for: domain!) {
+                self.fileProviderManager = fileProviderManager
+            }
         }
                 
         // NO DOMAIN -> Set default account
@@ -136,18 +146,10 @@ class fileProviderData: NSObject {
         
         if update || delete {
             currentAnchor += 1
-            NSFileProviderManager.default.signalEnumerator(for: parentItemIdentifier) { error in
-                if let error = error {
-                    print("SignalEnumerator returned error: \(error)")
-                }
-            }
+            fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
         
-        NSFileProviderManager.default.signalEnumerator(for: .workingSet) { error in
-            if let error = error {
-                print("SignalEnumerator returned error: \(error)")
-            }
-        }
+        fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
         
         return item
     }
