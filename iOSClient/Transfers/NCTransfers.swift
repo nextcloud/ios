@@ -43,7 +43,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        listLayout.itemHeight = 100
+        listLayout.itemHeight = 115
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -229,13 +229,20 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             
         cell.objectId = metadata.ocId
         cell.indexPath = indexPath
-        cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-        cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
-        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+        
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
+        
+        cell.labelTitle.text = metadata.fileNameView
+        cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+        
+        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
+        cell.labelPath.text = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
+        
+        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+
         cell.progressView.progress = 0.0
+        cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
@@ -272,24 +279,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         // Write status on Label Info
         switch metadata.status {
         case Int(k_metadataStatusWaitDownload):
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
         case Int(k_metadataStatusInDownload):
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
         case Int(k_metadataStatusDownloading):
+            cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
             break
         case Int(k_metadataStatusWaitUpload):
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
         case Int(k_metadataStatusInUpload):
-            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
         case Int(k_metadataStatusUploading):
+            cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break
         default:
+            cell.labelStatus.text = ""
+            cell.labelInfo.text = ""
             break
         }
                         
