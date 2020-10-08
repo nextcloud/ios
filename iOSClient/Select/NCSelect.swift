@@ -93,7 +93,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 50
+    private let footerHeight: CGFloat = 100
     
     private var shares: [tableShare]?
     

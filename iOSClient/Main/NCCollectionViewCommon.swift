@@ -59,7 +59,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
     private let headerHeight: CGFloat = 50
     private var headerRichWorkspaceHeight: CGFloat = 0
-    private let footerHeight: CGFloat = 50
+    private let footerHeight: CGFloat = 100
     
     private var timerInputSearch: Timer?
     internal var literalSearch: String?
