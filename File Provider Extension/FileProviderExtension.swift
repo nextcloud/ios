@@ -71,7 +71,7 @@ class FileProviderExtension: NSFileProviderExtension {
         var maybeEnumerator: NSFileProviderEnumerator? = nil
         
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             }
         }
@@ -213,7 +213,7 @@ class FileProviderExtension: NSFileProviderExtension {
         fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -369,6 +369,12 @@ class FileProviderExtension: NSFileProviderExtension {
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)!
                 
+                // NCCommunication
+                let account = fileProviderData.sharedInstance.setupAccount(domain: self.domain?.identifier.rawValue, providerExtension: self)
+                if account == nil {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
+                }
                 if let task = NCCommunicationBackground.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, description: ocIdTemp, session: NCNetworking.shared.sessionManagerBackgroundExtension) {
                     
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask

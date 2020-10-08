@@ -37,7 +37,7 @@ extension FileProviderExtension {
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -93,7 +93,7 @@ extension FileProviderExtension {
         let fileName = metadata.fileName;
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -148,7 +148,7 @@ extension FileProviderExtension {
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -195,7 +195,7 @@ extension FileProviderExtension {
         let ocId = metadata.ocId
         
         // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -267,7 +267,7 @@ extension FileProviderExtension {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             
             // NCCommunication
-            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == nil {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
