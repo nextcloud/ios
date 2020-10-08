@@ -40,6 +40,19 @@ class NCTransfers: NCCollectionViewCommon  {
         DZNdescription = "_no_transfer_sub_"
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+
+        appDelegate.activeViewController = self
+        
+        collectionView?.collectionViewLayout = listLayout
+        
+        self.navigationItem.title = titleCurrentFolder
+        
+        setNavigationItem()
+        
+        reloadDataSource()
+    }
+    
     override func setNavigationItem() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
@@ -197,6 +210,14 @@ class NCTransfers: NCCollectionViewCommon  {
     
     override func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 0)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = super.collectionView(collectionView, cellForItemAt: indexPath)
+        if cell is NCListCell {
+            (cell as! NCListCell).hideButtonShare(true)
+        }
+        return cell
     }
     
     // MARK: - DataSource + NC Endpoint
