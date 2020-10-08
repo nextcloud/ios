@@ -97,7 +97,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
-        
+        collectionView.register(UINib.init(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
+
         // Header
         collectionView.register(UINib.init(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         
@@ -496,6 +497,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if let cell = collectionView?.cellForItem(at: IndexPath(row: index, section: 0)) {
                         if cell is NCListCell {
                             let cell = cell as! NCListCell
+                            if progress > 0 {
+                                cell.progressView?.isHidden = false
+                                cell.progressView?.progress = progress
+                                cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+                                if status == k_metadataStatusInDownload {
+                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+                                } else if status == k_metadataStatusInUpload {
+                                    cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+                                }
+                            }
+                        } else if cell is NCTransferCell {
+                            let cell = cell as! NCTransferCell
                             if progress > 0 {
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress

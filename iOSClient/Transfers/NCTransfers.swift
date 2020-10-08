@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCTransfers: NCCollectionViewCommon  {
+class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     
     var metadataTemp: tableMetadata?
     
@@ -213,10 +213,87 @@ class NCTransfers: NCCollectionViewCommon  {
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = super.collectionView(collectionView, cellForItemAt: indexPath)
-        if cell is NCListCell {
-            (cell as! NCListCell).hideButtonShare(true)
+       
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+            return UICollectionViewCell()
         }
+                
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
+            cell.delegate = self
+            
+        cell.objectId = metadata.ocId
+        cell.indexPath = indexPath
+        cell.labelTitle.text = metadata.fileNameView
+        cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+        cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+        cell.imageItem.image = nil
+        cell.imageItem.backgroundColor = nil
+        cell.progressView.progress = 0.0
+                
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+        } else {
+            if metadata.hasPreview {
+                cell.imageItem.backgroundColor = .lightGray
+            } else {
+                if metadata.iconName.count > 0 {
+                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
+                } else {
+                    cell.imageItem.image = NCCollectionCommon.images.cellFileImage
+                }
+            }
+        }
+        
+        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+        
+        // Transfer
+        var progress: Float = 0.0
+        var totalBytes: Double = 0.0
+        let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
+        if progressArray != nil && progressArray?.count == 3 {
+            progress = progressArray?.object(at: 0) as? Float ?? 0
+            totalBytes = progressArray?.object(at: 1) as? Double ?? 0
+        }
+        
+        if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+            cell.progressView.isHidden = false
+        } else {
+            cell.progressView.isHidden = true
+            cell.progressView.progress = progress
+        }
+
+        // Write status on Label Info
+        switch metadata.status {
+        case Int(k_metadataStatusWaitDownload):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+            break
+        case Int(k_metadataStatusInDownload):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+            break
+        case Int(k_metadataStatusDownloading):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            break
+        case Int(k_metadataStatusWaitUpload):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+            break
+        case Int(k_metadataStatusInUpload):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+            break
+        case Int(k_metadataStatusUploading):
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            break
+        default:
+            break
+        }
+                        
+        // Remove last separator
+        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
+            cell.separator.isHidden = true
+        } else {
+            cell.separator.isHidden = false
+        }
+        
         return cell
     }
     

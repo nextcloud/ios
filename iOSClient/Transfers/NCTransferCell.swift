@@ -1,8 +1,8 @@
 //
-//  NCListCell.swift
+//  NCTransferCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 24/10/2018.
+//  Created by Marino Faggiana on 08/10/2020.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -24,22 +24,12 @@
 import Foundation
 import UIKit
 
-class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
+class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCellProtocol {
     
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     
-    @IBOutlet weak var imageSelect: UIImageView!
-    @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageLocal: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
-
     @IBOutlet weak var labelInfo: UILabel!
-
-    @IBOutlet weak var imageShared: UIImageView!
-    @IBOutlet weak var buttonShared: UIButton!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
@@ -54,7 +44,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         }
     }
 
-    var delegate: NCListCellDelegate?
+    var delegate: NCTransferCellDelegate?
     var objectId = ""
     var indexPath = IndexPath()
     var namedButtonMore = ""
@@ -109,42 +99,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         namedButtonMore = named
         imageMore.image = image
     }
-    
-    func hideButtonMore(_ status: Bool) {
-        imageMore.isHidden = status
-        buttonMore.isHidden = status
-    }
-    
-    func hideButtonShare(_ status: Bool) {
-        imageShared.isHidden = status
-        buttonShared.isHidden = status
-    }
-    
-    func selectMode(_ status: Bool) {
-        if status {
-            imageItemLeftConstraint.constant = 45
-            imageSelect.isHidden = false
-        } else {
-            imageItemLeftConstraint.constant = 10
-            imageSelect.isHidden = true
-            backgroundView = nil
-        }
-    }
-    
-    func selected(_ status: Bool) {
-        if status {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
-            backgroundView = NCUtility.shared.cellBlurEffect(with: self.bounds)
-            separator.isHidden = true
-        } else {
-            imageSelect.image = NCCollectionCommon.images.cellCheckedNo
-            backgroundView = nil
-            separator.isHidden = false
-        }
-    }
 }
 
-protocol NCListCellDelegate {
+protocol NCTransferCellDelegate {
     func tapShareListItem(with objectId: String, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, sender: Any)
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer)
