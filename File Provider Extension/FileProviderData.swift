@@ -84,6 +84,7 @@ class fileProviderData: NSObject {
             return true
         }
         
+        // DOMAIN
         let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
         if tableAccounts.count == 0 { return false }
         
