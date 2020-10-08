@@ -76,6 +76,16 @@ class NCTrashListCell: UICollectionViewCell {
             backgroundView = nil
         }
     }
+    
+    func selected(_ status: Bool) {
+        if status {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            backgroundView = NCUtility.shared.cellBlurEffect(with: self.bounds)
+        } else {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedNo
+            backgroundView = nil
+        }
+    }
 }
 
 protocol NCTrashListCellDelegate {

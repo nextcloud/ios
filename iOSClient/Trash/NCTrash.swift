@@ -498,11 +498,9 @@ extension NCTrash: UICollectionViewDataSource {
             if isEditMode {
                 cell.selectMode(true)
                 if selectOcId.contains(tableTrash.fileId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = nil
+                    cell.selected(false)
                 }
             } else {
                 cell.selectMode(false)
@@ -530,11 +528,9 @@ extension NCTrash: UICollectionViewDataSource {
             if isEditMode {
                 cell.imageSelect.isHidden = false
                 if selectOcId.contains(tableTrash.fileId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.isHidden = true
-                    cell.backgroundView = nil
+                    cell.selected(false)
                 }
             } else {
                 cell.imageSelect.isHidden = true

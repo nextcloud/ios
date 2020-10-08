@@ -616,18 +616,14 @@ extension NCMedia: UICollectionViewDataSource {
         }
         
         if isEditMode {
-            cell.imageSelect.isHidden = false
+            cell.selectMode(true)
             if selectOcId.contains(metadata.ocId) {
-                cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
-                cell.imageVisualEffect.isHidden = false
-                cell.imageVisualEffect.alpha = 0.4
+                cell.selected(true)
             } else {
-                cell.imageSelect.isHidden = true
-                cell.imageVisualEffect.isHidden = true
+                cell.selected(false)
             }
         } else {
-            cell.imageSelect.isHidden = true
-            cell.imageVisualEffect.isHidden = true
+            cell.selectMode(false)
         }
        
         return cell
