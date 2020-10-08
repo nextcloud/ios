@@ -212,11 +212,6 @@ class FileProviderExtension: NSFileProviderExtension {
         NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
         fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
         
-        // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
             downloadRequest = request
@@ -329,13 +324,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 var size = 0 as Double
                 var error: NSError?
                 
-                // NCCommunication
-                let account = fileProviderData.sharedInstance.setupAccount(domain: self.domain, providerExtension: self)
-                if account == nil {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
-                
                 guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
@@ -366,7 +354,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 
                 fileURL.stopAccessingSecurityScopedResource()
                                 
-                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: account!.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadata = NCManageDatabase.sharedInstance.createMetadata(account: fileProviderData.sharedInstance.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
                 metadata.size = size
                 metadata.status = Int(k_metadataStatusUploading)
