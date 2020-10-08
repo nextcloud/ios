@@ -35,37 +35,54 @@ class FileProviderDomain: NSObject {
             
             var domains:[String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
-            let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
+            let accounts = NCManageDatabase.sharedInstance.getAllAccount()
             
             for domain in fileProviderDomain {
                 domains.append(domain.identifier.rawValue)
             }
             
-            // Delete all domains
+            // Delete
             for domain in domains {
-                let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                NSFileProviderManager.remove(domainRawValue, completionHandler: { (error) in
-                    if error != nil {
-                        print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                var domainFound = false
+                for account in accounts {
+                    guard let urlBase = NSURL(string: account.urlBase) else { continue }
+                    guard let host = urlBase.host else { continue }
+                    let accountDomain =  account.userID + " (" + host + ")"
+                    if domain == accountDomain {
+                        domainFound = true
+                        break
                     }
-                })
+                }
+                if !domainFound {
+                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.remove(domainRawValue, completionHandler: { (error) in
+                        if error != nil {
+                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                        }
+                    })
+                }
             }
             
-            // Check account->domain & (add)
-            for tableAccount in tableAccounts {
-                guard let urlBase = NSURL(string: tableAccount.urlBase) else {
-                    continue
-                }
-                guard let host = urlBase.host else {
-                    continue
-                }
-                let accountDomain =  tableAccount.userID + " (" + host + ")"
-                let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                NSFileProviderManager.add(domainRawValue, completionHandler: { (error) in
-                    if error != nil {
-                        print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+            // Add
+            for account in accounts {
+                var domainFound = false
+                guard let urlBase = NSURL(string: account.urlBase) else { continue }
+                guard let host = urlBase.host else { continue }
+                let accountDomain =  account.userID + " (" + host + ")"
+                for domain in domains {
+                    if domain == accountDomain {
+                        domainFound = true
+                        break
                     }
-                })
+                }
+                if !domainFound {
+                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.add(domainRawValue, completionHandler: { (error) in
+                        if error != nil {
+                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                        }
+                    })
+                }
             }
         }
     }
