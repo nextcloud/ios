@@ -36,11 +36,6 @@ extension FileProviderExtension {
         let directoryName = NCUtility.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
-        // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
         NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
                         
             if errorCode == 0 {
@@ -92,11 +87,6 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl;
         let fileName = metadata.fileName;
         
-        // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName) { (account, errorCode, errorDescription) in
             
             if errorCode == 0 { //|| error == kOCErrorServerPathNotFound {
@@ -147,11 +137,6 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
@@ -194,11 +179,6 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
         
-        // NCCommunication
-        if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { (account, errorCode, errorDescription) in
        
             if errorCode == 0 {
@@ -266,11 +246,6 @@ extension FileProviderExtension {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             
-            // NCCommunication
-            if fileProviderData.sharedInstance.setupAccount(domain: domain, providerExtension: self) == nil {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
             NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { (account, errorCode, errorDescription) in
                 
                 if errorCode == 0 {
