@@ -496,9 +496,7 @@ extension NCTrash: UICollectionViewDataSource {
             }
             
             if isEditMode {
-                cell.imageItemLeftConstraint.constant = 45
-                cell.imageSelect.isHidden = false
-                
+                cell.selectMode(true)
                 if selectOcId.contains(tableTrash.fileId) {
                     cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
                     cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
@@ -507,9 +505,7 @@ extension NCTrash: UICollectionViewDataSource {
                     cell.backgroundView = nil
                 }
             } else {
-                cell.imageItemLeftConstraint.constant = 10
-                cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.selectMode(false)
             }
             
             return cell

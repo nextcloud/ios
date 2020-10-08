@@ -40,7 +40,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
 
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
-    @IBOutlet weak var sharedLeftConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
@@ -111,14 +110,35 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         imageMore.image = image
     }
     
-    func hideButtonMore() {
-        imageMore.isHidden = true
-        sharedLeftConstraint.constant = 5
+    func hideButtonMore(_ status: Bool) {
+        imageMore.isHidden = status
+        buttonMore.isHidden = status
     }
     
     func hideButtonShare(_ status: Bool) {
         imageShared.isHidden = status
         buttonShared.isHidden = status
+    }
+    
+    func selectMode(_ status: Bool) {
+        if status {
+            imageItemLeftConstraint.constant = 45
+            imageSelect.isHidden = false
+        } else {
+            imageItemLeftConstraint.constant = 10
+            imageSelect.isHidden = true
+            backgroundView = nil
+        }
+    }
+    
+    func selected(_ status: Bool) {
+        if status {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            backgroundView = NCUtility.shared.cellBlurEffect(with: self.bounds)
+        } else {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedNo
+            backgroundView = nil
+        }
     }
 }
 

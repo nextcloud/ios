@@ -1425,20 +1425,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             
             if isEditMode {
-                cell.imageItemLeftConstraint.constant = 45
-                cell.imageSelect.isHidden = false
-                
+                cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
-                    cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.image = NCCollectionCommon.images.cellCheckedNo
-                    cell.backgroundView = nil
+                    cell.selected(false)
                 }
             } else {
-                cell.imageItemLeftConstraint.constant = 10
-                cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.selectMode(false)
             }
             
             // Transfer
@@ -1583,18 +1577,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             
             if isEditMode {
-                cell.imageSelect.isHidden = false
+                cell.selectMode(true)
                 if selectOcId.contains(metadata.ocId) {
-                    cell.imageSelect.image = NCCollectionCommon.images.cellCheckedYes
-                    cell.imageVisualEffect.isHidden = false
-                    cell.imageVisualEffect.alpha = 0.4
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.isHidden = true
-                    cell.imageVisualEffect.isHidden = true
+                    cell.selected(false)
                 }
             } else {
-                cell.imageSelect.isHidden = true
-                cell.imageVisualEffect.isHidden = true
+                cell.selectMode(false)
             }
             
             // Transfer

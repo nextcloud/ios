@@ -100,8 +100,28 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         buttonMore.setImage(image, for: .normal)
     }
     
-    func hideButtonMore() {
-        buttonMore.isHidden = true
+    func hideButtonMore(_ status: Bool) {
+        buttonMore.isHidden = status
+    }
+    
+    func selectMode(_ status: Bool) {
+        if status {
+            imageSelect.isHidden = false
+        } else {
+            imageSelect.isHidden = true
+            imageVisualEffect.isHidden = true
+        }
+    }
+    
+    func selected(_ status: Bool) {
+        if status {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            imageVisualEffect.isHidden = false
+            imageVisualEffect.alpha = 0.4
+        } else {
+            imageSelect.isHidden = true
+            imageVisualEffect.isHidden = true
+        }
     }
 }
 

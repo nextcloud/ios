@@ -583,9 +583,11 @@ extension NCSelect: UICollectionViewDataSource {
                 }
             }
             
-            cell.imageItemLeftConstraint.constant = 10
             cell.imageSelect.isHidden = true
             cell.backgroundView = nil
+            cell.hideButtonMore(true)
+            cell.hideButtonShare(true)
+            cell.selectMode(false)
     
             // Live Photo
             if metadata.livePhoto {
@@ -683,7 +685,7 @@ extension NCSelect: UICollectionViewDataSource {
             
             cell.imageSelect.isHidden = true
             cell.backgroundView = nil
-            cell.hideButtonMore()
+            cell.hideButtonMore(true)
 
             // Live Photo
             if metadata.livePhoto {
