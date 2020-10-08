@@ -70,28 +70,9 @@ class FileProviderExtension: NSFileProviderExtension {
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
         
-        if Int(k_fileProvider_domain) == 1 {
-            
-            if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-                if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
-                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                } else if self.domain?.identifier.rawValue != nil {
-                    if fileProviderData.sharedInstance.setupAccount(domain: self.domain?.identifier.rawValue, providerExtension: self) == false {
-                        throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                    }
-                } else {
-                    if fileProviderData.sharedInstance.setupAccount(itemIdentifier: containerItemIdentifier, providerExtension: self) == false {
-                        throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                    }
-                }
-            }
-            
-        } else {
-            
-            if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-                if fileProviderData.sharedInstance.setupAccount(domain: nil, providerExtension: self) == false {
-                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-                }
+        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
+            if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             }
         }
         

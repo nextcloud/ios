@@ -120,38 +120,6 @@ class fileProviderData: NSObject {
         return foundAccount
     }
     
-    func setupAccount(itemIdentifier: NSFileProviderItemIdentifier, providerExtension: NSFileProviderExtension) -> Bool {
-        
-        var foundAccount: Bool = false
-
-        guard let accountFromItemIdentifier = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier) else { return false }
-        
-        let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
-        if tableAccounts.count == 0 { return false }
-        
-        for tableAccount in tableAccounts {
-            if accountFromItemIdentifier == tableAccount.account {
-                
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                let webDav = NCUtility.shared.getWebDAV(account: tableAccount.account)
-                
-                account = tableAccount.account
-                accountUser = tableAccount.user
-                accountUserID = tableAccount.userID
-                accountPassword = CCUtility.getPassword(tableAccount.account)
-                accountUrlBase = tableAccount.urlBase
-                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
-                
-                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
-                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
-                
-                foundAccount = true
-            }
-        }
-        
-        return foundAccount
-    }
-    
     // MARK: -
 
     @discardableResult
