@@ -123,7 +123,7 @@ class FileProviderExtension: NSFileProviderExtension {
             guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -212,6 +212,11 @@ class FileProviderExtension: NSFileProviderExtension {
         NCManageDatabase.sharedInstance.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
         fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
         
+        // NCCommunication
+        if fileProviderData.sharedInstance.setupAccount(domain: domain?.identifier.rawValue, providerExtension: self) == false {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
             
             downloadRequest = request
