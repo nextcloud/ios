@@ -1311,8 +1311,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             tableShare = dataSource.metadataShare[metadata.ocId]
         }
         
+        //
         // LAYOUT LIST
-        
+        //
         if layout == k_layout_list {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
@@ -1498,8 +1499,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             return cell
         }
         
+        //
         // LAYOUT GRID
-        
+        //
         if layout == k_layout_grid {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
