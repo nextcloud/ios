@@ -1424,17 +1424,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
             
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
-            
             // Transfer
             var progress: Float = 0.0
             var totalBytes: Double = 0.0
@@ -1492,6 +1481,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.separator.isHidden = true
             } else {
                 cell.separator.isHidden = false
+            }
+            
+            // Edit mode
+            if isEditMode {
+                cell.selectMode(true)
+                if selectOcId.contains(metadata.ocId) {
+                    cell.selected(true)
+                } else {
+                    cell.selected(false)
+                }
+            } else {
+                cell.selectMode(false)
             }
             
             return cell
@@ -1576,17 +1577,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.imageFavorite.image = NCCollectionCommon.images.cellFavouriteImage
             }
             
-            if isEditMode {
-                cell.selectMode(true)
-                if selectOcId.contains(metadata.ocId) {
-                    cell.selected(true)
-                } else {
-                    cell.selected(false)
-                }
-            } else {
-                cell.selectMode(false)
-            }
-            
             // Transfer
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
@@ -1600,6 +1590,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // Live Photo
             if metadata.livePhoto {
                 cell.imageStatus.image = NCCollectionCommon.images.cellLivePhotoImage
+            }
+            
+            // Edit mode
+            if isEditMode {
+                cell.selectMode(true)
+                if selectOcId.contains(metadata.ocId) {
+                    cell.selected(true)
+                } else {
+                    cell.selected(false)
+                }
+            } else {
+                cell.selectMode(false)
             }
             
             return cell

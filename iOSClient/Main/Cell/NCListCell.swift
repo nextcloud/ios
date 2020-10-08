@@ -135,9 +135,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
         if status {
             imageSelect.image = NCCollectionCommon.images.cellCheckedYes
             backgroundView = NCUtility.shared.cellBlurEffect(with: self.bounds)
+            separator.isHidden = true
         } else {
             imageSelect.image = NCCollectionCommon.images.cellCheckedNo
             backgroundView = nil
+            separator.isHidden = false
         }
     }
 }
