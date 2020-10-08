@@ -147,7 +147,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
 
 class NCListLayout: UICollectionViewFlowLayout {
     
-    let itemHeight: CGFloat = 60
+    var itemHeight: CGFloat = 60
     
     override init() {
         super.init()

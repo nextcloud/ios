@@ -29,6 +29,8 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImage
     @IBOutlet weak var imageItem: UIImageView!
     
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelPath: UILabel!
+
     @IBOutlet weak var labelInfo: UILabel!
 
     @IBOutlet weak var imageMore: UIImageView!

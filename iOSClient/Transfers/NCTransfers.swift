@@ -40,6 +40,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         DZNdescription = "_no_transfer_sub_"
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        listLayout.itemHeight = 100
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
 
         appDelegate.activeViewController = self
