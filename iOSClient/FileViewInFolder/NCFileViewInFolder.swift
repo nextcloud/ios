@@ -101,7 +101,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
                                     self.collectionView.scrollToItem(at: IndexPath(row: row, section: 0), at: .centeredVertically, animated: false)
                                 } completion: { (_) in
                                     if let cell = self.collectionView.cellForItem(at: IndexPath(row: row, section: 0)) {
-                                        cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.5)
+                                        cell.backgroundColor = .darkGray
                                         UIView.animate(withDuration: 2) {
                                             cell.backgroundColor = .clear
                                             self.fileName = nil

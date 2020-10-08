@@ -578,7 +578,7 @@ extension NCTrash {
                             self.collectionView.scrollToItem(at:indexPath, at: .centeredVertically, animated: false)
                         } completion: { (_) in
                             if let cell = self.collectionView.cellForItem(at: indexPath) {
-                                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.5)
+                                cell.backgroundColor = .darkGray
                                 UIView.animate(withDuration: 2) {
                                     cell.backgroundColor = .clear
                                     self.blinkFileId = nil
