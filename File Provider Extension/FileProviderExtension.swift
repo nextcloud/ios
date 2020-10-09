@@ -137,11 +137,8 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         guard let item = try? item(for: identifier) else {
             return nil
         }
-        
-        // in this implementation, all paths are structured as <base storage directory>/<item identifier>/<item file name>
-        
-        let manager = fileProviderData.shared.fileProviderManager
-        var url = manager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
+                
+        var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
         
         if item.typeIdentifier == (kUTTypeFolder as String) {
             url = url.appendingPathComponent(item.filename, isDirectory:true)
