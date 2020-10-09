@@ -50,7 +50,7 @@ import Alamofire
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
-class FileProviderExtension: NSFileProviderExtension {
+class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
     
     var outstandingSessionTasks: [URL: URLSessionTask] = [:]
     var outstandingOcIdTemp: [String: String] = [:]
@@ -377,4 +377,62 @@ class FileProviderExtension: NSFileProviderExtension {
             }
         }
     }
+    
+    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, description: String?, task: URLSessionTask, errorCode: Int, errorDescription: String) {
+                
+        guard let ocIdTemp = description else { return }
+        guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdTemp) else { return }
+        let metadata = tableMetadata.init(value: metadataTemp)
+        
+        let url = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.outstandingSessionTasks.removeValue(forKey: url)
+        }
+        outstandingOcIdTemp[ocIdTemp] = ocId
+        
+        if errorCode == 0 {
+            
+            // New file
+            if ocId != ocIdTemp {
+                // Signal update
+                fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, delete: true)
+            }
+                        
+            metadata.fileName = fileName
+            metadata.serverUrl = serverUrl
+            if let etag = etag { metadata.etag = etag }
+            if let ocId = ocId { metadata.ocId = ocId }
+            if let date = date { metadata.date = date }
+            metadata.permissions = "RGDNVW"
+            metadata.session = ""
+            metadata.size = Double(size)
+            metadata.status = Int(k_metadataStatusNormal)
+                  
+            NCManageDatabase.sharedInstance.addMetadata(metadata)
+            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+            
+            // New file
+            if ocId != ocIdTemp {
+            
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                
+                // File system
+                let atPath = CCUtility.getDirectoryProviderStorageOcId(ocIdTemp)
+                let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId)
+                CCUtility.copyFile(atPath: atPath, toPath: toPath)
+            }
+            
+            fileProviderData.sharedInstance.signalEnumerator(ocId: metadata.ocId, update: true)
+            
+        } else {
+            
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            
+            fileProviderData.sharedInstance.signalEnumerator(ocId: ocIdTemp, delete: true)
+        }
+    }
+
 }
+
+
+    
