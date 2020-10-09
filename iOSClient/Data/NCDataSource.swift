@@ -27,7 +27,7 @@ class NCDataSource: NSObject {
     
     public var metadatas: [tableMetadata] = []
     public var metadataShare: [String:tableShare] = [:]
-    public var metadataLocalImage: [String:String] = [:]
+    public var metadataOffLine: [String] = []
 
     private var ascending: Bool = true
     private var sort: String = ""
@@ -122,9 +122,7 @@ class NCDataSource: NSObject {
                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile?.offline ?? false {
-                        metadataLocalImage[metadata.ocId] = "offlineFlag"
-                    } else {
-                        metadataLocalImage[metadata.ocId] = "local"
+                        metadataOffLine.append(metadata.ocId)
                     }
                 }
             }

@@ -1397,11 +1397,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
-                
+                                
                 // image local
-                if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
+                if dataSource.metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
-                } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
+                } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     cell.imageLocal.image = NCCollectionCommon.images.cellLocal
                 }
             }
@@ -1580,9 +1580,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 
                 // image Local
-                if dataSource.metadataLocalImage[metadata.ocId] == "offlineFlag" {
+                if dataSource.metadataOffLine.contains(metadata.ocId) {
                     cell.imageLocal.image = NCCollectionCommon.images.cellOfflineFlag
-                } else if dataSource.metadataLocalImage[metadata.ocId] == "local" {
+                } else if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     cell.imageLocal.image = NCCollectionCommon.images.cellLocal
                 }
             }
