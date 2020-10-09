@@ -319,11 +319,8 @@
     [self pushNotification];
     
     // Registeration domain File Provider
-    if (k_fileProvider_domain) {
-        [FileProviderDomain.sharedInstance registerDomain];
-    } else {
-        [FileProviderDomain.sharedInstance removeAllDomain];
-    }
+    [FileProviderDomain.sharedInstance registerDomain];
+    //[FileProviderDomain.sharedInstance removeAllDomain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
