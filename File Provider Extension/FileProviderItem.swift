@@ -87,7 +87,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var favoriteRank: NSNumber? {
-        if let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId] {
+        if let rank = fileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
             return rank
         } else {
             return nil

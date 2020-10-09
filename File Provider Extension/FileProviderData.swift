@@ -24,7 +24,7 @@
 import NCCommunication
 
 class fileProviderData: NSObject {
-    @objc static let sharedInstance: fileProviderData = {
+    @objc static let shared: fileProviderData = {
         let instance = fileProviderData()
         return instance
     }()
@@ -131,17 +131,17 @@ class fileProviderData: NSObject {
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
         
         if delete {
-            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
         
         if update {
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
         if !update && !delete {
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
         if update || delete {
