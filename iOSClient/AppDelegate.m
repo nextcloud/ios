@@ -319,8 +319,13 @@
     [self pushNotification];
     
     // Registeration domain File Provider
-    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-    [fileProviderDomain registerDomain];
+    if (k_fileProvider_domain == 1) {
+        FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+        [fileProviderDomain registerDomain];
+    } else {
+//        FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+//        [fileProviderDomain removeAllDomain];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

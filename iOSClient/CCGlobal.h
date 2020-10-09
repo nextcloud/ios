@@ -340,3 +340,11 @@
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
 #define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
 #define k_notificationCenter_menuDetailClose            @"menuDetailClose"
+
+
+// -----------------------------------------------------------------------------------------------------------
+// INTERNAL
+// -----------------------------------------------------------------------------------------------------------
+
+#define k_fileProvider_domain                           0
+
