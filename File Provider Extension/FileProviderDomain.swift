@@ -24,11 +24,7 @@
 import Foundation
 
 class FileProviderDomain: NSObject {
-    @objc static let sharedInstance: FileProviderDomain = {
-        let instance = FileProviderDomain()
-        return instance
-    }()
-
+    
     @objc func registerDomain() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in

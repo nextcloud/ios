@@ -319,7 +319,8 @@
     [self pushNotification];
     
     // Registeration domain File Provider
-    [FileProviderDomain.sharedInstance registerDomain];
+    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+    [fileProviderDomain registerDomain];
     //[FileProviderDomain.sharedInstance removeAllDomain];
 }
 
