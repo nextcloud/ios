@@ -30,7 +30,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var parentItemIdentifier: NSFileProviderItemIdentifier
 
     var itemIdentifier: NSFileProviderItemIdentifier {
-        return fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+        return fileProviderUtility.shared.getItemIdentifier(metadata: metadata)
     }
     
     var filename: String {

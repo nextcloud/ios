@@ -120,10 +120,10 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             
         } else {
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata) else {
+            guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -194,7 +194,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             return
         }
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -228,7 +228,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         }) { (account, etag, date, length, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
-            guard var metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
+            guard var metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
@@ -297,7 +297,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fileProviderUtility.sharedInstance.fileManager.removeItem(at: url)
+                _ = try fileProviderUtility.shared.fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -324,7 +324,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 var size = 0 as Double
                 var error: NSError?
                 
-                guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+                guard let tableDirectory = fileProviderUtility.shared.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -333,7 +333,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                    
                 // typefile directory ? (NOT PERMITTED)
                 do {
-                    let attributes = try fileProviderUtility.sharedInstance.fileManager.attributesOfItem(atPath: fileURL.path)
+                    let attributes = try fileProviderUtility.shared.fileManager.attributesOfItem(atPath: fileURL.path)
                     size = attributes[FileAttributeKey.size] as! Double
                     let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
@@ -349,7 +349,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 let ocIdTemp = NSUUID().uuidString.lowercased()
                 
                 NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = fileProviderUtility.sharedInstance.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+                    _ = fileProviderUtility.shared.copyFile(url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
                 }
                 
                 fileURL.stopAccessingSecurityScopedResource()

@@ -22,7 +22,7 @@
 //
 
 class fileProviderUtility: NSObject {
-    @objc static let sharedInstance: fileProviderUtility = {
+    @objc static let shared: fileProviderUtility = {
         let instance = fileProviderUtility()
         return instance
     }()

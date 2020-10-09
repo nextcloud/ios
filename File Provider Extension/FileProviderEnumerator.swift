@@ -38,7 +38,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             serverUrl = fileProviderData.shared.homeServerUrl
         } else {
             
-            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+            let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
                 if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
@@ -67,8 +67,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             for tag in tags {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(tag.ocId)  else { continue }
-                fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
-                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
+                fileProviderUtility.shared.createocIdentifierOnFileSystem(metadata: metadata)
+                itemIdentifierMetadata[fileProviderUtility.shared.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // ***** Favorite *****
@@ -76,12 +76,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(identifier) else { continue }
-                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
+                itemIdentifierMetadata[fileProviderUtility.shared.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // create items
             for (_, metadata) in itemIdentifierMetadata {
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata)
+                let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)
@@ -195,9 +195,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                 if metadata.e2eEncrypted || (metadata.session != "" && metadata.session != NCNetworking.shared.sessionIdentifierBackgroundExtension) { continue }
                     
-                fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
+                fileProviderUtility.shared.createocIdentifierOnFileSystem(metadata: metadata)
                         
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata)
+                let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)

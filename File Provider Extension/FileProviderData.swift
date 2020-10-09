@@ -126,7 +126,7 @@ class fileProviderData: NSObject {
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return nil }
                 
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata) else { return nil }
+        guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else { return nil }
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
         
