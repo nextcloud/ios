@@ -46,6 +46,7 @@
 @class NCDetailViewController;
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
+@class FileProviderDomain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 

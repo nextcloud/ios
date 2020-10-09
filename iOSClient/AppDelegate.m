@@ -321,7 +321,6 @@
     // Registeration domain File Provider
     FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
     [fileProviderDomain registerDomain];
-    //[FileProviderDomain.sharedInstance removeAllDomain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
