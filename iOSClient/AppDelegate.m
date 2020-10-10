@@ -367,74 +367,74 @@
 
 - (void)openLoginView:(UIViewController *)viewController selector:(NSInteger)selector openLoginWeb:(BOOL)openLoginWeb
 {
-        // use appConfig [MDM]
-        if ([NCBrandOptions sharedInstance].use_configuration) {
-            
-            if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
-            
-                self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
-                
-                [self showLoginViewController:self.appConfigView forContext:viewController];
-            }
+    // use appConfig [MDM]
+    if ([NCBrandOptions sharedInstance].use_configuration) {
         
-            return;
+        if (!(_appConfigView.isViewLoaded && _appConfigView.view.window)) {
+        
+            self.appConfigView = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCAppConfigView"];
+            
+            [self showLoginViewController:self.appConfigView forContext:viewController];
         }
+    
+        return;
+    }
+    
+    // only for personalized LoginWeb [customer]
+    if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
         
-        // only for personalized LoginWeb [customer]
-        if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
-            
-            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
-                
-                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-
-                [self showLoginViewController:self.activeLoginWeb forContext:viewController];
-            }
-            
-            return;
-        }
-        
-        // normal login
-        if (selector == k_intro_signup) {
-            
-            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
-                
-                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                
-                if (selector == k_intro_signup) {
-                    self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
-                } else {
-                    self.activeLoginWeb.urlBase = self.urlBase;
-                }
-                
-               [self showLoginViewController:self.activeLoginWeb forContext:viewController];
-            }
-            
-        } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
+        if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
             
             self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
             self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
-            
-            [self showLoginViewController:self.activeLoginWeb forContext:viewController];
-            
-        } else if (openLoginWeb) {
-            
-            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
-                self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
-                self.activeLoginWeb.urlBase = self.urlBase;
 
-                [self showLoginViewController:self.activeLoginWeb forContext:viewController];
-            }
-            
-        } else {
-            
-            if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
-                
-                _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-                
-                [self showLoginViewController:_activeLogin forContext:viewController];
-            }
+            [self showLoginViewController:self.activeLoginWeb forContext:viewController];
         }
+        
+        return;
+    }
+    
+    // normal login
+    if (selector == k_intro_signup) {
+        
+        if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
+            
+            self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+            
+            if (selector == k_intro_signup) {
+                self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
+            } else {
+                self.activeLoginWeb.urlBase = self.urlBase;
+            }
+            
+           [self showLoginViewController:self.activeLoginWeb forContext:viewController];
+        }
+        
+    } else if ([NCBrandOptions sharedInstance].disable_intro && [NCBrandOptions sharedInstance].disable_request_login_url) {
+        
+        self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+        self.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
+        
+        [self showLoginViewController:self.activeLoginWeb forContext:viewController];
+        
+    } else if (openLoginWeb) {
+        
+        if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
+            self.activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
+            self.activeLoginWeb.urlBase = self.urlBase;
+
+            [self showLoginViewController:self.activeLoginWeb forContext:viewController];
+        }
+        
+    } else {
+        
+        if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
+            
+            _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+            
+            [self showLoginViewController:_activeLogin forContext:viewController];
+        }
+    }
 }
 
 -(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
