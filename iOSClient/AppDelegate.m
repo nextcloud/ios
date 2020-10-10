@@ -319,15 +319,9 @@
     [self pushNotification];
     
     // Registeration domain File Provider
-    NSInteger k_fileProvider_domain = 0;
-    
-    if (k_fileProvider_domain == 1) {
-        FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-        [fileProviderDomain registerDomain];
-    } else {
-        FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-        [fileProviderDomain removeAllDomain];
-    }
+    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+    [fileProviderDomain registerDomain];
+    //[fileProviderDomain removeAllDomain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
