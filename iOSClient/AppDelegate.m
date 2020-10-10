@@ -189,6 +189,8 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
+    [[NCCommunicationCommon shared] writeLog:@"Application did finish launching"];
+
     return YES;
 }
 
