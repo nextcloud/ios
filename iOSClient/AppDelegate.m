@@ -320,7 +320,7 @@
     
     // Registeration domain File Provider
     FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-    [fileProviderDomain registerDomain];
+    [fileProviderDomain registerDomains];
     //[fileProviderDomain removeAllDomain];
 }
 

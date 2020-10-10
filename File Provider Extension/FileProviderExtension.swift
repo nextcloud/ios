@@ -64,6 +64,10 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         _ = NCNetworking.shared.sessionManagerBackgroundExtension
     }
     
+    deinit {
+        print("")
+    }
+    
     // MARK: - Enumeration
     
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {

@@ -25,7 +25,7 @@ import Foundation
 
 class FileProviderDomain: NSObject {
     
-    @objc func registerDomain() {
+    @objc func registerDomains() {
         
         NSFileProviderManager.getDomainsWithCompletionHandler { (fileProviderDomain, error) in
             
@@ -83,8 +83,15 @@ class FileProviderDomain: NSObject {
         }
     }
     
-    @objc func removeAllDomain() {
+    @objc func removeAllDomains() {
         
         NSFileProviderManager.removeAllDomains { (_) in }
+    }
+    
+    @objc func recreateDomains() {
+        
+        NSFileProviderManager.removeAllDomains { (_) in
+            self.recreateDomains()
+        }
     }
 }
