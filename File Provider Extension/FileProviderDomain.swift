@@ -87,11 +87,4 @@ class FileProviderDomain: NSObject {
         
         NSFileProviderManager.removeAllDomains { (_) in }
     }
-    
-    @objc func recreateDomains() {
-        
-        NSFileProviderManager.removeAllDomains { (_) in
-            self.recreateDomains()
-        }
-    }
 }

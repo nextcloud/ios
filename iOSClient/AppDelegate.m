@@ -279,7 +279,10 @@
 // L'applicazione terminerà
 //
 - (void)applicationWillTerminate:(UIApplication *)application
-{    
+{
+    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+    [fileProviderDomain removeAllDomains];
+    
     [[NCCommunicationCommon shared] writeLog:@"bye bye"];
 }
 
@@ -321,7 +324,6 @@
     // Registeration domain File Provider
     FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
     [fileProviderDomain registerDomains];
-    //[fileProviderDomain removeAllDomain];
 }
 
 #pragma --------------------------------------------------------------------------------------------
