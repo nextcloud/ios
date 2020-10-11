@@ -1,4 +1,3 @@
-github "nextcloud/ios-communication-library" "develop"
 github "tilltue/TLPhotoPicker" "2.0.12"
 github "kishikawakatsumi/UICKeyChainStore"
 github "dzenbot/DZNEmptyDataSet" "v1.8.1"
