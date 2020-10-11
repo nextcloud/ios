@@ -71,7 +71,6 @@
 		F7169A1C1EE590930086BD69 /* NCShares.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A181EE590930086BD69 /* NCShares.m */; };
 		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
-		F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F716FE7723795E5000FABE50 /* NCCommunication.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
@@ -218,6 +217,10 @@
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
+		F789B7772533192D0069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B7762533192D0069BD3D /* NCCommunication */; };
+		F789B77D253319380069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B77C253319380069BD3D /* NCCommunication */; };
+		F789B77F2533193E0069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B77E2533193E0069BD3D /* NCCommunication */; };
+		F789B781253319450069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B780253319450069BD3D /* NCCommunication */; };
 		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
 		F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F78AA20521F783E900D0F205 /* SwiftRichString.framework */; };
@@ -724,6 +727,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A58D251236D1007BBABD /* RealmSwift in Frameworks */,
+				F789B781253319450069BD3D /* NCCommunication in Frameworks */,
 				F782A58B251236D1007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -733,6 +737,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
+				F789B77D253319380069BD3D /* NCCommunication in Frameworks */,
 				F782A583251236B7007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -742,6 +747,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
+				F789B77F2533193E0069BD3D /* NCCommunication in Frameworks */,
 				F782A587251236CA007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -750,7 +756,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F716FE7823795E5000FABE50 /* NCCommunication.framework in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
@@ -778,6 +783,7 @@
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
+				F789B7772533192D0069BD3D /* NCCommunication in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1586,6 +1592,7 @@
 			packageProductDependencies = (
 				F782A58A251236D1007BBABD /* Realm */,
 				F782A58C251236D1007BBABD /* RealmSwift */,
+				F789B780253319450069BD3D /* NCCommunication */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -1607,6 +1614,7 @@
 			packageProductDependencies = (
 				F782A582251236B7007BBABD /* Realm */,
 				F782A584251236B7007BBABD /* RealmSwift */,
+				F789B77C253319380069BD3D /* NCCommunication */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -1628,6 +1636,7 @@
 			packageProductDependencies = (
 				F782A586251236CA007BBABD /* Realm */,
 				F782A588251236CA007BBABD /* RealmSwift */,
+				F789B77E2533193E0069BD3D /* NCCommunication */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -1654,6 +1663,7 @@
 			packageProductDependencies = (
 				F782A57A25123694007BBABD /* Realm */,
 				F782A57C25123694007BBABD /* RealmSwift */,
+				F789B7762533192D0069BD3D /* NCCommunication */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1760,6 +1770,7 @@
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			packageReferences = (
 				F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */,
+				F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -1898,10 +1909,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/FSCalendar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/DropDown.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/OpenSSL.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Alamofire.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftyXMLParser.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/NCCommunication.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftyJSON.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QuickLayout.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftEntryKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/FloatingPanel.framework",
@@ -2799,6 +2806,14 @@
 				version = 5.4.8;
 			};
 		};
+		F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2841,6 +2856,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
+		};
+		F789B7762533192D0069BD3D /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F789B77C253319380069BD3D /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F789B77E2533193E0069BD3D /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
+		};
+		F789B780253319450069BD3D /* NCCommunication */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			productName = NCCommunication;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

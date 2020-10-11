@@ -1,5 +1,0 @@
-framework module KTVCocoaHTTPServer {
-    umbrella header "KTVCocoaHTTPServer.h"
-    export *
-    module * { export * }
-}

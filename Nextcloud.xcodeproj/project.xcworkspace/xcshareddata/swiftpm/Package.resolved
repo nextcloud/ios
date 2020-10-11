@@ -2,6 +2,24 @@
   "object": {
     "pins": [
       {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire",
+        "state": {
+          "branch": null,
+          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
+          "version": "5.2.2"
+        }
+      },
+      {
+        "package": "NCCommunication",
+        "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
+        "state": {
+          "branch": "develop",
+          "revision": "6493b390ae89f4530e832a8d466ef291bc69e86b",
+          "version": null
+        }
+      },
+      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
@@ -17,6 +35,24 @@
           "branch": null,
           "revision": "612057010f5521d41559970306054f4c5b12632a",
           "version": "6.1.4"
+        }
+      },
+      {
+        "package": "SwiftyJSON",
+        "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
+        "state": {
+          "branch": null,
+          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
+          "version": "5.0.0"
+        }
+      },
+      {
+        "package": "SwiftyXMLParser",
+        "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
+        "state": {
+          "branch": null,
+          "revision": "0ca0e992ce0135169c715a6580b99f3e99c503e7",
+          "version": "5.2.1"
         }
       }
     ]
