@@ -462,8 +462,9 @@ import Queuer
             guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(description) else { return }
             guard let tableAccount = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else { return }
             let ocIdTemp = metadata.ocId
+            var errorDescription = errorDescription
             
-            if errorCode == 0 && ocId != nil {
+            if errorCode == 0 && ocId != nil && size > 0 {
                 
                 let metadata = tableMetadata.init(value: metadata)
                
@@ -538,6 +539,10 @@ import Queuer
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
 
                 } else {
+                    
+                    if size == 0 {
+                        errorDescription = "File length zero"
+                    }
                     
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 }
