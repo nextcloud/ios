@@ -228,9 +228,10 @@
 // Flow Version
 #define k_flow_version_available                        12
 
-// Trash Version
+// New capabilities version
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
+#define k_files_comments                                20
 
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49

@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Parchment",
+        "repositoryURL": "https://github.com/rechsteiner/Parchment",
+        "state": {
+          "branch": null,
+          "revision": "af4c9773ad7833df93b3f6226ccd78acad6f5735",
+          "version": "2.4.0"
+        }
+      },
+      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
