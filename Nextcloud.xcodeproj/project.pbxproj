@@ -216,11 +216,11 @@
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
+		F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D58C253454BF00E3DD7B /* NCCommunication */; };
+		F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D592253454CE00E3DD7B /* NCCommunication */; };
+		F786D595253454D300E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D594253454D300E3DD7B /* NCCommunication */; };
+		F786D597253454D800E3DD7B /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F786D596253454D800E3DD7B /* NCCommunication */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
-		F789B7772533192D0069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B7762533192D0069BD3D /* NCCommunication */; };
-		F789B77D253319380069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B77C253319380069BD3D /* NCCommunication */; };
-		F789B77F2533193E0069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B77E2533193E0069BD3D /* NCCommunication */; };
-		F789B781253319450069BD3D /* NCCommunication in Frameworks */ = {isa = PBXBuildFile; productRef = F789B780253319450069BD3D /* NCCommunication */; };
 		F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */; };
 		F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78A18B723CDE2B300F681F3 /* NCViewerRichWorkspace.swift */; };
 		F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F78AA20521F783E900D0F205 /* SwiftRichString.framework */; };
@@ -727,7 +727,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A58D251236D1007BBABD /* RealmSwift in Frameworks */,
-				F789B781253319450069BD3D /* NCCommunication in Frameworks */,
+				F786D597253454D800E3DD7B /* NCCommunication in Frameworks */,
 				F782A58B251236D1007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -737,7 +737,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A585251236B7007BBABD /* RealmSwift in Frameworks */,
-				F789B77D253319380069BD3D /* NCCommunication in Frameworks */,
+				F786D593253454CE00E3DD7B /* NCCommunication in Frameworks */,
 				F782A583251236B7007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -747,7 +747,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F782A589251236CA007BBABD /* RealmSwift in Frameworks */,
-				F789B77F2533193E0069BD3D /* NCCommunication in Frameworks */,
+				F786D595253454D300E3DD7B /* NCCommunication in Frameworks */,
 				F782A587251236CA007BBABD /* Realm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -772,6 +772,7 @@
 				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
 				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
+				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
@@ -783,7 +784,6 @@
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
-				F789B7772533192D0069BD3D /* NCCommunication in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1592,7 +1592,7 @@
 			packageProductDependencies = (
 				F782A58A251236D1007BBABD /* Realm */,
 				F782A58C251236D1007BBABD /* RealmSwift */,
-				F789B780253319450069BD3D /* NCCommunication */,
+				F786D596253454D800E3DD7B /* NCCommunication */,
 			);
 			productName = "Notification Service Extension";
 			productReference = 2C33C47F23E2C475005F963B /* Notification Service Extension.appex */;
@@ -1614,7 +1614,7 @@
 			packageProductDependencies = (
 				F782A582251236B7007BBABD /* Realm */,
 				F782A584251236B7007BBABD /* RealmSwift */,
-				F789B77C253319380069BD3D /* NCCommunication */,
+				F786D592253454CE00E3DD7B /* NCCommunication */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -1636,7 +1636,7 @@
 			packageProductDependencies = (
 				F782A586251236CA007BBABD /* Realm */,
 				F782A588251236CA007BBABD /* RealmSwift */,
-				F789B77E2533193E0069BD3D /* NCCommunication */,
+				F786D594253454D300E3DD7B /* NCCommunication */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -1663,7 +1663,7 @@
 			packageProductDependencies = (
 				F782A57A25123694007BBABD /* Realm */,
 				F782A57C25123694007BBABD /* RealmSwift */,
-				F789B7762533192D0069BD3D /* NCCommunication */,
+				F786D58C253454BF00E3DD7B /* NCCommunication */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -1770,7 +1770,7 @@
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			packageReferences = (
 				F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */,
-				F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */,
+				F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -2236,7 +2236,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2291,7 +2291,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2338,7 +2338,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2386,7 +2386,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2440,7 +2440,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2494,7 +2494,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2540,7 +2540,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2589,7 +2589,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 18;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2806,12 +2806,12 @@
 				version = 5.4.8;
 			};
 		};
-		F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
+		F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				branch = spm;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.80.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -2857,24 +2857,24 @@
 			package = F782A57925123694007BBABD /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
 		};
-		F789B7762533192D0069BD3D /* NCCommunication */ = {
+		F786D58C253454BF00E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
 			productName = NCCommunication;
 		};
-		F789B77C253319380069BD3D /* NCCommunication */ = {
+		F786D592253454CE00E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
 			productName = NCCommunication;
 		};
-		F789B77E2533193E0069BD3D /* NCCommunication */ = {
+		F786D594253454D300E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
 			productName = NCCommunication;
 		};
-		F789B780253319450069BD3D /* NCCommunication */ = {
+		F786D596253454D800E3DD7B /* NCCommunication */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F789B7752533192D0069BD3D /* XCRemoteSwiftPackageReference "ios-communication-library" */;
+			package = F786D58B253454BF00E3DD7B /* XCRemoteSwiftPackageReference "ios-communication-library" */;
 			productName = NCCommunication;
 		};
 /* End XCSwiftPackageProductDependency section */
