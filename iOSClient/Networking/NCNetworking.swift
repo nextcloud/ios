@@ -541,7 +541,8 @@ import Queuer
                 } else {
                     
                     if size == 0 {
-                        errorDescription = "File length zero"
+                        errorDescription = "File length 0"
+                        NCCommunicationCommon.shared.writeLog("Upload error 0 length " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
                     }
                     
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
