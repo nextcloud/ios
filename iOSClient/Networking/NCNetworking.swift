@@ -304,7 +304,12 @@ import Queuer
         let metadata = tableMetadata.init(value: metadata)
         guard let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            
+            completion(Int(k_CCErrorInternalError), "Internal error")
+            return
+        }
+        
+        if metadata.size == 0 {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             completion(Int(k_CCErrorInternalError), "Internal error")
             return
         }
