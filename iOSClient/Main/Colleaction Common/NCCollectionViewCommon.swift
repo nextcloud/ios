@@ -592,6 +592,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return true
     }
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        return -100
+    }
+    
     // MARK: - SEARCH
     
     func updateSearchResults(for searchController: UISearchController) {
