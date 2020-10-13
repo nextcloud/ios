@@ -230,7 +230,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         }
                 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
-            cell.delegate = self
+        cell.delegate = self
             
         cell.objectId = metadata.ocId
         cell.indexPath = indexPath
@@ -242,7 +242,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
         
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
-        cell.labelPath.text = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
+        var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
+        if pathText == "" { pathText = "/" }
+        cell.labelPath.text = pathText
         
         cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
 
