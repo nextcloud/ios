@@ -119,10 +119,6 @@
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
--(CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return -100;
-}
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
