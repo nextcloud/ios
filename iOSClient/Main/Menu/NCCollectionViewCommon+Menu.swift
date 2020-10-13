@@ -54,6 +54,15 @@ extension NCCollectionViewCommon {
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
+        var titleDelete = NSLocalizedString("_delete_", comment: "")
+        if metadataFolder != nil {
+            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
+            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+            if isShare || isMounted {
+                titleDelete = NSLocalizedString("_leave_share_", comment: "")
+            }
+        }
+                
         if metadata.directory {
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
                 isOffline = directory.offline
@@ -237,7 +246,7 @@ extension NCCollectionViewCommon {
         //
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_delete_", comment: ""),
+                title: titleDelete,
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)

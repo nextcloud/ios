@@ -141,6 +141,8 @@
 "_recent_"                  = "Recent";
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
+"_delete_file_"             = "Delete file";
+"_delete_folder_"           = "Delete folder";
 
 // App
 
