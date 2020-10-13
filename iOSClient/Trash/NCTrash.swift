@@ -157,6 +157,10 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         return true
     }
     
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
+        return -100
+    }
+    
     // MARK: TAP EVENT
     
     func tapSwitchHeaderMenu(sender: Any) {
