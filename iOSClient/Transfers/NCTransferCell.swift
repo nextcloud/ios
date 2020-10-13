@@ -88,12 +88,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImage
     }
     
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state != .began { return }
         delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
     }
     
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state != .began { return }
         delegate?.longPressListItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     

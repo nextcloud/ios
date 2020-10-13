@@ -86,12 +86,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCImageCell
     }
     
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state != .began { return }
         delegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, gestureRecognizer: gestureRecognizer)
     }
     
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state != .began { return }
         delegate?.longPressGridItem(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     

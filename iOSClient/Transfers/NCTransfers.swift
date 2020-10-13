@@ -157,7 +157,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     // MARK: TAP EVENT
     
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-      
+        
+        if gestureRecognizer.state != .began { return }
+        
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
        
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -171,6 +173,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     }
     
     override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+        
+        if gestureRecognizer.state != .began { return }
+        
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)

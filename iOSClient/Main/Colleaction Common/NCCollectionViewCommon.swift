@@ -707,17 +707,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
-            metadataTouch = metadata
-            longPressCollecationView(gestureRecognizer)
-        }
+        openMenuItems(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
-            metadataTouch = metadata
-            longPressCollecationView(gestureRecognizer)
-        }
+        openMenuItems(with: objectId, gestureRecognizer: gestureRecognizer)
     }
     
     func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -727,8 +721,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
+    }
+    
+    func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
+        
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+            metadataTouch = metadata
+        } else {
+            metadataTouch = nil
+        }
         
         var listMenuItems: [UIMenuItem] = []
         let touchPoint = gestureRecognizer.location(in: collectionView)
