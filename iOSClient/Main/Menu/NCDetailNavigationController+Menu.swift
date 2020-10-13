@@ -68,11 +68,21 @@ extension NCDetailNavigationController {
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        
         var titleOffline = ""
         if (localFile == nil || localFile!.offline == false) {
             titleOffline = NSLocalizedString("_set_available_offline_", comment: "")
         } else {
             titleOffline = NSLocalizedString("_remove_available_offline_", comment: "")
+        }
+        
+        var titleDelete = NSLocalizedString("_delete_", comment: "")
+        if NCManageDatabase.sharedInstance.isMetadataShareOrMounted(metadata: metadata, metadataFolder: nil) {
+            titleDelete = NSLocalizedString("_leave_share_", comment: "")
+        } else if metadata.directory {
+            titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+        } else {
+            titleDelete = NSLocalizedString("_delete_file_", comment: "")
         }
         
         //
@@ -216,7 +226,7 @@ extension NCDetailNavigationController {
         // DELETE
         //
         actions.append(
-            NCMenuAction(title: NSLocalizedString("_delete_", comment: ""),
+            NCMenuAction(title: titleDelete,
                          icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
                 action: { menuAction in
                     

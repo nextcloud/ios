@@ -55,14 +55,22 @@ extension NCCollectionViewCommon {
         var isOffline = false
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")
-        if metadataFolder != nil {
-            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
-            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+        if NCManageDatabase.sharedInstance.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
+            titleDelete = NSLocalizedString("_leave_share_", comment: "")
+        } else if metadata.directory {
+            titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+        } else {
+            titleDelete = NSLocalizedString("_delete_file_", comment: "")
+        }
+        
+        if let metadataFolder = metadataFolder {
+            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
+            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
             if isShare || isMounted {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
             }
         }
-                
+               
         if metadata.directory {
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
                 isOffline = directory.offline

@@ -2255,6 +2255,29 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableMetadata.init(value:$0) })
     }
     
+    func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
+           
+        var isShare = false
+        var isMounted = false
+        
+        if metadataFolder != nil {
+            
+            isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
+            isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+            
+        } else if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
+                
+            isShare = metadata.permissions.contains(k_permission_shared) && !directory.permissions.contains(k_permission_shared)
+            isMounted = metadata.permissions.contains(k_permission_mounted) && !directory.permissions.contains(k_permission_mounted)
+        }
+        
+        if isShare || isMounted {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     
