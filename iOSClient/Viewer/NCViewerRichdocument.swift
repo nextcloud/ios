@@ -122,6 +122,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
+                
                 if param["MessageName"] as? String == "downloadAs" {
                     if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
                         guard let type = values["Type"] as? String else {
@@ -181,6 +182,15 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         metadata.fileName = newName
                         metadata.fileNameView = newName
                     }
+                } else if param["MessageName"] as? String == "hyperlink" {
+                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                        guard let urlString = values["Url"] as? String else {
+                            return
+                        }
+                        if let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
                 }
             }
             
@@ -190,15 +200,6 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             
             if message.body as? String == "paste" {
                 self.paste(self)
-            }
-            
-            if (message.body as? String)?.hasPrefix("HYPERLINK") != nil {
-                if let messageBodyItem = (message.body as? String)?.components(separatedBy: " ") {
-                    if messageBodyItem.count >= 2 {
-                        let url = URL(fileURLWithPath: messageBodyItem[1])
-                        UIApplication.shared.open(url, options: [:]) { (_) in }
-                    }
-                }
             }
         }
     }
