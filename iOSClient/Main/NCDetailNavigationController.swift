@@ -50,12 +50,11 @@ class NCDetailNavigationController: UINavigationController {
     }
     
     //MARK: - NotificationCenter
-    
 
     @objc func changeTheming() {
-
+        navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
+        navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
-    
 
     //MARK: - Button
 
