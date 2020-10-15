@@ -367,6 +367,7 @@ class NCDetailViewController: UIViewController {
         metadata = nil
         selector = nil
         
+        /*
         if let splitViewController = self.splitViewController as? NCSplitViewController {
             if splitViewController.isCollapsed {
                 if let navigationController = splitViewController.viewControllers.last as? UINavigationController {
@@ -377,7 +378,7 @@ class NCDetailViewController: UIViewController {
                 self.navigationController?.navigationBar.topItem?.title = ""
             }
         }
-        
+        */
         self.splitViewController?.preferredDisplayMode = .allVisible
         self.navigationController?.isNavigationBarHidden = false
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView

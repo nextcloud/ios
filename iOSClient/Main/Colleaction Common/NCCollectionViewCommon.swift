@@ -938,6 +938,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 segueViewController.metadata = metadataTouch
                 segueViewController.layoutKey = layoutKey
             }
+        } else if let segueViewController = segue.destination as? NCDetailViewController {
+            segueViewController.metadata = metadataTouch
+            segueViewController.layoutKey = layoutKey
         }
     }
     

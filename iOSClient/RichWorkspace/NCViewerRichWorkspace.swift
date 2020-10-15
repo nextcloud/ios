@@ -70,9 +70,9 @@ import MarkdownKit
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if let splitViewController = appDelegate.window.rootViewController as? NCSplitViewController {
-            splitViewController.traitCollectionDidChange(previousTraitCollection)
-        }
+//        if let splitViewController = appDelegate.window.rootViewController as? NCSplitViewController {
+//            splitViewController.traitCollectionDidChange(previousTraitCollection)
+//        }
     }
     
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {

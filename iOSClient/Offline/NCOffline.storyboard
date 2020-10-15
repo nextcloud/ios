@@ -50,10 +50,10 @@
             </objects>
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
-        <!--CCDetailNC-->
+        <!--NCDetail-->
         <scene sceneID="D5y-IR-BuC">
             <objects>
-                <viewControllerPlaceholder storyboardName="Main" referencedIdentifier="CCDetailNC" id="rIl-hI-jAh" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="NCDetail" referencedIdentifier="NCDetail" id="rIl-hI-jAh" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eCA-Ct-z68" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1080" y="228"/>

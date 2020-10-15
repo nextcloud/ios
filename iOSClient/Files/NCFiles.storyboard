@@ -43,17 +43,19 @@
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
-                        <segue destination="rIl-hI-jAh" kind="showDetail" identifier="segueDetail" id="MHI-ti-PGq"/>
+                        <segue destination="rIl-hI-jAh" kind="show" identifier="segueDetail" id="MHI-ti-PGq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
-        <!--CCDetailNC-->
+        <!--NCDetail-->
         <scene sceneID="D5y-IR-BuC">
             <objects>
-                <viewControllerPlaceholder storyboardName="Main" referencedIdentifier="CCDetailNC" id="rIl-hI-jAh" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="NCDetail" referencedIdentifier="NCDetail" id="rIl-hI-jAh" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="nRf-yG-Cl8"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eCA-Ct-z68" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1080" y="228"/>
