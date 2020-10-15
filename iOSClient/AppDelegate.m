@@ -162,6 +162,12 @@
         }
     }
     
+    //
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+        [self createTabBarController:tabBarController];
+    }
+    
     if ([NCBrandOptions sharedInstance].disable_intro) {
         [CCUtility setIntro:YES];
         
@@ -985,18 +991,12 @@
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 
     //Tab bar
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *masterNavigationController = [splitViewController.viewControllers firstObject];
-        if ([masterNavigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = [masterNavigationController.viewControllers firstObject];
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
-                tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
-                tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-                [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brandElement;
-            }
-        }
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+        tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
+        tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
+        tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
+        [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brandElement;
     }
     
     // Nav bar
