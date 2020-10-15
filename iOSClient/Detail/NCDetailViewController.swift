@@ -58,7 +58,6 @@ class NCDetailViewController: UIViewController {
         super.viewDidLoad()
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
@@ -172,6 +171,7 @@ class NCDetailViewController: UIViewController {
         }
     }
    
+    /*
     @objc func changeDisplayMode() {
        if self.view?.window == nil { return }
         
@@ -181,6 +181,7 @@ class NCDetailViewController: UIViewController {
             self.setProgressBar()
         }
     }
+    */
     
     @objc func triggerProgressTask(_ notification: NSNotification) {
         if self.view?.window == nil { return }

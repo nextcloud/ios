@@ -44,7 +44,6 @@ import PDFKit
         super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeDisplayMode), name: NSNotification.Name(rawValue: k_notificationCenter_splitViewChangeDisplayMode), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
     }
@@ -114,10 +113,6 @@ import PDFKit
     }
     
     //MARK: - NotificationCenter
-    
-    @objc func changeDisplayMode() {
-        layoutIfNeeded()
-    }
     
     @objc private func handlePageChange() {
         

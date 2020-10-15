@@ -350,23 +350,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             self.present(controller, animated: true, completion: nil)
 
         } else if item.url.contains("//") {
+           
+            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+            browserWebVC.urlBase = item.url
+            browserWebVC.isHiddenButtonExit = true
 
-            if (self.splitViewController?.isCollapsed)! {
-
-                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                browserWebVC.urlBase = item.url
-                browserWebVC.isHiddenButtonExit = true
-
-                self.navigationController?.pushViewController(browserWebVC, animated: true)
-                self.navigationController?.navigationBar.isHidden = false
-
-            } else {
-
-                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                browserWebVC.urlBase = item.url
-
-                self.present(browserWebVC, animated: true, completion: nil)
-            }
+            self.navigationController?.pushViewController(browserWebVC, animated: true)
+            self.navigationController?.navigationBar.isHidden = false
 
         } else if item.url == "logout" {
 
@@ -395,23 +385,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         if (quotaMenu.count > 0) {
 
             let item = quotaMenu[0]
+            let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
+            browserWebVC.urlBase = item.url
+            browserWebVC.isHiddenButtonExit = true
 
-            if (self.splitViewController?.isCollapsed)! {
-
-                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                browserWebVC.urlBase = item.url
-                browserWebVC.isHiddenButtonExit = true
-
-                self.navigationController?.pushViewController(browserWebVC, animated: true)
-                self.navigationController?.navigationBar.isHidden = false
-
-            } else {
-
-                let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
-                browserWebVC.urlBase = item.url
-
-                self.present(browserWebVC, animated: true, completion: nil)
-            }
+            self.navigationController?.pushViewController(browserWebVC, animated: true)
+            self.navigationController?.navigationBar.isHidden = false
         }
     }
 

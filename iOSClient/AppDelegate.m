@@ -162,7 +162,7 @@
         }
     }
     
-    //
+    // TabBar Controller
     UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
         [self createTabBarController:tabBarController];

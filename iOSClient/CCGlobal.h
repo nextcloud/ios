@@ -310,7 +310,6 @@
 #define k_notificationCenter_initializeMain             @"initializeMain"
 #define k_notificationCenter_setTitleMain               @"setTitleMain"
 #define k_notificationCenter_changeTheming              @"changeTheming"
-#define k_notificationCenter_splitViewChangeDisplayMode @"splitViewChangeDisplayMode"
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
