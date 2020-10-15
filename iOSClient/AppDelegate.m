@@ -760,6 +760,12 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
 
+            UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+                
+            }
+            
+            
             UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
             if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
                 UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
@@ -809,20 +815,13 @@
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-        UINavigationController *navigationController = (UINavigationController *)[splitViewController.viewControllers firstObject];
-        if ([navigationController isKindOfClass:[UINavigationController class]]) {
-            UITabBarController *tabBarController = (UITabBarController *)navigationController.topViewController;
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
-                    
-                if (total > 0) {
-                    [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-                } else {
-                    [tabBarItem setBadgeValue:nil];
-                }
-            }
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
+        UITabBarItem *tabBarItem = [tabBarController.tabBar.items objectAtIndex:0];
+        if (total > 0) {
+            [tabBarItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
+        } else {
+            [tabBarItem setBadgeValue:nil];
         }
     }
 }

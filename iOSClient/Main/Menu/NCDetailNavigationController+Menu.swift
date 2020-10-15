@@ -24,6 +24,7 @@
 import FloatingPanel
 import NCCommunication
 
+/*
 extension NCDetailNavigationController {
 
     @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
@@ -308,4 +309,4 @@ extension NCDetailNavigationController {
         return actions
     }
 }
-
+*/
