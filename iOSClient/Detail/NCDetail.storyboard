@@ -11,7 +11,7 @@
         <!--Detail View Controller-->
         <scene sceneID="5rh-5g-l0Y">
             <objects>
-                <viewController storyboardIdentifier="NCDetail" extendedLayoutIncludesOpaqueBars="YES" id="z35-nC-Oo4" customClass="NCDetailViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCDetail" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="z35-nC-Oo4" customClass="NCDetailViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" tag="900" contentMode="scaleToFill" id="boJ-by-2PT">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

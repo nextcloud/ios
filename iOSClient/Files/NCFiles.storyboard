@@ -11,7 +11,7 @@
         <!--Files-->
         <scene sceneID="X4W-6b-l7s">
             <objects>
-                <viewController storyboardIdentifier="NCFiles.storyboard" extendedLayoutIncludesOpaqueBars="YES" hidesBottomBarWhenPushed="YES" id="EFX-fO-Oip" customClass="NCFiles" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="NCFiles.storyboard" extendedLayoutIncludesOpaqueBars="YES" id="EFX-fO-Oip" customClass="NCFiles" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QEs-gO-Cmp">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
