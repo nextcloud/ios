@@ -48,12 +48,11 @@ class NCViewer: NSObject {
                 viewController.viewer = self
                 
                 navigationController.pushViewController(viewController, animated: true)
+                return
             }
-            return
         }
         
         // OTHER
-        
         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
 
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
