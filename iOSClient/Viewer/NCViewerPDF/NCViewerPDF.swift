@@ -83,10 +83,10 @@ import PDFKit
         
         view.addSubview(pageView)
         
-        pageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         pageViewWidthAnchor = pageView.widthAnchor.constraint(equalToConstant: 10)
         pageViewWidthAnchor?.isActive = true
-        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 7).isActive = true
+        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 7).isActive = true
         
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -139,9 +139,7 @@ import PDFKit
     }
     
     @objc func changeTheming() {
-        guard let navigationController = appDelegate.activeDetail.navigationController else { return }
-
-        if navigationController.isNavigationBarHidden == false {
+        if navigationController?.isNavigationBarHidden == false {
             pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
     }
@@ -155,7 +153,8 @@ import PDFKit
             navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView!.isHidden = false
             pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            
+            pdfView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height - thumbnailViewHeight)
+
         } else {
             
             let point = recognizer.location(in: pdfView)
@@ -164,19 +163,9 @@ import PDFKit
             navigationController?.setNavigationBarHidden(true, animated: false)
             pdfThumbnailView!.isHidden = true
             pdfView.backgroundColor = .black
+            pdfView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         }
 
-        let size = self.appDelegate.activeDetail.view!.bounds
-        var height: CGFloat = 0
-            
-        if navigationController?.isNavigationBarHidden ?? false {
-            height = size.height - size.origin.y
-        } else {
-            height = size.height - size.origin.y - self.thumbnailViewHeight
-        }
-             
-        pdfView.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
-        
         handlePageChange()
     }
     
