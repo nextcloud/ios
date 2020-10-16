@@ -103,6 +103,15 @@ class NCDetailViewController: UIViewController {
         }
     }
     
+    @objc func viewUnload() {
+        
+        metadata = nil
+        selector = nil
+        
+        navigationController?.popViewController(animated: true)
+        navigationController?.isNavigationBarHidden = false
+    }
+    
     //MARK: - ProgressBar
 
     @objc func setProgressBar() {
@@ -352,33 +361,6 @@ class NCDetailViewController: UIViewController {
         }
     }
     
-    @objc func viewUnload() {
-        self.unload(checkWindow: true)
-    }
-    
-    private func unload(checkWindow: Bool) {
-        if checkWindow && self.view?.window == nil { return }
-
-        metadata = nil
-        selector = nil
-        
-        /*
-        if let splitViewController = self.splitViewController as? NCSplitViewController {
-            if splitViewController.isCollapsed {
-                if let navigationController = splitViewController.viewControllers.last as? UINavigationController {
-                    navigationController.popViewController(animated: true)
-                }
-            } else {
-                closeAllSubView()
-                self.navigationController?.navigationBar.topItem?.title = ""
-            }
-        }
-        */
-        self.splitViewController?.preferredDisplayMode = .allVisible
-        self.navigationController?.isNavigationBarHidden = false
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-    }
-    
     //MARK: - View File
     
     @objc func viewFile(metadata: tableMetadata, selector: String?) {
@@ -469,7 +451,7 @@ class NCDetailViewController: UIViewController {
                     }
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-                    unload(checkWindow: false)
+                    viewUnload()
                 }
                 
                 return
@@ -521,7 +503,7 @@ class NCDetailViewController: UIViewController {
         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.unload(checkWindow: false)
+            self.viewUnload()
         }
     }
 }
