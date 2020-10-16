@@ -24,12 +24,17 @@
 import Foundation
 
 class NCViewer: NSObject {
+    @objc static let shared: NCViewer = {
+        let instance = NCViewer()
+        return instance
+    }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var viewerQuickLook: NCViewerQuickLook?
+    
+    func view(viewController: UIViewController, metadata: tableMetadata) {
 
-    init(viewController: UIViewController, metadata: tableMetadata) {
-        super.init()
-
+        // DOCUMENTS
         if metadata.typeFile == k_metadataTypeFile_document {
                 
             // PDF
@@ -44,7 +49,17 @@ class NCViewer: NSObject {
                 
                 navigationController.pushViewController(viewController, animated: true)
             }
+            return
         }
+        
+        // OTHER
+        
+        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+
+        CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+
+        viewerQuickLook = NCViewerQuickLook.init()
+        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
     }
     
     private func canPush(viewController: UIViewController) -> Bool {

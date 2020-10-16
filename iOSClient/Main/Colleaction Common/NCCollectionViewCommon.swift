@@ -1248,7 +1248,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if CCUtility.fileProviderStorageExists(metadataTouch?.ocId, fileNameView: metadataTouch?.fileNameView) {
                 guard let metadataTouch = metadataTouch else { return }
-                _ = NCViewer.init(viewController: self, metadata: metadataTouch)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
             }

@@ -77,7 +77,7 @@ import Foundation
                                 
                             } else {
                                 
-                                _ = NCViewer.init(viewController: self.appDelegate.activeViewController, metadata: metadata)
+                                NCViewer.shared.view(viewController: self.appDelegate.activeViewController, metadata: metadata) 
                             }
                         }
                         
