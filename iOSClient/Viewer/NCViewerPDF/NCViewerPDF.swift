@@ -92,7 +92,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         pageViewWidthAnchor = pageView.widthAnchor.constraint(equalToConstant: 10)
         pageViewWidthAnchor?.isActive = true
-        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10).isActive = true
+        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 7).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 7).isActive = true
         
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false

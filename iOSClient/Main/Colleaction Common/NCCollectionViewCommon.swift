@@ -1218,6 +1218,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         } else {
             
+            /*
             NCViewer.init(navigationController: self.navigationController!, metadata: metadataTouch!)
             return
             
@@ -1243,9 +1244,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
                 return
             }
+            */
             
             if CCUtility.fileProviderStorageExists(metadataTouch?.ocId, fileNameView: metadataTouch?.fileNameView) {
-                performSegue(withIdentifier: "segueDetail", sender: self)
+                guard let metadataTouch = metadataTouch else { return }
+                _ = NCViewer.init(viewController: self, metadata: metadataTouch)
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
             }

@@ -27,9 +27,11 @@ class NCViewer: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    init(navigationController: UINavigationController, metadata: tableMetadata) {
+    init(viewController: UIViewController, metadata: tableMetadata) {
         super.init()
-                
+
+        guard let navigationController = viewController.navigationController else { return }
+        
         if metadata.typeFile == k_metadataTypeFile_document {
                 
             // PDF

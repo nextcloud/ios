@@ -77,7 +77,7 @@ import Foundation
                                 
                             } else {
                                 
-                                segueMetadata(metadata)
+                                _ = NCViewer.init(viewController: self.appDelegate.activeViewController, metadata: metadata)
                             }
                         }
                         
