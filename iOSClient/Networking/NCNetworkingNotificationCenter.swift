@@ -35,7 +35,7 @@ import Foundation
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewerQuickLook: NCViewerQuickLook?
-    var docController: UIDocumentInteractionController?
+    var documentController: UIDocumentInteractionController?
     
     //MARK: - Download
 
@@ -49,7 +49,9 @@ import Foundation
                 if errorCode == 0 {
                     
                     let fileURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                    
+                    documentController = UIDocumentInteractionController(url: fileURL)
+                    documentController?.delegate = self
+
                     switch selector {
                     case selectorLoadFileQuickLook:
                         
@@ -65,15 +67,21 @@ import Foundation
                                                         
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
-                                openIn(fileURL: fileURL, selector: selector)
+                                if let view = appDelegate.window?.rootViewController?.view {
+                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                }
                                 
                             } else {
                                 
@@ -81,11 +89,13 @@ import Foundation
                             }
                         }
                         
-                    case selectorOpenIn, selectorOpenInDetail:
+                    case selectorOpenIn, selectorOpenInView:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
-                            openIn(fileURL: fileURL, selector: selector)
+                            if let view = appDelegate.window?.rootViewController?.view {
+                                documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                            }
                         }
                         
                     case selectorLoadCopy:
@@ -128,25 +138,6 @@ import Foundation
                     }
                 }
             }
-        }
-    }
-    
-    func openIn(fileURL: URL, selector: String?) {
-        
-        docController = UIDocumentInteractionController(url: fileURL)
-        docController?.delegate = self
-        
-        if selector == selectorOpenInDetail {
-            guard let barButtonItem = appDelegate.activeDetail.navigationItem.rightBarButtonItem else { return }
-            guard let buttonItemView = barButtonItem.value(forKey: "view") as? UIView else { return }
-            
-            docController?.presentOptionsMenu(from: buttonItemView.frame, in: buttonItemView, animated: true)
-            
-        } else {
-            guard let splitViewController = appDelegate.window?.rootViewController as? UISplitViewController, let view = splitViewController.viewControllers.first?.view, let frame = splitViewController.viewControllers.first?.view.frame else {
-                return }
-    
-            docController?.presentOptionsMenu(from: frame, in: view, animated: true)
         }
     }
     

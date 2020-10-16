@@ -195,7 +195,12 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             let fileURL = NSURL.fileURL(withPath: NSTemporaryDirectory(), isDirectory: true).appendingPathComponent("capabilities.txt")
             do {
                 try self.capabilitiesText.write(to: fileURL, atomically: true, encoding: .utf8)
-                NCNetworkingNotificationCenter.shared.openIn(fileURL: fileURL, selector: nil)
+                
+                if let view = self.appDelegate.window?.rootViewController?.view {
+                    self.documentController = UIDocumentInteractionController(url: fileURL)
+                    self.documentController?.delegate = self
+                    self.documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                }
             } catch { }
         }
     }
