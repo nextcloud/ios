@@ -40,7 +40,7 @@ class NCViewer: NSObject {
             // PDF
             if metadata.contentType == "application/pdf" {
                     
-                if !canPush(viewController: viewController) { return }
+                if !canPush(viewController: viewController, serverUrl: metadata.serverUrl) { return }
                 guard let navigationController = viewController.navigationController else { return }
                 let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
@@ -62,10 +62,12 @@ class NCViewer: NSObject {
         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
     }
     
-    private func canPush(viewController: UIViewController) -> Bool {
+    private func canPush(viewController: UIViewController, serverUrl: String) -> Bool {
         
         if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder {
-            return true
+            if serverUrl == appDelegate.activeServerUrl {
+                return true
+            }
         }
         return false
     }
