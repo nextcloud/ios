@@ -55,7 +55,7 @@
 		F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FB24057E5E00A6033D /* NCActionSheetHeader.swift */; };
 		F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FC24057E5E00A6033D /* NCActionSheetHeaderView.swift */; };
 		F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */; };
-		F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */; };
+		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
@@ -395,7 +395,7 @@
 		F710D1FB24057E5E00A6033D /* NCActionSheetHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeader.swift; sourceTree = "<group>"; };
 		F710D1FC24057E5E00A6033D /* NCActionSheetHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeaderView.swift; sourceTree = "<group>"; };
 		F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
-		F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCDetailNavigationController+Menu.swift"; sourceTree = "<group>"; };
+		F710D2012405826100A6033D /* NCViewer+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCViewer+Menu.swift"; sourceTree = "<group>"; };
 		F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ImagesIntro.xcassets; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
@@ -797,7 +797,7 @@
 				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
 				F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */,
-				F710D2012405826100A6033D /* NCDetailNavigationController+Menu.swift */,
+				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
 				371B5A2D23D0B04500FAFAE9 /* NCMainMenuTableViewController.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 				37ECC83A23D0C7400082EFA2 /* NCMenuAction.swift */,
@@ -2030,7 +2030,7 @@
 				F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */,
 				F749C10C23C4A5340027D966 /* NCIntroViewController.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
-				F710D2022405826100A6033D /* NCDetailNavigationController+Menu.swift in Sources */,
+				F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */,
 				3757A35523D9D76300EC369E /* NCMenuPanelController.swift in Sources */,
 				F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */,
 				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,

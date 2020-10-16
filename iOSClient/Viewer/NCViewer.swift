@@ -25,6 +25,8 @@ import Foundation
 
 class NCViewer: NSObject {
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     init(navigationController: UINavigationController, metadata: tableMetadata) {
         super.init()
                 
@@ -33,11 +35,12 @@ class NCViewer: NSObject {
             // PDF
             if metadata.contentType == "application/pdf" {
                     
-                let ViewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
+                let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
-                ViewController.metadata = metadata
+                viewController.metadata = metadata
+                viewController.viewer = self
                 
-                navigationController.pushViewController(ViewController, animated: true)
+                navigationController.pushViewController(viewController, animated: true)
             }
         }
     }

@@ -24,13 +24,9 @@
 import FloatingPanel
 import NCCommunication
 
-/*
-extension NCDetailNavigationController {
+extension NCViewer {
 
     @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
-        if appDelegate.activeDetail.backgroundView.subviews.first == nil && appDelegate.activeDetail.viewerImageViewController == nil {
-            return
-        }
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
@@ -65,6 +61,7 @@ extension NCDetailNavigationController {
     }
     
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
+        
         var actions = [NCMenuAction]()
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
@@ -111,7 +108,7 @@ extension NCDetailNavigationController {
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
-                    NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                    NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
                 }
             )
         )
@@ -144,7 +141,7 @@ extension NCDetailNavigationController {
                     let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
                     let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
                         let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: self) { (errorCode, errorDescription) in
+                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: viewController) { (errorCode, errorDescription) in
                             if errorCode != 0 {
                                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
@@ -153,7 +150,7 @@ extension NCDetailNavigationController {
                     alertController.addAction(cancelAction)
                     alertController.addAction(okAction)
 
-                    self.present(alertController, animated: true, completion: nil)
+                    viewController.present(alertController, animated: true, completion: nil)
                 }
             )
         )
@@ -183,7 +180,7 @@ extension NCDetailNavigationController {
                     viewController.isOverwriteHide = false
                     
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                    self.present(navigationController, animated: true, completion: nil)
+                    viewController.present(navigationController, animated: true, completion: nil)
                 }
             )
         )
@@ -244,7 +241,7 @@ extension NCDetailNavigationController {
                     
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                                         
-                    self.present(alertController, animated: true, completion:nil)
+                    viewController.present(alertController, animated: true, completion:nil)
                 }
             )
         )
@@ -309,4 +306,3 @@ extension NCDetailNavigationController {
         return actions
     }
 }
-*/

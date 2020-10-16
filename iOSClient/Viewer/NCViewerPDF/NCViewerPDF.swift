@@ -24,9 +24,12 @@
 import Foundation
 import PDFKit
 
-@objc class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
+class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
-    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var metadata = tableMetadata()
+    var viewer: NCViewer?
+    
     private var pdfView = PDFView()
     private var thumbnailViewHeight: CGFloat = 40
     private var pdfThumbnailView: PDFThumbnailView?
@@ -35,7 +38,6 @@ import PDFKit
     private let pageViewLabel = UILabel()
     private var pageViewWidthAnchor : NSLayoutConstraint?
     
-    var metadata = tableMetadata()
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -116,11 +118,18 @@ import PDFKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationItem.title = metadata.fileNameView
+        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = buttonMore
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = metadata.fileNameView
 
         appDelegate.activeViewController = self
-    }   
+    }
+    
+    @objc func openMenuMore() {
+        viewer?.toggleMoreMenu(viewController: self, metadata: metadata)
+    }
     
     //MARK: - NotificationCenter
     
