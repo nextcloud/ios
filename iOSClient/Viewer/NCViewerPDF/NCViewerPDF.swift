@@ -83,7 +83,7 @@ import PDFKit
         
         view.addSubview(pageView)
         
-        pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        pageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         pageViewWidthAnchor = pageView.widthAnchor.constraint(equalToConstant: 10)
         pageViewWidthAnchor?.isActive = true
         pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 7).isActive = true
@@ -113,11 +113,14 @@ import PDFKit
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        navigationController?.navigationBar.topItem?.title = metadata.fileNameView
-    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationItem.title = metadata.fileNameView
+
+        appDelegate.activeViewController = self
+    }   
     
     //MARK: - NotificationCenter
     
@@ -149,7 +152,7 @@ import PDFKit
         
         if navigationController?.isNavigationBarHidden ?? false {
             
-            appDelegate.activeDetail.navigateControllerBarHidden(false)
+            navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView!.isHidden = false
             pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
@@ -158,7 +161,7 @@ import PDFKit
             let point = recognizer.location(in: pdfView)
             if point.y > pdfView.frame.height - thumbnailViewHeight { return }
             
-            appDelegate.activeDetail.navigateControllerBarHidden(true)
+            navigationController?.setNavigationBarHidden(true, animated: false)
             pdfThumbnailView!.isHidden = true
             pdfView.backgroundColor = .black
         }
