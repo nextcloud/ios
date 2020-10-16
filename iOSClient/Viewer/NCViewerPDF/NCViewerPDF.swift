@@ -50,7 +50,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+
         pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
@@ -127,7 +128,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         appDelegate.activeViewController = self
     }
     
+    //MARK: - Action
+    
     @objc func openMenuMore() {
+                
         viewer?.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
@@ -151,6 +155,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         if navigationController?.isNavigationBarHidden == false {
             pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
+    }
+    
+    @objc func viewUnload() {                
+        navigationController?.popViewController(animated: true)
     }
     
     //MARK: - Gesture Recognizer
