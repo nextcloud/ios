@@ -89,7 +89,7 @@ import Foundation
                             }
                         }
                         
-                    case selectorOpenIn, selectorOpenInView:
+                    case selectorOpenIn:
                         
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             

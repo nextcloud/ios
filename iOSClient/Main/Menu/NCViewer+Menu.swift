@@ -121,7 +121,7 @@ extension NCViewer {
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenInView)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
                     }
                 )
             )
