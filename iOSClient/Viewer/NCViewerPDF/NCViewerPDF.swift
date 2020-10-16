@@ -172,6 +172,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
+    @objc func changeTheming() {
+        
+        if navigationController?.isNavigationBarHidden == false {
+            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        }
+    }
+    
     @objc private func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
@@ -186,13 +193,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         })
     }
     
-    @objc func changeTheming() {
-        if navigationController?.isNavigationBarHidden == false {
-            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        }
-    }
-    
-    @objc func viewUnload() {                
+    @objc func viewUnload() {
+        
         navigationController?.popViewController(animated: true)
     }
     
