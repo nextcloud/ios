@@ -1,5 +1,5 @@
 //
-//  NCViewerVideo.swift
+//  NCViewerVideoCommon.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/09/18.
@@ -24,9 +24,9 @@
 import Foundation
 import KTVHTTPCache
 
-class NCViewerVideo: NSObject {
-    @objc static let sharedInstance: NCViewerVideo = {
-        let viewVideo = NCViewerVideo()
+class NCViewerVideoCommon: NSObject {
+    @objc static let sharedInstance: NCViewerVideoCommon = {
+        let viewVideo = NCViewerVideoCommon()
         viewVideo.setupHTTPCache()
         return viewVideo
     }()

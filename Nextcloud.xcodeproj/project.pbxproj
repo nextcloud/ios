@@ -238,7 +238,7 @@
 		F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B3240962C7007C9B6D /* NCViewerImageContentView.swift */; };
 		F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B4240962C7007C9B6D /* NCViewerImageViewController.swift */; };
 		F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B5240962C7007C9B6D /* NCViewerImageContentTransformers.swift */; };
-		F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerVideo.swift */; };
+		F79630EE215527D40015EEA5 /* NCViewerVideoCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerVideoCommon.swift */; };
 		F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */; };
 		F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */; };
 		F79918A221997FA300C2E308 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F79918A021997F9000C2E308 /* UICKeyChainStore.framework */; };
@@ -590,7 +590,7 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F79630ED215527D40015EEA5 /* NCViewerVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerVideo.swift; sourceTree = "<group>"; };
+		F79630ED215527D40015EEA5 /* NCViewerVideoCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerVideoCommon.swift; sourceTree = "<group>"; };
 		F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkFolderMenuView.xib; sourceTree = "<group>"; };
 		F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareUserFolderMenuView.xib; sourceTree = "<group>"; };
 		F79918A021997F9000C2E308 /* UICKeyChainStore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UICKeyChainStore.framework; path = Carthage/Build/iOS/UICKeyChainStore.framework; sourceTree = "<group>"; };
@@ -1090,7 +1090,7 @@
 				F79018B1240962C7007C9B6D /* NCViewerImage */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
-				F79630ED215527D40015EEA5 /* NCViewerVideo.swift */,
+				F79630ED215527D40015EEA5 /* NCViewerVideoCommon.swift */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";
@@ -2117,7 +2117,7 @@
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
-				F79630EE215527D40015EEA5 /* NCViewerVideo.swift in Sources */,
+				F79630EE215527D40015EEA5 /* NCViewerVideoCommon.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,

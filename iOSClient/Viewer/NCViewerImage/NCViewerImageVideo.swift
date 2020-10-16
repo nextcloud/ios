@@ -46,7 +46,7 @@ class NCViewerImageVideo: UIViewController {
         closeButton.setImage(image, for: .normal)
         
         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
-        NCViewerVideo.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
+        NCViewerVideoCommon.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
     }
     
     @IBAction func touchUpInsidecloseButton(_ sender: Any) {
@@ -57,7 +57,7 @@ class NCViewerImageVideo: UIViewController {
         
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
-            NCViewerVideo.sharedInstance.removeObserver()
+            NCViewerVideoCommon.sharedInstance.removeObserver()
         }
 
         dismiss(animated: false) { }
