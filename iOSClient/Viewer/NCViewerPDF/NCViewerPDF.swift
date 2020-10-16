@@ -24,9 +24,10 @@
 import Foundation
 import PDFKit
 
-@objc class NCViewerPDF: PDFView, NCViewerPDFSearchDelegate {
+@objc class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private var pdfView = PDFView()
     private var thumbnailViewHeight: CGFloat = 40
     private var pdfThumbnailView: PDFThumbnailView?
     private var pdfDocument: PDFDocument?
@@ -34,36 +35,36 @@ import PDFKit
     private let pageViewLabel = UILabel()
     private var pageViewWidthAnchor : NSLayoutConstraint?
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    var metadata = tableMetadata()
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
-    override init(frame: CGRect) {
-        
-        let height = frame.height - thumbnailViewHeight
-        super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: height))
-        
+    override func viewDidLoad() {
+          
+        let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
-    }
-    
-    @objc func setupPdfView(filePath: URL, view: UIView) {
-        pdfDocument = PDFDocument(url: filePath)
         
-        document = pdfDocument
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        displayMode = .singlePageContinuous
-        autoScales = true
-        displayDirection = .horizontal
-        autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin]
-        usePageViewController(true, withViewOptions: nil)
+        pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height - thumbnailViewHeight))
+        pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
-        view.addSubview(self)
+        pdfView.document = pdfDocument
+        pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        pdfView.displayMode = .singlePageContinuous
+        pdfView.autoScales = true
+        pdfView.displayDirection = .horizontal
+        pdfView.autoresizingMask = [.flexibleWidth, .flexibleHeight, .flexibleTopMargin, .flexibleBottomMargin]
+        pdfView.usePageViewController(true, withViewOptions: nil)
+        
+        view.addSubview(pdfView)
         
         pdfThumbnailView = PDFThumbnailView()
         pdfThumbnailView!.translatesAutoresizingMaskIntoConstraints = false
-        pdfThumbnailView!.pdfView = self
+        pdfThumbnailView!.pdfView = pdfView
         pdfThumbnailView!.layoutMode = .horizontal
         pdfThumbnailView!.thumbnailSize = CGSize(width: 40, height: thumbnailViewHeight)
         //pdfThumbnailView.layer.shadowOffset.height = -5
@@ -99,25 +100,31 @@ import PDFKit
         pageViewLabel.topAnchor.constraint(equalTo: pageView.topAnchor).isActive = true
         pageViewLabel.bottomAnchor.constraint(equalTo: pageView.bottomAnchor).isActive = true
         
-        layoutIfNeeded()
+        pdfView.layoutIfNeeded()
         handlePageChange()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(_:)))
         tapGesture.numberOfTapsRequired = 1
-        addGestureRecognizer(tapGesture)
+        pdfView.addGestureRecognizer(tapGesture)
         
         // recognize single / double tap
-        for gesture in gestureRecognizers! {
+        for gesture in pdfView.gestureRecognizers! {
             tapGesture.require(toFail:gesture)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        navigationController?.navigationBar.topItem?.title = metadata.fileNameView
     }
     
     //MARK: - NotificationCenter
     
     @objc private func handlePageChange() {
         
-        guard let curPage = currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
-        guard let totalPages = document?.pageCount else { return }
+        guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
+        guard let totalPages = pdfView.document?.pageCount else { return }
         
         pageView.alpha = 1
         pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
@@ -132,41 +139,40 @@ import PDFKit
         guard let navigationController = appDelegate.activeDetail.navigationController else { return }
 
         if navigationController.isNavigationBarHidden == false {
-            backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
     }
     
     //MARK: - Gesture Recognizer
     
     @objc func didTap(_ recognizer: UITapGestureRecognizer) {
-        guard let navigationController = appDelegate.activeDetail.navigationController else { return }
         
-        if navigationController.isNavigationBarHidden {
+        if navigationController?.isNavigationBarHidden ?? false {
             
             appDelegate.activeDetail.navigateControllerBarHidden(false)
             pdfThumbnailView!.isHidden = false
-            backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
         } else {
             
-            let point = recognizer.location(in: self)
-            if point.y > self.frame.height - thumbnailViewHeight { return }
+            let point = recognizer.location(in: pdfView)
+            if point.y > pdfView.frame.height - thumbnailViewHeight { return }
             
             appDelegate.activeDetail.navigateControllerBarHidden(true)
             pdfThumbnailView!.isHidden = true
-            backgroundColor = .black
+            pdfView.backgroundColor = .black
         }
 
         let size = self.appDelegate.activeDetail.view!.bounds
         var height: CGFloat = 0
             
-        if navigationController.isNavigationBarHidden {
+        if navigationController?.isNavigationBarHidden ?? false {
             height = size.height - size.origin.y
         } else {
             height = size.height - size.origin.y - self.thumbnailViewHeight
         }
              
-        self.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
+        pdfView.frame = CGRect(x: 0, y: 0, width: size.width, height: height)
         
         handlePageChange()
     }
@@ -185,7 +191,7 @@ import PDFKit
     
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
         pdfSelection.color = .yellow
-        currentSelection = pdfSelection
-        go(to: pdfSelection)
+        pdfView.currentSelection = pdfSelection
+        pdfView.go(to: pdfSelection)
     }
 }

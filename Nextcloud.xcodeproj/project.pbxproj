@@ -298,6 +298,7 @@
 		F7F878AF1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
 		F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */; };
 		F7F8D71D1ED6183000E711F3 /* CCCellShareExt.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */; };
+		F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
 /* End PBXBuildFile section */
@@ -704,6 +705,7 @@
 		F7F8D7191ED6183000E711F3 /* CCCellShareExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellShareExt.h; sourceTree = "<group>"; };
 		F7F8D71A1ED6183000E711F3 /* CCCellShareExt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellShareExt.m; sourceTree = "<group>"; };
 		F7F8D71B1ED6183000E711F3 /* CCCellShareExt.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellShareExt.xib; sourceTree = "<group>"; };
+		F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewer.swift; sourceTree = "<group>"; };
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
@@ -1087,6 +1089,7 @@
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
 				F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */,
+				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
 				F79630ED215527D40015EEA5 /* NCViewerVideo.swift */,
 			);
 			path = Viewer;
@@ -2053,6 +2056,7 @@
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
+				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,

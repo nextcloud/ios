@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -43,22 +43,11 @@
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
-                        <segue destination="rIl-hI-jAh" kind="show" identifier="segueDetail" id="MHI-ti-PGq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
-        </scene>
-        <!--NCDetail-->
-        <scene sceneID="D5y-IR-BuC">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCDetail" referencedIdentifier="NCDetail" id="rIl-hI-jAh" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="nRf-yG-Cl8"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eCA-Ct-z68" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1080" y="228"/>
         </scene>
     </scenes>
 </document>

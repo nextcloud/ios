@@ -1218,6 +1218,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         } else {
             
+            NCViewer.init(navigationController: self.navigationController!, metadata: metadataTouch!)
+            return
+            
             if metadata.typeFile == k_metadataTypeFile_video {
                 performSegue(withIdentifier: "segueDetail", sender: self)
                 return

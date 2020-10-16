@@ -384,23 +384,7 @@ class NCDetailViewController: UIViewController {
         // DOCUMENT
         if metadata.typeFile == k_metadataTypeFile_document {
             
-            // PDF
-            if metadata.contentType == "application/pdf" {
-                    
-                let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-                let viewerPDF = NCViewerPDF.init(frame: frame)
-                    
-                let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) == false {
-                    
-                    return
-                }
-                    
-                viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: view)
-                self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
-
-                return
-            }
+            
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
             if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
@@ -533,18 +517,18 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             self.viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
             if self.viewerImageViewController != nil {
                            
-                self.viewerImageViewController!.view.isHidden = true
-                self.viewerImageViewController!.enableInteractiveDismissal = true
+//                self.viewerImageViewController!.view.isHidden = true
+//                self.viewerImageViewController!.enableInteractiveDismissal = true
                 self.addChild(self.viewerImageViewController!)
                 self.view.addSubview(self.viewerImageViewController!.view)
-                self.viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+//                self.viewerImageViewController!.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                 self.viewerImageViewController!.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                self.viewerImageViewController!.didMove(toParent: self)
+//                self.viewerImageViewController!.didMove(toParent: self)
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    self.viewerImageViewController!.changeInViewSize(to: self.view.frame.size)
-                    self.viewerImageViewController!.view.isHidden = false
-                }
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+//                    self.viewerImageViewController!.changeInViewSize(to: self.view.frame.size)
+//                    self.viewerImageViewController!.view.isHidden = false
+//                }
             }
         }
     }
