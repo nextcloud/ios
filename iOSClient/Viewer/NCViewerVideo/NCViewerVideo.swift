@@ -1,5 +1,5 @@
 //
-//  NCViewerImageVideo.swift
+//  NCViewerVideo.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/03/2020.
@@ -24,7 +24,7 @@
 
 import Foundation
 
-class NCViewerImageVideo: UIViewController {
+class NCViewerVideo: UIViewController {
     
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var closeView: UIView!

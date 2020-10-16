@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Mmv-kq-uRN">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Mmv-kq-uRN">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Viewer Image Video-->
+        <!--Viewer Video-->
         <scene sceneID="puT-XC-QL4">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="Mmv-kq-uRN" customClass="NCViewerImageVideo" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="fullScreen" id="Mmv-kq-uRN" customClass="NCViewerVideo" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ZUd-xF-jbc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -23,7 +24,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oHy-h6-oBZ">
                                 <rect key="frame" x="8" y="44" width="45" height="26"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QdX-GD-p2D">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QdX-GD-p2D">
                                         <rect key="frame" x="11.5" y="2" width="22" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="22" id="dQc-qo-agC"/>
@@ -43,7 +44,8 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="I8r-2q-gEp"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="U2u-Ng-quR" firstAttribute="top" secondItem="I8r-2q-gEp" secondAttribute="top" constant="25" id="JMx-LP-euj"/>
                             <constraint firstItem="I8r-2q-gEp" firstAttribute="bottom" secondItem="U2u-Ng-quR" secondAttribute="bottom" constant="20" id="OB5-oL-uWd"/>
@@ -52,7 +54,6 @@
                             <constraint firstAttribute="trailing" secondItem="U2u-Ng-quR" secondAttribute="trailing" id="fK9-2n-mIB"/>
                             <constraint firstItem="U2u-Ng-quR" firstAttribute="leading" secondItem="ZUd-xF-jbc" secondAttribute="leading" id="zBR-Jl-ZtK"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="I8r-2q-gEp"/>
                     </view>
                     <connections>
                         <outlet property="backgroundView" destination="U2u-Ng-quR" id="f7b-ke-Ojf"/>
@@ -65,4 +66,9 @@
             <point key="canvasLocation" x="18.840579710144929" y="140.625"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
