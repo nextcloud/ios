@@ -47,6 +47,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
           
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
@@ -131,12 +134,44 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     //MARK: - Action
     
     @objc func openMenuMore() {
-                
         viewer?.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
     //MARK: - NotificationCenter
+   
+    @objc func moveFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    self.metadata = metadataNew
+                }
+            }
+        }
+    }
     
+    @objc func deleteFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    viewUnload()
+                }
+            }
+        }
+    }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    self.metadata = metadata
+                    navigationItem.title = metadata.fileNameView
+                }
+            }
+        }
+    }
+
     @objc private func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
