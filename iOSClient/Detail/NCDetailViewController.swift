@@ -27,8 +27,6 @@ import NCCommunication
 
 class NCDetailViewController: UIViewController {
     
-    @IBOutlet weak var backgroundView: UIImageView!
-
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
    
     @objc var isNavigationBarHidden = false
@@ -162,10 +160,6 @@ class NCDetailViewController: UIViewController {
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
-        if backgroundView.image != nil {
-            backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.4))
-        }
-        
         if navigationController?.isNavigationBarHidden == false {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
@@ -217,7 +211,7 @@ class NCDetailViewController: UIViewController {
                     self.metadata = metadataNew
                     
                     // update subview
-                    for view in backgroundView.subviews {
+                    for view in view.subviews {
                         if view is NCViewerNextcloudText {
                             (view as! NCViewerNextcloudText).metadata = self.metadata
                         }
@@ -383,20 +377,6 @@ class NCDetailViewController: UIViewController {
         self.splitViewController?.preferredDisplayMode = .allVisible
         self.navigationController?.isNavigationBarHidden = false
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        
-        backgroundView.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "logo"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.4))
-    }
-    
-    private func closeAllSubView() {
-        
-        if backgroundView != nil {
-            for view in backgroundView.subviews {
-                view.removeFromSuperview()
-            }
-        }
-        viewerImageViewController?.willMove(toParent: nil)
-        viewerImageViewController?.view.removeFromSuperview()
-        viewerImageViewController?.removeFromParent()
     }
     
     //MARK: - View File
@@ -405,10 +385,7 @@ class NCDetailViewController: UIViewController {
                 
         self.metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId)
         self.selector = selector
-        self.backgroundView.image = nil
         
-        closeAllSubView()
-
         if appDelegate.isMediaObserver {
             appDelegate.isMediaObserver = false
             NCViewerVideo.sharedInstance.removeObserver()
@@ -428,7 +405,7 @@ class NCDetailViewController: UIViewController {
             // PDF
             if metadata.contentType == "application/pdf" {
                     
-                let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                 let viewerPDF = NCViewerPDF.init(frame: frame)
                     
                 let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -437,7 +414,7 @@ class NCDetailViewController: UIViewController {
                     return
                 }
                     
-                viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+                viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: view)
                 self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
 
                 return
@@ -449,7 +426,7 @@ class NCDetailViewController: UIViewController {
                 guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
                 if editor == k_editor_text || editor == k_editor_onlyoffice {
                     
-                    NCUtility.shared.startActivityIndicator(view: backgroundView)
+                    NCUtility.shared.startActivityIndicator(view: view)
 
                     if metadata.url == "" {
                         
@@ -465,9 +442,9 @@ class NCDetailViewController: UIViewController {
                             
                             if errorCode == 0 && account == self.appDelegate.account && url != nil {
                                 
-                                let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                                let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                                 let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
-                                nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.backgroundView, viewController: self)
+                                nextcloudText.viewerAt(url!, metadata: metadata, editor: editor, view: self.view, viewController: self)
                                 
                             } else if errorCode != 0 {
                                 
@@ -486,9 +463,9 @@ class NCDetailViewController: UIViewController {
                             self.navigationController?.navigationBar.topItem?.title = ""
                         } 
                             
-                        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                        let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                         let nextcloudText = NCViewerNextcloudText.init(frame: frame, configuration: WKWebViewConfiguration())
-                        nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: backgroundView, viewController: self)
+                        nextcloudText.viewerAt(metadata.url, metadata: metadata, editor: editor, view: view, viewController: self)
                     }
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
@@ -501,7 +478,7 @@ class NCDetailViewController: UIViewController {
             // RichDocument: Collabora
             if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
                 
-                NCUtility.shared.startActivityIndicator(view: backgroundView)
+                NCUtility.shared.startActivityIndicator(view: view)
                 
                 if metadata.url == "" {
                     
@@ -509,9 +486,9 @@ class NCDetailViewController: UIViewController {
                         
                         if errorCode == 0 && account == self.appDelegate.account && url != nil {
                             
-                            let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+                            let frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
                             let richDocument = NCViewerRichdocument.init(frame: frame, configuration: WKWebViewConfiguration())
-                            richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.backgroundView, viewController: self)
+                            richDocument.viewRichDocumentAt(url!, metadata: metadata, view: self.view, viewController: self)
                             
                         } else if errorCode != 0 {
                             
@@ -526,8 +503,8 @@ class NCDetailViewController: UIViewController {
                     
                 } else {
                     
-                    let richDocument = NCViewerRichdocument.init(frame: backgroundView.frame, configuration: WKWebViewConfiguration())
-                    richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: backgroundView, viewController: self)
+                    let richDocument = NCViewerRichdocument.init(frame: view.frame, configuration: WKWebViewConfiguration())
+                    richDocument.viewRichDocumentAt(metadata.url, metadata: metadata, view: view, viewController: self)
                 }
                 
                 return
@@ -554,9 +531,7 @@ class NCDetailViewController: UIViewController {
 extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerImageViewControllerDataSource {
     
     func viewImage() {
-        
-        closeAllSubView()
-        
+                
         NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage, layoutKey: layoutKey) { (metadatas) in
             
             guard let metadatas = metadatas else {
@@ -576,7 +551,6 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             self.viewerImageViewController = NCViewerImageViewController(index: index, dataSource: self, delegate: self)
             if self.viewerImageViewController != nil {
                            
-                self.backgroundView.image = nil
                 self.viewerImageViewController!.view.isHidden = true
                 self.viewerImageViewController!.enableInteractiveDismissal = true
                 self.addChild(self.viewerImageViewController!)
@@ -586,7 +560,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 self.viewerImageViewController!.didMove(toParent: self)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
-                    self.viewerImageViewController!.changeInViewSize(to: self.backgroundView.frame.size)
+                    self.viewerImageViewController!.changeInViewSize(to: self.view.frame.size)
                     self.viewerImageViewController!.view.isHidden = false
                 }
             }
@@ -735,7 +709,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 viewerImageViewController.statusView.isHidden = true
             }
             
-            NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.backgroundView.frame.size, metadata: metadata)
+            NCViewerImageCommon.shared.imageChangeSizeView(viewerImageViewController: viewerImageViewController, size: self.view.frame.size, metadata: metadata)
             
         } else {
             

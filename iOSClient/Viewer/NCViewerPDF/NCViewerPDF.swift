@@ -157,7 +157,7 @@ import PDFKit
             backgroundColor = .black
         }
 
-        let size = self.appDelegate.activeDetail.backgroundView!.bounds
+        let size = self.appDelegate.activeDetail.view!.bounds
         var height: CGFloat = 0
             
         if navigationController.isNavigationBarHidden {
