@@ -92,7 +92,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
         pageViewWidthAnchor = pageView.widthAnchor.constraint(equalToConstant: 10)
         pageViewWidthAnchor?.isActive = true
-        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 7).isActive = true
+        pageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 4).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 7).isActive = true
         
         pageViewLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -186,7 +186,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         
         pageView.alpha = 1
         pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
-        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width
+        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
         
         UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
             self.pageView.alpha = 0
