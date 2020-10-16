@@ -30,13 +30,12 @@ class NCViewer: NSObject {
     init(viewController: UIViewController, metadata: tableMetadata) {
         super.init()
 
-        guard let navigationController = viewController.navigationController else { return }
-        
         if metadata.typeFile == k_metadataTypeFile_document {
                 
             // PDF
             if metadata.contentType == "application/pdf" {
                     
+                guard let navigationController = viewController.navigationController else { return }
                 let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
                 viewController.metadata = metadata
@@ -47,3 +46,19 @@ class NCViewer: NSObject {
         }
     }
 }
+
+/*
+ @objc func segueMetadata(_ metadata: tableMetadata) {
+     if self.appDelegate.activeViewController is NCFiles {
+         (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
+     } else if self.appDelegate.activeViewController is NCFavorite {
+         (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+     } else if self.appDelegate.activeViewController is NCOffline {
+         (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
+     } else if self.appDelegate.activeViewController is NCRecent {
+         (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
+     } else if self.appDelegate.activeViewController is NCFileViewInFolder {
+         (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
+     }
+ }
+ */

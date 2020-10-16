@@ -221,7 +221,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         handlePageChange()
     }
     
-    //MARK: -
+    //MARK: - Search
     
     @objc func searchText() {
         
@@ -230,7 +230,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         viewerPDFSearch.pdfDocument = pdfDocument
         
         let navigaionController = UINavigationController.init(rootViewController: viewerPDFSearch)
-        appDelegate.activeDetail.present(navigaionController, animated: true)
+        self.present(navigaionController, animated: true)
     }
     
     func searchPdfSelection(_ pdfSelection: PDFSelection) {

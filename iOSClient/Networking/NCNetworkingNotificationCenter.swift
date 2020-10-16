@@ -174,20 +174,6 @@ import Foundation
         }
     }
     
-    @objc func segueMetadata(_ metadata: tableMetadata) {
-        if self.appDelegate.activeViewController is NCFiles {
-            (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCFavorite {
-            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCOffline {
-            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCRecent {
-            (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
-        } else if self.appDelegate.activeViewController is NCFileViewInFolder {
-            (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
-        }
-    }
-    
     //MARK: - Upload
 
     @objc func uploadedFile(_ notification: NSNotification) {
