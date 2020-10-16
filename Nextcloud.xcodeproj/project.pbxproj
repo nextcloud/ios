@@ -1084,12 +1084,12 @@
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
+				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
+				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F79018B1240962C7007C9B6D /* NCViewerImage */,
 				F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */,
-				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
 				F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */,
-				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
 				F79630ED215527D40015EEA5 /* NCViewerVideo.swift */,
 			);
 			path = Viewer;
