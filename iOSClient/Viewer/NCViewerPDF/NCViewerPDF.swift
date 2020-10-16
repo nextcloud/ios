@@ -49,7 +49,7 @@ import PDFKit
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
         
-        pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height - thumbnailViewHeight))
+        pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
         pdfView.document = pdfDocument
@@ -131,7 +131,7 @@ import PDFKit
         
         pageView.alpha = 1
         pageViewLabel.text = String(curPage) + " " + NSLocalizedString("_of_", comment: "") + " " + String(totalPages)
-        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width + 10
+        pageViewWidthAnchor?.constant = pageViewLabel.intrinsicContentSize.width
         
         UIView.animate(withDuration: 1.0, delay: 3.0, animations: {
             self.pageView.alpha = 0
@@ -153,7 +153,6 @@ import PDFKit
             navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView!.isHidden = false
             pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            pdfView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height - thumbnailViewHeight)
 
         } else {
             
@@ -163,7 +162,6 @@ import PDFKit
             navigationController?.setNavigationBarHidden(true, animated: false)
             pdfThumbnailView!.isHidden = true
             pdfView.backgroundColor = .black
-            pdfView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         }
 
         handlePageChange()
