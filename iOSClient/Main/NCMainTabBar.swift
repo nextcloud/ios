@@ -50,7 +50,7 @@ import Foundation
                     CCUtility.setDarkMode(false)
                 }
             }
-            changeTheming()
+            appDelegate.settingThemingColorBrand()
         }
     }
     
