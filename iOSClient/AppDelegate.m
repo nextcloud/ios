@@ -163,10 +163,7 @@
     }
     
     // TabBar Controller
-    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-        [self createTabBarController:tabBarController];
-    }
+    //[self createTabBarController];
     
     if ([NCBrandOptions sharedInstance].disable_intro) {
         [CCUtility setIntro:YES];
@@ -823,114 +820,6 @@
         } else {
             [tabBarItem setBadgeValue:nil];
         }
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== TabBarController =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)createTabBarController:(UITabBarController *)tabBarController
-{
-    UITabBarItem *item;
-    NSLayoutConstraint *constraint;
-    CGFloat safeAreaBottom = safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-   
-    // File
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
-    [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // Favorites
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
-    [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // (PLUS INVISIBLE)
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
-    item.title = @"";
-    item.image = nil;
-    item.enabled = false;
-    
-    // Media
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
-    [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"media"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // More
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
-    [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] width:50 height:50 color:NCBrandColor.sharedInstance.brandElement];
-    item.selectedImage = item.image;
-    
-    // Plus Button
-    int buttonSize = 57;
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] width:120 height:120 color:UIColor.whiteColor];
-    UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
-    buttonPlus.tag = 99;
-    buttonPlus.accessibilityLabel = NSLocalizedString(@"_accessibility_add_upload_", nil);
-    [buttonPlus setImage:buttonImage forState:UIControlStateNormal];
-    buttonPlus.backgroundColor = NCBrandColor.sharedInstance.brandElement;
-    buttonPlus.layer.cornerRadius = buttonSize / 2;
-    buttonPlus.layer.masksToBounds = NO;
-    buttonPlus.layer.shadowOffset = CGSizeMake(0, 0);
-    buttonPlus.layer.shadowRadius = 3.0f;
-    buttonPlus.layer.shadowOpacity = 0.5;
-    
-
-    [buttonPlus addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
-    
-    [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [tabBarController.tabBar addSubview:buttonPlus];
-    
-
-    if (safeAreaBottom > 0) {
-        
-        // X
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        [tabBarController.view addConstraint:constraint];
-        // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeTop multiplier:1.0 constant:-(buttonSize / 2)];
-        [tabBarController.view addConstraint:constraint];
-        // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        
-    } else {
-        
-        // X
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-        [tabBarController.view addConstraint:constraint];
-        // Y
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:-(buttonSize / 2)];
-        [tabBarController.view addConstraint:constraint];
-        // Width
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-        // Height
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:0 multiplier:1.0 constant:buttonSize];
-        [tabBarController.view addConstraint:constraint];
-    }
-}
-
-- (void)handleTouchTabbarCenter:(id)sender
-{
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-    
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeServerUrl]];
-    
-    if ([tableDirectory.permissions containsString:@"CK"]) {
-        [self showMenuInViewController:self.window.rootViewController];
-    } else {
-        [[NCContentPresenter shared] messageNotification:@"_warning_" description:@"_no_permission_add_file_" delay:k_dismissAfterSecond type:messageTypeInfo errorCode:k_CCErrorInternalError forced:false];
     }
 }
 

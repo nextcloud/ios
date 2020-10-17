@@ -142,9 +142,6 @@
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
-// TabBarController
-- (void)createTabBarController:(UITabBarController *)tabBarController;
-
 // Push Notification
 - (void)pushNotification;
 
