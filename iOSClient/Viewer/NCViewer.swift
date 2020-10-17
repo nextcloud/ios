@@ -83,3 +83,28 @@ class NCViewer: NSObject {
         return nil
     }
 }
+
+//MARK: -
+
+extension NCViewer: NCSelectDelegate {
+    
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
+        if let metadata = metadata, let serverUrl = serverUrl {
+            if buttonType == "done" {
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
+                    if errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    }
+                }
+            } else {
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
+                    if errorCode != 0 {
+                        NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                    }
+                }
+            }
+        }
+    }
+}
+
+

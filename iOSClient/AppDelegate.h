@@ -98,7 +98,6 @@
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCRecent *activeRecent;
 @property (nonatomic, retain) NCMedia *activeMedia;
-@property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;

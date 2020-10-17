@@ -168,7 +168,7 @@ extension NCViewer {
                     let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
                     let viewController = navigationController.topViewController as! NCSelect
                     
-                    viewController.delegate = self.appDelegate.activeDetail
+                    viewController.delegate = NCViewer.shared
                     viewController.hideButtonCreateFolder = false
                     viewController.selectFile = false
                     viewController.includeDirectoryE2EEncryption = false

@@ -97,7 +97,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
             
             if message.body as? String == "close" {
                                 
-                appDelegate.activeDetail.viewUnload()
+                //appDelegate.activeDetail.viewUnload()
                 appDelegate.activeFiles.reloadDataSourceNetwork()
             }
             

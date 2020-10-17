@@ -49,7 +49,6 @@ class NCDetailViewController: UIViewController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
-        appDelegate.activeDetail = self
     }
     
     override func viewDidLoad() {

@@ -96,7 +96,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             
             if message.body as? String == "close" {
                 
-                appDelegate.activeDetail.viewUnload()                                
+                //appDelegate.activeDetail.viewUnload()                                
                 appDelegate.activeFiles.reloadDataSourceNetwork()
             }
             
