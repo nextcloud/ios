@@ -150,10 +150,7 @@
             }
         }
     }
-    
-    // TabBar Controller
-    //[self createTabBarController];
-    
+        
     if ([NCBrandOptions sharedInstance].disable_intro) {
         [CCUtility setIntro:YES];
         
