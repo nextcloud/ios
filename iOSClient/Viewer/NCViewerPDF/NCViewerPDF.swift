@@ -55,6 +55,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
        
+        changeTheming()
 
         pdfView = PDFView.init(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))

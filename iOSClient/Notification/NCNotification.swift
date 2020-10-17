@@ -45,6 +45,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         self.tableView.emptyDataSetDelegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     

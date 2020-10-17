@@ -65,6 +65,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         viewRichWorkspace?.addGestureRecognizer(tap)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
