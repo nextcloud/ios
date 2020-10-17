@@ -935,18 +935,10 @@
         [[NSFileManager defaultManager]moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
         
         if (error == nil) {
-            
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                    UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-                    
-                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                        [navigationControllerMaster presentViewController:uploadNavigationViewController animated:YES completion:nil];
-                    });
-                }
-            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                UIViewController *uploadNavigationViewController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+                [self.window.rootViewController presentViewController:uploadNavigationViewController animated:YES completion:nil];
+            });
         }
     }
     
