@@ -1218,18 +1218,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
         } else {
             
-            /*
-            NCViewer.init(navigationController: self.navigationController!, metadata: metadataTouch!)
-            return
-            
-            if metadata.typeFile == k_metadataTypeFile_video {
-                performSegue(withIdentifier: "segueDetail", sender: self)
-                return
-            }
+            guard let metadataTouch = metadataTouch else { return }
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
-                    performSegue(withIdentifier: "segueDetail", sender: self)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
@@ -1238,16 +1231,19 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isRichDocument(metadata) {
                 if NCCommunication.shared.isNetworkReachable() {
-                    performSegue(withIdentifier: "segueDetail", sender: self)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
                 return
             }
-            */
+            
+            if metadata.typeFile == k_metadataTypeFile_video {
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                return
+            }
             
             if CCUtility.fileProviderStorageExists(metadataTouch?.ocId, fileNameView: metadataTouch?.fileNameView) {
-                guard let metadataTouch = metadataTouch else { return }
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch)
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
