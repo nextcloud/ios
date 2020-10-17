@@ -137,10 +137,6 @@
 - (void)deleteAccount:(NSString *)account wipe:(BOOL)wipe;
 - (void)settingSetupCommunication:(NSString *)account;
 
-// Quick Actions - ShotcutItem
-- (void)configDynamicShortcutItems;
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
-
 // Push Notification
 - (void)pushNotification;
 

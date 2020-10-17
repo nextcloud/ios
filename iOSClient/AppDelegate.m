@@ -129,17 +129,6 @@
     // ProgressView Detail
     self.progressViewDetail = [[UIProgressView alloc] initWithProgressViewStyle: UIProgressViewStyleBar];
     
-    // Quick Actions
-    if([[UIApplicationShortcutItem class] respondsToSelector:@selector(new)]) {
-    
-        [self configDynamicShortcutItems];
-        
-        UIApplicationShortcutItem *shortcutItem = [launchOptions objectForKeyedSubscript:UIApplicationLaunchOptionsShortcutItemKey];
-        
-        if (shortcutItem)
-            [self handleShortCutItem:shortcutItem];
-    }
-        
     // Start Timer
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
     [self startTimerErrorNetworking];
@@ -721,81 +710,6 @@
     }
     
     return [token copy];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Quick Actions - ShotcutItem =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)configDynamicShortcutItems
-{
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    
-    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"media"];
-    UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
-   
-    // add the array to our app
-    if (shortcutMedia)
-        [UIApplication sharedApplication].shortcutItems = @[shortcutMedia];
-}
-
-- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
-{
-    BOOL handledShortCutItem = [self handleShortCutItem:shortcutItem];
-    
-    completionHandler(handledShortCutItem);
-}
-
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem
-{
-    BOOL handled = NO;
-    
-    NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    NSString *shortcutMedia = [NSString stringWithFormat:@"%@.media", bundleId];
-    
-    if ([shortcutItem.type isEqualToString:shortcutMedia] && self.account) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-            if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                
-            }
-            
-            
-            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-            if ([splitViewController isKindOfClass:[UISplitViewController class]]) {
-                UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                    UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                     if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                         
-                         if (splitViewController.isCollapsed) {
-                                         
-                             [navigationControllerMaster popToRootViewControllerAnimated:false];
-                             UINavigationController *navigationControllerMaster = (UINavigationController *)splitViewController.viewControllers.firstObject;
-                             if ([navigationControllerMaster isKindOfClass:[UINavigationController class]]) {
-                                 UITabBarController *tabBarController = (UITabBarController *)navigationControllerMaster.topViewController;
-                                 if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                     [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
-                                 }
-                             }
-                        
-                         } else {
-                         
-                             if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-                                 [tabBarController setSelectedIndex: k_tabBarApplicationIndexMedia];
-                             }
-                         }
-                     }
-                }
-            }
-        });
-        
-        handled = YES;
-    }
-    
-    return handled;
 }
 
 #pragma --------------------------------------------------------------------------------------------
