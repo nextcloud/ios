@@ -1243,10 +1243,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
-            if CCUtility.fileProviderStorageExists(metadataTouch?.ocId, fileNameView: metadataTouch?.fileNameView) {
+            if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch)
             } else {
-                NCNetworking.shared.download(metadata: metadataTouch!, selector: selectorLoadFileView) { (_) in }
+                NCNetworking.shared.download(metadata: metadataTouch, selector: selectorLoadFileView) { (_) in }
             }
         }
     }
