@@ -31,7 +31,7 @@ class NCViewerVideo: UIViewController {
     @IBOutlet weak var closeButton: UIButton!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    @objc var metadata = tableMetadata()
+    var metadata = tableMetadata()
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)        
@@ -47,6 +47,24 @@ class NCViewerVideo: UIViewController {
         
         let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
         NCViewerVideoCommon.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = buttonMore
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = metadata.fileNameView
+
+        appDelegate.activeViewController = self
+    }
+    
+    //MARK: - Action
+    
+    @objc func openMenuMore() {
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
     @IBAction func touchUpInsidecloseButton(_ sender: Any) {

@@ -41,7 +41,7 @@ class NCViewer: NSObject {
                 let viewController:NCViewerVideo = UIStoryboard(name: "NCViewerVideo", bundle: nil).instantiateInitialViewController() as! NCViewerVideo
             
                 viewController.metadata = metadata
-            
+
                 navigationController.pushViewController(viewController, animated: true)
             }
             return
@@ -57,7 +57,6 @@ class NCViewer: NSObject {
                     let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
                     viewController.metadata = metadata
-                    viewController.viewer = self
                 
                     navigationController.pushViewController(viewController, animated: true)
                 }

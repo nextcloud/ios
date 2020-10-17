@@ -28,7 +28,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
-    var viewer: NCViewer?
     
     private var pdfView = PDFView()
     private var thumbnailViewHeight: CGFloat = 40
@@ -134,7 +133,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     //MARK: - Action
     
     @objc func openMenuMore() {
-        viewer?.toggleMoreMenu(viewController: self, metadata: metadata)
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
     //MARK: - NotificationCenter
