@@ -29,9 +29,9 @@ import Foundation
     private var shapeLayer: CALayer?
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    override var traitCollection: UITraitCollection {
-        return UITraitCollection(horizontalSizeClass: .compact)
-    }
+//    override var traitCollection: UITraitCollection {
+//        return UITraitCollection(horizontalSizeClass: .compact)
+//    }
 
     override var backgroundColor: UIColor? {
         get {
