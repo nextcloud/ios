@@ -263,6 +263,7 @@ extension NCViewer {
         //
         // IMAGE - VIDEO - AUDIO
         //
+        /*
         if metadata.session == "" {
             if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
                 actions.append(
@@ -275,6 +276,7 @@ extension NCViewer {
                 )
             }
         }
+        */
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {

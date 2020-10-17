@@ -27,8 +27,6 @@ import Foundation
 class NCViewerVideo: UIViewController {
     
     @IBOutlet weak var backgroundView: UIView!
-    @IBOutlet weak var closeView: UIView!
-    @IBOutlet weak var closeButton: UIButton!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
@@ -41,11 +39,7 @@ class NCViewerVideo: UIViewController {
         super.viewDidLoad()
         
         view.backgroundColor = .black
-        closeView.layer.cornerRadius = 7
-        let image = CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: .black)
-        closeButton.setImage(image, for: .normal)
-        
-        let frame = CGRect(x: 0, y: 0, width: self.backgroundView.frame.width, height: self.backgroundView.frame.height)
+        let frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
         NCViewerVideoCommon.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
     }
     
@@ -65,19 +59,5 @@ class NCViewerVideo: UIViewController {
     
     @objc func openMenuMore() {
         NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
-    }
-    
-    @IBAction func touchUpInsidecloseButton(_ sender: Any) {
-        
-        if appDelegate.player != nil && appDelegate.player.rate != 0 {
-            appDelegate.player.pause()
-        }
-        
-        if appDelegate.isMediaObserver {
-            appDelegate.isMediaObserver = false
-            NCViewerVideoCommon.sharedInstance.removeObserver()
-        }
-
-        dismiss(animated: false) { }
     }
 }
