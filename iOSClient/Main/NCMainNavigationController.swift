@@ -55,11 +55,13 @@ class NCMainNavigationController: UINavigationController {
             navigationBar.standardAppearance = navBarAppearance
             
         } else {
+            
             navigationBar.barStyle = .default
             navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
             navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
             navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
         }
+        
         navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
         navigationBar.setNeedsLayout()
     }
