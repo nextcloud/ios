@@ -37,6 +37,8 @@ import Foundation
         super.init(coder: coder)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
+        changeTheming()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -83,8 +85,8 @@ import Foundation
     }
 
     override func layoutSubviews() {
-        
         super.layoutSubviews()
+        
         layer.shadowPath = createPath()
         layer.shadowRadius = 5
         layer.shadowOffset = .zero
@@ -101,6 +103,7 @@ import Foundation
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = createPath()
         shapeLayer.fillColor = backgroundColor?.cgColor
+        shapeLayer.strokeColor = UIColor.clear.cgColor
 
         if let oldShapeLayer = self.shapeLayer {
             self.layer.replaceSublayer(oldShapeLayer, with: shapeLayer)
