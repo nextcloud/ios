@@ -82,6 +82,7 @@ import Foundation
     }
     
     private func createPath() -> CGPath {
+        
         let height: CGFloat = 28
         let margin: CGFloat = 8
         let path = UIBezierPath()
