@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U2u-Ng-quR">
-                                <rect key="frame" x="0.0" y="49" width="414" height="827"/>
+                                <rect key="frame" x="0.0" y="49" width="414" height="847"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
@@ -26,7 +26,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="U2u-Ng-quR" firstAttribute="top" secondItem="I8r-2q-gEp" secondAttribute="top" constant="5" id="JMx-LP-euj"/>
-                            <constraint firstAttribute="bottom" secondItem="U2u-Ng-quR" secondAttribute="bottom" constant="20" id="OB5-oL-uWd"/>
+                            <constraint firstAttribute="bottom" secondItem="U2u-Ng-quR" secondAttribute="bottom" id="OB5-oL-uWd"/>
                             <constraint firstAttribute="trailing" secondItem="U2u-Ng-quR" secondAttribute="trailing" id="fK9-2n-mIB"/>
                             <constraint firstItem="U2u-Ng-quR" firstAttribute="leading" secondItem="ZUd-xF-jbc" secondAttribute="leading" id="zBR-Jl-ZtK"/>
                         </constraints>

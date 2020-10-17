@@ -41,10 +41,8 @@ class NCViewerVideo: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
-        view.backgroundColor = .black
         let frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
         NCViewerVideoCommon.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
     }
@@ -101,10 +99,6 @@ class NCViewerVideo: UIViewController {
         }
     }
 
-    @objc func changeTheming() {
-        
-    }
-    
     //MARK: - Action
     
     @objc func openMenuMore() {
