@@ -50,6 +50,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: k_notificationCenter_menuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handlePageChange), name: Notification.Name.PDFViewPageChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
@@ -130,10 +131,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         appDelegate.activeViewController = self
     }
     
-    //MARK: - Action
-    
-    @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
+    @objc func viewUnload() {
+        
+        navigationController?.popViewController(animated: true)
     }
     
     //MARK: - NotificationCenter
@@ -178,7 +178,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
     
-    @objc private func handlePageChange() {
+    @objc func handlePageChange() {
         
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
         guard let totalPages = pdfView.document?.pageCount else { return }
@@ -192,9 +192,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         })
     }
     
-    @objc func viewUnload() {
-        
-        navigationController?.popViewController(animated: true)
+    //MARK: - Action
+    
+    @objc func openMenuMore() {
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
     //MARK: - Gesture Recognizer
