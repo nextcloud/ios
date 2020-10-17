@@ -817,7 +817,6 @@
 				F73F537E1E929C8500F8678D /* CCMore.swift */,
 				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
-				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
 			);
@@ -1436,6 +1435,7 @@
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7B174C722FAC0A8000B7579 /* AppDelegate.m */,
+				37C83A0C24532B7200618A3B /* AppDelegate+Swift.swift */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F7A321621E9E37960069AD1B /* Activity */,
