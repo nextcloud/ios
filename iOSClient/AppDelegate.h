@@ -147,7 +147,6 @@
 
 // Theming Color
 - (void)settingThemingColorBrand;
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

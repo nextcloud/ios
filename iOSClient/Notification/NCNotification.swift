@@ -59,7 +59,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        tableView.reloadData()        
     }
 
     @objc func viewClose() {

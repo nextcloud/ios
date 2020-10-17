@@ -80,8 +80,7 @@ import MarkdownKit
     }
     
     @objc func changeTheming() {
-        
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         if textViewColor != NCBrandColor.sharedInstance.textView {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)

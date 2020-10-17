@@ -80,7 +80,9 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    [self.tableView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------

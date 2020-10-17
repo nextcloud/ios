@@ -385,7 +385,9 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.reloadData()
         
         cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)

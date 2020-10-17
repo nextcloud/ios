@@ -83,7 +83,9 @@ import NCCommunication
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.reloadData()
         initializeForm()
     }
     

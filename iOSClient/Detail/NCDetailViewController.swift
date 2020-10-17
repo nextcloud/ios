@@ -167,11 +167,11 @@ class NCDetailViewController: UIViewController {
     //MARK: - NotificationCenter
 
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
+        //appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: false)
         
-        if navigationController?.isNavigationBarHidden == false {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        }
+//        if navigationController?.isNavigationBarHidden == false {
+//            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+//        }
     }
    
     /*

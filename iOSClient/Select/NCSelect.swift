@@ -208,7 +208,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.reloadData()
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
         //toolbar.tintColor = .gray

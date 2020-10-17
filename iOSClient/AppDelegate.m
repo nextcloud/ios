@@ -874,31 +874,6 @@
     });
 }
 
-- (void)changeTheming:(UIViewController *)viewController tableView:(UITableView *)tableView collectionView:(UICollectionView *)collectionView form:(BOOL)form
-{
-    [NCBrandColor.sharedInstance setDarkMode];
-    [self.window setTintColor:NCBrandColor.sharedInstance.textView];
-
-    // View
-    if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-    else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-            
-    // TableView
-    if (tableView) {
-        if (form) tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        else tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator;
-        [tableView reloadData];
-    }
-    
-    // CollectionView
-    if (collectionView) {
-        if (form) collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-        else collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-        [collectionView reloadData];
-    }
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Fetch =====
 #pragma --------------------------------------------------------------------------------------------

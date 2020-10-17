@@ -91,11 +91,13 @@ class DragDropViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
-        
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+
         collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        
+        collectionViewSource.reloadData()
+        collectionViewDestination.reloadData()
+
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
         if #available(iOS 13.0, *) {
             labelTitlePDFzone.backgroundColor = .systemBackground

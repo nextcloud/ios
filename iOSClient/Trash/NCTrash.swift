@@ -128,7 +128,9 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        collectionView.reloadData()
     }
     
     // MARK: DZNEmpty

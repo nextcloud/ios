@@ -202,7 +202,9 @@
 
 - (void)changeTheming
 {
-    [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:true];
+    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    [self.tableView reloadData];    
     [self initializeForm];
     [self reloadForm];
 }
