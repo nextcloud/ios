@@ -878,18 +878,6 @@
     [NCBrandColor.sharedInstance setDarkMode];
     [self.window setTintColor:NCBrandColor.sharedInstance.textView];
 
-    //Tab bar
-    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-    if ([tabBarController isKindOfClass:[UITabBarController class]]) {
-        tabBarController.tabBar.barTintColor = NCBrandColor.sharedInstance.backgroundView;
-        tabBarController.tabBar.backgroundColor = NCBrandColor.sharedInstance.tabBar;
-        tabBarController.tabBar.tintColor = NCBrandColor.sharedInstance.brandElement;
-        [tabBarController.tabBar viewWithTag:99].backgroundColor = NCBrandColor.sharedInstance.brandElement;
-    }
-    
-    // Nav bar
-    [self configureNavBarForViewController:viewController];
-
     // View
     if (form) viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
     else viewController.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;

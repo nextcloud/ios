@@ -33,6 +33,21 @@ import Foundation
 //        return UITraitCollection(horizontalSizeClass: .compact)
 //    }
 
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+    }
+    
+    @objc func changeTheming() {
+        barTintColor = NCBrandColor.sharedInstance.backgroundView
+        backgroundColor = NCBrandColor.sharedInstance.tabBar
+        tintColor = NCBrandColor.sharedInstance.brandElement
+        if let centerButton = self.viewWithTag(99) {
+            centerButton.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        }
+    }
+    
     override var backgroundColor: UIColor? {
         get {
             return self.fillColor
