@@ -407,10 +407,10 @@
         } else {
             [CCUtility setIntro:YES];
             if (self.presentingViewController == nil) {
-                UISplitViewController *splitController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
-                splitController.modalPresentationStyle = UIModalPresentationFullScreen;
+                UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
+                viewController.modalPresentationStyle = UIModalPresentationFullScreen;
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
-                appDelegate.window.rootViewController = splitController;
+                appDelegate.window.rootViewController = viewController;
                 [appDelegate.window makeKeyWindow];
             } else {
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];

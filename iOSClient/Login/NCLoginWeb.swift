@@ -241,14 +241,15 @@ extension NCLoginWeb: WKNavigationDelegate {
             
             CCUtility.setIntro(true)
             if (self.presentingViewController == nil) {
-                let splitController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
-                splitController?.modalPresentationStyle = .fullScreen
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
-                splitController!.view.alpha = 0
-                appDelegate.window.rootViewController = splitController!
-                appDelegate.window.makeKeyAndVisible()
-                UIView.animate(withDuration: 0.5) {
-                    splitController!.view.alpha = 1
+                if let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() {
+                    viewController.modalPresentationStyle = .fullScreen
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
+                    viewController.view.alpha = 0
+                    appDelegate.window.rootViewController = viewController
+                    appDelegate.window.makeKeyAndVisible()
+                    UIView.animate(withDuration: 0.5) {
+                        viewController.view.alpha = 1
+                    }
                 }
             } else {
                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_initializeMain)
