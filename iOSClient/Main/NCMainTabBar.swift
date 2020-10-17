@@ -39,6 +39,21 @@ import Foundation
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13.0, *) {
+            if CCUtility.getDarkModeDetect() {
+                if traitCollection.userInterfaceStyle == .dark {
+                    CCUtility.setDarkMode(true)
+                } else {
+                    CCUtility.setDarkMode(false)
+                }
+            }
+            changeTheming()
+        }
+    }
+    
     @objc func changeTheming() {
         barTintColor = NCBrandColor.sharedInstance.backgroundView
         backgroundColor = NCBrandColor.sharedInstance.tabBar
