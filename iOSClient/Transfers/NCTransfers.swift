@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCTransfers: NCCollectionViewCommon  {
+class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
     
     var metadataTemp: tableMetadata?
     
@@ -40,8 +40,23 @@ class NCTransfers: NCCollectionViewCommon  {
         DZNdescription = "_no_transfer_sub_"
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        listLayout.itemHeight = 105
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+
+        appDelegate.activeViewController = self
+        
+        collectionView?.collectionViewLayout = listLayout
+        
+        self.navigationItem.title = titleCurrentFolder
+        
+        setNavigationItem()
+        
+        reloadDataSource()
     }
     
     override func setNavigationItem() {
@@ -72,7 +87,7 @@ class NCTransfers: NCCollectionViewCommon  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
 
-                if let row = dataSource?.addMetadata(metadata) {
+                if let row = dataSource.addMetadata(metadata) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.insertItems(at: [indexPath])
@@ -91,7 +106,7 @@ class NCTransfers: NCCollectionViewCommon  {
             if let metadata = userInfo["metadata"] as? tableMetadata, let ocIdTemp = userInfo["ocIdTemp"] as? String, let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0 {
                     
-                    if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -104,7 +119,7 @@ class NCTransfers: NCCollectionViewCommon  {
                     
                 } else if errorCode != NSURLErrorCancelled {
                     
-                    if let row = dataSource?.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
+                    if let row = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.reloadItems(at: [indexPath])
@@ -125,7 +140,7 @@ class NCTransfers: NCCollectionViewCommon  {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                     
-                if let row = dataSource?.deleteMetadata(ocId: metadata.ocId) {
+                if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     collectionView?.performBatchUpdates({
                         collectionView?.deleteItems(at: [indexPath])
@@ -142,7 +157,9 @@ class NCTransfers: NCCollectionViewCommon  {
     // MARK: TAP EVENT
     
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) {
-      
+        
+        if gestureRecognizer.state != .began { return }
+        
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
        
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -156,6 +173,9 @@ class NCTransfers: NCCollectionViewCommon  {
     }
     
     override func longPressListItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) {
+        
+        if gestureRecognizer.state != .began { return }
+        
         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
@@ -203,15 +223,115 @@ class NCTransfers: NCCollectionViewCommon  {
         return CGSize(width: collectionView.frame.width, height: 0)
     }
     
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+       
+        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+            return UICollectionViewCell()
+        }
+                
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as! NCTransferCell
+        cell.delegate = self
+            
+        cell.objectId = metadata.ocId
+        cell.indexPath = indexPath
+        
+        cell.imageItem.image = nil
+        cell.imageItem.backgroundColor = nil
+        
+        cell.labelTitle.text = metadata.fileNameView
+        cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+        
+        let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: metadata.urlBase, account: metadata.account)
+        var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
+        if pathText == "" { pathText = "/" }
+        cell.labelPath.text = pathText
+        
+        cell.setButtonMore(named: k_buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
+
+        cell.progressView.progress = 0.0
+        cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+                
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+        } else {
+            if metadata.hasPreview {
+                cell.imageItem.backgroundColor = .lightGray
+            } else {
+                if metadata.iconName.count > 0 {
+                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
+                } else {
+                    cell.imageItem.image = NCCollectionCommon.images.cellFileImage
+                }
+            }
+        }
+        
+        cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
+        
+        // Transfer
+        var progress: Float = 0.0
+        var totalBytes: Double = 0.0
+        let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
+        if progressArray != nil && progressArray?.count == 3 {
+            progress = progressArray?.object(at: 0) as? Float ?? 0
+            totalBytes = progressArray?.object(at: 1) as? Double ?? 0
+        }
+        
+        if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+            cell.progressView.isHidden = false
+        } else {
+            cell.progressView.isHidden = true
+            cell.progressView.progress = progress
+        }
+
+        // Write status on Label Info
+        switch metadata.status {
+        case Int(k_metadataStatusWaitDownload):
+            cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
+        case Int(k_metadataStatusInDownload):
+            cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
+        case Int(k_metadataStatusDownloading):
+            cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
+            break
+        case Int(k_metadataStatusWaitUpload):
+            cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
+        case Int(k_metadataStatusInUpload):
+            cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
+            break
+        case Int(k_metadataStatusUploading):
+            cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
+            cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
+            break
+        default:
+            cell.labelStatus.text = ""
+            cell.labelInfo.text = ""
+            break
+        }
+                        
+        // Remove last separator
+        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
+            cell.separator.isHidden = true
+        } else {
+            cell.separator.isHidden = false
+        }
+        
+        return cell
+    }
+    
     // MARK: - DataSource + NC Endpoint
 
     override func reloadDataSource() {
         super.reloadDataSource()
-        
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
-        
-        metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: "sessionTaskIdentifier", ascending: true, directoryOnTop: false, filterLivePhoto: false)
+                
+        metadatasSource = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "(session CONTAINS 'upload') OR (session CONTAINS 'download')"), page: 1, limit: 100, sorted: "sessionTaskIdentifier", ascending: false)
+        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource)
         
         refreshControl.endRefreshing()
         collectionView.reloadData()

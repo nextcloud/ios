@@ -103,13 +103,14 @@ public class NCViewerImageContentView: UIScrollView {
     private lazy var indicator: UIActivityIndicatorView = {
         let indicatorView = UIActivityIndicatorView()
         indicatorView.style = .whiteLarge
+        indicatorView.color = .darkGray
         indicatorView.hidesWhenStopped = true
         return indicatorView
     }()
 
     private lazy var indicatorContainer: UIView = {
         let container = UIView()
-        container.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        container.backgroundColor = .clear
         container.layer.cornerRadius = Constants.indicatorViewSize * 0.5
         container.layer.masksToBounds = true
         return container

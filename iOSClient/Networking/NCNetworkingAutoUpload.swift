@@ -48,7 +48,7 @@ class NCNetworkingAutoUpload: NSObject {
 
         var counterUpload: Int = 0
         var sizeUpload = 0
-        var maxConcurrentOperationUpload = Int(k_maxConcurrentOperation)
+        var maxConcurrentOperationUpload = 5
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
         
         if appDelegate.account == nil || appDelegate.account.count == 0 || appDelegate.maintenanceMode {
@@ -77,7 +77,7 @@ class NCNetworkingAutoUpload: NSObject {
                     } else {
                         predicate = NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, k_metadataStatusWaitUpload)
                     }
-                    let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
+                    let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: predicate, page: 1, limit: limit, sorted: "date", ascending: true)
                     if metadatas.count > 0 {
                         NCCommunicationCommon.shared.writeLog("PROCESS-AUTO-UPLOAD find \(metadatas.count) items")
                     }

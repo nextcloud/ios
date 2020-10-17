@@ -109,7 +109,9 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.sharedInstance.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-               NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                if errorCode != k_CCErrorResourceNotFound {
+                    NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                }
             }
         }
         
@@ -176,7 +178,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }

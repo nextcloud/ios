@@ -38,42 +38,29 @@ class NCFavorite: NCCollectionViewCommon  {
         DZNdescription = "_tutorial_favorite_view_"
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        if serverUrl == "" {
-            appDelegate.activeServerUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
-        } else {
-            appDelegate.activeServerUrl = self.serverUrl
-        }
-        
-        super.viewWillAppear(animated)
-    }
-    
     // MARK: - DataSource + NC Endpoint
     
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        var sort: String
-        var ascending: Bool
-        var directoryOnTop: Bool
-        
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey)
-        
-        if !isSearching {
-       
-            if serverUrl == "" {
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", appDelegate.account))
-            } else {
-                metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+        DispatchQueue.global().async {
+            
+            if !self.isSearching {
+           
+                if self.serverUrl == "" {
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+                } else {
+                    self.metadatasSource = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                }
+            }
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
             }
         }
-        
-        self.dataSource = NCDataSource.init(metadatasSource: metadatasSource, sort: sort, ascending: ascending, directoryOnTop: directoryOnTop, filterLivePhoto: true)
-        
-        refreshControl.endRefreshing()
-        collectionView.reloadData()
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
@@ -102,13 +89,15 @@ class NCFavorite: NCCollectionViewCommon  {
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
                 self.reloadDataSource()
             }
             
         } else {
             
-            networkReadFolder(forced: forced) { (metadatas, errorCode, errorDescription) in
+            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
                 if errorCode == 0 {
                     for metadata in metadatas ?? [] {
                         if !metadata.directory {
@@ -119,8 +108,14 @@ class NCFavorite: NCCollectionViewCommon  {
                         }
                     }
                 }
+                
+                self.refreshControl.endRefreshing()
                 self.isReloadDataSourceNetworkInProgress = false
-                self.reloadDataSource()
+                if metadatasUpdate?.count ?? 0 > 0 || forced {
+                    self.reloadDataSource()
+                } else {
+                    self.collectionView?.reloadData()
+                }
             }
         }
     }

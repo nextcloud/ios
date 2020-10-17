@@ -225,7 +225,7 @@
         }
     }
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource page:0 limit:0 sorted:@"fileName" ascending:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource];
     
     if (result)
         return [result count];

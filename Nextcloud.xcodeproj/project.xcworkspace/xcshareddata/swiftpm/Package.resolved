@@ -2,12 +2,39 @@
   "object": {
     "pins": [
       {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire",
+        "state": {
+          "branch": null,
+          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
+          "version": "5.2.2"
+        }
+      },
+      {
+        "package": "NCCommunication",
+        "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
+        "state": {
+          "branch": null,
+          "revision": "ffdfebc5ab4e3bce5a65ce48019c8b3fe96fb48f",
+          "version": "0.80.0"
+        }
+      },
+      {
+        "package": "Parchment",
+        "repositoryURL": "https://github.com/rechsteiner/Parchment",
+        "state": {
+          "branch": null,
+          "revision": "af4c9773ad7833df93b3f6226ccd78acad6f5735",
+          "version": "2.4.0"
+        }
+      },
+      {
         "package": "Realm",
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "f64ac045d8cb171d8e317d9b854df7215aed7466",
-          "version": "5.4.2"
+          "revision": "96d5d28f9fd35bd5b109da376bfdc3194cd2794a",
+          "version": "5.4.8"
         }
       },
       {
@@ -15,8 +42,26 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "4e5326b20e6d4aae6af581402372a42971fa732b",
-          "version": "6.1.1"
+          "revision": "612057010f5521d41559970306054f4c5b12632a",
+          "version": "6.1.4"
+        }
+      },
+      {
+        "package": "SwiftyJSON",
+        "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON",
+        "state": {
+          "branch": null,
+          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
+          "version": "5.0.0"
+        }
+      },
+      {
+        "package": "SwiftyXMLParser",
+        "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
+        "state": {
+          "branch": null,
+          "revision": "0ca0e992ce0135169c715a6580b99f3e99c503e7",
+          "version": "5.2.1"
         }
       }
     ]

@@ -75,12 +75,15 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
                 if #available(iOS 13.0, *) {
                     self.presentationController?.delegate?.presentationControllerWillDismiss?(self.presentationController!)
                 }
-                dismiss(animated: true)
+                
+                dismiss(animated: true) {
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_closeRichWorkspaceWebView, userInfo: nil)
+                }
             }
             
             if message.body as? String == "share" {
                 if (metadata != nil) {
-                     NCMainCommon.shared.openShare(ViewController: self, metadata: metadata!, indexPage: 2)
+                    NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata!, indexPage: 2)
                 }
             }
             

@@ -30,15 +30,18 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
 
     var trashPath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var blinkocId: String?
+    var blinkFileId: String?
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     private var isEditMode = false
-    private var selectocId: [String] = []
+    private var selectOcId: [String] = []
     
     private var datasource: [tableTrash] = []
     
+    private var sort: String = ""
+    private var ascending: Bool = true
+    private var directoryOnTop: Bool = true
     private var layout = ""
     private var groupBy = "none"
     private var titleButton = ""
@@ -77,8 +80,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         // Add Refresh Control
         collectionView.addSubview(refreshControl)
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
         
         // empty Data Source
@@ -95,7 +97,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        (layout, _, _, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         gridLayout.itemForLine = CGFloat(itemForLine)
         
         if layout == k_layout_list {
@@ -127,9 +129,6 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
     
     @objc func changeTheming() {
         appDelegate.changeTheming(self, tableView: nil, collectionView: collectionView, form: false)
-        
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
-        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
     }
     
     // MARK: DZNEmpty
@@ -168,29 +167,27 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
                     self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
             layout = k_layout_list
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
                     self.collectionView.reloadData()
-                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
             layout = k_layout_grid
-            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, layout: layout)
+            NCUtility.shared.setLayoutForView(key: k_layout_view_trash, serverUrl: "", layout: layout)
         }
     }
     
     func tapOrderHeaderMenu(sender: Any) {
         
         let sortMenu = NCSortMenu()
-        sortMenu.toggleMenu(viewController: self, key: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: nil, hideDirectoryOnTop: true)
+        sortMenu.toggleMenu(viewController: self, key: k_layout_view_trash, sortButton: sender as? UIButton, serverUrl: "", hideDirectoryOnTop: true)
     }
     
     func tapMoreHeaderMenu(sender: Any) {
@@ -202,15 +199,15 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_selected_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_selected_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
-                            for ocId in self.selectocId {
+                            for ocId in self.selectOcId {
                                 self.deleteItem(with: ocId)
                             }
                             self.isEditMode = false
-                            self.selectocId.removeAll()
+                            self.selectOcId.removeAll()
                             self.collectionView.reloadData()
                         }))
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in
@@ -223,7 +220,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_trash_delete_all_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         let alert = UIAlertController(title: NSLocalizedString("_trash_delete_all_", comment: ""), message: "", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .destructive, handler: { _ in
@@ -291,7 +288,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
@@ -356,7 +353,7 @@ class NCTrash: UIViewController, UIGestureRecognizerDelegate, NCTrashListCellDel
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.deleteItem(with: objectId)
                     }
@@ -396,10 +393,10 @@ extension NCTrash: UICollectionViewDelegate {
         let tableTrash = datasource[indexPath.item]
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: tableTrash.fileId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: tableTrash.fileId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(tableTrash.fileId)
+                selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
             return
@@ -497,20 +494,14 @@ extension NCTrash: UICollectionViewDataSource {
             }
             
             if isEditMode {
-                cell.imageItemLeftConstraint.constant = 45
-                cell.imageSelect.isHidden = false
-                
-                if selectocId.contains(tableTrash.fileId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                cell.selectMode(true)
+                if selectOcId.contains(tableTrash.fileId) {
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedNo"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = nil
+                    cell.selected(false)
                 }
             } else {
-                cell.imageItemLeftConstraint.constant = 10
-                cell.imageSelect.isHidden = true
-                cell.backgroundView = nil
+                cell.selectMode(false)
             }
             
             return cell
@@ -534,12 +525,10 @@ extension NCTrash: UICollectionViewDataSource {
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectocId.contains(tableTrash.fileId) {
-                    cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                    cell.backgroundView = NCUtility.shared.cellBlurEffect(with: cell.bounds)
+                if selectOcId.contains(tableTrash.fileId) {
+                    cell.selected(true)
                 } else {
-                    cell.imageSelect.isHidden = true
-                    cell.backgroundView = nil
+                    cell.selected(false)
                 }
             } else {
                 cell.imageSelect.isHidden = true
@@ -567,10 +556,7 @@ extension NCTrash {
 
     @objc func reloadDataSource() {
         
-        var sort: String
-        var ascending: Bool
-        
-        (layout, sort, ascending, groupBy, _, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_trash, serverUrl: "")
         
         datasource.removeAll()
         
@@ -579,25 +565,28 @@ extension NCTrash {
         }
         
         datasource = tashItems
+        collectionView.reloadData()
         
-        CATransaction.begin()
-        CATransaction.setCompletionBlock {
-            // GoTo ocId
-            if self.blinkocId != nil {
-                for item in 0...self.datasource.count-1 {
-                    if self.datasource[item].fileId.contains(self.blinkocId!) {
-                        let indexPath = IndexPath(item: item, section: 0)
-                        self.collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.blinkocId = nil
-                            NCUtility.shared.blink(cell: self.collectionView.cellForItem(at: indexPath))
+        if self.blinkFileId != nil {
+            for item in 0...self.datasource.count-1 {
+                if self.datasource[item].fileId.contains(self.blinkFileId!) {
+                    let indexPath = IndexPath(item: item, section: 0)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIView.animate(withDuration: 0.3) {
+                            self.collectionView.scrollToItem(at:indexPath, at: .centeredVertically, animated: false)
+                        } completion: { (_) in
+                            if let cell = self.collectionView.cellForItem(at: indexPath) {
+                                cell.backgroundColor = .darkGray
+                                UIView.animate(withDuration: 2) {
+                                    cell.backgroundColor = .clear
+                                    self.blinkFileId = nil
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-        collectionView.reloadData()
-        CATransaction.commit()
     }
     
     @objc func loadListingTrash() {

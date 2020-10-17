@@ -65,6 +65,27 @@ class NCTrashListCell: UICollectionViewCell {
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: objectId, sender: sender)
     }
+    
+    func selectMode(_ status: Bool) {
+        if status {
+            imageItemLeftConstraint.constant = 45
+            imageSelect.isHidden = false
+        } else {
+            imageItemLeftConstraint.constant = 10
+            imageSelect.isHidden = true
+            backgroundView = nil
+        }
+    }
+    
+    func selected(_ status: Bool) {
+        if status {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            backgroundView = NCUtility.shared.cellBlurEffect(with: self.bounds)
+        } else {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedNo
+            backgroundView = nil
+        }
+    }
 }
 
 protocol NCTrashListCellDelegate {

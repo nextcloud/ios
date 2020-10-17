@@ -30,7 +30,8 @@ class NCSharePaging: UIViewController {
     
     private let pagingViewController = NCShareHeaderViewController()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+    private var commentsEnabled = true
+    
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
     
@@ -47,6 +48,13 @@ class NCSharePaging: UIViewController {
         addChild(pagingViewController)
         view.addSubview(pagingViewController.view)
         pagingViewController.didMove(toParent: self)
+        
+        // Verify Comments enabled
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+        if serverVersionMajor >= k_files_comments && comments == false {
+            commentsEnabled = false
+        }
         
         // Customization
         pagingViewController.indicatorOptions = .visible(

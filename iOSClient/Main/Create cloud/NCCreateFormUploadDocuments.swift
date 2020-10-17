@@ -211,7 +211,7 @@ import NCCommunication
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         
         guard let serverUrl = serverUrl else {
             return
@@ -242,7 +242,6 @@ import NCCommunication
         viewController.hideButtonCreateFolder = false
         viewController.includeDirectoryE2EEncryption = false
         viewController.includeImages = false
-        viewController.keyLayout = k_layout_view_move
         viewController.selectFile = false
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = ""
@@ -330,13 +329,7 @@ import NCCommunication
                         self.dismiss(animated: true, completion: {
                             let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url ?? "", contentType: result.contentType, livePhoto: false)
                             
-                            if self.appDelegate.activeViewController is CCMain {
-                                (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
-                            } else if self.appDelegate.activeViewController is NCFavorite {
-                                (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                            } else if self.appDelegate.activeViewController is NCOffline {
-                                (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                            }
+                            NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
                         })
                     }
                     
@@ -358,13 +351,7 @@ import NCCommunication
                     
                         let metadata = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: (fileName as NSString).deletingPathExtension + "." + self.fileNameExtension, ocId: CCUtility.createRandomString(12), serverUrl: self.serverUrl, urlBase: self.appDelegate.urlBase, url: url!, contentType: "", livePhoto: false)
                     
-                        if self.appDelegate.activeViewController is CCMain {
-                            (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
-                        } else if self.appDelegate.activeViewController is NCFavorite {
-                            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                        } else if self.appDelegate.activeViewController is NCOffline {
-                            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                        }
+                        NCNetworkingNotificationCenter.shared.segueMetadata(metadata)
                    })
                    
                     

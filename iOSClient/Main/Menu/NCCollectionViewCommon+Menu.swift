@@ -54,6 +54,23 @@ extension NCCollectionViewCommon {
         let serverUrlHome = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var isOffline = false
         
+        var titleDelete = NSLocalizedString("_delete_", comment: "")
+        if NCManageDatabase.sharedInstance.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
+            titleDelete = NSLocalizedString("_leave_share_", comment: "")
+        } else if metadata.directory {
+            titleDelete = NSLocalizedString("_delete_folder_", comment: "")
+        } else {
+            titleDelete = NSLocalizedString("_delete_file_", comment: "")
+        }
+        
+        if let metadataFolder = metadataFolder {
+            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
+            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
+            if isShare || isMounted {
+                titleDelete = NSLocalizedString("_leave_share_", comment: "")
+            }
+        }
+               
         if metadata.directory {
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
                 isOffline = directory.offline
@@ -70,9 +87,9 @@ extension NCCollectionViewCommon {
         } else {
             if metadata.directory {
                 if metadata.e2eEncrypted {
-                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderEncryptedImage
+                    iconHeader = NCCollectionCommon.images.cellFolderEncryptedImage
                 } else {
-                    iconHeader = NCCollectionCommon.NCCollectionCommonImages.cellFolderImage
+                    iconHeader = NCCollectionCommon.images.cellFolderImage
                 }
             } else {
                 iconHeader = UIImage(named: metadata.iconName)
@@ -113,7 +130,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCMainCommon.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
+                        NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 0)
                     }
                 )
             )
@@ -128,7 +145,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCMainCommon.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
+                        NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
                     }
                 )
             )
@@ -179,7 +196,7 @@ extension NCCollectionViewCommon {
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
-                        NCCollectionCommon.shared.openSelectView(viewController: viewController, array: [metadata])
+                        NCCollectionCommon.shared.openSelectView(viewController: viewController, items: [metadata])
                     }
                 )
             )
@@ -218,12 +235,27 @@ extension NCCollectionViewCommon {
         }
         
         //
+        // VIEW IN FOLDER
+        //
+        if layoutKey == k_layout_view_recent && appDelegate.activeFileViewInFolder == nil {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_view_in_folder_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    }
+                )
+            )
+        }
+        
+        //
         // DELETE
         //
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_delete_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                title: titleDelete,
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -318,6 +350,9 @@ extension NCCollectionViewCommon {
             )
         )
         
+        //
+        // COPY - MOVE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
@@ -330,17 +365,20 @@ extension NCCollectionViewCommon {
                         }
                     }
                     if meradatasSelect.count > 0 {
-                        NCCollectionCommon.shared.openSelectView(viewController: viewController, array: meradatasSelect)
+                        NCCollectionCommon.shared.openSelectView(viewController: viewController, items: meradatasSelect)
                     }
                     self.tapSelect(sender: self)
                 }
             )
         )
         
+        //
+        // DELETE
+        //
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                 action: { menuAction in
                     let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -361,23 +399,6 @@ extension NCCollectionViewCommon {
                     })
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
                     self.present(alertController, animated: true, completion:nil)
-                }
-            )
-        )
-        
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_save_selected_files_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "saveSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    for ocId in selectOcId {
-                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
-                            }
-                        }
-                    }
-                    self.tapSelect(sender: self)
                 }
             )
         )

@@ -64,5 +64,25 @@ class NCGridMediaCell: UICollectionViewCell, NCImageCellProtocol {
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
     }
+    
+    func selectMode(_ status: Bool) {
+        if status {
+            imageSelect.isHidden = false
+        } else {
+            imageSelect.isHidden = true
+            imageVisualEffect.isHidden = true
+        }
+    }
+    
+    func selected(_ status: Bool) {
+        if status {
+            imageSelect.image = NCCollectionCommon.images.cellCheckedYes
+            imageVisualEffect.isHidden = false
+            imageVisualEffect.alpha = 0.4
+        } else {
+            imageSelect.isHidden = true
+            imageVisualEffect.isHidden = true
+        }
+    }
 }
 

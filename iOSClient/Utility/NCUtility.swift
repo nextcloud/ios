@@ -147,14 +147,19 @@ class NCUtility: NSObject {
         return blurEffectView
     }
     
-    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
+    func setLayoutForView(key: String, serverUrl: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
         let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)" + "|" + titleButton + "|" + "\(itemForLine)"
+        var keyStore = key
         
-        UICKeyChainStore.setString(string, forKey: key, service: k_serviceShareKeyChain)
+        if serverUrl != "" {
+            keyStore = serverUrl
+        }
+        
+        UICKeyChainStore.setString(string, forKey: keyStore, service: k_serviceShareKeyChain)
     }
     
-    func setLayoutForView(key: String, layout: String) {
+    func setLayoutForView(key: String, serverUrl: String, layout: String) {
         
         var sort: String
         var ascending: Bool
@@ -163,57 +168,42 @@ class NCUtility: NSObject {
         var titleButton: String
         var itemForLine: Int
 
-        (_, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite)
+        (_, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: k_layout_view_favorite, serverUrl: serverUrl)
 
-        setLayoutForView(key: key, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
     }
     
-    @objc func getLayoutForView(key: String) -> (String) {
+    @objc func getLayoutForView(key: String, serverUrl: String) -> (String) {
         
         var layout: String
-        (layout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (layout, _, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         return layout
     }
     
-    @objc func getSortedForView(key: String) -> (String) {
+    @objc func getSortedForView(key: String, serverUrl: String) -> (String) {
         
         var sort: String
-        (_, sort, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, sort, _, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         return sort
     }
     
-    @objc func getAscendingForView(key: String) -> (Bool) {
+    @objc func getAscendingForView(key: String, serverUrl: String) -> (Bool) {
         
         var ascending: Bool
-        (_, _, ascending, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
+        (_, _, ascending, _, _, _, _) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
         return ascending
     }
     
-    @objc func getGroupByForView(key: String) -> (String) {
+    func getLayoutForView(key: String, serverUrl: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
         
-        var groupBy: String
-        (_, _, _, groupBy, _, _, _) = NCUtility.shared.getLayoutForView(key: key)
-        return groupBy
-    }
-    
-    @objc func getDirectoryOnTopForView(key: String) -> (Bool) {
+        var keyStore = key
         
-        var directoryOnTop: Bool
-        (_, _, _, _, directoryOnTop, _, _) = NCUtility.shared.getLayoutForView(key: key)
-        return directoryOnTop
-    }
-    
-    @objc func getTitleButtonForView(key: String) -> (String) {
+        if serverUrl != "" {
+            keyStore = serverUrl
+        }
         
-        var titleButton: String
-        (_, _, _, _, _, titleButton, _) = NCUtility.shared.getLayoutForView(key: key)
-        return titleButton
-    }
-    
-    func getLayoutForView(key: String) -> (layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool, titleButton: String, itemForLine: Int) {
-        
-        guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
-            setLayoutForView(key: key, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        guard let string = UICKeyChainStore.string(forKey: keyStore, service: k_serviceShareKeyChain) else {
+            setLayoutForView(key: key, serverUrl: serverUrl, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
             return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
         }
 
@@ -226,7 +216,8 @@ class NCUtility: NSObject {
             return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue, array[5], Int(itemForLine.intValue))
         }
         
-        setLayoutForView(key: key, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        setLayoutForView(key: key, serverUrl: serverUrl, layout: k_layout_list, sort: "fileName", ascending: true, groupBy: "none", directoryOnTop: true, titleButton: "_sorted_by_name_a_z_", itemForLine: 3)
+        
         return (k_layout_list, "fileName", true, "none", true, "_sorted_by_name_a_z_", 3)
     }
         
@@ -360,22 +351,6 @@ class NCUtility: NSObject {
         return String(format: "%02d:%02d:%02d", hour, min, sec)
     }
     
-    @objc func blink(cell: AnyObject?) {
-        DispatchQueue.main.async {
-            if let cell = cell as? UITableViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
-                UIView.animate(withDuration: 2) {
-                    cell.backgroundColor = .clear
-                }
-            } else if let cell = cell as? UICollectionViewCell {
-                cell.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.3)
-                UIView.animate(withDuration: 2) {
-                    cell.backgroundColor = .clear
-                }
-            }
-        }
-    }
-        
     @objc func isRichDocument(_ metadata: tableMetadata) -> Bool {
         
         guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {

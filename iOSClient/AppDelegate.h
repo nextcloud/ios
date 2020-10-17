@@ -29,9 +29,12 @@
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "CCUtility.h"
-#import "CCMain.h"
 #import "CCSettings.h"
+#import "CCLogin.h"
 
+@class NCFiles;
+@class NCFileViewInFolder;
+@class NCRecent;
 @class CCMore;
 @class NCMedia;
 @class NCOffline;
@@ -43,6 +46,7 @@
 @class NCDetailViewController;
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
+@class FileProviderDomain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
@@ -87,11 +91,12 @@
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;
-@property (nonatomic, retain) id activeViewController;
+@property (nonatomic, retain) UIViewController *activeViewController;
 
-@property (nonatomic, retain) CCMain *activeMain;
-@property (nonatomic, retain) CCMain *homeMain;
+@property (nonatomic, retain) NCFiles *activeFiles;
+@property (nonatomic, retain) NCFileViewInFolder *activeFileViewInFolder;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
+@property (nonatomic, retain) NCRecent *activeRecent;
 @property (nonatomic, retain) NCMedia *activeMedia;
 @property (nonatomic, retain) NCDetailViewController *activeDetail;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
@@ -104,6 +109,7 @@
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
+@property (nonatomic, strong) NSMutableDictionary *listFilesVC;
 @property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
 

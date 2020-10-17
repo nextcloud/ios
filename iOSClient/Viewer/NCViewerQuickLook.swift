@@ -26,14 +26,12 @@ import QuickLook
 
 @objc class NCViewerQuickLook: NSObject, QLPreviewControllerDelegate, QLPreviewControllerDataSource {
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     let previewController = QLPreviewController()
     var previewItems: [PreviewItem] = []
-    var viewController: UIViewController?
         
-    @objc func quickLook(url: URL, viewController: UIViewController) {
-        
-        self.viewController = viewController
-        
+    @objc func quickLook(url: URL) {
+                
         URLSession.shared.dataTask(with: url) { data, response, error in
             
             guard let _ = data, error == nil else {
@@ -54,7 +52,7 @@ import QuickLook
                 self.previewController.delegate = self
                 self.previewController.dataSource = self
                 self.previewController.currentPreviewItemIndex = 0
-                self.viewController?.present(self.previewController, animated: true)
+                self.appDelegate.window?.rootViewController?.present(self.previewController, animated: true)
             }
             
         }.resume()
@@ -74,7 +72,7 @@ import QuickLook
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             let alert = UIAlertController(title: "Alert", message: message, preferredStyle: .alert)
             alert.addAction(.init(title: "OK", style: .default))
-            self.viewController?.present(alert, animated: true)
+            self.appDelegate.window?.rootViewController?.present(alert, animated: true)
         }
     }
 }

@@ -28,12 +28,12 @@ extension FileProviderExtension {
 
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+        guard let tableDirectory = fileProviderUtility.shared.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        let directoryName = NCUtility.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
+        let directoryName = NCUtility.shared.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
         
         NCCommunication.shared.createFolder(serverUrlFileName) { (account, ocId, date, errorCode, errorDescription) in
@@ -45,9 +45,9 @@ extension FileProviderExtension {
                     if errorCode == 0 && files.count > 0 {
                         
                         let file = files.first!
-                        let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: false, account: fileProviderData.sharedInstance.account)
+                        let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: false, account: fileProviderData.shared.account)
             
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, richWorkspace: metadata.richWorkspace, creationDate: metadata.creationDate, account: metadata.account)
+                        NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, richWorkspace: metadata.richWorkspace, account: metadata.account)
                         NCManageDatabase.sharedInstance.addMetadata(metadata)
                         
                         guard let metadataInsert = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId!) else {
@@ -55,7 +55,7 @@ extension FileProviderExtension {
                             return
                         }
                         
-                        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadataInsert, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+                        guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadataInsert) else {
                             completionHandler(nil, NSFileProviderError(.noSuchItem))
                             return
                         }
@@ -76,7 +76,7 @@ extension FileProviderExtension {
     
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
@@ -93,7 +93,7 @@ extension FileProviderExtension {
             
                 let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)!
                 do {
-                    try fileProviderUtility.sharedInstance.fileManager.removeItem(atPath: fileNamePath)
+                    try fileProviderUtility.shared.fileManager.removeItem(atPath: fileNamePath)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -109,7 +109,7 @@ extension FileProviderExtension {
                 completionHandler(nil)
 
             } else {
-                completionHandler( NSFileProviderError(.serverUnreachable))
+                completionHandler(NSFileProviderError(.serverUnreachable))
             }
         }
     }
@@ -121,7 +121,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let metadataFrom = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadataFrom = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -130,7 +130,7 @@ extension FileProviderExtension {
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
         
-        guard let tableDirectoryTo = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+        guard let tableDirectoryTo = fileProviderUtility.shared.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -164,7 +164,7 @@ extension FileProviderExtension {
     
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -197,24 +197,24 @@ extension FileProviderExtension {
                     
                 } else {
                     
-                    let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+                    let itemIdentifier = fileProviderUtility.shared.getItemIdentifier(metadata: metadata)
                     
                     // rename file
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
+                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
                     
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
-                    _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
+                    _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
                     NCManageDatabase.sharedInstance.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
                 }
                 
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+                guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
+                let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
                 
             } else {
@@ -225,12 +225,7 @@ extension FileProviderExtension {
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -239,17 +234,17 @@ extension FileProviderExtension {
         let ocId = metadata.ocId
         
         if favoriteRank == nil {
-            fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+            fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
-            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[itemIdentifier.rawValue]
+            let rank = fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue]
             if rank == nil {
-                fileProviderData.sharedInstance.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
+                fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
             }
             favorite = true
         }
         
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, account: metadata.account)!
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             
             NCCommunication.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { (account, errorCode, errorDescription) in
                 
@@ -264,11 +259,8 @@ extension FileProviderExtension {
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    let item = FileProviderItem(metadata: metadata.freeze(), parentItemIdentifier: parentItemIdentifier)
                     
-                    fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
-
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
                     
                 } else {
@@ -279,12 +271,9 @@ extension FileProviderExtension {
                     }
                     
                     // Errore, remove from listFavoriteIdentifierRank
-                    fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                        
-                    fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
-                                
+                    fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                    
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }
             }
@@ -293,7 +282,7 @@ extension FileProviderExtension {
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let metadataForTag = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadataForTag = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -303,32 +292,18 @@ extension FileProviderExtension {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(ocId, tagIOS: tagData, account: account)
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        
-        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        fileProviderData.sharedInstance.signalEnumerator(for: [.workingSet])
-
+        let item = fileProviderData.shared.signalEnumerator(ocId: ocId)
         completionHandler(item, nil)
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
+        guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }

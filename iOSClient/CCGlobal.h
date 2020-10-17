@@ -46,7 +46,6 @@
 //#endif
 
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
-
 #endif
 
 // Directory on Group
@@ -79,7 +78,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         143
+#define k_databaseSchemaVersion                         145
 
 // Database JSON
 #define k_databaseDefaultJSON                           @"nextcloud.json"
@@ -92,12 +91,6 @@
 #define k_login_Add                                     0
 #define k_login_Add_Forced                              1
 #define k_login_Add_SignUp                              2
-
-// define Nextcloud IOS
-#define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
-
-// serverUrl root
-#define k_serverUrl_root                                @".."
 
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
@@ -113,11 +106,6 @@
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
-
-// TaskStatus
-#define k_taskStatusCancel                              -1
-#define k_taskStatusResume                              -2
-#define k_taskStatusSuspend                             -3
 
 // Metadata : Status
 //
@@ -148,10 +136,6 @@
 #define k_timerUpdateApplicationIconBadgeNumber         5
 #define k_timerErrorNetworking                          3
 
-// ConcurrentOperation
-#define k_maxHTTPConnectionsPerHost                     5
-#define k_maxConcurrentOperation                        5
-
 // Max Size Operation
 #define k_maxSizeOperationUpload                        524288000   // 500 MB
 
@@ -159,6 +143,10 @@
 #define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
+#define k_CCErrorBadRequest                             400
+#define k_CCErrorResourceNotFound                       404
+#define k_CCErrorConflict                               409
+#define k_CCErrorBadServerResponse                      -1011
 #define k_CCErrorInternalError                          -99999
 #define k_CCErrorFileNotSaved                           -99998
 #define k_CCErrorDecodeMetadata                         -99997
@@ -167,10 +155,6 @@
 #define k_CCErrorOffline                                -99994
 #define k_CCErrorCharactersForbidden                    -99993
 #define k_CCErrorCreationFile                           -99992
-
-
-// Search
-#define k_minCharsSearch                                2
 
 // Selector
 #define selectorDownloadFile                            @"downloadFile"
@@ -183,7 +167,6 @@
 #define selectorLoadOffline                             @"loadOffline"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenInDetail                            @"openInDetail"
-#define selectorSaveAlbum                               @"saveAlbum"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
@@ -245,9 +228,10 @@
 // Flow Version
 #define k_flow_version_available                        12
 
-// Trash Version
+// New capabilities version
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
+#define k_files_comments                                20
 
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
@@ -277,8 +261,15 @@
 #define k_layout_view_trash                             @"LayoutTrash"
 #define k_layout_view_offline                           @"LayoutOffline"
 #define k_layout_view_favorite                          @"LayoutFavorite"
-#define k_layout_view_main                              @"LayoutMain"
+#define k_layout_view_files                             @"LayoutFiles"
+#define k_layout_view_viewInFolder                      @"ViewInFolder"
 #define k_layout_view_transfers                         @"LayoutTransfers"
+#define k_layout_view_media                             @"LayoutMedia"
+#define k_layout_view_recent                            @"LayoutRecent"
+
+// Button Type in Cell list/grid
+#define k_buttonMoreMore                                @"more"
+#define k_buttonMoreStop                                @"stop"
 
 // Rich Workspace
 #define k_fileNameRichWorkspace                         @"Readme.md"
@@ -309,6 +300,7 @@
 #define k_nextcloud_version_17_0                        17
 #define k_nextcloud_version_18_0                        18
 #define k_nextcloud_version_19_0                        19
+#define k_nextcloud_version_20_0                        20
 
 // Notification Center
 
@@ -322,8 +314,9 @@
 #define k_notificationCenter_changeUserProfile          @"changeUserProfile"
 #define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
 #define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
+#define k_notificationCenter_closeRichWorkspaceWebView  @"closeRichWorkspaceWebView"
+
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_reloadMediaDataSource      @"reloadMediaDataSource"
 #define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
 #define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
 
@@ -348,11 +341,3 @@
 #define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
 #define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
 #define k_notificationCenter_menuDetailClose            @"menuDetailClose"
-
-
-// -----------------------------------------------------------------------------------------------------------
-// INTERNAL
-// -----------------------------------------------------------------------------------------------------------
-
-#define k_fileProvider_domain                           0
-

@@ -97,7 +97,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
             if message.body as? String == "close" {
                 
                 appDelegate.activeDetail.viewUnload()                                
-                appDelegate.activeMain.readFileReloadFolder()
+                appDelegate.activeFiles.reloadDataSourceNetwork()
             }
             
             if message.body as? String == "insertGraphic" {
@@ -112,17 +112,17 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                 viewController.includeDirectoryE2EEncryption = false
                 viewController.includeImages = true
                 viewController.type = ""
-                viewController.keyLayout = k_layout_view_richdocument
                 
                 navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
                 self.viewController.present(navigationController, animated: true, completion: nil)
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
+                NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if let param = message.body as? Dictionary<AnyHashable,Any> {
+                
                 if param["MessageName"] as? String == "downloadAs" {
                     if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
                         guard let type = values["Type"] as? String else {
@@ -182,6 +182,15 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
                         metadata.fileName = newName
                         metadata.fileNameView = newName
                     }
+                } else if param["MessageName"] as? String == "hyperlink" {
+                    if let values = param["Values"] as? Dictionary<AnyHashable,Any> {
+                        guard let urlString = values["Url"] as? String else {
+                            return
+                        }
+                        if let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }
                 }
             }
             
@@ -205,7 +214,7 @@ class NCViewerRichdocument: WKWebView, WKNavigationDelegate, WKScriptMessageHand
     
     //MARK: -
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil && metadata != nil {
             

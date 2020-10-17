@@ -35,10 +35,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         // Select ServerUrl
         if (enumeratedItemIdentifier == .rootContainer) {
-            serverUrl = fileProviderData.sharedInstance.homeServerUrl
+            serverUrl = fileProviderData.shared.homeServerUrl
         } else {
             
-            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+            let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
                 if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
@@ -63,25 +63,25 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
             
             // ***** Tags *****
-            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.sharedInstance.account))
+            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.account))
             for tag in tags {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(tag.ocId)  else { continue }
-                fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
-                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
+                fileProviderUtility.shared.createocIdentifierOnFileSystem(metadata: metadata)
+                itemIdentifierMetadata[fileProviderUtility.shared.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // ***** Favorite *****
-            fileProviderData.sharedInstance.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.sharedInstance.account)
-            for (identifier, _) in fileProviderData.sharedInstance.listFavoriteIdentifierRank {
+            fileProviderData.shared.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.shared.account)
+            for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(identifier) else { continue }
-                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
+                itemIdentifierMetadata[fileProviderUtility.shared.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // create items
             for (_, metadata) in itemIdentifierMetadata {
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl)
+                let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)
@@ -95,7 +95,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         /*** ServerUrl ***/
                 
-            let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: fileProviderData.sharedInstance.account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
+            let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: fileProviderData.shared.account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
             
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
@@ -106,7 +106,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 if paginationEndpoint != nil {
                                     
-                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: 1, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: 1, limit: fileProviderData.shared.itemForPage) { (metadatas) in
                         self.completeObserver(observer, numPage: 1, metadatas: metadatas)
                     }
                     
@@ -123,7 +123,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 if paginationEndpoint != nil {
 
-                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: numPage, limit: fileProviderData.sharedInstance.itemForPage) { (metadatas) in
+                    self.getPagination(endpoint: paginationEndpoint!, serverUrl: serverUrl, page: numPage, limit: fileProviderData.shared.itemForPage) { (metadatas) in
                         self.completeObserver(observer, numPage: numPage, metadatas: metadatas)
                     }
                     
@@ -143,40 +143,40 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the deleted items
         //
         if self.enumeratedItemIdentifier == .workingSet {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier {
+            for (itemIdentifier, _) in fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier {
                 itemsDelete.append(itemIdentifier)
             }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
+            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
         } else {
-            for (itemIdentifier, _) in fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier {
+            for (itemIdentifier, _) in fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier {
                 itemsDelete.append(itemIdentifier)
             }
-            fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
+            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
         }
         
         // Report the updated items
         //
         if self.enumeratedItemIdentifier == .workingSet {
-            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem {
+            for (_, item) in fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem {
                 itemsUpdate.append(item)
             }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem.removeAll()
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem.removeAll()
         } else {
-            for (_, item) in fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem {
+            for (_, item) in fileProviderData.shared.fileProviderSignalUpdateContainerItem {
                 itemsUpdate.append(item)
             }
-            fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem.removeAll()
+            fileProviderData.shared.fileProviderSignalUpdateContainerItem.removeAll()
         }
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
         
-        let data = "\(fileProviderData.sharedInstance.currentAnchor)".data(using: .utf8)
+        let data = "\(fileProviderData.shared.currentAnchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(fileProviderData.sharedInstance.currentAnchor)".data(using: .utf8)
+        let data = "\(fileProviderData.shared.currentAnchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
     
@@ -195,9 +195,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                 if metadata.e2eEncrypted || (metadata.session != "" && metadata.session != NCNetworking.shared.sessionIdentifierBackgroundExtension) { continue }
                     
-                fileProviderUtility.sharedInstance.createocIdentifierOnFileSystem(metadata: metadata)
+                fileProviderUtility.shared.createocIdentifierOnFileSystem(metadata: metadata)
                         
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl)
+                let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)
@@ -206,7 +206,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             observer.didEnumerate(items)
         }
         
-        if (items.count == fileProviderData.sharedInstance.itemForPage) {
+        if (items.count == fileProviderData.shared.itemForPage) {
             numPage += 1
             let providerPage = NSFileProviderPage("\(numPage)".data(using: .utf8)!)
             observer.finishEnumerating(upTo: providerPage)
@@ -219,7 +219,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         var directoryEtag: String?
         
-        if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl)) {
+        if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)) {
             directoryEtag = tableDirectory.etag
         }
             
@@ -238,17 +238,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
                                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: metadata.account)
                                 }
-                                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
+                                let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                                 completionHandler(metadatas)
                             }
                         }
                     } else {
-                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
+                        let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                         completionHandler(metadatas)
                     }
                 }
             } else {
-                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
+                let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                 completionHandler(metadatas)
             }
         }
@@ -257,13 +257,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func getPagination(endpoint:String, serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         
         let offset = (page - 1) * limit
-        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, account: fileProviderData.sharedInstance.account)!
+        var fileNamePath = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: fileProviderData.shared.accountUrlBase, account: fileProviderData.shared.account)!
         if fileNamePath == "" {
             fileNamePath = "/"
         }
         var directoryEtag: String?
         
-        if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl)) {
+        if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)) {
             if page == 1 {
                 directoryEtag = tableDirectory.etag
             }
@@ -284,23 +284,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     if errorCode == 0 {
                         DispatchQueue.global().async {
                             NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
-                                let metadatasResult = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.sharedInstance.account, serverUrl, k_metadataStatusNormal), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                                let metadatasResult = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.shared.account, serverUrl, k_metadataStatusNormal), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
                                 NCManageDatabase.sharedInstance.updateMetadatas(metadatas, metadatasResult: metadatasResult)
                                 for metadata in metadatasFolder {
                                     let serverUrl = metadata.serverUrl + "/" + metadata.fileNameView
                                     NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: nil, account: metadata.account)
                                 }
-                                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                                let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
                                 completionHandler(metadatas)
                             }
                         }
                     } else {
-                        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), page: page, limit: fileProviderData.sharedInstance.itemForPage, sorted: "fileName", ascending: true)
+                        let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), page: page, limit: fileProviderData.shared.itemForPage, sorted: "fileName", ascending: true)
                         completionHandler(metadatas)
                     }
                 }
             } else {
-                let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.sharedInstance.account, serverUrl), sorted: "fileName", ascending: true)
+                let metadatas = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl), sorted: "fileName", ascending: true)
                 completionHandler(metadatas)
             }
         }

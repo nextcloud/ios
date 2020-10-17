@@ -57,7 +57,7 @@ import Foundation
                         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
                         viewerQuickLook = NCViewerQuickLook.init()
-                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: appDelegate.activeMain)
+                        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
                         
                     case selectorLoadFileView:
                         
@@ -77,13 +77,7 @@ import Foundation
                                 
                             } else {
                                 
-                                if self.appDelegate.activeViewController is CCMain {
-                                    (self.appDelegate.activeViewController as! CCMain).shouldPerformSegue(metadata, selector: "")
-                                } else if self.appDelegate.activeViewController is NCFavorite {
-                                    (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
-                                } else if self.appDelegate.activeViewController is NCOffline {
-                                    (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
-                                }
+                                segueMetadata(metadata)
                             }
                         }
                         
@@ -93,10 +87,6 @@ import Foundation
                             
                             openIn(fileURL: fileURL, selector: selector)
                         }
-                        
-                    case selectorSaveAlbum:
-                        
-                        appDelegate.activeMain.save(toPhotoAlbum: metadata)
                         
                     case selectorLoadCopy:
                         
@@ -123,7 +113,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == 404 || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
+                    if (errorCode == k_CCErrorResourceNotFound || errorCode == k_CCErrorBadServerResponse) {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -157,6 +147,44 @@ import Foundation
                 return }
     
             docController?.presentOptionsMenu(from: frame, in: view, animated: true)
+        }
+    }
+    
+    @objc func openShare(ViewController: UIViewController, metadata: tableMetadata, indexPage: Int) {
+        
+        let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let shareViewController = shareNavigationController.topViewController as! NCSharePaging
+        
+        shareViewController.metadata = metadata
+        shareViewController.indexPage = indexPage
+        
+        shareNavigationController.modalPresentationStyle = .formSheet
+        ViewController.present(shareNavigationController, animated: true, completion: nil)
+    }
+        
+    @objc func downloadOpen(metadata: tableMetadata, selector: String) {
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata": metadata, "selector": selector, "errorCode": 0, "errorDescription": "" ])
+                                    
+        } else {
+            
+            NCNetworking.shared.download(metadata: metadata, selector: selector) { (_) in }
+        }
+    }
+    
+    @objc func segueMetadata(_ metadata: tableMetadata) {
+        if self.appDelegate.activeViewController is NCFiles {
+            (self.appDelegate.activeViewController as! NCFiles).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCFavorite {
+            (self.appDelegate.activeViewController as! NCFavorite).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCOffline {
+            (self.appDelegate.activeViewController as! NCOffline).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCRecent {
+            (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
+        } else if self.appDelegate.activeViewController is NCFileViewInFolder {
+            (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
         }
     }
     

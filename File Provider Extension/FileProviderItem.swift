@@ -30,7 +30,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var parentItemIdentifier: NSFileProviderItemIdentifier
 
     var itemIdentifier: NSFileProviderItemIdentifier {
-        return fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+        return fileProviderUtility.shared.getItemIdentifier(metadata: metadata)
     }
     
     var filename: String {
@@ -51,7 +51,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var creationDate: Date? {
-        return metadata.date as Date
+        return metadata.creationDate as Date
     }
     
     var lastUsedDate: Date? {
@@ -87,7 +87,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var favoriteRank: NSNumber? {
-        if let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.ocId] {
+        if let rank = fileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
             return rank
         } else {
             return nil
@@ -99,7 +99,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloaded: Bool {
-        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             return true
         } else {
             return false
@@ -107,7 +107,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     
     var isDownloading: Bool {
-        if metadata.status == Int(k_metadataStatusInDownload) {
+        if metadata.status == Int(k_metadataStatusDownloading) {
             return true
         } else {
             return false
@@ -123,15 +123,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var isUploaded: Bool {
-        if metadata.status == Int(k_metadataStatusInUpload) {
-            return false
-        } else {
+        if NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
             return true
+        } else {
+            return false
         }
     }
     
     var isUploading: Bool {
-        if metadata.status == Int(k_metadataStatusInUpload) {
+        if metadata.status == Int(k_metadataStatusUploading) {
             return true
         } else {
             return false

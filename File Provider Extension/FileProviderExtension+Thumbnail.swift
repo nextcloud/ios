@@ -33,8 +33,7 @@ extension FileProviderExtension {
         
         for itemIdentifier in itemIdentifiers {
             
-            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                
+            guard let metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 counterProgress += 1
                 if (counterProgress == progress.totalUnitCount) { completionHandler(nil) }
                 continue
@@ -42,7 +41,7 @@ extension FileProviderExtension {
             
             if (metadata.hasPreview) {
                 
-                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: fileProviderData.sharedInstance.accountUrlBase, account: metadata.account)!
+                let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                 let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
                     
                 NCCommunication.shared.getPreview(fileNamePath: fileNamePath, widthPreview: Int(k_sizeIcon), heightPreview: Int(k_sizeIcon)) { (account, data, errorCode, errorDescription) in

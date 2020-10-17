@@ -195,7 +195,7 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
@@ -290,7 +290,6 @@ class NCCreateFormUploadVoiceNote: XLFormViewController, NCSelectDelegate, AVAud
         viewController.hideButtonCreateFolder = false
         viewController.includeDirectoryE2EEncryption = true
         viewController.includeImages = false
-        viewController.keyLayout = k_layout_view_move
         viewController.selectFile = false
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = ""

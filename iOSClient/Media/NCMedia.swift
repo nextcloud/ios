@@ -41,12 +41,12 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private var predicate: NSPredicate?
 
     private var isEditMode = false
-    private var selectocId: [String] = []
+    private var selectOcId: [String] = []
     
     private var filterTypeFileImage = false
     private var filterTypeFileVideo = false
             
-    private let kMaxImageGrid: CGFloat = 5
+    private let kMaxImageGrid: CGFloat = 7
     private var cellHeigth: CGFloat = 0
 
     private var oldInProgress = false
@@ -55,9 +55,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
-    
-    private var listOcIdReadFileForMedia: [String] = []
-    
+        
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
         static var cellPlayImage = UIImage()
@@ -71,7 +69,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
 
         appDelegate.activeMedia = self
         
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: k_notificationCenter_reloadMediaDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: NSNotification.Name(rawValue: k_notificationCenter_applicationWillEnterForeground), object: nil)
     }
     
@@ -253,7 +250,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                         viewController.hideButtonCreateFolder = true
                         viewController.includeDirectoryE2EEncryption = false
                         viewController.includeImages = false
-                        viewController.keyLayout = k_layout_view_move
                         viewController.selectFile = false
                         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
                         viewController.type = "mediaFolder"
@@ -311,19 +307,45 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.isEditMode = false
-                        self.selectocId.removeAll()
+                        self.selectOcId.removeAll()
                         self.reloadDataThenPerform { }
                     }
                 )
             )
             
+            //
+            // COPY - MOVE
+            //
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_delete_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: .red),
+                    title: NSLocalizedString("_move_or_copy_selected_files_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                     action: { menuAction in
                         self.isEditMode = false
-                        for ocId in self.selectocId {
+                        var meradatasSelect = [tableMetadata]()
+                        for ocId in self.selectOcId {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                                meradatasSelect.append(metadata)
+                            }
+                        }
+                        if meradatasSelect.count > 0 {
+                            NCCollectionCommon.shared.openSelectView(viewController: self, items: meradatasSelect)
+                        }
+                        self.selectOcId.removeAll()
+                    }
+                )
+            )
+            
+            //
+            // DELETE
+            //
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_delete_selected_files_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        self.isEditMode = false
+                        for ocId in self.selectOcId {
                             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                                 NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
                                     if errorCode != 0 {
@@ -332,6 +354,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                                 }
                             }
                         }
+                        self.selectOcId.removeAll()
                     }
                 )
             )
@@ -349,7 +372,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     
     // MARK: Select Path
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         if serverUrl != nil {
             let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.account)
@@ -401,7 +424,19 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.account == appDelegate.account {
-                    self.reloadDataSource()
+                    
+                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
+                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    self.metadatas = metadatas
+                    
+                    if self.metadatas.count == 0 {
+                        collectionView?.reloadData()
+                    } else if let row = indexes.first {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.deleteItems(at: [indexPath])
+                    }
+                    
+                    self.updateMediaControlVisibility()
                 }
             }
         }
@@ -420,10 +455,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     }
     
     // MARK: DZNEmpty
-    
-    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
-        return 0
-    }
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
@@ -459,6 +490,7 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
                 segueViewController.metadata = metadataTouch
                 segueViewController.metadatas = metadatas
                 segueViewController.mediaFilterImage = true
+                segueViewController.layoutKey = k_layout_view_media
             }
         }
     }
@@ -503,10 +535,10 @@ extension NCMedia: UICollectionViewDelegate {
         metadataTouch = metadata
         
         if isEditMode {
-            if let index = selectocId.firstIndex(of: metadata.ocId) {
-                selectocId.remove(at: index)
+            if let index = selectOcId.firstIndex(of: metadata.ocId) {
+                selectOcId.remove(at: index)
             } else {
-                selectocId.append(metadata.ocId)
+                selectOcId.append(metadata.ocId)
             }
             if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
                 collectionView.reloadItems(at: [indexPath])
@@ -543,10 +575,6 @@ extension NCMedia: UICollectionViewDataSource {
         if indexPath.row < self.metadatas.count {
             let metadata = self.metadatas[indexPath.row]
             NCOperationQueue.shared.downloadThumbnail(metadata: metadata, urlBase: self.appDelegate.urlBase, view: self.collectionView as Any, indexPath: indexPath)
-            if !listOcIdReadFileForMedia.contains(metadata.ocId) {
-                NCOperationQueue.shared.readFileForMedia(metadata: metadata)
-                listOcIdReadFileForMedia.append(metadata.ocId)
-            }
         }
     }
     
@@ -554,7 +582,6 @@ extension NCMedia: UICollectionViewDataSource {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
             NCOperationQueue.shared.cancelDownloadThumbnail(metadata: metadata)
-            NCOperationQueue.shared.cancelReadFileForMedia(metadata: metadata)
         }
     }
 
@@ -573,43 +600,26 @@ extension NCMedia: UICollectionViewDataSource {
             if metadata.iconName.count > 0 {
                 cell.imageItem.image = UIImage.init(named: metadata.iconName)
             } else {
-                cell.imageItem.image = UIImage.init(named: "file")
+                cell.imageItem.image = NCCollectionCommon.images.cellFileImage 
             }
         }
         cell.date = metadata.date as Date
 
-        // image status
         if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             cell.imageStatus.image = cacheImages.cellPlayImage
         } else if metadata.livePhoto && livePhoto {
             cell.imageStatus.image = cacheImages.cellLivePhotoImage
         }
         
-        // image Local
-        let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            if tableLocalFile!.offline { cell.imageLocal.image = UIImage.init(named: "offlineFlag") }
-            else { cell.imageLocal.image = UIImage.init(named: "local") }
-        }
-        
-        // image Favorite
-        if metadata.favorite {
-            cell.imageFavorite.image = cacheImages.cellFavouriteImage
-        }
-        
         if isEditMode {
-            cell.imageSelect.isHidden = false
-            if selectocId.contains(metadata.ocId) {
-                cell.imageSelect.image = CCGraphics.scale(UIImage.init(named: "checkedYes"), to: CGSize(width: 50, height: 50), isAspectRation: true)
-                cell.imageVisualEffect.isHidden = false
-                cell.imageVisualEffect.alpha = 0.4
+            cell.selectMode(true)
+            if selectOcId.contains(metadata.ocId) {
+                cell.selected(true)
             } else {
-                cell.imageSelect.isHidden = true
-                cell.imageVisualEffect.isHidden = true
+                cell.selected(false)
             }
         } else {
-            cell.imageSelect.isHidden = true
-            cell.imageVisualEffect.isHidden = true
+            cell.selectMode(false)
         }
        
         return cell

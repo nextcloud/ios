@@ -119,6 +119,7 @@
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
+
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Peek & Pop  =====
@@ -327,7 +328,7 @@
         
         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, table.serverUrl, table.fileName]];
         if (metadata) {
-            [[NCMainCommon shared] openShareWithViewController:self metadata:metadata indexPage:2];
+            [[NCNetworkingNotificationCenter shared] openShareWithViewController:self metadata:metadata indexPage:2];
         }
     }
 }

@@ -301,7 +301,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     
     // MARK: - Action
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         
         if serverUrl != nil {
             
@@ -395,7 +395,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 }
                 
                 // Check if is in upload
-                let isRecordInSessions = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
+                let isRecordInSessions = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
                 if isRecordInSessions.count > 0 {
                     continue
                 }
@@ -525,7 +525,6 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         viewController.hideButtonCreateFolder = false
         viewController.includeDirectoryE2EEncryption = true
         viewController.includeImages = false
-        viewController.keyLayout = k_layout_view_move
         viewController.selectFile = false
         viewController.titleButtonDone = NSLocalizedString("_select_", comment: "")
         viewController.type = ""

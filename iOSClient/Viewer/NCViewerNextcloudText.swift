@@ -98,11 +98,11 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
             if message.body as? String == "close" {
                                 
                 appDelegate.activeDetail.viewUnload()
-                appDelegate.activeMain.readFileReloadFolder()
+                appDelegate.activeFiles.reloadDataSourceNetwork()
             }
             
             if message.body as? String == "share" {
-                NCMainCommon.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
+                NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
             }
             
             if message.body as? String == "loading" {

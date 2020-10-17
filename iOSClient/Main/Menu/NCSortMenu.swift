@@ -27,7 +27,7 @@ import NCCommunication
 class NCSortMenu: NSObject {
     
     private var sortButton: UIButton?
-    private var serverUrl: String?
+    private var serverUrl: String = ""
     private var hideDirectoryOnTop: Bool?
     
     private var key = ""
@@ -39,14 +39,14 @@ class NCSortMenu: NSObject {
     private var titleButton = ""
     private var itemForLine: Int = 0
 
-    @objc func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String?, hideDirectoryOnTop: Bool = false) {
+    @objc func toggleMenu(viewController: UIViewController, key: String, sortButton: UIButton?, serverUrl: String, hideDirectoryOnTop: Bool = false) {
         
         self.key = key
         self.sortButton = sortButton
         self.serverUrl = serverUrl
         self.hideDirectoryOnTop = hideDirectoryOnTop
         
-        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key)
+        (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: key, serverUrl: serverUrl)
 
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         mainMenuViewController.actions = self.initSortMenu()
@@ -68,16 +68,16 @@ class NCSortMenu: NSObject {
         case "date":
             titleButton = ascending ? "_sorted_by_date_less_recent_" : "_sorted_by_date_more_recent_"
         case "size":
-            titleButton = ascending ? "_sorted_by_size_largest_" : "_sorted_by_size_smallest_"
+            titleButton = ascending ? "_sorted_by_size_smallest_" : "_sorted_by_size_largest_"
         default:
             break
         }
         
         self.sortButton?.setTitle(NSLocalizedString(titleButton, comment: ""), for: .normal)
         
-        NCUtility.shared.setLayoutForView(key: key, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
+        NCUtility.shared.setLayoutForView(key: key, serverUrl: serverUrl, layout: layout, sort: sort, ascending: ascending, groupBy: groupBy, directoryOnTop: directoryOnTop, titleButton: titleButton, itemForLine: itemForLine)
         
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl ?? ""])
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["serverUrl":self.serverUrl])
     }
 
     private func initSortMenu() -> [NCMenuAction] {

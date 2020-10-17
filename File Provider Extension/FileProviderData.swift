@@ -24,15 +24,15 @@
 import NCCommunication
 
 class fileProviderData: NSObject {
-    @objc static let sharedInstance: fileProviderData = {
+    @objc static let shared: fileProviderData = {
         let instance = fileProviderData()
         return instance
     }()
         
+    var domain: NSFileProviderDomain?
+    var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
+    
     var account = ""
-    var accountUser = ""
-    var accountUserID = ""
-    var accountPassword = ""
     var accountUrlBase = ""
     var homeServerUrl = ""
         
@@ -62,112 +62,96 @@ class fileProviderData: NSObject {
     
     // MARK: - 
     
-    func setupAccount(domain: String?, providerExtension: NSFileProviderExtension) -> Bool {
-        
-        var foundAccount: Bool = false
-        
+    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+                
         if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
-            return false
+            return nil
+        }
+        
+        self.domain = domain
+        if domain != nil {
+            if let fileProviderManager = NSFileProviderManager.init(for: domain!) {
+                self.fileProviderManager = fileProviderManager
+            }
         }
                 
         // NO DOMAIN -> Set default account
         if domain == nil {
             
-            guard let tableAccount = NCManageDatabase.sharedInstance.getAccountActive() else { return false }
-            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-            let webDav = NCUtility.shared.getWebDAV(account: tableAccount.account)
+            guard let accountActive = NCManageDatabase.sharedInstance.getAccountActive() else { return nil }
+            let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+            let webDav = NCUtility.shared.getWebDAV(account: accountActive.account)
             
-            account = tableAccount.account
-            accountUser = tableAccount.user
-            accountUserID = tableAccount.userID
-            accountPassword = CCUtility.getPassword(tableAccount.account)
-            accountUrlBase = tableAccount.urlBase
-            homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
+            account = accountActive.account
+            accountUrlBase = accountActive.urlBase
+            homeServerUrl = NCUtility.shared.getHomeServer(urlBase: accountActive.urlBase, account: accountActive.account)
                         
-            NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+            NCCommunicationCommon.shared.setup(account: accountActive.account, user: accountActive.user, userId: accountActive.userID, password: CCUtility.getPassword(accountActive.account), urlBase: accountActive.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
             
-            return true
+            return tableAccount.init(value: accountActive)
         }
         
-        let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
-        if tableAccounts.count == 0 { return false }
+        // DOMAIN
+        let accounts = NCManageDatabase.sharedInstance.getAllAccount()
+        if accounts.count == 0 { return nil }
         
-        for tableAccount in tableAccounts {
-            guard let url = NSURL(string: tableAccount.urlBase) else { continue }
+        for accountActive in accounts {
+            guard let url = NSURL(string: accountActive.urlBase) else { continue }
             guard let host = url.host else { continue }
-            let accountDomain = tableAccount.userID + " (" + host + ")"
-            if accountDomain == domain {
+            let accountDomain = accountActive.userID + " (" + host + ")"
+            if accountDomain == domain!.identifier.rawValue {
                 
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                let webDav = NCUtility.shared.getWebDAV(account: tableAccount.account)
+                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: accountActive.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let webDav = NCUtility.shared.getWebDAV(account: accountActive.account)
                 
-                account = tableAccount.account
-                accountUser = tableAccount.user
-                accountUserID = tableAccount.userID
-                guard let password = CCUtility.getPassword(tableAccount.account) else { return false }
-                accountPassword = password
-                accountUrlBase = tableAccount.urlBase
-                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
+                account = accountActive.account
+                accountUrlBase = accountActive.urlBase
+                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: accountActive.urlBase, account: accountActive.account)
                 
-                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
+                NCCommunicationCommon.shared.setup(account: accountActive.account, user: accountActive.user, userId: accountActive.userID, password: CCUtility.getPassword(accountActive.account), urlBase: accountActive.urlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
-                foundAccount = true
+                return tableAccount.init(value: accountActive)
             }
         }
         
-        return foundAccount
+        return nil
     }
-    
-    func setupAccount(itemIdentifier: NSFileProviderItemIdentifier, providerExtension: NSFileProviderExtension) -> Bool {
         
-        var foundAccount: Bool = false
-
-        guard let accountFromItemIdentifier = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier) else { return false }
-        
-        let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
-        if tableAccounts.count == 0 { return false }
-        
-        for tableAccount in tableAccounts {
-            if accountFromItemIdentifier == tableAccount.account {
-                
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: tableAccount.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-                let webDav = NCUtility.shared.getWebDAV(account: tableAccount.account)
-                
-                account = tableAccount.account
-                accountUser = tableAccount.user
-                accountUserID = tableAccount.userID
-                accountPassword = CCUtility.getPassword(tableAccount.account)
-                accountUrlBase = tableAccount.urlBase
-                homeServerUrl = NCUtility.shared.getHomeServer(urlBase: tableAccount.urlBase, account: tableAccount.account)
-                
-                NCCommunicationCommon.shared.setup(account: account, user: accountUser, userId: accountUserID, password: accountPassword, urlBase: accountUrlBase, userAgent: CCUtility.getUserAgent(), webDav: webDav, dav: nil, nextcloudVersion: serverVersionMajor, delegate: NCNetworking.shared)
-                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
-                
-                foundAccount = true
-            }
-        }
-        
-        return foundAccount
-    }
-    
     // MARK: -
 
-    // Convinent method to signal the enumeration for containers.
-    //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
-                
-        currentAnchor += 1
+    @discardableResult
+    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
         
-        for containerItemIdentifier in containerItemIdentifiers {
-            
-            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
-                if let error = error {
-                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
-                }
-            }
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else { return nil }
+                
+        guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else { return nil }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+        
+        if delete {
+            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
+        
+        if update {
+            fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        
+        if !update && !delete {
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        
+        if update || delete {
+            currentAnchor += 1
+            fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
+        }
+        
+        fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
+        
+        return item
     }
     
     /*

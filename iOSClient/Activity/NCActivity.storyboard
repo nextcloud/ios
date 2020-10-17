@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nhT-TJ-YvX">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="nhT-TJ-YvX">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="20" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="X49-xg-JXO">
-                                <rect key="frame" x="0.0" y="44" width="375" height="768"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableCell" rowHeight="120" id="ggj-aE-fnh" customClass="activityTableViewCell" customModule="Nextcloud" customModuleProvider="target">
@@ -122,13 +122,13 @@
                                 </connections>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="USa-eR-a1s"/>
                         <constraints>
                             <constraint firstItem="USa-eR-a1s" firstAttribute="trailing" secondItem="X49-xg-JXO" secondAttribute="trailing" id="5we-Fh-GVu"/>
-                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="USa-eR-a1s" secondAttribute="top" id="SfR-9z-HeQ"/>
+                            <constraint firstItem="X49-xg-JXO" firstAttribute="top" secondItem="vOO-VC-ekK" secondAttribute="top" id="SfR-9z-HeQ"/>
                             <constraint firstAttribute="bottom" secondItem="X49-xg-JXO" secondAttribute="bottom" id="aHq-g4-dUG"/>
                             <constraint firstItem="X49-xg-JXO" firstAttribute="leading" secondItem="USa-eR-a1s" secondAttribute="leading" id="pfF-ag-f7x"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="USa-eR-a1s"/>
                     </view>
                     <connections>
                         <outlet property="tableView" destination="X49-xg-JXO" id="GUb-8b-mIS"/>
@@ -139,6 +139,11 @@
             <point key="canvasLocation" x="-330.39999999999998" y="139.65517241379311"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="LQ8-cO-794">
+            <size key="intrinsicContentSize" width="25" height="25"/>
+        </designable>
+    </designables>
     <resources>
         <image name="avatar" width="25" height="25"/>
     </resources>

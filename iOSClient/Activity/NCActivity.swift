@@ -360,7 +360,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
                     if let result = NCManageDatabase.sharedInstance.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
-                        viewController.blinkocId = result.fileId
+                        viewController.blinkFileId = result.fileId
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
@@ -384,7 +384,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
                         if fileSize > 0 {
-                            self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
+                            self.appDelegate.activeFiles.segue(metadata: metadata)
                             return
                         }
                     } catch {
@@ -427,7 +427,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
                             NCManageDatabase.sharedInstance.addMetadata(metadata!)
-                            self.appDelegate.activeMain.performSegue(withIdentifier: "segueDetail", sender: metadata)
+                            self.appDelegate.activeFiles.segue(metadata: metadata!)
                         }
                     }
                     

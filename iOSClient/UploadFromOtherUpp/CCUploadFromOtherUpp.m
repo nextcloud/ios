@@ -139,7 +139,7 @@
 #pragma mark == IBAction ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type array:(NSArray *)array buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
+- (void)dismissSelectWithServerUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata type:(NSString *)type items:(NSArray *)items buttonType:(NSString *)buttonType overwrite:(BOOL)overwrite
 {
     if (serverUrl) {
         serverUrlLocal = serverUrl;
@@ -164,7 +164,6 @@
     viewController.includeImages = false;
     viewController.type = @"";
     viewController.titleButtonDone = NSLocalizedString(@"_select_", nil);
-    viewController.keyLayout = k_layout_view_move;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];

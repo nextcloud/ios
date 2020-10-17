@@ -37,7 +37,6 @@ import NCCommunication
     private let copyMoveQueue = Queuer(name: "copyMoveQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let synchronizationQueue = Queuer(name: "synchronizationQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     private let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    private let readFileForMediaQueue = Queuer(name: "readFileForMediaQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
    
     private var timerReadFileForMediaQueue: Timer?
 
@@ -47,7 +46,6 @@ import NCCommunication
         copyMoveCancelAll()
         synchronizationCancelAll()
         downloadThumbnailCancelAll()
-        readFileForMediaCancelAll()
     }
     
     // Download file
@@ -138,39 +136,6 @@ import NCCommunication
     
     @objc func downloadThumbnailCancelAll() {
         downloadThumbnailQueue.cancelAll()
-    }
-    
-    // Get file information
-    
-    @objc func readFileForMedia(metadata: tableMetadata) {
-        for operation in readFileForMediaQueue.operations as! [NCOperationReadFileForMediaQueue] {
-            if operation.metadata.ocId == metadata.ocId {
-                return
-            }
-        }
-        readFileForMediaQueue.addOperation(NCOperationReadFileForMediaQueue.init(metadata: metadata))
-    }
-    
-    func cancelReadFileForMedia(metadata: tableMetadata) {
-        for operation in  readFileForMediaQueue.operations as! [NCOperationReadFileForMediaQueue] {
-            if operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
-            }
-        }
-    }
-    
-    @objc func readFileForMediaCancelAll() {
-        readFileForMediaQueue.cancelAll()
-    }
-    
-    @objc func notificationReloadDataSourceMedia() {
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadMediaDataSource)
-    }
-    
-    func reloadDataSourceMedia() {
-        if !(timerReadFileForMediaQueue?.isValid ?? false) {
-            timerReadFileForMediaQueue = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(notificationReloadDataSourceMedia), userInfo: nil, repeats: false)
-        }
     }
 }
 
@@ -328,10 +293,10 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 }
                             }
                             // Update etag directory
-                            NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrlFileName, richWorkspace: metadataFolder.richWorkspace, creationDate: metadataFolder.creationDate, account: metadataFolder.account)
+                            NCManageDatabase.sharedInstance.addDirectory(encrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, serverUrl: serverUrlFileName, richWorkspace: metadataFolder.richWorkspace, account: metadataFolder.account)
                         }
                     
-                    } else if errorCode == 404 && self.metadata.directory {
+                    } else if errorCode == k_CCErrorResourceNotFound && self.metadata.directory {
                         NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                     }
                     self.finish()
@@ -377,12 +342,17 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath , widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorDescription) in
                 
                 var cell: NCImageCellProtocol?
-                if self.view is UICollectionView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
-                    cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
-                } else if self.view is UITableView && NCMainCommon.shared.isValidIndexPath(self.indexPath, view: self.view) {
-                    cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                
+                if self.view is UICollectionView {
+                    if self.indexPath.section < (self.view as! UICollectionView).numberOfSections && self.indexPath.row < (self.view as! UICollectionView).numberOfItems(inSection: self.indexPath.section) {
+                        cell = (self.view as! UICollectionView).cellForItem(at: self.indexPath) as? NCImageCellProtocol
+                    }
+                } else {
+                    if self.indexPath.section < (self.view as! UITableView).numberOfSections && self.indexPath.row < (self.view as! UITableView).numberOfRows(inSection: self.indexPath.section) {
+                        cell = (self.view as! UITableView).cellForRow(at: self.indexPath) as? NCImageCellProtocol
+                    }
                 }
-
+                
                 if (cell != nil) {
                     var previewImage: UIImage!
                     if errorCode == 0 && imageIcon != nil {
@@ -406,65 +376,3 @@ class NCOperationDownloadThumbnail: ConcurrentOperation {
         }
     }
 }
-
-//MARK: -
-
-class NCOperationReadFileForMediaQueue: ConcurrentOperation {
-   
-    var metadata: tableMetadata
-    
-    init(metadata: tableMetadata) {
-        self.metadata = tableMetadata.init(value: metadata)
-    }
-    
-    override func start() {
-
-        if isCancelled {
-            self.finish()
-        } else {
-            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            let requestBody =
-            """
-            <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-            <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-            <d:prop>
-                <has-preview xmlns=\"http://nextcloud.org/ns\"/>
-                <creation_time xmlns=\"http://nextcloud.org/ns\"/>
-                <upload_time xmlns=\"http://nextcloud.org/ns\"/>
-            </d:prop>
-            </d:propfind>
-            """
-            
-            NCCommunication.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", requestBody: requestBody.data(using: .utf8)) { (account, files, responseData, errorCode, errorDescription) in
-                if errorCode == 0 && files.count > 0 {
-                    let file = files[0]
-                    let metadata = tableMetadata.init(value: self.metadata)
-                    var modify = false
-                    if metadata.hasPreview != file.hasPreview {
-                        metadata.hasPreview = file.hasPreview
-                        modify = true
-                    }
-                    if file.creationDate != nil && metadata.creationDate != file.creationDate {
-                        metadata.creationDate = file.creationDate!
-                        modify = true
-                    }
-                    if file.uploadDate != nil && metadata.uploadDate != file.uploadDate {
-                        metadata.uploadDate = file.uploadDate!
-                        modify = true
-                    }
-                    if modify {
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
-                        NCOperationQueue.shared.reloadDataSourceMedia()
-                    }
-                } else if errorCode == 404 {
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", self.metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_mediaFileNotFound, userInfo: ["metadata": self.metadata])
-                }
-                self.finish()
-            }
-        }
-    }
-}
-
-
-

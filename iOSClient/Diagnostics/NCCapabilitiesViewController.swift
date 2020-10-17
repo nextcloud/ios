@@ -36,10 +36,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     
     @IBOutlet weak var imageEndToEndEncryption: UIImageView!
     @IBOutlet weak var statusEndToEndEncryption: UILabel!
-    
-    @IBOutlet weak var imagePaginatedFileListing: UIImageView!
-    @IBOutlet weak var statusPaginatedFileListing: UILabel!
-    
+        
     @IBOutlet weak var imageActivity: UIImageView!
     @IBOutlet weak var statusActivity: UILabel!
    
@@ -97,11 +94,6 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusEndToEndEncryption.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
         statusEndToEndEncryption.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
         
-        statusPaginatedFileListing.layer.cornerRadius = 12.5
-        statusPaginatedFileListing.layer.borderWidth = 0.5
-        statusPaginatedFileListing.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusPaginatedFileListing.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
-        
         statusActivity.layer.cornerRadius = 12.5
         statusActivity.layer.borderWidth = 0.5
         statusActivity.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
@@ -135,7 +127,6 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
-        imagePaginatedFileListing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "application"), width: 100, height: 100, color: .gray)
         imageActivity.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 100, height: 100, color: .gray)
         imageNotification.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 100, height: 100, color: .gray)
         imageDeletedFiles.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "delete"), width: 100, height: 100, color: .gray)
@@ -238,14 +229,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         } else {
             statusEndToEndEncryption.text = NSLocalizedString("_not_available_", comment: "")
         }
-        
-        let paginationEndpoint = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesPaginationEndpoint)
-        if paginationEndpoint != nil {
-            statusPaginatedFileListing.text = "✓ " + NSLocalizedString("_available_", comment: "")
-        } else {
-            statusPaginatedFileListing.text = NSLocalizedString("_not_available_", comment: "")
-        }
-        
+      
         let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
         if activity != nil {
             statusActivity.text = "✓ " + NSLocalizedString("_available_", comment: "")

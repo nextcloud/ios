@@ -35,7 +35,8 @@ class NCDetailViewController: UIViewController {
     @objc var metadata: tableMetadata?
     @objc var selector: String?
     @objc var mediaFilterImage: Bool = false
-    
+    @objc var layoutKey = ""
+
     @objc var viewerImageViewController: NCViewerImageViewController?
     @objc var metadatas: [tableMetadata] = []
     
@@ -435,6 +436,7 @@ class NCDetailViewController: UIViewController {
                 }
                     
                 viewerPDF.setupPdfView(filePath: URL(fileURLWithPath: filePath), view: backgroundView)
+                self.navigationController?.navigationBar.topItem?.title = self.metadata!.fileNameView
 
                 return
             }
@@ -537,7 +539,7 @@ class NCDetailViewController: UIViewController {
         CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: fileNamePath)
 
         viewerQuickLook = NCViewerQuickLook.init()
-        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath), viewController: self)
+        viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.unload(checkWindow: false)
@@ -553,7 +555,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
         
         closeAllSubView()
         
-        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage) { (metadatas) in
+        NCViewerImageCommon.shared.getMetadatasDatasource(metadata: self.metadata, mediaDatasorce: mediaFilterImage, layoutKey: layoutKey) { (metadatas) in
             
             guard let metadatas = metadatas else {
                 self.viewUnload()
@@ -829,7 +831,7 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
 
 extension NCDetailViewController: NCSelectDelegate {
     
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, array: [Any], buttonType: String, overwrite: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
         if let metadata = self.metadata, let serverUrl = serverUrl {
             if buttonType == "done" {
                 NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in

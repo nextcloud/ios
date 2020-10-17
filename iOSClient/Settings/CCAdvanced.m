@@ -147,7 +147,7 @@
             [self deselectFormRow:sender];
             
             NCViewerQuickLook *viewerQuickLook = [NCViewerQuickLook new];
-            [viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:fileNameLog] viewController:self];
+            [viewerQuickLook quickLookWithUrl:[NSURL fileURLWithPath:fileNameLog]];
         };
         [section addFormRow:row];
         
@@ -304,7 +304,7 @@
         
         NSInteger logLevel = [[rowDescriptor.value valueData] intValue];
         [CCUtility setLogLevel:logLevel];
-        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel echo:true];
+        [[NCCommunicationCommon shared] setFileLogWithLevel:logLevel];
     }
 }
 
