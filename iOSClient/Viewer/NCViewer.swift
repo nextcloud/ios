@@ -34,20 +34,33 @@ class NCViewer: NSObject {
     
     func view(viewController: UIViewController, metadata: tableMetadata) {
 
+        // VIDEO AUDIO
+        if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
+            
+            if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                let viewController:NCViewerVideo = UIStoryboard(name: "NCViewerVideo", bundle: nil).instantiateInitialViewController() as! NCViewerVideo
+            
+                viewController.metadata = metadata
+            
+                navigationController.pushViewController(viewController, animated: true)
+            }
+            return
+        }
+        
         // DOCUMENTS
         if metadata.typeFile == k_metadataTypeFile_document {
                 
             // PDF
             if metadata.contentType == "application/pdf" {
                     
-                if !canPush(viewController: viewController, serverUrl: metadata.serverUrl) { return }
-                guard let navigationController = viewController.navigationController else { return }
-                let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
+                if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                    let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
-                viewController.metadata = metadata
-                viewController.viewer = self
+                    viewController.metadata = metadata
+                    viewController.viewer = self
                 
-                navigationController.pushViewController(viewController, animated: true)
+                    navigationController.pushViewController(viewController, animated: true)
+                }
                 return
             }
         }
@@ -61,13 +74,13 @@ class NCViewer: NSObject {
         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
     }
     
-    private func canPush(viewController: UIViewController, serverUrl: String) -> Bool {
+    private func getPushNavigationController(viewController: UIViewController, serverUrl: String) -> UINavigationController? {
         
         if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder {
             if serverUrl == appDelegate.activeServerUrl {
-                return true
+                return viewController.navigationController
             }
         }
-        return false
+        return nil
     }
 }
