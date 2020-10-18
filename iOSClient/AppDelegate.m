@@ -224,7 +224,7 @@
     // Request Service Server Nextcloud
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCService shared] startRequestServicesServer];
-    });    
+    });
 }
 
 //
@@ -298,7 +298,6 @@
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // Start services
-    [[NCCommunicationCommon shared] writeLog:@"Request Service Server Nextcloud"];
     [[NCService shared] startRequestServicesServer];
     
     // Registeration push notification
