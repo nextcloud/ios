@@ -93,7 +93,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     
     @objc func viewUnload() {
         
-        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":metadata.serverUrl])
         navigationController?.popViewController(animated: true)
     }
     
@@ -157,7 +156,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         if (message.name == "DirectEditingMobileInterface") {
             
             if message.body as? String == "close" {
-                                
                 viewUnload()
             }
             
@@ -207,5 +205,11 @@ extension NCViewerNextcloudText : UINavigationControllerDelegate {
 
     override func willMove(toParent parent: UIViewController?) {
         super.willMove(toParent: parent)
+        
+        if parent == nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":self.metadata.serverUrl])
+            }
+        }
      }
 }
