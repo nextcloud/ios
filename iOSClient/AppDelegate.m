@@ -420,26 +420,31 @@
 -(void)showLoginViewController:(UIViewController *)viewController forContext:(UIViewController *)contextViewController
 {
     if (contextViewController == NULL) {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navController.navigationBar.barStyle =  UIBarStyleBlack;
-        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
-        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
-        [navController.navigationBar setTranslucent:false];
-        self.window.rootViewController = navController;
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+        navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navigationController.navigationBar setTranslucent:false];
+        self.window.rootViewController = navigationController;
+        
         [self.window makeKeyAndVisible];
         
     } else if ([contextViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navController = ((UINavigationController *)contextViewController);
-        [navController pushViewController:viewController animated:true];
+        
+        UINavigationController *navigationController = ((UINavigationController *)contextViewController);
+        [navigationController pushViewController:viewController animated:true];
         
     } else {
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        navController.modalPresentationStyle = UIModalPresentationFullScreen;
-        navController.navigationBar.barStyle =  UIBarStyleBlack;
-        navController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
-        navController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
-        [navController.navigationBar setTranslucent:false];
-        [contextViewController presentViewController:navController animated:true completion:nil];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
+        navigationController.navigationBar.barStyle =  UIBarStyleBlack;
+        navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.customerText;
+        navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer;
+        [navigationController.navigationBar setTranslucent:false];
+        
+        [contextViewController presentViewController:navigationController animated:true completion:nil];
     }
 }
 
