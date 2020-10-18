@@ -106,3 +106,21 @@ class NCViewerVideo: UIViewController {
         NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
 }
+
+extension NCViewerVideo : UINavigationControllerDelegate {
+
+    override func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
+        
+        if parent == nil {
+            if appDelegate.player != nil && appDelegate.player.rate != 0 {
+                appDelegate.player.pause()
+            }
+            
+            if appDelegate.isMediaObserver {
+                appDelegate.isMediaObserver = false
+                NCViewerVideoCommon.sharedInstance.removeObserver()
+            }
+        }
+     }
+}
