@@ -177,8 +177,6 @@
     // Auto upload
     self.networkingAutoUpload = [NCNetworkingAutoUpload new];
     
-    [[NCCommunicationCommon shared] writeLog:@"Application did finish launching"];
-
     return YES;
 }
 
@@ -226,9 +224,7 @@
     // Request Service Server Nextcloud
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
         [[NCService shared] startRequestServicesServer];
-    });
-    
-    [[NCCommunicationCommon shared] writeLog:@"The application Will enter in foreground"];
+    });    
 }
 
 //
@@ -251,8 +247,6 @@
     #endif
     
     [[NCNetworking shared] verifyUploadZombie];
-    
-    [[NCCommunicationCommon shared] writeLog:@"The application did become active"];
 }
 
 //
