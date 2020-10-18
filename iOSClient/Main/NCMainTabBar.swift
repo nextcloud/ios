@@ -201,7 +201,6 @@ import Foundation
     // Menu Button Touch Action
     @objc func centerButtonAction(sender: UIButton) {
         
-        if appDelegate.maintenanceMode { return }
         if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {

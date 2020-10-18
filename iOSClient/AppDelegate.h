@@ -119,9 +119,6 @@
 // Shares
 @property (nonatomic, strong) NSArray *shares;
 
-// Maintenance Mode
-@property BOOL maintenanceMode;
-
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
@@ -139,9 +136,6 @@
 
 // Push Notification
 - (void)pushNotification;
-
-// Maintenance Mode
-- (void)maintenanceMode:(BOOL)mode;
 
 @end
 

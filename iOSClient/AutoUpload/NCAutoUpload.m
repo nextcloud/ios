@@ -332,9 +332,7 @@
 
 - (void)uploadAssetsNewAndFull:(NSString *)selector
 {
-    if (!appDelegate.account || appDelegate.maintenanceMode) {
-         return;
-    }
+    if (!appDelegate.account) return;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     if (tableAccount == nil) {
