@@ -125,6 +125,44 @@ class NCViewer: NSObject {
                 return
             }
             
+            // RichDocument: Collabora
+            if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
+                                
+                if metadata.url == "" {
+                    
+                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
+                        
+                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                            
+                            if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                                let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                            
+                                viewController.metadata = metadata
+                                viewController.link = url!
+                            
+                                navigationController.pushViewController(viewController, animated: true)
+                            }
+                            
+                        } else if errorCode != 0 {
+                            
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        }
+                    }
+                    
+                } else {
+                    
+                    if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                        let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                    
+                        viewController.metadata = metadata
+                        viewController.link = metadata.url
+                    
+                        navigationController.pushViewController(viewController, animated: true)
+                    }
+                }
+                
+                return
+            }
         }
         
         // OTHER

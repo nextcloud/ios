@@ -72,6 +72,7 @@
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
+		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729289F253B0937009CA4FD /* NCMainNavigationController.swift */; };
@@ -413,6 +414,7 @@
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F722814223C8C34500C41898 /* NCRichWorkspace.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCRichWorkspace.xib; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
+		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
@@ -907,6 +909,15 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
+		F7239861253C95D500257F49 /* NCViewerRichdocument */ = {
+			isa = PBXGroup;
+			children = (
+				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
+				F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */,
+			);
+			path = NCViewerRichdocument;
+			sourceTree = "<group>";
+		};
 		F728CE741BF6322C00E69702 /* Share */ = {
 			isa = PBXGroup;
 			children = (
@@ -1108,8 +1119,8 @@
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F71CEB0D253A0B1A00832FFE /* NCViewerVideo */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
+				F7239861253C95D500257F49 /* NCViewerRichdocument */,
 				F79018B1240962C7007C9B6D /* NCViewerImage */,
-				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";
@@ -1845,6 +1856,7 @@
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */,
+				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,

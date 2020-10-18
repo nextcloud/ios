@@ -444,6 +444,7 @@ class NCDetailViewController: UIViewController {
             */
             
             // RichDocument: Collabora
+            /*
             if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
                 
                 NCUtility.shared.startActivityIndicator(view: view)
@@ -477,6 +478,7 @@ class NCDetailViewController: UIViewController {
                 
                 return
             }
+            */
         }
         
         // OTHER
