@@ -77,7 +77,6 @@ class NCViewer: NSObject {
                         
                         if editor == k_editor_onlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
-                            //self.navigationController?.navigationBar.topItem?.title = ""
                         }
                         
                         NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in

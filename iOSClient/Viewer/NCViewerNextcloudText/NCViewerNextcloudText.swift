@@ -32,7 +32,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var link: String = ""
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
-    var documentInteractionController: UIDocumentInteractionController!
    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -41,6 +40,17 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
              
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        changeTheming()
+
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
@@ -54,9 +64,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
@@ -72,6 +79,63 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         webView.load(request)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = buttonMore
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = metadata.fileNameView
+
+        appDelegate.activeViewController = self
+    }
+    
+    @objc func viewUnload() {
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    //MARK: - NotificationCenter
+   
+    @objc func moveFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    self.metadata = metadataNew
+                }
+            }
+        }
+    }
+    
+    @objc func deleteFile(_ notification: NSNotification) {
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    viewUnload()
+                }
+            }
+        }
+    }
+    
+    @objc func renameFile(_ notification: NSNotification) {
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    self.metadata = metadata
+                    navigationItem.title = metadata.fileNameView
+                }
+            }
+        }
+    }
+
+    @objc func changeTheming() {
+        if navigationController?.isNavigationBarHidden == false {
+        }
+    }
+    
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
@@ -81,6 +145,12 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     
     @objc func keyboardWillHide(notification: Notification) {
         self.view.frame = view.frame
+    }
+    
+    //MARK: - Action
+    
+    @objc func openMenuMore() {
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
     
     //MARK: -
@@ -135,4 +205,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCUtility.shared.stopActivityIndicator()
     }
+}
+
+extension NCViewerNextcloudText : UINavigationControllerDelegate {
+
+    override func willMove(toParent parent: UIViewController?) {
+        super.willMove(toParent: parent)
+     }
 }

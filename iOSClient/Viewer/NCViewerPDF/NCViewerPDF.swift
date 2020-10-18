@@ -36,8 +36,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private let pageView = UIView()
     private let pageViewLabel = UILabel()
     private var pageViewWidthAnchor : NSLayoutConstraint?
-    
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
