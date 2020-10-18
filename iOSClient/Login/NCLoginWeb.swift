@@ -55,6 +55,7 @@ class NCLoginWeb: UIViewController {
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView!.navigationDelegate = self
         view.addSubview(webView!)
+        
         webView!.translatesAutoresizingMaskIntoConstraints = false
         webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true

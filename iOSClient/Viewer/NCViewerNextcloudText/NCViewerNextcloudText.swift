@@ -28,7 +28,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
-    
+    var bottomConstraint : NSLayoutConstraint?
+
     var link: String = ""
     var editor: String = ""
     var metadata: tableMetadata = tableMetadata()
@@ -43,14 +44,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
-        changeTheming()
-
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
@@ -59,11 +57,13 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
         view.addSubview(webView)
+        
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+        bottomConstraint?.isActive = true
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
@@ -131,20 +131,16 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
     }
 
-    @objc func changeTheming() {
-        if navigationController?.isNavigationBarHidden == false {
-        }
-    }
-    
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
-        self.view.frame.size.height = view.frame.height - keyboardFrame.size.height
+        let height = keyboardFrame.size.height
+        bottomConstraint?.constant = -height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        self.view.frame = view.frame
+        bottomConstraint?.constant = 0
     }
     
     //MARK: - Action
