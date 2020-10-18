@@ -23,7 +23,7 @@
 
 import Foundation
 
-@IBDesignable class NCMainTabBar: UITabBar {
+class NCMainTabBar: UITabBar {
 
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
