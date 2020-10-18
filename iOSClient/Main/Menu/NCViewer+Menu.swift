@@ -180,7 +180,7 @@ extension NCViewer {
                     viewController.isOverwriteHide = false
                     
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                    viewController.present(navigationController, animated: true, completion: nil)
+                    self.appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
                 }
             )
         )
