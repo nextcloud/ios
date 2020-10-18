@@ -107,7 +107,6 @@
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
 
-@property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listFilesVC;
 @property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;
 @property (nonatomic, strong) NSMutableDictionary *listOfflineVC;
