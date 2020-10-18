@@ -304,8 +304,8 @@
     [self pushNotification];
     
     // Registeration domain File Provider
-    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-    [fileProviderDomain removeAllDomains];
+    //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+    //[fileProviderDomain removeAllDomains];
     //[fileProviderDomain registerDomains];
     
     [[NCCommunicationCommon shared] writeLog:@"initialize Main"];
