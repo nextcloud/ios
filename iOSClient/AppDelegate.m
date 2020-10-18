@@ -213,7 +213,7 @@
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // Read active directory
-    [self.activeFiles reloadDataSourceNetworkWithForced:true];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_reloadDataSourceNetworkForced object:nil];
     
     // Required unsubscribing / subscribing
     [self pushNotification];

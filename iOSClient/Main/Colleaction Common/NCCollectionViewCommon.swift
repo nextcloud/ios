@@ -274,6 +274,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     reloadDataSourceNetwork(forced: true)
                 }
             }
+        } else {
+            reloadDataSourceNetwork(forced: true)
         }
     }
     
