@@ -56,15 +56,17 @@ import MarkdownKit
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { (account, metadata, errorCode, errorDescription) in
-            
-            if errorCode == 0 && account == self.appDelegate.account {
-                guard let metadata = metadata else { return }
-                NCManageDatabase.sharedInstance.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
-                if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
-                    self.appDelegate.activeFiles.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadata.richWorkspace!
-                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: self.appDelegate.account) { (account, metadata, errorCode, errorDescription) in
+                
+                if errorCode == 0 && account == self.appDelegate.account {
+                    guard let metadata = metadata else { return }
+                    NCManageDatabase.sharedInstance.setDirectory(richWorkspace: metadata.richWorkspace, serverUrl: self.serverUrl, account: account)
+                    if self.richWorkspaceText != metadata.richWorkspace && metadata.richWorkspace != nil {
+                        self.appDelegate.activeFiles.richWorkspaceText = self.richWorkspaceText
+                        self.richWorkspaceText = metadata.richWorkspace!
+                        self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
+                    }
                 }
             }
         }
