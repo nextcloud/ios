@@ -220,12 +220,14 @@ class NCDetailViewController: UIViewController {
                     
                     // update subview
                     for view in view.subviews {
+                        /*
                         if view is NCViewerNextcloudText {
                             (view as! NCViewerNextcloudText).metadata = self.metadata
                         }
                         else if view is NCViewerRichdocument {
                             (view as! NCViewerRichdocument).metadata = self.metadata
                         }
+                        */
                     }
                 }
             }
@@ -383,7 +385,7 @@ class NCDetailViewController: UIViewController {
         // DOCUMENT
         if metadata.typeFile == k_metadataTypeFile_document {
             
-            
+            /*
             
             // DirectEditinf: Nextcloud Text - OnlyOffice
             if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
@@ -439,6 +441,7 @@ class NCDetailViewController: UIViewController {
                 
                 return
             }
+            */
             
             // RichDocument: Collabora
             if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {

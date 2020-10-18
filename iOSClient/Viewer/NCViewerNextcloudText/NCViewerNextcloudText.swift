@@ -24,41 +24,37 @@
 import Foundation
 import WebKit
 
-class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHandler {
+class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var editor: String!
-    var metadata: tableMetadata!
-    var view: UIView!
-    var viewController: UIViewController!
+    var webView = WKWebView()
+    
+    var link: String = ""
+    var editor: String = ""
+    var metadata: tableMetadata = tableMetadata()
     var documentInteractionController: UIDocumentInteractionController!
    
-    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
-        super.init(frame: frame, configuration: configuration)
-
-        let contentController = configuration.userContentController
-        contentController.add(self, name: "DirectEditingMobileInterface")
-        
-        autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        navigationDelegate = self
-    }
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: self.frame.height)
-    }
-    
-    @objc func viewerAt(_ link: String, metadata: tableMetadata, editor: String, view: UIView, viewController: UIViewController) {
-                
-        self.metadata = metadata
-        self.editor = editor
-        self.view = view
-        self.viewController = viewController
-
+    override func viewDidLoad() {
+        super.viewDidLoad()
+             
+        let config = WKWebViewConfiguration()
+        config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
+        let contentController = config.userContentController
+        contentController.add(self, name: "DirectEditingMobileInterface")
+        
+        webView = WKWebView(frame: CGRect.zero, configuration: config)
+        webView.navigationDelegate = self
+        view.addSubview(webView)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
@@ -68,25 +64,23 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
                 
         if editor == k_editor_onlyoffice {
-            customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+            webView.customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
         } else {
-            customUserAgent = CCUtility.getUserAgent()
+            webView.customUserAgent = CCUtility.getUserAgent()
         }
         
-        load(request)
-        
-        self.view.addSubview(self)
+        webView.load(request)
     }
     
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
-        frame.size.height = view.frame.height - keyboardFrame.size.height
+        self.view.frame.size.height = view.frame.height - keyboardFrame.size.height
     }
     
     @objc func keyboardWillHide(notification: Notification) {
-        frame = view.frame
+        self.view.frame = view.frame
     }
     
     //MARK: -
@@ -102,7 +96,7 @@ class NCViewerNextcloudText: WKWebView, WKNavigationDelegate, WKScriptMessageHan
             }
             
             if message.body as? String == "share" {
-                NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 2)
+                NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
             }
             
             if message.body as? String == "loading" {

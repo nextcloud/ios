@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NCCommunication
 
 class NCViewer: NSObject {
     @objc static let shared: NCViewer = {
@@ -62,6 +63,66 @@ class NCViewer: NSObject {
                 }
                 return
             }
+            
+            // DirectEditinf: Nextcloud Text - OnlyOffice
+            if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
+                
+                guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
+                if editor == k_editor_text || editor == k_editor_onlyoffice {
+                    
+                    if metadata.url == "" {
+                        
+                        var customUserAgent: String?
+                        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+                        
+                        if editor == k_editor_onlyoffice {
+                            customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
+                            //self.navigationController?.navigationBar.topItem?.title = ""
+                        }
+                        
+                        NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
+                            
+                            if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                                
+                                if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                                    let viewController:NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
+                                
+                                    viewController.metadata = metadata
+                                    viewController.editor = editor
+                                    viewController.link = url!
+                                
+                                    navigationController.pushViewController(viewController, animated: true)
+                                }
+                                
+                            } else if errorCode != 0 {
+                                
+                                NCContentPresenter.shared.messageNotification("_error_", description: errorMessage, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                            }
+                        }
+                        
+                    } else {
+                        
+                        if editor == k_editor_onlyoffice {
+                            //self.navigationController?.navigationBar.topItem?.title = ""
+                        }
+                            
+                        if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                            let viewController:NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
+                        
+                            viewController.metadata = metadata
+                            viewController.editor = editor
+                            viewController.link = metadata.url
+                        
+                            navigationController.pushViewController(viewController, animated: true)
+                        }
+                    }
+                } else {
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                }
+                
+                return
+            }
+            
         }
         
         // OTHER
