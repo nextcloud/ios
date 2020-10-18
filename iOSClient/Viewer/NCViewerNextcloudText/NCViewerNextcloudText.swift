@@ -203,13 +203,11 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
 extension NCViewerNextcloudText : UINavigationControllerDelegate {
 
-    override func willMove(toParent parent: UIViewController?) {
-        super.willMove(toParent: parent)
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
         
         if parent == nil {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":self.metadata.serverUrl])
-            }
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":self.metadata.serverUrl])
         }
-     }
+    }
 }
