@@ -42,8 +42,6 @@ class NCMainNavigationController: UINavigationController {
             navBarAppearance.configureWithOpaqueBackground()
             navBarAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
             navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            navBarAppearance.shadowColor = .clear
-            navBarAppearance.shadowImage = UIImage()
             
             navBarAppearance = UINavigationBarAppearance()
             
