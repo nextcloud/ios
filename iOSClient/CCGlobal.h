@@ -315,6 +315,8 @@
 #define k_notificationCenter_closeRichWorkspaceWebView  @"closeRichWorkspaceWebView"
 
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
+#define k_notificationCenter_reloadDataSourceNetwork    @"reloadDataSourceNetwork"          // userInfo: serverUrl
+
 #define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
 #define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
 

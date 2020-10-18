@@ -82,8 +82,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
-        navigationItem.rightBarButtonItem = buttonMore
+        navigationItem.rightBarButtonItem = nil
+        navigationItem.leftBarButtonItem = nil
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
@@ -157,8 +157,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             
             if message.body as? String == "close" {
                                 
-                //appDelegate.activeDetail.viewUnload()
-                appDelegate.activeFiles.reloadDataSourceNetwork()
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetwork, userInfo: ["serverUrl":metadata.serverUrl])
+                viewUnload()
             }
             
             if message.body as? String == "share" {
