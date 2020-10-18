@@ -32,9 +32,12 @@ class NCViewer: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var viewerQuickLook: NCViewerQuickLook?
+    private var metadata = tableMetadata()
     
     func view(viewController: UIViewController, metadata: tableMetadata) {
 
+        self.metadata = metadata
+        
         // VIDEO AUDIO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
@@ -149,15 +152,15 @@ class NCViewer: NSObject {
 extension NCViewer: NCSelectDelegate {
     
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool) {
-        if let metadata = metadata, let serverUrl = serverUrl {
+        if let serverUrl = serverUrl {
             if buttonType == "done" {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
+                NCNetworking.shared.moveMetadata(self.metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
                 }
             } else {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
+                NCNetworking.shared.copyMetadata(self.metadata, serverUrlTo: serverUrl, overwrite: overwrite) { (errorCode, errorDescription) in
                     if errorCode != 0 {
                         NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                     }
