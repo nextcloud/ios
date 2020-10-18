@@ -306,38 +306,38 @@
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"
 #define k_notificationCenter_applicationWillEnterForeground @"applicationWillEnterForeground"
 
-#define k_notificationCenter_initializeMain             @"initializeMain"
-#define k_notificationCenter_setTitleMain               @"setTitleMain"
-#define k_notificationCenter_changeTheming              @"changeTheming"
-#define k_notificationCenter_changeUserProfile          @"changeUserProfile"
-#define k_notificationCenter_richdocumentGrabFocus      @"richdocumentGrabFocus"
-#define k_notificationCenter_reloadDataNCShare          @"reloadDataNCShare"
-#define k_notificationCenter_closeRichWorkspaceWebView  @"closeRichWorkspaceWebView"
+#define k_notificationCenter_initializeMain                 @"initializeMain"
+#define k_notificationCenter_setTitleMain                   @"setTitleMain"
+#define k_notificationCenter_changeTheming                  @"changeTheming"
+#define k_notificationCenter_changeUserProfile              @"changeUserProfile"
+#define k_notificationCenter_richdocumentGrabFocus          @"richdocumentGrabFocus"
+#define k_notificationCenter_reloadDataNCShare              @"reloadDataNCShare"
+#define k_notificationCenter_closeRichWorkspaceWebView      @"closeRichWorkspaceWebView"
 
-#define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_reloadDataSourceNetwork    @"reloadDataSourceNetwork"          // userInfo: serverUrl
+#define k_notificationCenter_reloadDataSource               @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
+#define k_notificationCenter_reloadDataSourceNetworkForced  @"reloadDataSourceNetworkForced"    // userInfo: serverUrl
 
-#define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
-#define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
+#define k_notificationCenter_mediaFileNotFound              @"mediaFileNotFound"                // userInfo: metadata
+#define k_notificationCenter_changeStatusFolderE2EE         @"changeStatusFolderE2EE"           // userInfo: serverUrl
 
-#define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: metadata
-#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
-#define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: metadata
+#define k_notificationCenter_downloadStartFile              @"downloadStartFile"                // userInfo: metadata
+#define k_notificationCenter_downloadedFile                 @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
+#define k_notificationCenter_downloadCancelFile             @"downloadCancelFile"               // userInfo: metadata
 
-#define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: metadata
-#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, ocIdTemp, errorCode, errorDescription
-#define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: metadata
+#define k_notificationCenter_uploadStartFile                @"uploadStartFile"                  // userInfo: metadata
+#define k_notificationCenter_uploadedFile                   @"uploadedFile"                     // userInfo: metadata, ocIdTemp, errorCode, errorDescription
+#define k_notificationCenter_uploadCancelFile               @"uploadCancelFile"                 // userInfo: metadata
 
-#define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
+#define k_notificationCenter_progressTask                   @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-#define k_notificationCenter_createFolder               @"createFolder"                     // userInfo: metadata
-#define k_notificationCenter_deleteFile                 @"deleteFile"                       // userInfo: metadata, onlyLocal
-#define k_notificationCenter_renameFile                 @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_moveFile                   @"moveFile"                         // userInfo: metadata, metadataNew
-#define k_notificationCenter_copyFile                   @"copyFile"                         // userInfo: metadata, serverUrlTo
-#define k_notificationCenter_favoriteFile               @"favoriteFile"                     // userInfo: metadata
+#define k_notificationCenter_createFolder                   @"createFolder"                     // userInfo: metadata
+#define k_notificationCenter_deleteFile                     @"deleteFile"                       // userInfo: metadata, onlyLocal
+#define k_notificationCenter_renameFile                     @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
+#define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: metadata, metadataNew
+#define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: metadata, serverUrlTo
+#define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: metadata
 
-#define k_notificationCenter_menuSearchTextPDF          @"menuSearchTextPDF"
-#define k_notificationCenter_menuDownloadImage          @"menuDownloadImage"                // userInfo: metadata
-#define k_notificationCenter_menuSaveLivePhoto          @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
-#define k_notificationCenter_menuDetailClose            @"menuDetailClose"
+#define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
+#define k_notificationCenter_menuDownloadImage              @"menuDownloadImage"                // userInfo: metadata
+#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
+#define k_notificationCenter_menuDetailClose                @"menuDetailClose"

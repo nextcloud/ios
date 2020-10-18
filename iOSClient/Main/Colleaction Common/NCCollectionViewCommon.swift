@@ -134,6 +134,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(initializeMain), name: NSNotification.Name(rawValue: k_notificationCenter_initializeMain), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSourceNetworkForced(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_reloadDataSourceNetworkForced), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_changeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: k_notificationCenter_closeRichWorkspaceWebView), object: nil)
 
@@ -263,6 +264,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         reloadDataSource()
+    }
+    
+    @objc func reloadDataSourceNetworkForced(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let serverUrl = userInfo["serverUrl"] as? String {
+                if serverUrl == self.serverUrl {
+                    reloadDataSourceNetwork(forced: true)
+                }
+            }
+        }
     }
     
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {

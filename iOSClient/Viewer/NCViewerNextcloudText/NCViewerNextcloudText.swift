@@ -93,6 +93,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     
     @objc func viewUnload() {
         
+        NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":metadata.serverUrl])
         navigationController?.popViewController(animated: true)
     }
     
@@ -157,7 +158,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             
             if message.body as? String == "close" {
                                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetwork, userInfo: ["serverUrl":metadata.serverUrl])
                 viewUnload()
             }
             
