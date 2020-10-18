@@ -52,7 +52,7 @@ import Foundation
                     CCUtility.setDarkMode(false)
                 }
             }
-            appDelegate.settingThemingColorBrand()
+            NCBrandColor.sharedInstance.settingThemingColor()
         }
     }
     

@@ -153,4 +153,58 @@ class NCBrandColor: NSObject {
             select = self.brandElement.withAlphaComponent(0.1)
         }
     }
+    
+#if !EXTENSION
+    @objc public func settingThemingColor() {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let darker: CGFloat = 10
+        let lighter: CGFloat = 40
+
+        if NCBrandOptions.sharedInstance.use_themingColor {
+            
+            let themingColor = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
+            
+            let themingColorElement = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
+            
+            let themingColorText = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
+            
+            CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
+                        
+            if NCBrandColor.sharedInstance.brandElement.isTooLight() {
+                if let color = NCBrandColor.sharedInstance.brandElement.darker(by: darker) {
+                    NCBrandColor.sharedInstance.brandElement = color
+                }
+            } else if NCBrandColor.sharedInstance.brandElement.isTooDark() {
+                if let color = NCBrandColor.sharedInstance.brandElement.lighter(by: lighter) {
+                    NCBrandColor.sharedInstance.brandElement = color
+                }
+            }           
+            
+        } else {
+            
+            if NCBrandColor.sharedInstance.customer.isTooLight() {
+                if let color = NCBrandColor.sharedInstance.customer.darker(by: darker) {
+                    NCBrandColor.sharedInstance.brandElement = color
+                }
+            } else if NCBrandColor.sharedInstance.customer.isTooDark() {
+                if let color = NCBrandColor.sharedInstance.customer.lighter(by: lighter) {
+                    NCBrandColor.sharedInstance.brandElement = color
+                }
+            } else {
+                NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer
+            }
+            
+            NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer
+            NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText
+        }
+        
+        setDarkMode()
+        
+        DispatchQueue.main.async {
+            NCCollectionCommon.shared.createImagesThemingColor()
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_changeTheming)
+        }
+    }
+#endif
 }

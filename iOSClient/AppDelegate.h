@@ -140,9 +140,6 @@
 // Push Notification
 - (void)pushNotification;
 
-// Theming Color
-- (void)settingThemingColorBrand;
-
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;
 

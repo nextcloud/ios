@@ -287,7 +287,7 @@
     [CCUtility setCertificateError:self.account error:NO];
     
     // Setting Theming
-    [self settingThemingColorBrand];
+    [[NCBrandColor sharedInstance] settingThemingColor];
     
     // If AVPlayer in play -> Stop
     if (self.player != nil && self.player.rate != 0) {
@@ -732,57 +732,6 @@
             [tabBarItem setBadgeValue:nil];
         }
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Theming Color =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)settingThemingColorBrand
-{
-    if (self.account.length == 0 || self.maintenanceMode)
-        return;
-    
-    if ([NCBrandOptions sharedInstance].use_themingColor) {
-        
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
-
-        [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
-        
-        BOOL isTooLight = NCBrandColor.sharedInstance.brandElement.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.brandElement.isTooDark;
-        
-        if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:10];
-        } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:40];
-        }
-    
-    } else {
-    
-        BOOL isTooLight = NCBrandColor.sharedInstance.customer.isTooLight;
-        BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
-        
-        if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:10];
-        } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:40];
-        } else {
-            NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
-        }
-        
-        NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer;
-        NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText;
-    }
-        
-    [NCBrandColor.sharedInstance setDarkMode];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[NCCollectionCommon shared] createImagesThemingColor];
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_changeTheming object:nil];
-    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
