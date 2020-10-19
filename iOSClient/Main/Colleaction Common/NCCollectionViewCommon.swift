@@ -115,9 +115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(collectionView: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription)
-        //collectionView.emptyDataSetDelegate = self
-        //collectionView.emptyDataSetSource = self
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription, offset: 100)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
