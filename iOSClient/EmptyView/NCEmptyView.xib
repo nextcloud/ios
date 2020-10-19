@@ -16,20 +16,20 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="W3d-Us-kU4">
-                    <rect key="frame" x="10" y="0.0" width="300" height="300"/>
+                    <rect key="frame" x="85" y="0.0" width="150" height="150"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="300" id="A8B-y7-Fre"/>
-                        <constraint firstAttribute="width" constant="300" id="g0C-P6-l3d"/>
+                        <constraint firstAttribute="height" constant="150" id="A8B-y7-Fre"/>
+                        <constraint firstAttribute="width" constant="150" id="g0C-P6-l3d"/>
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="crs-DO-owR">
-                    <rect key="frame" x="10" y="340" width="300" height="20.5"/>
+                    <rect key="frame" x="0.0" y="190" width="320" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4p-sI-mNB">
-                    <rect key="frame" x="10" y="400.5" width="300" height="20.5"/>
+                    <rect key="frame" x="0.0" y="250.5" width="320" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -38,12 +38,12 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="crs-DO-owR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="CMU-Tp-bUM"/>
+                <constraint firstItem="crs-DO-owR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="CMU-Tp-bUM"/>
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Fyb-so-iAw"/>
-                <constraint firstItem="D4p-sI-mNB" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="egV-G4-wax"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="crs-DO-owR" secondAttribute="trailing" constant="10" id="hHl-iN-Gev"/>
+                <constraint firstItem="D4p-sI-mNB" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="egV-G4-wax"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="crs-DO-owR" secondAttribute="trailing" id="hHl-iN-Gev"/>
                 <constraint firstItem="crs-DO-owR" firstAttribute="top" secondItem="W3d-Us-kU4" secondAttribute="bottom" constant="40" id="hLN-L6-0gH"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="D4p-sI-mNB" secondAttribute="trailing" constant="10" id="imv-AK-mqu"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="D4p-sI-mNB" secondAttribute="trailing" id="imv-AK-mqu"/>
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="kma-1Q-c3Q"/>
                 <constraint firstItem="D4p-sI-mNB" firstAttribute="top" secondItem="crs-DO-owR" secondAttribute="bottom" constant="40" id="zbi-5P-raN"/>
             </constraints>
