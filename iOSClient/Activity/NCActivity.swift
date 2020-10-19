@@ -166,12 +166,13 @@ extension NCActivity: UITableViewDelegate {
 extension NCActivity: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
+        emptyDataSet?.numberOfSections(sectionDate.count)
         return sectionDate.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let numberItems = getTableActivitiesFromSection(section).count
-        emptyDataSet?.numberOfItemsInSection(numberItems)
+        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
     }
     

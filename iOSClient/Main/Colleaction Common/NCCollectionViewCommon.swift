@@ -1291,7 +1291,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberItems = dataSource.numberOfItems()
-        emptyDataSet?.numberOfItemsInSection(numberItems)
+        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
         return numberItems
     }
     

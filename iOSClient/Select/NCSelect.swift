@@ -438,7 +438,7 @@ extension NCSelect: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItems = dataSource.numberOfItems()
-        emptyDataSet?.numberOfItemsInSection(numberOfItems)
+        emptyDataSet?.numberOfItemsInSection(numberOfItems, section:section)
         return numberOfItems
     }
     

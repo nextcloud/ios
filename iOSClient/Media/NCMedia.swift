@@ -556,7 +556,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(metadatas.count)
+        emptyDataSet?.numberOfItemsInSection(metadatas.count, section: section)
         return metadatas.count
     }
 

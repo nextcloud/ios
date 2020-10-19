@@ -437,7 +437,7 @@ extension NCTrash: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(datasource.count)
+        emptyDataSet?.numberOfItemsInSection(datasource.count, section: section)
         return datasource.count
     }
     
