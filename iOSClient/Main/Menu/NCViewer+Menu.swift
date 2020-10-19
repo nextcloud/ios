@@ -30,12 +30,8 @@ extension NCViewer {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
-            mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
-        } else {
-            mainMenuViewController.actions = self.initMoreMenuClose(viewController: viewController)
-        }
-
+        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
         menuPanelController.delegate = mainMenuViewController
@@ -43,21 +39,6 @@ extension NCViewer {
         menuPanelController.track(scrollView: mainMenuViewController.tableView)
 
         viewController.present(menuPanelController, animated: true, completion: nil)
-    }
-    
-    private func initMoreMenuClose(viewController: UIViewController) -> [NCMenuAction] {
-        var actions = [NCMenuAction]()
-                
-        actions.append(
-            NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDetailClose)
-                }
-            )
-        )
-        
-        return actions
     }
     
     private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
