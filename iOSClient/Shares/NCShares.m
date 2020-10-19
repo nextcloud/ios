@@ -52,8 +52,6 @@
     _dataSource = [NSMutableArray new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
     
     // Title
@@ -85,8 +83,8 @@
     [self.tableView reloadData];
 }
 
+/*
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
@@ -120,7 +118,7 @@
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
-
+*/
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
