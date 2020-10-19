@@ -79,9 +79,7 @@ class NCFiles: NCCollectionViewCommon  {
             
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-                
-                self.empty?.reload()
+                self.collectionView.reloadData()                
             }
         }
     }

@@ -116,6 +116,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         // Empty
         emptyDataSet = NCEmptyDataSet.init(collectionView: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription)
+        //collectionView.emptyDataSetDelegate = self
+        //collectionView.emptyDataSetSource = self
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -1324,7 +1326,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItems()
+        let numberItems = dataSource.numberOfItems()
+        emptyDataSet?.numberOfItemsInSection(numberItems)
+        return numberItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
