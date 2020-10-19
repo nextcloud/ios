@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="NCEmptyView" customModule="Nextcloud" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -47,6 +47,11 @@
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="kma-1Q-c3Q"/>
                 <constraint firstItem="D4p-sI-mNB" firstAttribute="top" secondItem="crs-DO-owR" secondAttribute="bottom" constant="40" id="zbi-5P-raN"/>
             </constraints>
+            <connections>
+                <outlet property="emptyDescription" destination="D4p-sI-mNB" id="4Rw-TK-oGc"/>
+                <outlet property="emptyImage" destination="W3d-Us-kU4" id="xtd-nV-OUc"/>
+                <outlet property="emptyTtle" destination="crs-DO-owR" id="uoT-Bx-5Uw"/>
+            </connections>
             <point key="canvasLocation" x="138.75" y="75"/>
         </view>
     </objects>
