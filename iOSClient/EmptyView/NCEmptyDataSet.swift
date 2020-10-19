@@ -1,5 +1,5 @@
 //
-//  NCEmpty.swift
+//  NCEmptyDataSet.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/10/2020.
@@ -8,15 +8,15 @@
 
 import Foundation
 
-class NCEmpty: NSObject {
+class NCEmptyDataSet: NSObject {
     
     var emptyView: NCEmptyView?
-    var collectioView: UICollectionView?
+    var collectionView: UICollectionView?
     
-    init(collectioView: UICollectionView, image: UIImage?, title: String, description: String) {
+    init(collectionView: UICollectionView, image: UIImage?, title: String, description: String) {
         super.init()
 
-        self.collectioView = collectioView
+        self.collectionView = collectionView
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
             self.emptyView = emptyView
@@ -29,17 +29,17 @@ class NCEmpty: NSObject {
             emptyView.emptyTtle.text = NSLocalizedString(title, comment: "")
             emptyView.emptyDescription.text = NSLocalizedString(description, comment: "")
                        
-            collectioView.addSubview(emptyView)
+            collectionView.addSubview(emptyView)
 
-            emptyView.centerXAnchor.constraint(equalTo: collectioView.centerXAnchor, constant: 0).isActive = true
-            emptyView.topAnchor.constraint(equalTo: collectioView.topAnchor).isActive = true
+            emptyView.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor, constant: 0).isActive = true
+            emptyView.topAnchor.constraint(equalTo: collectionView.topAnchor).isActive = true
             
             emptyView.layoutIfNeeded()
         }
     }
     
     func reload() {
-        let items = collectioView?.numberOfItems(inSection: 0)
+        let items = collectionView?.numberOfItems(inSection: 0)
         if items == 0 {
             emptyView?.isHidden = false
         } else {
