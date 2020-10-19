@@ -35,9 +35,9 @@ class NCFiles: NCCollectionViewCommon  {
         titleCurrentFolder = NCBrandOptions.sharedInstance.brand
         layoutKey = k_layout_view_files
         enableSearchBar = true
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
-        DZNtitle = "_files_no_files_"
-        DZNdescription = "_no_file_pull_down_"
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        emptyTitle = "_files_no_files_"
+        emptyDescription = "_no_file_pull_down_"
     }
     
     override func viewWillAppear(_ animated: Bool) {
