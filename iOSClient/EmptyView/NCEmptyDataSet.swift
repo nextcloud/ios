@@ -11,12 +11,10 @@ import Foundation
 class NCEmptyDataSet: NSObject {
     
     var emptyView: NCEmptyView?
-    var collectionView: UICollectionView?
     
-    init(collectionView: UICollectionView, image: UIImage?, title: String, description: String) {
+    init(view: UIView, image: UIImage?, title: String, description: String, offset: CGFloat) {
         super.init()
 
-        self.collectionView = collectionView
         
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
@@ -30,14 +28,12 @@ class NCEmptyDataSet: NSObject {
             emptyView.emptyTtle.text = NSLocalizedString(title, comment: "")
             emptyView.emptyDescription.text = NSLocalizedString(description, comment: "")
                        
-            collectionView.addSubview(emptyView)
+            view.addSubview(emptyView)
 
-            let constantY: CGFloat = (collectionView.frame.height - emptyView.frame.height) / 2 - 100
+            let constantY: CGFloat = (view.frame.height - emptyView.frame.height) / 2 - offset
             
-            emptyView.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor).isActive = true
-            emptyView.topAnchor.constraint(equalTo: collectionView.topAnchor, constant: constantY).isActive = true
-            
-            //emptyView.layoutIfNeeded()
+            emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+            emptyView.topAnchor.constraint(equalTo: view.topAnchor, constant: constantY).isActive = true
         }
     }
     
