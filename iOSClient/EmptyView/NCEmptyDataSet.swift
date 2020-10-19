@@ -17,7 +17,7 @@ class NCEmptyDataSet: NSObject {
     var emptyView: NCEmptyView?
     var delegate: NCEmptyDataSetDelegate?
     var timer: Timer?
-    var numberItemsForSection: [Int] = []
+    var numberItemsForSection: [Int] = [Int](repeating: 0, count:1)
     
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
@@ -26,7 +26,6 @@ class NCEmptyDataSet: NSObject {
         
             self.delegate = delegate
             self.emptyView = emptyView
-            numberItemsForSection = [Int](repeating: 0, count:1)
             
             emptyView.frame =  CGRect(x:0, y: 0, width:300, height:300)
             emptyView.isHidden = true
