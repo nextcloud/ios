@@ -16,7 +16,8 @@ class NCEmptyDataSet: NSObject {
     
     var emptyView: NCEmptyView?
     var delegate: NCEmptyDataSetDelegate?
-
+    var timer: Timer?
+    var numberItems: Int = 0
     
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
@@ -45,15 +46,23 @@ class NCEmptyDataSet: NSObject {
     func numberOfItemsInSection(_ numberItems: Int) {
         if let emptyView = emptyView {
             self.delegate?.emptyDataSetView?(emptyView)
-        }
-        if numberItems == 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.emptyView?.isHidden = false
+            
+            if !(timer?.isValid ?? false) && emptyView.isHidden == true {
+                timer = Timer.scheduledTimer(timeInterval: 0.4, target: self, selector: #selector(timerHandler(_:)), userInfo: nil, repeats: false)
             }
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+            if numberItems > 0 {
                 self.emptyView?.isHidden = true
             }
+            
+            self.numberItems = numberItems
+        }
+    }
+    
+    @objc func timerHandler(_ timer: Timer) {
+        if numberItems == 0 {
+            self.emptyView?.isHidden = false
+        } else {
+            self.emptyView?.isHidden = true
         }
     }
 }
