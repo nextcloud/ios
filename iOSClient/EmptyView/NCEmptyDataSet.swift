@@ -18,7 +18,7 @@ class NCEmptyDataSet: NSObject {
     var delegate: NCEmptyDataSetDelegate?
 
     
-    init(view: UIView, image: UIImage?, title: String, description: String, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
+    init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
 
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
@@ -30,10 +30,7 @@ class NCEmptyDataSet: NSObject {
             emptyView.isHidden = true
             emptyView.translatesAutoresizingMaskIntoConstraints = false
 
-            emptyView.emptyImage.image = image
-            emptyView.emptyTitle.text = NSLocalizedString(title, comment: "")
             emptyView.emptyTitle.sizeToFit()
-            emptyView.emptyDescription.text = NSLocalizedString(description, comment: "")
             emptyView.emptyDescription.sizeToFit()
             
             view.addSubview(emptyView)
