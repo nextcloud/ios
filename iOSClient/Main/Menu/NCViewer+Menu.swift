@@ -296,6 +296,7 @@ extension NCViewer {
         //
         // CLOSE
         //
+        /*
         actions.append(
             NCMenuAction(title: NSLocalizedString("_close_", comment: ""),
                 icon: CCGraphics.changeThemingColorImage(UIImage(named: "exit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -304,7 +305,7 @@ extension NCViewer {
                 }
             )
         )
-        
+        */
         return actions
     }
 }
