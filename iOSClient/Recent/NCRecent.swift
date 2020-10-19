@@ -33,9 +33,9 @@ class NCRecent: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = k_layout_view_recent
         enableSearchBar = false
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
-        DZNtitle = "_files_no_files_"
-        DZNdescription = ""
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        emptyTitle = "_files_no_files_"
+        emptyDescription = ""
     }
     
     // MARK: - Collection View

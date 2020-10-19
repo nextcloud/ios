@@ -71,9 +71,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
-    internal var DZNimage: UIImage?
-    internal var DZNtitle: String = ""
-    internal var DZNdescription: String = ""
+    internal var emptyImage: UIImage?
+    internal var emptyTitle: String = ""
+    internal var emptyDescription: String = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -549,7 +549,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
         
-    // MARK: - DZNEmpty
+    // MARK: - Empty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
@@ -565,12 +565,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
         }
         
-        return DZNimage
+        return emptyImage
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         
-        var text = "\n"+NSLocalizedString(DZNtitle, comment: "")
+        var text = "\n"+NSLocalizedString(emptyTitle, comment: "")
         
         if isReloadDataSourceNetworkInProgress {
             text = "\n"+NSLocalizedString("_request_in_progress_", comment: "")
@@ -590,7 +590,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         
-        var text = "\n"+NSLocalizedString(DZNdescription, comment: "")
+        var text = "\n"+NSLocalizedString(emptyDescription, comment: "")
         
         if isReloadDataSourceNetworkInProgress {
             text = ""
