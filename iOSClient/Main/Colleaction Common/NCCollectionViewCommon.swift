@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSet  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -115,7 +115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription, offset: 100, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 100, delegate: self)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -551,59 +551,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     // MARK: - Empty
     
-    
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+    func emptyDataSetView(_ view: NCEmptyView) {
         
         if searchController?.isActive ?? false {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
-        }
-        
-        if isReloadDataSourceNetworkInProgress {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
-        }
-        
-        return emptyImage
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        
-        var text = "\n"+NSLocalizedString(emptyTitle, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = "\n"+NSLocalizedString("_request_in_progress_", comment: "")
-        }
-        
-        if searchController?.isActive ?? false {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
             if isReloadDataSourceNetworkInProgress {
-                text = "\n"+NSLocalizedString("_search_in_progress_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
-                text = "\n"+NSLocalizedString("_search_no_record_found_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
             }
+            view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
+        } else if isReloadDataSourceNetworkInProgress {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+            view.emptyDescription.text = ""
+        } else {
+            view.emptyImage.image = emptyImage
+            view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+            view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
         }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        
-        var text = "\n"+NSLocalizedString(emptyDescription, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = ""
-        }
-        
-        if searchController?.isActive ?? false {
-            text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
-        }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
     }
     
     // MARK: - SEARCH
