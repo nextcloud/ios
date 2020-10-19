@@ -17,7 +17,7 @@ class NCEmptyDataSet: NSObject {
     var emptyView: NCEmptyView?
     var delegate: NCEmptyDataSetDelegate?
     var timer: Timer?
-    var numberItemsForSection: [Int:Int] = [:]
+    var numberItemsForSection: [Int] = []
     
     init(view: UIView, offset: CGFloat = 0, delegate: NCEmptyDataSetDelegate?) {
         super.init()
@@ -26,6 +26,7 @@ class NCEmptyDataSet: NSObject {
         
             self.delegate = delegate
             self.emptyView = emptyView
+            numberItemsForSection = [Int](repeating: 0, count:1)
             
             emptyView.frame =  CGRect(x:0, y: 0, width:300, height:300)
             emptyView.isHidden = true
@@ -44,7 +45,7 @@ class NCEmptyDataSet: NSObject {
     }
     
     func numberOfSections(_ num: Int) {
-        self.numberItemsForSection.removeAll()
+        numberItemsForSection = [Int](repeating: 0, count:num)
     }
     
     func numberOfItemsInSection(_ num: Int, section: Int) {
@@ -57,7 +58,7 @@ class NCEmptyDataSet: NSObject {
             }
             
             var numberItems: Int = 0
-            for (_, value) in numberItemsForSection {
+            for value in numberItemsForSection {
                 numberItems += value
             }
             if numberItems > 0 {
@@ -71,7 +72,7 @@ class NCEmptyDataSet: NSObject {
     @objc func timerHandler(_ timer: Timer) {
         
         var numberItems: Int = 0
-        for (_, value) in numberItemsForSection {
+        for value in numberItemsForSection {
             numberItems += value
         }
         if numberItems == 0 {
