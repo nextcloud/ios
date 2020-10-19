@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, UIAdaptivePresentationControllerDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -32,6 +32,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
+    internal var empty: NCEmpty?
     
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
@@ -113,9 +114,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
-        // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self
-        self.collectionView.emptyDataSetSource = self
+        // Empty
+        empty = NCEmpty.init(collectioView: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -551,9 +551,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
     // MARK: - Empty
     
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
+    
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
         
