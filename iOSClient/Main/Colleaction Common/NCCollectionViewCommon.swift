@@ -32,7 +32,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
-    internal var empty: NCEmpty?
+    internal var emptyDataSet: NCEmptyDataSet?
     
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
@@ -115,7 +115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // Empty
-        empty = NCEmpty.init(collectioView: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription)
+        emptyDataSet = NCEmptyDataSet.init(collectionView: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
