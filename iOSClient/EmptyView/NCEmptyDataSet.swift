@@ -15,7 +15,6 @@ class NCEmptyDataSet: NSObject {
     init(view: UIView, image: UIImage?, title: String, description: String, offset: CGFloat) {
         super.init()
 
-        
         if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
         
             self.emptyView = emptyView
@@ -39,9 +38,13 @@ class NCEmptyDataSet: NSObject {
     
     func numberOfItemsInSection(_ numberItems: Int) {
         if numberItems == 0 {
-            emptyView?.isHidden = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.emptyView?.isHidden = false
+            }
         } else {
-            emptyView?.isHidden = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+                self.emptyView?.isHidden = true
+            }
         }
     }
 }
