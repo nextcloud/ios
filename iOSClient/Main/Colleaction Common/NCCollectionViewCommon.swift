@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSet  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -115,7 +115,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription, offset: 100)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, image: emptyImage, title: emptyTitle, description: emptyDescription, offset: 100, delegate: self)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
