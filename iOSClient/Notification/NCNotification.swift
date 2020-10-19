@@ -85,7 +85,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyDataSet?.numberOfItemsInSection(notifications.count)
+        emptyDataSet?.numberOfItemsInSection(notifications.count, section: section)
         return notifications.count
     }
     
