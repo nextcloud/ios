@@ -73,7 +73,7 @@
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
 		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
-		F7239871253D86B600257F49 /* NCEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyView.swift */; };
+		F7239871253D86B600257F49 /* NCEmpty.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmpty.swift */; };
 		F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
@@ -417,7 +417,7 @@
 		F722814223C8C34500C41898 /* NCRichWorkspace.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCRichWorkspace.xib; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
-		F7239870253D86B600257F49 /* NCEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEmptyView.swift; sourceTree = "<group>"; };
+		F7239870253D86B600257F49 /* NCEmpty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEmpty.swift; sourceTree = "<group>"; };
 		F7239876253D86D300257F49 /* NCEmptyView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCEmptyView.xib; sourceTree = "<group>"; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
@@ -933,7 +933,7 @@
 		F723986F253D867900257F49 /* EmptyView */ = {
 			isa = PBXGroup;
 			children = (
-				F7239870253D86B600257F49 /* NCEmptyView.swift */,
+				F7239870253D86B600257F49 /* NCEmpty.swift */,
 				F7239876253D86D300257F49 /* NCEmptyView.xib */,
 			);
 			path = EmptyView;
@@ -2118,7 +2118,7 @@
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
-				F7239871253D86B600257F49 /* NCEmptyView.swift in Sources */,
+				F7239871253D86B600257F49 /* NCEmpty.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
 				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
