@@ -10,7 +10,26 @@ import Foundation
 
 class NCEmpty: NSObject {
     
+    var emptyView: NCEmptyView?
     
+    init(collectioView: UICollectionView, image: UIImage, title: String, description: String) {
+        super.init()
+
+        if let emptyView = UINib(nibName: "NCEmptyView", bundle: nil).instantiate(withOwner: self, options: nil).first as? NCEmptyView {
+            self.emptyView = emptyView
+            
+            emptyView.emptyImage.image = image
+            emptyView.emptyTtle.text = title
+            emptyView.emptyDescription.text = description
+            
+            collectioView.addSubview(emptyView)
+            
+            emptyView.leftAnchor.constraint(equalTo: collectioView.leftAnchor).isActive = true
+            emptyView.rightAnchor.constraint(equalTo: collectioView.rightAnchor).isActive = true
+            emptyView.topAnchor.constraint(equalTo: collectioView.topAnchor).isActive = true
+            emptyView.bottomAnchor.constraint(equalTo: collectioView.bottomAnchor).isActive = true
+        }
+    }
 }
 
 class NCEmptyView: UIView {
