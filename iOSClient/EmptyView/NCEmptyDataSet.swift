@@ -48,7 +48,7 @@ class NCEmptyDataSet: NSObject {
             self.delegate?.emptyDataSetView?(emptyView)
             
             if !(timer?.isValid ?? false) && emptyView.isHidden == true {
-                timer = Timer.scheduledTimer(timeInterval: 0.4, target: self, selector: #selector(timerHandler(_:)), userInfo: nil, repeats: false)
+                timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(timerHandler(_:)), userInfo: nil, repeats: false)
             }
             if numberItems > 0 {
                 self.emptyView?.isHidden = true
