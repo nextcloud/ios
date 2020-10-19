@@ -28,7 +28,7 @@ import NCCommunication
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
@@ -63,6 +63,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
     // -------------------------------------------------------------
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    private var emptyDataSet: NCEmptyDataSet?
     
     private let keyLayout = k_layout_view_move
     private var serverUrlPush = ""
@@ -125,9 +127,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brandElement
         refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
-        // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 80, delegate: self)
         
         // title button
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -216,34 +217,23 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         //toolbar.tintColor = .gray
     }
     
-    // MARK: DZNEmpty
+    // MARK: - Empty
     
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        if networkInProgress {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
-        } else {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
-        }
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+    func emptyDataSetView(_ view: NCEmptyView) {
         
         if networkInProgress {
-            return NSAttributedString.init(string: "\n"+NSLocalizedString("_request_in_progress_", comment: ""), attributes: attributes)
-        } else if includeImages {
-            return NSAttributedString.init(string: "\n"+NSLocalizedString("_files_no_files_", comment: ""), attributes: attributes)
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+            view.emptyDescription.text = ""
         } else {
-            return NSAttributedString.init(string: "\n"+NSLocalizedString("_files_no_folders_", comment: ""), attributes: attributes)
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+            if includeImages {
+                view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
+            } else {
+                view.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
+            }
+            view.emptyDescription.text = ""
         }
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
     }
     
     // MARK: ACTION
@@ -447,7 +437,9 @@ extension NCSelect: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItems()
+        let numberOfItems = dataSource.numberOfItems()
+        emptyDataSet?.numberOfItemsInSection(numberOfItems)
+        return numberOfItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
