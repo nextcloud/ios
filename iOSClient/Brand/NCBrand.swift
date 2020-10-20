@@ -103,7 +103,7 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    @objc public let customer:              UIColor = .white //UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
     @objc public var customerText:          UIColor = .white
     
     @objc public var brand:                 UIColor                                                                                 // don't touch me
@@ -158,10 +158,10 @@ class NCBrandColor: NSObject {
     @objc public func settingThemingColor() {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let darker: CGFloat = 10
-        let lighter: CGFloat = 40
+        let darker: CGFloat = 30    // %
+        let lighter: CGFloat = 40   // %
 
-        if NCBrandOptions.sharedInstance.use_themingColor {
+        if !NCBrandOptions.sharedInstance.use_themingColor {
             
             let themingColor = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
             
