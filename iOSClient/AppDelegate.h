@@ -40,6 +40,7 @@
 @class NCOffline;
 @class NCTransfers;
 @class NCFavorite;
+@class NCShares;
 @class NCTrash;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
@@ -97,6 +98,7 @@
 @property (nonatomic, retain) NCFileViewInFolder *activeFileViewInFolder;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCRecent *activeRecent;
+@property (nonatomic, retain) NCShares *activeShares;
 @property (nonatomic, retain) NCMedia *activeMedia;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
