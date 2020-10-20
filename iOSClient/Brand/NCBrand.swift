@@ -159,7 +159,7 @@ class NCBrandColor: NSObject {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let darker: CGFloat = 30    // %
-        let lighter: CGFloat = 40   // %
+        let lighter: CGFloat = 30   // %
 
         if !NCBrandOptions.sharedInstance.use_themingColor {
             
