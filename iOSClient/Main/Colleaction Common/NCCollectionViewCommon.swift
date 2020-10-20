@@ -1186,6 +1186,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
+            //VIEW IN FOLDER
             if layoutKey == k_layout_view_viewInFolder {
                 
                 let vcFileViewInFolder:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
@@ -1194,6 +1195,30 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 vcFileViewInFolder.titleCurrentFolder = metadataTouch!.fileNameView
                                 
                 self.navigationController?.pushViewController(vcFileViewInFolder, animated: true)
+            }
+            
+            // SHARES ( for push use Files ... he he he )
+            if layoutKey == k_layout_view_shares {
+                
+                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
+                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                    
+                    if vcFiles.isViewLoaded {
+                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    }
+                    
+                } else {
+                    
+                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    
+                    vcFiles.isRoot = false
+                    vcFiles.serverUrl = serverUrlPush
+                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    
+                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                }
             }
             
         } else {
