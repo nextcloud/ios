@@ -310,12 +310,6 @@ import Queuer
             return
         }
         
-        if metadata.size == 0 {
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(Int(k_CCErrorInternalError), "Internal error")
-            return
-        }
-        
         let internalContenType = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: metadata.contentType, directory: false)
         var fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                    
