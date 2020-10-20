@@ -324,9 +324,9 @@
     // Registeration push notification
     [self pushNotification];
     
-    // Registeration domain File Provider
-    FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
-    [fileProviderDomain removeAllDomains];
+    //Registeration domain File Provider
+    //FileProviderDomain *fileProviderDomain = [FileProviderDomain new];
+    //[fileProviderDomain removeAllDomains];
     //[fileProviderDomain registerDomains];
     
     [[NCCommunicationCommon shared] writeLog:@"initialize Main"];
@@ -950,9 +950,9 @@
         BOOL isTooDark = NCBrandColor.sharedInstance.brandElement.isTooDark;
         
         if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:10];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement darkerBy:30];
         } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:40];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.brandElement lighterBy:30];
         }
     
     } else {
@@ -961,9 +961,9 @@
         BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
         
         if (isTooLight) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:10];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer darkerBy:30];
         } else if (isTooDark) {
-            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:40];
+            NCBrandColor.sharedInstance.brandElement = [NCBrandColor.sharedInstance.customer lighterBy:30];
         } else {
             NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer;
         }

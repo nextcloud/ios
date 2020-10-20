@@ -31,12 +31,22 @@ extension UIColor {
     }
     
     @objc func isTooLight() -> Bool {
+        
+        var white: CGFloat = 0.0
+        color.getWhite(&white, alpha: nil)
+        if white == 1 { return true }
+        
         guard let components = cgColor.components, components.count > 2 else {return false}
         let brightness = ((components[0] * 299) + (components[1] * 587) + (components[2] * 114)) / 1000
         return (brightness > 0.95)
     }
     
     @objc func isTooDark() -> Bool {
+        
+        var white: CGFloat = 0.0
+        color.getWhite(&white, alpha: nil)
+        if white == 0 { return true }
+        
         guard let components = cgColor.components, components.count > 2 else {return false}
         let brightness = ((components[0] * 299) + (components[1] * 587) + (components[2] * 114)) / 1000
         return (brightness < 0.05)
