@@ -1108,12 +1108,13 @@ import Queuer
         
         let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
         let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
+        let ocId = metadata.ocId
                 
         NCCommunication.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false) { (account, errorCode, errorDescription) in
                     
             if errorCode == 0 {
                         
-                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId)
+                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: fileNameNew, ocId: ocId)
                         
                 if metadata.directory {
                             
@@ -1126,17 +1127,18 @@ import Queuer
                             
                 } else {
                             
-                    NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, fileName: fileNameNew, etag: nil)
+                    NCManageDatabase.sharedInstance.setLocalFile(ocId: ocId, fileName: fileNameNew, etag: nil)
                     // Move file system
-                    let atPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                    let toPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                    let atPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + metadata.fileName
+                    let toPath = CCUtility.getDirectoryProviderStorageOcId(ocId) + "/" + fileNameNew
                     do {
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                     } catch { }
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
-                
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
+                }
             }
                     
             completion(errorCode, errorDescription)
