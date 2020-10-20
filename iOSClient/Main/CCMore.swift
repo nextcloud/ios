@@ -109,12 +109,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Shares
-        item = NCCommunicationExternalSite()
-        item.name = "_list_shares_"
-        item.icon = "shareFill"
-        item.url = "segueShares"
-        functionMenu.append(item)
-
+        let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        if isFilesSharingEnabled {
+            item = NCCommunicationExternalSite()
+            item.name = "_list_shares_"
+            item.icon = "shareFill"
+            item.url = "segueShares"
+            functionMenu.append(item)
+        }
+        
         // ITEM : Offline
         item = NCCommunicationExternalSite()
         item.name = "_manage_file_offline_"

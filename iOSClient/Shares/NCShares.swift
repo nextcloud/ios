@@ -59,6 +59,36 @@ class NCShares: NCCollectionViewCommon  {
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
         super.reloadDataSourceNetwork(forced: forced)
+        
+        if isSearching {
+            networkSearch()
+            return
+        }
+                
+        isReloadDataSourceNetworkInProgress = true
+        collectionView?.reloadData()
+        
+        NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
+            
+            self.refreshControl.endRefreshing()
+            self.isReloadDataSourceNetworkInProgress = false
+            
+            if errorCode == 0 {
+                
+                NCManageDatabase.sharedInstance.deleteTableShare(account: account)
+                if shares != nil {
+                    NCManageDatabase.sharedInstance.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
+                }
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
+                
+                self.reloadDataSource()
+                
+            } else {
+                
+                self.collectionView?.reloadData()
+                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+            }
+        }
     }
 }
 
