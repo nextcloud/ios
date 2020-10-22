@@ -1,5 +1,5 @@
 //
-//  CCMore.swift
+//  NCMore.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 03/04/17.
@@ -25,7 +25,7 @@
 import UIKit
 import NCCommunication
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
