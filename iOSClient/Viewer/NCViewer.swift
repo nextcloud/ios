@@ -58,7 +58,7 @@ class NCViewer: NSObject {
         
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
-            viewImage(viewController: viewController)
+            
             return
         }
         
@@ -196,7 +196,7 @@ class NCViewer: NSObject {
     }
 }
 
-//MARK: -
+//MARK: - SELECT
 
 extension NCViewer: NCSelectDelegate {
     
@@ -219,7 +219,8 @@ extension NCViewer: NCSelectDelegate {
     }
 }
 
-//MARK: -
+/*
+//MARK: - IMAGE VIEW
 
 extension NCViewer: NCViewerImageViewControllerDelegate, NCViewerImageViewControllerDataSource {
 
@@ -490,4 +491,6 @@ extension NCViewer: NCViewerImageViewControllerDelegate, NCViewerImageViewContro
         }
         */
     }
+
 }
+ */
