@@ -468,23 +468,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         }
         view.emptyDescription.text = ""
     }
-    
-    // MARK: SEGUE
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        /*
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-            
-                segueViewController.metadata = metadataTouch
-                segueViewController.metadatas = metadatas
-                segueViewController.mediaFilterImage = true
-                segueViewController.layoutKey = k_layout_view_media
-            }
-        }
-        */
-    }
 }
 
 // MARK: - 3D Touch peek and pop
