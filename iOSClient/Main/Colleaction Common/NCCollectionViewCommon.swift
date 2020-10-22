@@ -1220,6 +1220,17 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
+            if metadata.typeFile == k_metadataTypeFile_image {
+                var mediaMetadatas: [tableMetadata] = []
+                for metadata in dataSource.metadatas {
+                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
+                        mediaMetadatas.append(metadata)
+                    }
+                }
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, mediaMetadatas: mediaMetadatas)
+                return
+            }
+            
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
                 NCViewer.shared.view(viewController: self, metadata: metadataTouch)
             } else {

@@ -518,10 +518,10 @@ extension NCMedia: UICollectionViewDelegate {
                 collectionView.reloadItems(at: [indexPath])
             }
             
-            return
+        } else {
+            
+            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, mediaMetadatas: metadatas)
         }
-        
-        performSegue(withIdentifier: "segueDetail", sender: self)
     }
 }
 
