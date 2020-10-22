@@ -896,36 +896,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - SEGUE
-    
-    @objc func segue(metadata: tableMetadata) {
-        self.metadataTouch = metadata
-        performSegue(withIdentifier: "segueDetail", sender: self)
-    }
-        
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let photoDataSource: NSMutableArray = []
-        
-        for metadata in (dataSource.metadatas) {
-            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                photoDataSource.add(metadata)
-            }
-        }
-        
-        /*
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-                segueViewController.metadata = metadataTouch
-                segueViewController.layoutKey = layoutKey
-            }
-        } else if let segueViewController = segue.destination as? NCDetailViewController {
-            segueViewController.metadata = metadataTouch
-            segueViewController.layoutKey = layoutKey
-        }
-        */
-    }
-    
     // MARK: - DataSource + NC Endpoint
     
     @objc func reloadDataSource() {

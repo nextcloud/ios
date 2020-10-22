@@ -366,7 +366,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
                         if fileSize > 0 {
-                            self.appDelegate.activeFiles.segue(metadata: metadata)
+                            //self.appDelegate.activeFiles.segue(metadata: metadata)
                             return
                         }
                     } catch {
@@ -409,7 +409,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
                             NCManageDatabase.sharedInstance.addMetadata(metadata!)
-                            self.appDelegate.activeFiles.segue(metadata: metadata!)
+                            //self.appDelegate.activeFiles.segue(metadata: metadata!)
                         }
                     }
                     
