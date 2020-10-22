@@ -1,5 +1,5 @@
 //
-//  CCSettings.h
+//  NCSettings.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 24/11/14.
@@ -27,7 +27,7 @@
 #import "CCUtility.h"
 #import "CCHud.h"
 
-@interface CCSettings : XLFormViewController
+@interface NCSettings : XLFormViewController
 
 - (void)reloadForm;
 

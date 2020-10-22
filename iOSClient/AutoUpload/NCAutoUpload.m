@@ -24,6 +24,7 @@
 #import "NCAutoUpload.h"
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
+#import "CCHud.h"
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 
