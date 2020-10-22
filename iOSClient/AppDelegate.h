@@ -43,7 +43,6 @@
 @class NCTrash;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
-@class NCDetailViewController;
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
 @class FileProviderDomain;

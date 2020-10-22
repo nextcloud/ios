@@ -913,6 +913,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
         
+        /*
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
                 segueViewController.metadata = metadataTouch
@@ -922,6 +923,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             segueViewController.metadata = metadataTouch
             segueViewController.layoutKey = layoutKey
         }
+        */
     }
     
     // MARK: - DataSource + NC Endpoint

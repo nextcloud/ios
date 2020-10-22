@@ -473,6 +473,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
+        /*
         if let segueNavigationController = segue.destination as? UINavigationController {
             if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
             
@@ -482,6 +483,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                 segueViewController.layoutKey = k_layout_view_media
             }
         }
+        */
     }
 }
 

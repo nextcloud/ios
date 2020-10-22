@@ -1,5 +1,5 @@
 //
-//  NCDetailNavigationController+Menu.swift
+//  NCViewer.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 07/02/2020.
