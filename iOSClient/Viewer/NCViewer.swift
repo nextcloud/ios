@@ -33,10 +33,12 @@ class NCViewer: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
+    private var metadatas: [tableMetadata]? = nil
     
-    func view(viewController: UIViewController, metadata: tableMetadata, mediaMetadatas: [tableMetadata]? = nil) {
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata]? = nil) {
 
         self.metadata = metadata
+        self.metadatas = metadatas
         
         // VIDEO AUDIO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {

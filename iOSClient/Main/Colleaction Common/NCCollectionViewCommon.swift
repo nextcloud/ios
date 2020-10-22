@@ -1221,13 +1221,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             if metadata.typeFile == k_metadataTypeFile_image {
-                var mediaMetadatas: [tableMetadata] = []
+                var metadatas: [tableMetadata] = []
                 for metadata in dataSource.metadatas {
                     if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                        mediaMetadatas.append(metadata)
+                        metadatas.append(metadata)
                     }
                 }
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, mediaMetadatas: mediaMetadatas)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: metadatas)
                 return
             }
             
