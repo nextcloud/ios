@@ -53,6 +53,12 @@ class NCViewer: NSObject {
             return
         }
         
+        // IMAGE
+        if metadata.typeFile == k_metadataTypeFile_image {
+            
+            return
+        }
+        
         // DOCUMENTS
         if metadata.typeFile == k_metadataTypeFile_document {
                 
