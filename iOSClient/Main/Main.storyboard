@@ -15,7 +15,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8572" y="887"/>
+            <point key="canvasLocation" x="7770" y="899"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -40,7 +40,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7073" y="-709"/>
+            <point key="canvasLocation" x="7071" y="-556"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
@@ -59,7 +59,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5215" y="327"/>
+            <point key="canvasLocation" x="5662" y="327"/>
         </scene>
         <!--Favorites-->
         <scene sceneID="YSr-JF-a0V">
@@ -78,7 +78,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5857" y="327"/>
+            <point key="canvasLocation" x="6367" y="327"/>
         </scene>
         <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
@@ -97,7 +97,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8572" y="327"/>
+            <point key="canvasLocation" x="7771" y="327"/>
         </scene>
         <!--Main Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -113,7 +113,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ohd-Sv-ssv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7935" y="327"/>
+            <point key="canvasLocation" x="7072" y="327"/>
         </scene>
         <!--More-->
         <scene sceneID="4RE-f1-SKU">
@@ -140,7 +140,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9212" y="326"/>
+            <point key="canvasLocation" x="8458" y="327"/>
         </scene>
         <!--NCTrash.storyboard-->
         <scene sceneID="361-ZH-Lss">
@@ -150,7 +150,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WGZ-c6-AXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10718" y="34"/>
+            <point key="canvasLocation" x="10178" y="35"/>
         </scene>
         <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
@@ -160,7 +160,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10724" y="132"/>
+            <point key="canvasLocation" x="10185" y="134"/>
         </scene>
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
@@ -170,7 +170,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10727" y="208"/>
+            <point key="canvasLocation" x="10188" y="210"/>
         </scene>
         <!--NCNotification.storyboard-->
         <scene sceneID="1sy-aN-34T">
@@ -180,7 +180,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10749" y="289"/>
+            <point key="canvasLocation" x="10209" y="291"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -190,7 +190,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10740" y="364"/>
+            <point key="canvasLocation" x="10201" y="366"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
@@ -200,7 +200,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10729" y="443"/>
+            <point key="canvasLocation" x="10190" y="445"/>
         </scene>
         <!--NCShares.storyboard-->
         <scene sceneID="eRk-6B-fMu">
@@ -210,7 +210,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olY-7a-lXK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10729" y="537"/>
+            <point key="canvasLocation" x="10190" y="538"/>
         </scene>
         <!--NCSettings.storyboard-->
         <scene sceneID="FRF-y9-mZJ">
@@ -220,7 +220,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bcK-1B-gxh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10730" y="618"/>
+            <point key="canvasLocation" x="10190" y="619"/>
         </scene>
         <!--NCFiles.storyboard-->
         <scene sceneID="xwl-IR-lkD">
@@ -230,7 +230,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vst-OD-Y5z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5214" y="899"/>
+            <point key="canvasLocation" x="5661" y="899"/>
         </scene>
         <!--NCFavorite.storyboard-->
         <scene sceneID="zqD-Jj-h2w">
@@ -240,7 +240,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gnf-oc-B60" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5857" y="899"/>
+            <point key="canvasLocation" x="6367" y="899"/>
         </scene>
         <!--NCMore.storyboard-->
         <scene sceneID="OXv-NF-UnP">
@@ -250,7 +250,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="9212" y="887"/>
+            <point key="canvasLocation" x="8458" y="899"/>
         </scene>
     </scenes>
     <resources>
