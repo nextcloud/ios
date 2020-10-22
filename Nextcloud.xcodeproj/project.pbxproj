@@ -996,9 +996,9 @@
 			isa = PBXGroup;
 			children = (
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
-				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
+				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */,
 				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
@@ -1009,9 +1009,9 @@
 		F758B41E212C516300515F55 /* ScanDocument */ = {
 			isa = PBXGroup;
 			children = (
-				F758B45F212C56A400515F55 /* ScanCollectionView.swift */,
-				F758B45D212C569C00515F55 /* ScanCell.swift */,
 				F758B457212C564000515F55 /* Scan.storyboard */,
+				F758B45D212C569C00515F55 /* ScanCell.swift */,
+				F758B45F212C56A400515F55 /* ScanCollectionView.swift */,
 			);
 			path = ScanDocument;
 			sourceTree = "<group>";
@@ -1042,8 +1042,8 @@
 		F765F72E25237E3F00391DBE /* Recent */ = {
 			isa = PBXGroup;
 			children = (
-				F765F72F25237E3F00391DBE /* NCRecent.swift */,
 				F765F73025237E3F00391DBE /* NCRecent.storyboard */,
+				F765F72F25237E3F00391DBE /* NCRecent.swift */,
 			);
 			path = Recent;
 			sourceTree = "<group>";
@@ -1106,10 +1106,10 @@
 		F78F74322163753B00C2ADAD /* Trash */ = {
 			isa = PBXGroup;
 			children = (
-				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
-				F78F74352163781100C2ADAD /* NCTrash.swift */,
 				F78ACD4721903F850088454D /* Cell */,
 				F7632FC32183667400721B71 /* Section */,
+				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
+				F78F74352163781100C2ADAD /* NCTrash.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -1211,8 +1211,8 @@
 		F7AE00F6230E8191007ACF8A /* BrowserWeb */ = {
 			isa = PBXGroup;
 			children = (
-				F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */,
 				F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */,
+				F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */,
 			);
 			path = BrowserWeb;
 			sourceTree = "<group>";
@@ -1406,8 +1406,8 @@
 		F7CB68942541670D0050EC94 /* More */ = {
 			isa = PBXGroup;
 			children = (
-				F73F537E1E929C8500F8678D /* NCMore.swift */,
 				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
+				F73F537E1E929C8500F8678D /* NCMore.swift */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -1432,8 +1432,8 @@
 		F7E0E1DA22327885006B0911 /* AudioRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */,
 				F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */,
+				F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */,
 			);
 			path = AudioRecorder;
 			sourceTree = "<group>";
@@ -1607,9 +1607,9 @@
 		F7FCFFD51D70798C000E6E29 /* PeekPop */ = {
 			isa = PBXGroup;
 			children = (
-				F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */,
 				F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */,
 				F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */,
+				F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */,
 			);
 			path = PeekPop;
 			sourceTree = "<group>";
@@ -1617,11 +1617,11 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
+				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
+				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
 				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
-				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
-				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 			);
 			path = Security;
 			sourceTree = "<group>";
