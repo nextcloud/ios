@@ -360,6 +360,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
             browserWebVC.urlBase = item.url
             browserWebVC.isHiddenButtonExit = true
+            browserWebVC.titleBrowser = item.name
 
             self.navigationController?.pushViewController(browserWebVC, animated: true)
             self.navigationController?.navigationBar.isHidden = false
