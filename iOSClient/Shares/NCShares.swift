@@ -43,18 +43,22 @@ class NCShares: NCCollectionViewCommon  {
     override func reloadDataSource() {
         super.reloadDataSource()
         
-        self.metadatasSource.removeAll()
-        let sharess = NCManageDatabase.sharedInstance.getTableShares(account: appDelegate.account)
-        for share in sharess {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, share.serverUrl, share.fileName)) {
-                self.metadatasSource.append(metadata)
+        DispatchQueue.global().async {
+            self.metadatasSource.removeAll()
+            let sharess = NCManageDatabase.sharedInstance.getTableShares(account: self.appDelegate.account)
+            for share in sharess {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", self.appDelegate.account, share.serverUrl, share.fileName)) {
+                    self.metadatasSource.append(metadata)
+                }
+            }
+            
+            self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
+            
+            DispatchQueue.main.async {
+                self.refreshControl.endRefreshing()
+                self.collectionView.reloadData()
             }
         }
-        
-        self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource, sort:self.sort, ascending: self.ascending, directoryOnTop: self.directoryOnTop, favoriteOnTop: true, filterLivePhoto: true)
-        
-        self.refreshControl.endRefreshing()
-        self.collectionView.reloadData()
     }
     
     override func reloadDataSourceNetwork(forced: Bool = false) {
@@ -67,53 +71,27 @@ class NCShares: NCCollectionViewCommon  {
                 
         isReloadDataSourceNetworkInProgress = true
         collectionView?.reloadData()
-        
-        if serverUrl == "" {
-            
-            NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
+                    
+        // Shares network
+        NCCommunication.shared.readShares { (account, shares, errorCode, ErrorDescription) in
                 
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
+            self.refreshControl.endRefreshing()
+            self.isReloadDataSourceNetworkInProgress = false
                 
-                if errorCode == 0 {
+            if errorCode == 0 {
                     
-                    NCManageDatabase.sharedInstance.deleteTableShare(account: account)
-                    if shares != nil {
-                        NCManageDatabase.sharedInstance.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
-                    }
-                    self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
-                    
-                    self.reloadDataSource()
-                    
-                } else {
-                    
-                    self.collectionView?.reloadData()
-                    NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                NCManageDatabase.sharedInstance.deleteTableShare(account: account)
+                if shares != nil {
+                    NCManageDatabase.sharedInstance.addShare(urlBase: self.appDelegate.urlBase, account: account, shares: shares!)
                 }
-            }
-            
-        } else {
-                        
-            networkReadFolder(forced: forced) { (metadatas, metadatasUpdate, errorCode, errorDescription) in
-                if errorCode == 0 {
-                    for metadata in metadatas ?? [] {
-                        if !metadata.directory {
-                            let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                            if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
-                            }
-                        }
-                    }
-                }
-                
-                self.refreshControl.endRefreshing()
-                self.isReloadDataSourceNetworkInProgress = false
-                
-                if metadatasUpdate?.count ?? 0 > 0 || forced {
-                    self.reloadDataSource()
-                } else {
-                    self.collectionView?.reloadData()
-                }
+                self.appDelegate.shares = NCManageDatabase.sharedInstance.getTableShares(account: account)
+                    
+                self.reloadDataSource()
+                    
+            } else {
+                    
+                self.collectionView?.reloadData()
+                NCContentPresenter.shared.messageNotification("_share_", description: ErrorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
         }
     }
