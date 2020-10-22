@@ -520,7 +520,7 @@ extension NCMedia: UICollectionViewDelegate {
             
         } else {
             
-            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, mediaMetadatas: metadatas)
+            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
         }
     }
 }
