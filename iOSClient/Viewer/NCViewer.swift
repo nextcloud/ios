@@ -34,7 +34,7 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     
-    func view(viewController: UIViewController, metadata: tableMetadata) {
+    func view(viewController: UIViewController, metadata: tableMetadata, mediaMetadatas: [tableMetadata]? = nil) {
 
         self.metadata = metadata
         
