@@ -4,42 +4,9 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Settings-->
-        <scene sceneID="8L1-Aq-u4E">
-            <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="amx-XG-NId" customClass="CCSettings" sceneMemberID="viewController">
-                    <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="qPP-0c-bH9">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="RbN-9l-HP2">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
-                                <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            </tableView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="UsN-KI-3bQ"/>
-                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="RbN-9l-HP2" firstAttribute="top" secondItem="UsN-KI-3bQ" secondAttribute="top" id="PQF-xh-bxZ"/>
-                            <constraint firstItem="RbN-9l-HP2" firstAttribute="leading" secondItem="UsN-KI-3bQ" secondAttribute="leading" id="exJ-dx-QyW"/>
-                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="bottom" secondItem="RbN-9l-HP2" secondAttribute="bottom" id="gMy-ww-Gd1"/>
-                            <constraint firstItem="UsN-KI-3bQ" firstAttribute="trailing" secondItem="RbN-9l-HP2" secondAttribute="trailing" id="oal-6v-evn"/>
-                        </constraints>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="1CO-Ie-Aaj"/>
-                    <connections>
-                        <segue destination="eZl-ut-xpC" kind="presentation" identifier="AcknowledgementsSegue" modalPresentationStyle="formSheet" id="J9C-Ex-Q6i"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="wVn-RD-GD2" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10909" y="607"/>
-        </scene>
         <!--NCMedia.storyboard-->
         <scene sceneID="udp-lL-CYh">
             <objects>
@@ -49,70 +16,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8572" y="887"/>
-        </scene>
-        <!--Acknowledgements-->
-        <scene sceneID="h9y-Lj-jxB">
-            <objects>
-                <viewController extendedLayoutIncludesOpaqueBars="YES" id="Wu3-ow-y4h" customClass="Acknowledgements" sceneMemberID="viewController">
-                    <view key="view" opaque="NO" contentMode="scaleToFill" id="HYE-hK-m2I">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="786"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" delaysContentTouches="NO" canCancelContentTouches="NO" bouncesZoom="NO" editable="NO" usesAttributedText="YES" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vYq-of-LmL">
-                                <rect key="frame" x="7" y="0.0" width="400" height="786"/>
-                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <attributedString key="attributedText">
-                                    <fragment content="Copyright (C)">
-                                        <attributes>
-                                            <font key="NSFont" size="14" name="HelveticaNeue"/>
-                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
-                                        </attributes>
-                                    </fragment>
-                                </attributedString>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <connections>
-                                    <outlet property="delegate" destination="Wu3-ow-y4h" id="RHw-TA-1yQ"/>
-                                </connections>
-                            </textView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="vFx-Qx-nx8"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="vYq-of-LmL" firstAttribute="leading" secondItem="HYE-hK-m2I" secondAttribute="leadingMargin" constant="-13" id="RHX-O3-otO"/>
-                            <constraint firstItem="vYq-of-LmL" firstAttribute="top" secondItem="vFx-Qx-nx8" secondAttribute="top" id="SwN-pK-RVe"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="vYq-of-LmL" secondAttribute="trailing" constant="-13" id="iao-EZ-391"/>
-                            <constraint firstItem="vFx-Qx-nx8" firstAttribute="bottom" secondItem="vYq-of-LmL" secondAttribute="bottom" id="rjG-Mo-psH"/>
-                        </constraints>
-                    </view>
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <navigationItem key="navigationItem" id="NXp-TT-qTB"/>
-                    <connections>
-                        <outlet property="txtTermini" destination="vYq-of-LmL" id="hA3-bm-4ke"/>
-                        <outlet property="view" destination="HYE-hK-m2I" id="lTc-Ug-HO0"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="TUv-7S-62D" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="12655" y="607"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="eDq-6m-h8d">
-            <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="eZl-ut-xpC" sceneMemberID="viewController">
-                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rJe-3o-bpZ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="Wu3-ow-y4h" kind="relationship" relationship="rootViewController" id="Xpr-tm-bWy"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="38M-dR-dlY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="11762" y="607"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -224,7 +127,6 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="amx-XG-NId" kind="show" identifier="segueSettings" id="iJw-qx-dwJ"/>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
@@ -233,6 +135,7 @@
                         <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                         <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
                         <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="les-zO-92u"/>
+                        <segue destination="rhU-g7-7AK" kind="show" identifier="segueSettings" id="jMB-ji-wIR"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -247,7 +150,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WGZ-c6-AXe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10720" y="-90"/>
+            <point key="canvasLocation" x="10718" y="34"/>
         </scene>
         <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
@@ -257,7 +160,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10725" y="-36"/>
+            <point key="canvasLocation" x="10724" y="132"/>
         </scene>
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
@@ -267,7 +170,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10728" y="19"/>
+            <point key="canvasLocation" x="10727" y="208"/>
         </scene>
         <!--NCNotification.storyboard-->
         <scene sceneID="1sy-aN-34T">
@@ -277,7 +180,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10746" y="72"/>
+            <point key="canvasLocation" x="10749" y="289"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -287,7 +190,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10737" y="125"/>
+            <point key="canvasLocation" x="10740" y="364"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
@@ -297,7 +200,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rsS-r1-oFg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10728" y="181"/>
+            <point key="canvasLocation" x="10729" y="443"/>
         </scene>
         <!--NCShares.storyboard-->
         <scene sceneID="eRk-6B-fMu">
@@ -307,7 +210,17 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olY-7a-lXK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10728" y="231"/>
+            <point key="canvasLocation" x="10729" y="537"/>
+        </scene>
+        <!--NCSettings.storyboard-->
+        <scene sceneID="FRF-y9-mZJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCSettings" referencedIdentifier="NCSettings.storyboard" id="rhU-g7-7AK" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="HYx-6Q-lFs"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bcK-1B-gxh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="10730" y="618"/>
         </scene>
         <!--NCFiles.storyboard-->
         <scene sceneID="xwl-IR-lkD">

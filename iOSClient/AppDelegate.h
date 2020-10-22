@@ -29,7 +29,6 @@
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "CCUtility.h"
-#import "CCSettings.h"
 #import "CCLogin.h"
 
 @class NCFiles;

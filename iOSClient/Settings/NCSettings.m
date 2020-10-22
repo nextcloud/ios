@@ -1,5 +1,5 @@
 //
-//  CCSettings.m
+//  NCSettings.m
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 24/11/14.
@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "CCSettings.h"
+#import "NCSettings.h"
 #import "AppDelegate.h"
 #import "CCAdvanced.h"
 #import "CCManageAccount.h"
@@ -33,7 +33,7 @@
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
 
-@interface CCSettings () <TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate>
+@interface NCSettings () <TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate>
 {
     AppDelegate *appDelegate;
     TOPasscodeViewController *passcodeViewController;
@@ -41,7 +41,7 @@
 }
 @end
 
-@implementation CCSettings
+@implementation NCSettings
 
 - (void)initializeForm
 {
