@@ -35,7 +35,7 @@
 @class NCFiles;
 @class NCFileViewInFolder;
 @class NCRecent;
-@class CCMore;
+@class NCMore;
 @class NCMedia;
 @class NCOffline;
 @class NCTransfers;
@@ -103,7 +103,7 @@
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
-@property (nonatomic, retain) CCMore *activeMore;
+@property (nonatomic, retain) NCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
 @property (nonatomic, retain) NCTrash *activeTrash;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
