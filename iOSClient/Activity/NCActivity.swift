@@ -26,12 +26,13 @@ import UIKit
 import SwiftRichString
 import NCCommunication
 
-class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     
     @IBOutlet weak var tableView: UITableView!
 
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
+    var emptyDataSet: NCEmptyDataSet?
     var allActivities: [tableActivity] = []
     var filterActivities: [tableActivity] = []
 
@@ -51,9 +52,8 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         
         self.title = NSLocalizedString("_activity_", comment: "")
 
-        // empty Data Source
-        tableView.emptyDataSetDelegate = self;
-        tableView.emptyDataSetSource = self;
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 80, delegate: self)
         
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
@@ -86,37 +86,13 @@ class NCActivity: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelega
         }
     }
     
-    // MARK: DZNEmpty
+    // MARK: - Empty
     
-    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
-        if insets.top != 0 {
-            return insets.top - 150
-        } else {
-            let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-            return -height
-        }
-    }
-
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        if filterFileId == nil {
-            return NCBrandColor.sharedInstance.backgroundView
-        } else {
-            return NCBrandColor.sharedInstance.backgroundForm
-        }
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 300, height: 300, color: .gray)
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n" + NSLocalizedString("_no_activity_", comment: "")
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
+    func emptyDataSetView(_ view: NCEmptyView) {
+        
+        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "activity"), width: 300, height: 300, color: .gray)
+        view.emptyTitle.text = NSLocalizedString("_no_activity_", comment: "")
+        view.emptyDescription.text = ""
     }
 }
 
@@ -190,7 +166,9 @@ extension NCActivity: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return getTableActivitiesFromSection(section).count
+        let numberItems = getTableActivitiesFromSection(section).count
+        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
+        return numberItems
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

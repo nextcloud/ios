@@ -52,8 +52,6 @@
     _dataSource = [NSMutableArray new];
     
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 1)];
-    self.tableView.emptyDataSetDelegate = self;
-    self.tableView.emptyDataSetSource = self;
     self.tableView.delegate = self;
     
     // Title
@@ -82,43 +80,6 @@
 {
     [appDelegate changeTheming:self tableView:self.tableView collectionView:nil form:false];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== DZNEmptyDataSetSource ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return NCBrandColor.sharedInstance.backgroundView;
-}
-
-- (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
-{
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] width:300 height:300 color:[UIColor grayColor]];
-}
-
-- (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
-{
-    NSString *text = [NSString stringWithFormat:@"%@", NSLocalizedString(@"_list_shares_no_files_", nil)];
-    
-    NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor grayColor]};
-    
-    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
-}
-
-- (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
-{
-    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_list_shares_view_", nil)];
-    
-    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
-    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
-    paragraph.alignment = NSTextAlignmentCenter;
-    
-    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
-    
-    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
-}
-
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------

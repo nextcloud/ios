@@ -33,9 +33,9 @@ class NCOffline: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
         layoutKey = k_layout_view_offline
         enableSearchBar = true
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
-        DZNtitle = "_files_no_files_"
-        DZNdescription = "_tutorial_offline_view_"
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        emptyTitle = "_files_no_files_"
+        emptyDescription = "_tutorial_offline_view_"
     }
     
     // MARK: - DataSource + NC Endpoint

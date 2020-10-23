@@ -24,10 +24,11 @@
 import Foundation
 import NCCommunication
 
-class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : UICollectionView!
     
+    private var emptyDataSet: NCEmptyDataSet?
     private var mediaCommandView: NCMediaCommandView?
     private var gridLayout: NCGridMediaLayout!
 
@@ -86,9 +87,8 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
 
         collectionView.collectionViewLayout = gridLayout
         
-        // empty Data Source
-        collectionView.emptyDataSetDelegate = self
-        collectionView.emptyDataSetSource = self
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 80, delegate: self)
                 
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -454,30 +454,17 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         }
     }
     
-    // MARK: DZNEmpty
+    // MARK: - Empty
     
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: .gray)
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+    func emptyDataSetView(_ view: NCEmptyView) {
         
-        var text = "\n" + NSLocalizedString("_tutorial_photo_view_", comment: "")
-
+        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: .gray)
         if oldInProgress || newInProgress {
-            text = "\n" + NSLocalizedString("_search_in_progress_", comment: "")
+            view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
+        } else {
+            view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
         }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
+        view.emptyDescription.text = ""
     }
     
     // MARK: SEGUE
@@ -567,7 +554,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
+        emptyDataSet?.numberOfItemsInSection(metadatas.count, section: section)
         return metadatas.count
     }
 
