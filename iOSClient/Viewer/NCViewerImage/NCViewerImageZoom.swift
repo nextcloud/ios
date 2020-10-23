@@ -53,28 +53,6 @@ class NCViewerImageZoom: UIViewController {
         updateConstraintsForSize(view.bounds.size)
     }
     
-    override func viewSafeAreaInsetsDidChange() {
-        
-        //When this view's safeAreaInsets change, propagate this information
-        //to the previous ViewController so the collectionView contentInsets
-        //can be updated accordingly. This is necessary in order to properly
-        //calculate the frame position for the dismiss (swipe down) animation
-
-            
-            //Get the parent view controller (ViewController) from the navigation controller
-            guard let parentVC = self.navigationController?.viewControllers.first as? NCFiles else {
-                return
-            }
-            
-            //Update the ViewController's left and right local safeAreaInset variables
-            //with the safeAreaInsets for this current view. These will be used to
-            //update the contentInsets of the collectionView inside ViewController
-            parentVC.currentLeftSafeAreaInset = self.view.safeAreaInsets.left
-            parentVC.currentRightSafeAreaInset = self.view.safeAreaInsets.right
-            
-        
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }

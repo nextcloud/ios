@@ -2,19 +2,13 @@
 
 import UIKit
 
-protocol NCViewerImagePageContainerDelegate: class {
-    func containerViewController(_ containerViewController: NCViewerImagePageContainer, indexDidUpdate currentIndex: Int)
-}
-
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
     enum ScreenMode {
         case full, normal
     }
     var currentMode: ScreenMode = .normal
-    
-    weak var delegate: NCViewerImagePageContainerDelegate?
-    
+        
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
     }
@@ -26,12 +20,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
+    var startPanLocation = CGPoint.zero
+    let panDistanceForPopViewController: CGFloat = 50
     
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
-    
-    var transitionController = ZoomTransitionController()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -86,20 +80,19 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        let currentLocation = gestureRecognizer.location(in: self.view)
+
         switch gestureRecognizer.state {
         case .began:
-            currentViewController.scrollView.isScrollEnabled = false
-            transitionController.isInteractive = true
-            navigationController?.popViewController(animated: true)
+            startPanLocation = currentLocation
+            currentViewController.scrollView.isScrollEnabled = true
         case .ended:
-            if transitionController.isInteractive {
-                currentViewController.scrollView.isScrollEnabled = true
-                transitionController.isInteractive = false
-                transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
-            }
+            currentViewController.scrollView.isScrollEnabled = false
         default:
-            if transitionController.isInteractive {
-                transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
+            let dx = currentLocation.x - startPanLocation.x
+            let dy = currentLocation.y - startPanLocation.y
+            if sqrt(dx*dx + dy*dy) >= panDistanceForPopViewController {
+                self.navigationController?.popViewController(animated: true)
             }
         }
     }
@@ -112,7 +105,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             changeScreenMode(to: .full)
             self.currentMode = .full
         }
-
     }
     
     func changeScreenMode(to: ScreenMode) {
@@ -197,7 +189,6 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
             }
 
             currentIndex = nextIndex!
-            delegate?.containerViewController(self, indexDidUpdate: currentIndex)
         }
         
         self.nextIndex = nil
@@ -215,19 +206,3 @@ extension NCViewerImagePageContainer: NCViewerImageZoomDelegate {
     }
 }
 
-extension NCViewerImagePageContainer: ZoomAnimatorDelegate {
-    
-    func transitionWillStartWith(zoomAnimator: ZoomAnimator) {
-    }
-    
-    func transitionDidEndWith(zoomAnimator: ZoomAnimator) {
-    }
-    
-    func referenceImageView(for zoomAnimator: ZoomAnimator) -> UIImageView? {
-        return self.currentViewController.imageView
-    }
-    
-    func referenceImageViewFrameInTransitioningView(for zoomAnimator: ZoomAnimator) -> CGRect? {        
-        return currentViewController.scrollView.convert(currentViewController.imageView.frame, to: currentViewController.view)
-    }
-}

@@ -59,27 +59,16 @@ class NCViewer: NSObject {
             if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                 
                 let viewerImagePageContainer:NCViewerImagePageContainer = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImagePageContainer
-            
-                navigationController.delegate = viewerImagePageContainer.transitionController
-                viewerImagePageContainer.transitionController.toDelegate = viewerImagePageContainer
-                if viewController is NCFiles {
-                    let viewController: NCFiles = viewController as! NCFiles
-                    viewerImagePageContainer.transitionController.fromDelegate = viewController
-                    viewerImagePageContainer.transitionController.toDelegate = viewerImagePageContainer
-                    viewerImagePageContainer.delegate = viewController
-                    
-                    var index = 0
-                    for medatasImage in metadatas {
-                        if medatasImage.ocId == metadata.ocId {
-                            viewerImagePageContainer.currentIndex = index
-                            break
-                        }
-                        index += 1
+                var index = 0
+                for medatasImage in metadatas {
+                    if medatasImage.ocId == metadata.ocId {
+                        viewerImagePageContainer.currentIndex = index
+                        break
                     }
-                    viewerImagePageContainer.metadatas = metadatas
-                    
-                    navigationController.pushViewController(viewerImagePageContainer, animated: true)
+                    index += 1
                 }
+                viewerImagePageContainer.metadatas = metadatas
+                navigationController.pushViewController(viewerImagePageContainer, animated: true)
             }
     
             return
