@@ -68,6 +68,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     internal var isReloadDataSourceNetworkInProgress: Bool = false
     
+    var photos: [UIImage] = []
+    var selectedIndexPath: IndexPath!
+    var currentLeftSafeAreaInset: CGFloat = 0.0
+    var currentRightSafeAreaInset: CGFloat = 0.0
+    
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
@@ -189,6 +194,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewDidAppear(animated)
         
         reloadDataSourceNetwork()
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+    
+        currentLeftSafeAreaInset = view.safeAreaInsets.left
+        currentRightSafeAreaInset = view.safeAreaInsets.right
     }
         
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -1043,6 +1054,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         metadataTouch = metadata
+        selectedIndexPath = indexPath
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1393,6 +1405,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     }
                 }
+                if cell.imageItem.image != nil {
+                    self.photos.append(cell.imageItem.image!)
+                }
                 
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                                 
@@ -1576,6 +1591,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     }
                 }
+                if cell.imageItem.image != nil {
+                    self.photos.append(cell.imageItem.image!)
+                }
                 
                 // image Local
                 if dataSource.metadataOffLine.contains(metadata.ocId) {
@@ -1644,3 +1662,68 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         return CGSize(width: collectionView.frame.width, height: footerHeight)
     }
 }
+
+extension NCCollectionViewCommon: PhotoPageContainerViewControllerDelegate {
+ 
+    func containerViewController(_ containerViewController: PhotoPageContainerViewController, indexDidUpdate currentIndex: Int) {
+        self.selectedIndexPath = IndexPath(row: currentIndex, section: 0)
+        self.collectionView.scrollToItem(at: self.selectedIndexPath, at: .centeredVertically, animated: false)
+    }
+}
+
+extension NCCollectionViewCommon: ZoomAnimatorDelegate {
+    
+    func transitionWillStartWith(zoomAnimator: ZoomAnimator) {
+        
+    }
+    
+    func transitionDidEndWith(zoomAnimator: ZoomAnimator) {
+        
+        var cellFrame: CGRect = CGRect.init()
+        let cell = self.collectionView.cellForItem(at: self.selectedIndexPath)
+
+        if cell is NCListCell {
+            cellFrame = self.collectionView.convert((cell as! NCListCell).frame, to: self.view)
+        } else if cell is NCGridCell {
+            cellFrame = self.collectionView.convert((cell as! NCGridCell).frame, to: self.view)
+        }
+        
+        if cellFrame.minY < self.collectionView.contentInset.top {
+            self.collectionView.scrollToItem(at: self.selectedIndexPath, at: .top, animated: false)
+        } else if cellFrame.maxY > self.view.frame.height - self.collectionView.contentInset.bottom {
+            self.collectionView.scrollToItem(at: self.selectedIndexPath, at: .bottom, animated: false)
+        }
+    }
+    
+    func referenceImageView(for zoomAnimator: ZoomAnimator) -> UIImageView? {
+        
+        let cell = collectionView.cellForItem(at: selectedIndexPath)
+        if cell is NCListCell {
+            return (cell as! NCListCell).imageItem
+        } else if cell is NCGridCell {
+            return (cell as! NCGridCell).imageItem
+        }
+        
+        return nil
+    }
+    
+    func referenceImageViewFrameInTransitioningView(for zoomAnimator: ZoomAnimator) -> CGRect? {
+        
+        /*
+        self.view.layoutIfNeeded()
+        self.collectionView.layoutIfNeeded()
+        
+        let unconvertedFrame = getFrameFromCollectionViewCell(for: self.selectedIndexPath)        
+        let cellFrame = self.collectionView.convert(unconvertedFrame, to: self.view)
+        
+        if cellFrame.minY < self.collectionView.contentInset.top {
+            return CGRect(x: cellFrame.minX, y: self.collectionView.contentInset.top, width: cellFrame.width, height: cellFrame.height - (self.collectionView.contentInset.top - cellFrame.minY))
+        }
+        
+        return cellFrame
+        */
+        return nil
+    }
+    
+}
+
