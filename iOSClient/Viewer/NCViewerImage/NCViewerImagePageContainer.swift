@@ -35,23 +35,22 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.pageViewController.delegate = self
-        self.pageViewController.dataSource = self
-        self.panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
-        self.panGestureRecognizer.delegate = self
-        self.pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
+        pageViewController.delegate = self
+        pageViewController.dataSource = self
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
+        panGestureRecognizer.delegate = self
+        pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
         
-        self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
-        self.pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
+        singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
+        pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
-        vc.delegate = self
-        vc.index = self.currentIndex
-        vc.image = getImageFromMetadata(metadatas[currentIndex])
-        self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
-        let viewControllers = [vc]
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        viewerImageZoom.delegate = self
+        viewerImageZoom.index = currentIndex
+        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex])
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
-        self.pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
+        pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -77,7 +76,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
-        if otherGestureRecognizer == self.currentViewController.scrollView.panGestureRecognizer {
+        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
             if self.currentViewController.scrollView.contentOffset.y == 0 {
                 return true
             }
@@ -85,27 +84,22 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         return false
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
-            self.currentViewController.scrollView.isScrollEnabled = false
-            self.transitionController.isInteractive = true
-            let _ = self.navigationController?.popViewController(animated: true)
+            currentViewController.scrollView.isScrollEnabled = false
+            transitionController.isInteractive = true
+            navigationController?.popViewController(animated: true)
         case .ended:
-            if self.transitionController.isInteractive {
-                self.currentViewController.scrollView.isScrollEnabled = true
-                self.transitionController.isInteractive = false
-                self.transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
+            if transitionController.isInteractive {
+                currentViewController.scrollView.isScrollEnabled = true
+                transitionController.isInteractive = false
+                transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
             }
         default:
-            if self.transitionController.isInteractive {
-                self.transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
+            if transitionController.isInteractive {
+                transitionController.didPanWith(gestureRecognizer: gestureRecognizer)
             }
         }
     }
@@ -123,7 +117,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     func changeScreenMode(to: ScreenMode) {
         if to == .full {
-            self.navigationController?.setNavigationBarHidden(true, animated: false)
+            navigationController?.setNavigationBarHidden(true, animated: false)
             UIView.animate(withDuration: 0.25,
                            animations: {
                             self.view.backgroundColor = .black
@@ -131,7 +125,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             }, completion: { completed in
             })
         } else {
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
+            navigationController?.setNavigationBarHidden(false, animated: false)
             UIView.animate(withDuration: 0.25,
                            animations: {
                             if #available(iOS 13.0, *) {
@@ -161,12 +155,12 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
             return nil
         }
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
-        vc.delegate = self
-        vc.image = getImageFromMetadata(metadatas[currentIndex - 1])
-        vc.index = currentIndex - 1
-        self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
-        return vc
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        viewerImageZoom.delegate = self
+        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex - 1])
+        viewerImageZoom.index = currentIndex - 1
+        self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        return viewerImageZoom
         
     }
     
@@ -176,12 +170,12 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
             return nil
         }
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
-        vc.delegate = self
-        self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
-        vc.image = getImageFromMetadata(metadatas[currentIndex + 1])
-        vc.index = currentIndex + 1
-        return vc
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        viewerImageZoom.delegate = self
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex + 1])
+        viewerImageZoom.index = currentIndex + 1
+        return viewerImageZoom
         
     }
     
@@ -198,12 +192,12 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         if (completed && self.nextIndex != nil) {
             previousViewControllers.forEach { vc in
-                let zoomVC = vc as! NCViewerImageZoom
-                zoomVC.scrollView.zoomScale = zoomVC.scrollView.minimumZoomScale
+                let viewerImageZoom = vc as! NCViewerImageZoom
+                viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
             }
 
-            self.currentIndex = self.nextIndex!
-            self.delegate?.containerViewController(self, indexDidUpdate: self.currentIndex)
+            currentIndex = nextIndex!
+            delegate?.containerViewController(self, indexDidUpdate: currentIndex)
         }
         
         self.nextIndex = nil
@@ -214,9 +208,9 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
 extension NCViewerImagePageContainer: NCViewerImageZoomDelegate {
     
     func viewerImageZoom(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView) {
-        if scrollView.zoomScale != scrollView.minimumZoomScale && self.currentMode != .full {
-            self.changeScreenMode(to: .full)
-            self.currentMode = .full
+        if scrollView.zoomScale != scrollView.minimumZoomScale && currentMode != .full {
+            changeScreenMode(to: .full)
+            currentMode = .full
         }
     }
 }
@@ -234,6 +228,6 @@ extension NCViewerImagePageContainer: ZoomAnimatorDelegate {
     }
     
     func referenceImageViewFrameInTransitioningView(for zoomAnimator: ZoomAnimator) -> CGRect? {        
-        return self.currentViewController.scrollView.convert(self.currentViewController.imageView.frame, to: self.currentViewController.view)
+        return currentViewController.scrollView.convert(currentViewController.imageView.frame, to: currentViewController.view)
     }
 }
