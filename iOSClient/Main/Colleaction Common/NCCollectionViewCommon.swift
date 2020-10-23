@@ -1709,20 +1709,42 @@ extension NCCollectionViewCommon: ZoomAnimatorDelegate {
     
     func referenceImageViewFrameInTransitioningView(for zoomAnimator: ZoomAnimator) -> CGRect? {
         
-        /*
-        self.view.layoutIfNeeded()
-        self.collectionView.layoutIfNeeded()
+        var unconvertedFrame: CGRect = CGRect()
         
-        let unconvertedFrame = getFrameFromCollectionViewCell(for: self.selectedIndexPath)        
-        let cellFrame = self.collectionView.convert(unconvertedFrame, to: self.view)
+        view.layoutIfNeeded()
+        collectionView.layoutIfNeeded()
         
-        if cellFrame.minY < self.collectionView.contentInset.top {
-            return CGRect(x: cellFrame.minX, y: self.collectionView.contentInset.top, width: cellFrame.width, height: cellFrame.height - (self.collectionView.contentInset.top - cellFrame.minY))
+        let visibleCells = collectionView.indexPathsForVisibleItems
+        if !visibleCells.contains(selectedIndexPath) {
+            
+            collectionView.scrollToItem(at: selectedIndexPath, at: .centeredVertically, animated: false)
+            collectionView.reloadItems(at: collectionView.indexPathsForVisibleItems)
+            collectionView.layoutIfNeeded()
+            
+            let cell = collectionView.cellForItem(at: selectedIndexPath)
+            if cell is NCListCell {
+                unconvertedFrame = (cell as! NCListCell).frame
+            } else if cell is NCGridCell {
+                unconvertedFrame = (cell as! NCGridCell).frame
+            }
+            
+        } else {
+            
+            let cell = collectionView.cellForItem(at: self.selectedIndexPath)
+            if cell is NCListCell {
+                unconvertedFrame = (cell as! NCListCell).frame
+            } else if cell is NCGridCell {
+                unconvertedFrame = (cell as! NCGridCell).frame
+            }
+        }
+        
+        let cellFrame = self.collectionView.convert(unconvertedFrame, to: view)
+        
+        if cellFrame.minY < collectionView.contentInset.top {
+            return CGRect(x: cellFrame.minX, y: collectionView.contentInset.top, width: cellFrame.width, height: cellFrame.height - (collectionView.contentInset.top - cellFrame.minY))
         }
         
         return cellFrame
-        */
-        return nil
     }
     
 }
