@@ -155,7 +155,7 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
             return nil
         }
         
-        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "\(PhotoZoomViewController.self)") as! PhotoZoomViewController
+        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(PhotoZoomViewController.self)") as! PhotoZoomViewController
         vc.delegate = self
         vc.image = self.photos[currentIndex - 1]
         vc.index = currentIndex - 1
