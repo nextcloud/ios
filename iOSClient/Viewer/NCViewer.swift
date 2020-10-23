@@ -34,7 +34,6 @@ class NCViewer: NSObject {
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
-    private var viewerImageViewController: NCViewerImageViewController?
 
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata]? = nil) {
 
@@ -59,6 +58,24 @@ class NCViewer: NSObject {
         // IMAGE
         if metadata.typeFile == k_metadataTypeFile_image {
             
+            if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                
+                let vcImageView:PhotoPageContainerViewController = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! PhotoPageContainerViewController
+            
+                navigationController.delegate = vcImageView.transitionController
+                vcImageView.transitionController.toDelegate = vcImageView
+                if viewController is NCFiles {
+                    let viewController: NCFiles = viewController as! NCFiles
+                    vcImageView.transitionController.fromDelegate = viewController
+                    vcImageView.transitionController.toDelegate = vcImageView
+                    vcImageView.delegate = viewController
+                    vcImageView.currentIndex = viewController.selectedIndexPath.row
+                    vcImageView.photos = viewController.photos
+                    
+                    navigationController.pushViewController(vcImageView, animated: true)
+                }
+            }
+    
             return
         }
         
