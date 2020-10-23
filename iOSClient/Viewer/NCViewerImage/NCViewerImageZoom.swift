@@ -23,32 +23,31 @@ class NCViewerImageZoom: UIViewController {
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        
         self.doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
         self.doubleTapGestureRecognizer.numberOfTapsRequired = 2
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.scrollView.delegate = self
-        if #available(iOS 11, *) {
-            self.scrollView.contentInsetAdjustmentBehavior = .never
-        }
+        self.scrollView.contentInsetAdjustmentBehavior = .never
         self.imageView.image = self.image
-        self.imageView.frame = CGRect(x: self.imageView.frame.origin.x,
-                                      y: self.imageView.frame.origin.y,
-                                      width: self.image.size.width,
-                                      height: self.image.size.height)
+        self.imageView.frame = CGRect(x: self.imageView.frame.origin.x, y: self.imageView.frame.origin.y, width: self.image.size.width, height: self.image.size.height)
         self.view.addGestureRecognizer(self.doubleTapGestureRecognizer)        
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         updateZoomScaleForSize(view.bounds.size)
         updateConstraintsForSize(view.bounds.size)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         updateZoomScaleForSize(view.bounds.size)
         updateConstraintsForSize(view.bounds.size)
     }
@@ -58,6 +57,7 @@ class NCViewerImageZoom: UIViewController {
     }
     
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        
         let pointInView = gestureRecognizer.location(in: self.imageView)
         var newZoomScale = self.scrollView.maximumZoomScale
         
@@ -86,6 +86,7 @@ class NCViewerImageZoom: UIViewController {
     }
     
     fileprivate func updateConstraintsForSize(_ size: CGSize) {
+        
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
         imageViewTopConstraint.constant = yOffset
         imageViewBottomConstraint.constant = yOffset
@@ -101,6 +102,7 @@ class NCViewerImageZoom: UIViewController {
 }
 
 extension NCViewerImageZoom: UIScrollViewDelegate {
+    
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
