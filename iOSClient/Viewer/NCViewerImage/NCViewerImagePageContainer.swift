@@ -23,7 +23,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         return self.pageViewController.viewControllers![0] as! NCViewerImageZoom
     }
     
-    var photos: [UIImage]!
+    var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
     
@@ -47,11 +47,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
         vc.index = self.currentIndex
-        vc.image = self.photos[self.currentIndex]
+        vc.image = getImageFromMetadata(metadatas[currentIndex])
         self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
-        let viewControllers = [
-            vc
-        ]
+        let viewControllers = [vc]
         
         self.pageViewController.setViewControllers(viewControllers, direction: .forward, animated: true, completion: nil)
     }
@@ -145,6 +143,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             })
         }
     }
+    
+    func getImageFromMetadata(_ metadata: tableMetadata) -> UIImage {
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+            return UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))!
+        } else {
+            return NCCollectionCommon.images.cellFileImage
+        }
+    }
 }
 
 extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
@@ -157,7 +163,7 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
-        vc.image = self.photos[currentIndex - 1]
+        vc.image = getImageFromMetadata(metadatas[currentIndex - 1])
         vc.index = currentIndex - 1
         self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
         return vc
@@ -166,14 +172,14 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         
-        if currentIndex == (self.photos.count - 1) {
+        if currentIndex == (self.metadatas.count - 1) {
             return nil
         }
         
         let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
         self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
-        vc.image = self.photos[currentIndex + 1]
+        vc.image = getImageFromMetadata(metadatas[currentIndex + 1])
         vc.index = currentIndex + 1
         return vc
         

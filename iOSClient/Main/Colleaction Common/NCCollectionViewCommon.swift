@@ -68,7 +68,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     internal var isReloadDataSourceNetworkInProgress: Bool = false
     
-    var photos: [UIImage] = []
     var selectedIndexPath: IndexPath!
     var currentLeftSafeAreaInset: CGFloat = 0.0
     var currentRightSafeAreaInset: CGFloat = 0.0
@@ -1211,7 +1210,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
@@ -1220,7 +1219,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isRichDocument(metadata) {
                 if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
@@ -1228,7 +1227,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             if metadata.typeFile == k_metadataTypeFile_video {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 return
             }
             
@@ -1244,7 +1243,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch, selector: selectorLoadFileView) { (_) in }
             }
@@ -1405,10 +1404,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                     }
                 }
-                if cell.imageItem.image != nil {
-                    self.photos.append(cell.imageItem.image!)
-                }
-                
+               
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
                                 
                 // image local
@@ -1590,9 +1586,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                             cell.imageItem.image = NCCollectionCommon.images.cellFileImage
                         }
                     }
-                }
-                if cell.imageItem.image != nil {
-                    self.photos.append(cell.imageItem.image!)
                 }
                 
                 // image Local

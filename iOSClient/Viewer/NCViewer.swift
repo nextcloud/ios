@@ -35,12 +35,10 @@ class NCViewer: NSObject {
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
 
-    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata]? = nil) {
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata]) {
 
         self.metadata = metadata
-        if metadatas != nil {
-            self.metadatas = metadatas!
-        }
+        self.metadatas = metadatas
         
         // VIDEO AUDIO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
@@ -69,8 +67,16 @@ class NCViewer: NSObject {
                     viewerImagePageContainer.transitionController.fromDelegate = viewController
                     viewerImagePageContainer.transitionController.toDelegate = viewerImagePageContainer
                     viewerImagePageContainer.delegate = viewController
-                    viewerImagePageContainer.currentIndex = viewController.selectedIndexPath.row
-                    viewerImagePageContainer.photos = viewController.photos
+                    
+                    var index = 0
+                    for medatasImage in metadatas {
+                        if medatasImage.ocId == metadata.ocId {
+                            viewerImagePageContainer.currentIndex = index
+                            break
+                        }
+                        index += 1
+                    }
+                    viewerImagePageContainer.metadatas = metadatas
                     
                     navigationController.pushViewController(viewerImagePageContainer, animated: true)
                 }
