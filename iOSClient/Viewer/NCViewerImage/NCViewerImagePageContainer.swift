@@ -18,6 +18,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     var metadatas: [tableMetadata] = []
+    var metadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
    
@@ -44,10 +45,20 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         viewerImageZoom.delegate = self
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex])
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
         pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = buttonMore
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.title = metadata.fileNameView
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -128,12 +139,32 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
-    func getImageFromMetadata(_ metadata: tableMetadata) -> UIImage {
+    func getImageMetadata(_ metadata: tableMetadata) -> UIImage {
+        
+        setMetadata(metadata)
+        
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             return UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))!
         } else {
             return NCCollectionCommon.images.cellFileImage
         }
+    }
+    
+    func setMetadata(_ metadata: tableMetadata) {
+        self.metadata = metadata
+        
+        navigationItem.title = metadata.fileNameView
+    }
+    
+    @objc func viewUnload() {
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    //MARK: - Action
+    
+    @objc func openMenuMore() {
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
 }
 
@@ -147,7 +178,7 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         viewerImageZoom.delegate = self
-        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex - 1])
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.index = currentIndex - 1
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         return viewerImageZoom
@@ -163,7 +194,7 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         viewerImageZoom.delegate = self
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
-        viewerImageZoom.image = getImageFromMetadata(metadatas[currentIndex + 1])
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerImageZoom.index = currentIndex + 1
         return viewerImageZoom
         
@@ -187,6 +218,7 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
             }
 
             currentIndex = nextIndex!
+            setMetadata(metadatas[currentIndex])
         }
         
         self.nextIndex = nil

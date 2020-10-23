@@ -13,6 +13,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var statusViewImage: UIImageView!
     
     weak var delegate: NCViewerImageZoomDelegate?
     

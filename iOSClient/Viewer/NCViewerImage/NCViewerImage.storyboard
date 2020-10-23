@@ -70,13 +70,22 @@
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="1" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="206"/>
                                     </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2AU-85-K8y">
+                                        <rect key="frame" x="10" y="10" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="l1v-vA-4gG"/>
+                                            <constraint firstAttribute="width" constant="30" id="mSt-o6-S1g"/>
+                                        </constraints>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="CdQ-LC-Trx" secondAttribute="leading" constant="10" id="GvY-JZ-Fca"/>
                                     <constraint firstItem="kPV-JM-UnM" firstAttribute="leading" secondItem="CdQ-LC-Trx" secondAttribute="leading" id="asL-Ft-Lmc"/>
                                     <constraint firstAttribute="trailing" secondItem="kPV-JM-UnM" secondAttribute="trailing" id="fBN-70-6ry"/>
                                     <constraint firstItem="kPV-JM-UnM" firstAttribute="top" secondItem="CdQ-LC-Trx" secondAttribute="top" id="tdo-XY-uqv"/>
                                     <constraint firstAttribute="bottom" secondItem="kPV-JM-UnM" secondAttribute="bottom" id="xTI-ae-JfJ"/>
+                                    <constraint firstItem="2AU-85-K8y" firstAttribute="top" secondItem="CdQ-LC-Trx" secondAttribute="top" constant="10" id="zRS-KK-qAv"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
@@ -96,6 +105,7 @@
                         <outlet property="imageViewTopConstraint" destination="tdo-XY-uqv" id="9Ty-3b-gkL"/>
                         <outlet property="imageViewTrailingConstraint" destination="fBN-70-6ry" id="dZZ-2L-0VJ"/>
                         <outlet property="scrollView" destination="CdQ-LC-Trx" id="3np-FR-s39"/>
+                        <outlet property="statusViewImage" destination="2AU-85-K8y" id="22h-Ec-bj0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
