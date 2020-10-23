@@ -121,23 +121,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     func changeScreenMode(to: ScreenMode) {
         if to == .full {
             navigationController?.setNavigationBarHidden(true, animated: false)
-            UIView.animate(withDuration: 0.25,
-                           animations: {
-                            self.view.backgroundColor = .black
-                            
-            }, completion: { completed in
-            })
+            view.backgroundColor = .black
         } else {
             navigationController?.setNavigationBarHidden(false, animated: false)
-            UIView.animate(withDuration: 0.25,
-                           animations: {
-                            if #available(iOS 13.0, *) {
-                                self.view.backgroundColor = .systemBackground
-                            } else {
-                                self.view.backgroundColor = .white
-                            }
-            }, completion: { completed in
-            })
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
     }
     
