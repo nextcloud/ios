@@ -1,11 +1,11 @@
 
 import UIKit
 
-protocol PhotoZoomViewControllerDelegate: class {
-    func photoZoomViewController(_ photoZoomViewController: PhotoZoomViewController, scrollViewDidScroll scrollView: UIScrollView)
+protocol NCViewerImageZoomDelegate: class {
+    func viewerImageZoom(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView)
 }
 
-class PhotoZoomViewController: UIViewController {
+class NCViewerImageZoom: UIViewController {
     
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
@@ -14,7 +14,7 @@ class PhotoZoomViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     
-    weak var delegate: PhotoZoomViewControllerDelegate?
+    weak var delegate: NCViewerImageZoomDelegate?
     
     var image: UIImage!
     var index: Int = 0
@@ -122,7 +122,7 @@ class PhotoZoomViewController: UIViewController {
     }
 }
 
-extension PhotoZoomViewController: UIScrollViewDelegate {
+extension NCViewerImageZoom: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
     }
@@ -132,6 +132,6 @@ extension PhotoZoomViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.delegate?.photoZoomViewController(self, scrollViewDidScroll: scrollView)
+        self.delegate?.viewerImageZoom(self, scrollViewDidScroll: scrollView)
     }
 }

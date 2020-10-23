@@ -2,25 +2,25 @@
 
 import UIKit
 
-protocol PhotoPageContainerViewControllerDelegate: class {
-    func containerViewController(_ containerViewController: PhotoPageContainerViewController, indexDidUpdate currentIndex: Int)
+protocol NCViewerImagePageContainerDelegate: class {
+    func containerViewController(_ containerViewController: NCViewerImagePageContainer, indexDidUpdate currentIndex: Int)
 }
 
-class PhotoPageContainerViewController: UIViewController, UIGestureRecognizerDelegate {
+class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
     enum ScreenMode {
         case full, normal
     }
     var currentMode: ScreenMode = .normal
     
-    weak var delegate: PhotoPageContainerViewControllerDelegate?
+    weak var delegate: NCViewerImagePageContainerDelegate?
     
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
     }
     
-    var currentViewController: PhotoZoomViewController {
-        return self.pageViewController.viewControllers![0] as! PhotoZoomViewController
+    var currentViewController: NCViewerImageZoom {
+        return self.pageViewController.viewControllers![0] as! NCViewerImageZoom
     }
     
     var photos: [UIImage]!
@@ -44,7 +44,7 @@ class PhotoPageContainerViewController: UIViewController, UIGestureRecognizerDel
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         self.pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(PhotoZoomViewController.self)") as! PhotoZoomViewController
+        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
         vc.index = self.currentIndex
         vc.image = self.photos[self.currentIndex]
@@ -147,7 +147,7 @@ class PhotoPageContainerViewController: UIViewController, UIGestureRecognizerDel
     }
 }
 
-extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
+extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         
@@ -155,7 +155,7 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
             return nil
         }
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(PhotoZoomViewController.self)") as! PhotoZoomViewController
+        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
         vc.image = self.photos[currentIndex - 1]
         vc.index = currentIndex - 1
@@ -170,7 +170,7 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
             return nil
         }
         
-        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(PhotoZoomViewController.self)") as! PhotoZoomViewController
+        let vc = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "\(NCViewerImageZoom.self)") as! NCViewerImageZoom
         vc.delegate = self
         self.singleTapGestureRecognizer.require(toFail: vc.doubleTapGestureRecognizer)
         vc.image = self.photos[currentIndex + 1]
@@ -181,7 +181,7 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
-        guard let nextVC = pendingViewControllers.first as? PhotoZoomViewController else {
+        guard let nextVC = pendingViewControllers.first as? NCViewerImageZoom else {
             return
         }
         
@@ -192,7 +192,7 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
         
         if (completed && self.nextIndex != nil) {
             previousViewControllers.forEach { vc in
-                let zoomVC = vc as! PhotoZoomViewController
+                let zoomVC = vc as! NCViewerImageZoom
                 zoomVC.scrollView.zoomScale = zoomVC.scrollView.minimumZoomScale
             }
 
@@ -205,9 +205,9 @@ extension PhotoPageContainerViewController: UIPageViewControllerDelegate, UIPage
     
 }
 
-extension PhotoPageContainerViewController: PhotoZoomViewControllerDelegate {
+extension NCViewerImagePageContainer: NCViewerImageZoomDelegate {
     
-    func photoZoomViewController(_ photoZoomViewController: PhotoZoomViewController, scrollViewDidScroll scrollView: UIScrollView) {
+    func viewerImageZoom(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView) {
         if scrollView.zoomScale != scrollView.minimumZoomScale && self.currentMode != .full {
             self.changeScreenMode(to: .full)
             self.currentMode = .full
@@ -215,7 +215,7 @@ extension PhotoPageContainerViewController: PhotoZoomViewControllerDelegate {
     }
 }
 
-extension PhotoPageContainerViewController: ZoomAnimatorDelegate {
+extension NCViewerImagePageContainer: ZoomAnimatorDelegate {
     
     func transitionWillStartWith(zoomAnimator: ZoomAnimator) {
     }

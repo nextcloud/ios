@@ -41,8 +41,8 @@
 		F70753E32542A99100972D44 /* NCZoomTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753E02542A99100972D44 /* NCZoomTransitionController.swift */; };
 		F70753E42542A99100972D44 /* NCZoomDismissalInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753E12542A99100972D44 /* NCZoomDismissalInteractionController.swift */; };
 		F70753E52542A99100972D44 /* NCZoomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753E22542A99100972D44 /* NCZoomAnimator.swift */; };
-		F70753EB2542A99800972D44 /* NCPhotoPageContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCPhotoPageContainerViewController.swift */; };
-		F70753F12542A9A200972D44 /* NCPhotoZoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCPhotoZoomViewController.swift */; };
+		F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */; };
+		F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerImage.storyboard */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
@@ -383,8 +383,8 @@
 		F70753E02542A99100972D44 /* NCZoomTransitionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCZoomTransitionController.swift; sourceTree = "<group>"; };
 		F70753E12542A99100972D44 /* NCZoomDismissalInteractionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCZoomDismissalInteractionController.swift; sourceTree = "<group>"; };
 		F70753E22542A99100972D44 /* NCZoomAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCZoomAnimator.swift; sourceTree = "<group>"; };
-		F70753EA2542A99800972D44 /* NCPhotoPageContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPhotoPageContainerViewController.swift; sourceTree = "<group>"; };
-		F70753F02542A9A200972D44 /* NCPhotoZoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPhotoZoomViewController.swift; sourceTree = "<group>"; };
+		F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImagePageContainer.swift; sourceTree = "<group>"; };
+		F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageZoom.swift; sourceTree = "<group>"; };
 		F70753F62542A9C000972D44 /* NCViewerImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImage.storyboard; sourceTree = "<group>"; };
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
@@ -1126,8 +1126,8 @@
 			isa = PBXGroup;
 			children = (
 				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
-				F70753EA2542A99800972D44 /* NCPhotoPageContainerViewController.swift */,
-				F70753F02542A9A200972D44 /* NCPhotoZoomViewController.swift */,
+				F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */,
+				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
 				F70753DF2542A99100972D44 /* Animation */,
 			);
 			path = NCViewerImage;
@@ -2079,7 +2079,7 @@
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
-				F70753F12542A9A200972D44 /* NCPhotoZoomViewController.swift in Sources */,
+				F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */,
 				F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
@@ -2156,7 +2156,7 @@
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
-				F70753EB2542A99800972D44 /* NCPhotoPageContainerViewController.swift in Sources */,
+				F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
