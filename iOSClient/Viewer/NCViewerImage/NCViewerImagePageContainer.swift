@@ -20,8 +20,11 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var metadatas: [tableMetadata] = []
     var currentIndex = 0
     var nextIndex: Int?
+   
     var startPanLocation = CGPoint.zero
-    let panDistanceForPopViewController: CGFloat = 50
+    let panDistanceForPopViewController: CGFloat = 100
+    var defaultImageViewTopConstraint: CGFloat = 0
+    var defaultImageViewBottomConstraint: CGFloat = 0
     
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
@@ -80,20 +83,28 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-        let currentLocation = gestureRecognizer.location(in: self.view)
+        let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
         case .began:
             startPanLocation = currentLocation
-            currentViewController.scrollView.isScrollEnabled = true
-        case .ended:
+            defaultImageViewTopConstraint = currentViewController.imageViewTopConstraint.constant
+            defaultImageViewBottomConstraint = currentViewController.imageViewBottomConstraint.constant
             currentViewController.scrollView.isScrollEnabled = false
-        default:
-            let dx = currentLocation.x - startPanLocation.x
+        case .ended:
+            currentViewController.scrollView.isScrollEnabled = true
+            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint
+            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
+        case .changed:
             let dy = currentLocation.y - startPanLocation.y
-            if sqrt(dx*dx + dy*dy) >= panDistanceForPopViewController {
+            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
+            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
+            if dy >= panDistanceForPopViewController {
                 self.navigationController?.popViewController(animated: true)
             }
+            print(dy)
+        default:
+            break
         }
     }
     
