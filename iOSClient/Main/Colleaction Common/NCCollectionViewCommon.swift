@@ -1663,9 +1663,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     }
 }
 
-extension NCCollectionViewCommon: PhotoPageContainerViewControllerDelegate {
+extension NCCollectionViewCommon: NCViewerImagePageContainerDelegate {
  
-    func containerViewController(_ containerViewController: PhotoPageContainerViewController, indexDidUpdate currentIndex: Int) {
+    func containerViewController(_ containerViewController: NCViewerImagePageContainer, indexDidUpdate currentIndex: Int) {
         self.selectedIndexPath = IndexPath(row: currentIndex, section: 0)
         self.collectionView.scrollToItem(at: self.selectedIndexPath, at: .centeredVertically, animated: false)
     }

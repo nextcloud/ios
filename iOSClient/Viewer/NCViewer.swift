@@ -60,19 +60,19 @@ class NCViewer: NSObject {
             
             if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                 
-                let vcImageView:PhotoPageContainerViewController = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! PhotoPageContainerViewController
+                let viewerImagePageContainer:NCViewerImagePageContainer = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImagePageContainer
             
-                navigationController.delegate = vcImageView.transitionController
-                vcImageView.transitionController.toDelegate = vcImageView
+                navigationController.delegate = viewerImagePageContainer.transitionController
+                viewerImagePageContainer.transitionController.toDelegate = viewerImagePageContainer
                 if viewController is NCFiles {
                     let viewController: NCFiles = viewController as! NCFiles
-                    vcImageView.transitionController.fromDelegate = viewController
-                    vcImageView.transitionController.toDelegate = vcImageView
-                    vcImageView.delegate = viewController
-                    vcImageView.currentIndex = viewController.selectedIndexPath.row
-                    vcImageView.photos = viewController.photos
+                    viewerImagePageContainer.transitionController.fromDelegate = viewController
+                    viewerImagePageContainer.transitionController.toDelegate = viewerImagePageContainer
+                    viewerImagePageContainer.delegate = viewController
+                    viewerImagePageContainer.currentIndex = viewController.selectedIndexPath.row
+                    viewerImagePageContainer.photos = viewController.photos
                     
-                    navigationController.pushViewController(vcImageView, animated: true)
+                    navigationController.pushViewController(viewerImagePageContainer, animated: true)
                 }
             }
     
