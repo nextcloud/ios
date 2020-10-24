@@ -65,7 +65,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.image = getImageMetadata(metadata)
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
 
@@ -190,16 +190,15 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
 extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        if currentIndex == 0 { return nil }
         
-        if currentIndex == 0 {
-            return nil
-        }
-        
+        metadata = metadatas[currentIndex - 1]
+
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
-        
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
+                
+        viewerImageZoom.image = getImageMetadata(metadata)
         viewerImageZoom.index = currentIndex - 1
-        viewerImageZoom.metadata = metadatas[currentIndex - 1]
+        viewerImageZoom.metadata = metadata
         viewerImageZoom.delegate = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -208,16 +207,15 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        if currentIndex == (self.metadatas.count - 1) { return nil }
         
-        if currentIndex == (self.metadatas.count - 1) {
-            return nil
-        }
+        metadata = metadatas[currentIndex + 1]
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex + 1
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
-        viewerImageZoom.metadata = metadatas[currentIndex + 1]
+        viewerImageZoom.image = getImageMetadata(metadata)
+        viewerImageZoom.metadata = metadata
         viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
