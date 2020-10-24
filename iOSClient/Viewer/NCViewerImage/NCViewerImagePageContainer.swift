@@ -198,7 +198,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
-    //MARK: - Function
+    //MARK: - Delegate Image Zoom
 
     func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
         
@@ -212,6 +212,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
         }
     }
+    
+    //MARK: - Function
     
     func changeScreenMode(to: ScreenMode) {
         if to == .full {
