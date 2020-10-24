@@ -26,6 +26,8 @@ import SVGKit
 
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
+    @IBOutlet weak var progressView: UIProgressView!
+
     enum ScreenMode {
         case full, normal
     }
@@ -77,16 +79,21 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
         /*
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+       
                
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
         */
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+        
+        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.trackTintColor = .clear
+        progressView.progress = 0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -116,8 +123,23 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                     currentViewerImageZoom?.image = image
                     currentViewerImageZoom?.imageView.image = image
                 }
-                
-                //progress(0)
+                if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
+                    progressView.progress = 0
+                }
+            }
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+                if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
+                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                    let progress = progressNumber.floatValue
+                    self.progressView.progress = progress
+                }
             }
         }
     }
