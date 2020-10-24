@@ -80,6 +80,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.rightBarButtonItem = buttonMore
         
+        navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     

@@ -199,7 +199,7 @@ class NCViewer: NSObject {
     
     private func getPushNavigationController(viewController: UIViewController, serverUrl: String) -> UINavigationController? {
         
-        if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder {
+        if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder || viewController is NCMedia {
             if serverUrl == appDelegate.activeServerUrl {
                 return viewController.navigationController
             }
