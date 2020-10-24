@@ -339,6 +339,5 @@
 #define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: metadata
 
 #define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
-#define k_notificationCenter_menuDownloadImage              @"menuDownloadImage"                // userInfo: metadata
 #define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
 #define k_notificationCenter_menuDetailClose                @"menuDetailClose"

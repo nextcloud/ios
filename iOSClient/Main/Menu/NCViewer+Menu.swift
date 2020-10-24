@@ -250,7 +250,7 @@ extension NCViewer {
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                         action: { menuAction in
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
+                            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
                         }
                     )
                 )
