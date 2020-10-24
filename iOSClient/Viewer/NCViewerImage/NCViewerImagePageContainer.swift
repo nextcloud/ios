@@ -45,7 +45,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var nextIndex: Int?
    
     var startPanLocation = CGPoint.zero
-    let panDistanceForPopViewController: CGFloat = 100
+    let panDistanceForPopViewController: CGFloat = 150
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
     
@@ -109,6 +109,19 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     //MARK: - NotificationCenter
 
+    @objc func downloadedFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+                if metadata.ocId == self.metadata.ocId && errorCode == 0 {
+                    
+                }
+                //progress(0)
+            }
+        }
+    }
+    
     @objc func changeTheming() {
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
