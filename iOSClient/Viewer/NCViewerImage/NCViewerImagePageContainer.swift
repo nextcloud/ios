@@ -62,11 +62,13 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
         
+        metadata = metadatas[currentIndex]
+
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadata)
-        viewerImageZoom.metadata = metadatas[currentIndex]
+        viewerImageZoom.metadata = metadata
         viewerImageZoom.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
