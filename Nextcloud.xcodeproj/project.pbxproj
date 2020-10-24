@@ -1113,11 +1113,11 @@
 		F79018B1240962C7007C9B6D /* NCViewerImage */ = {
 			isa = PBXGroup;
 			children = (
-				F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */,
-				F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */,
 				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */,
 				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
+				F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */,
+				F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */,
 			);
 			path = NCViewerImage;
 			sourceTree = "<group>";
