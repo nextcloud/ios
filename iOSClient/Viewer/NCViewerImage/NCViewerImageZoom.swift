@@ -34,7 +34,7 @@ class NCViewerImageZoom: UIViewController {
         
     weak var delegate: NCViewerImagePageContainer?
     
-    var image: UIImage = UIImage()
+    var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
@@ -52,8 +52,10 @@ class NCViewerImageZoom: UIViewController {
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
         
-        imageView.image = image
-        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
+        if let image = image {
+            imageView.image = image
+            imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
+        }
         
         if NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)

@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SVGKit
 
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
@@ -196,13 +197,70 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
-    func getImageMetadata(_ metadata: tableMetadata) -> UIImage {
+    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
                 
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            return UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))!
-        } else {
-            return NCCollectionCommon.images.cellFileImage
+        if let image = getImage(metadata: metadata) {
+            return image
         }
+        
+        if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+            if let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                return UIImage.init(contentsOfFile: imagePath)
+            } 
+        }
+        
+        return NCCollectionCommon.images.cellFileImage
+    }
+    
+    private func getImage(metadata: tableMetadata) -> UIImage? {
+        
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        var image: UIImage?
+        
+        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
+           
+            let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+            
+            if ext == "GIF" {
+                if !FileManager().fileExists(atPath: previewPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                }
+                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
+            } else if ext == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
+                    let scale = svgImage.size.height / svgImage.size.width
+                    svgImage.size = CGSize(width: CGFloat(k_sizePreview), height: (CGFloat(k_sizePreview) * scale))
+                    if let image = svgImage.uiImage {
+                        if !FileManager().fileExists(atPath: previewPath) {
+                            do {
+                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
+                            } catch { }
+                        }
+                        return image
+                    } else {
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            } else {
+                if !FileManager().fileExists(atPath: previewPath) {
+                    CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+                }
+                image = UIImage.init(contentsOfFile: imagePath)
+            }
+            
+        } else {
+            
+            // AUTOMATIC DOWNLOAD FOR GIF
+            
+            if (ext == "GIF" || ext == "SVG") && metadata.session == "" {
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
+            }
+        }
+        
+        return image
     }
     
     //MARK: - Action
