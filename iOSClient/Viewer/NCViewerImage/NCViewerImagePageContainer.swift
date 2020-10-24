@@ -112,7 +112,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
-                    currentViewerImageZoom?.image = getImageMetadata(metadata)
+                    let image = getImageMetadata(metadata)
+                    currentViewerImageZoom?.image = image
+                    currentViewerImageZoom?.imageView.image = image
                 }
                 
                 //progress(0)
@@ -199,9 +201,16 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     //MARK: - Function
 
     func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
+        
         navigationItem.title = metadata.fileNameView
+        
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        if (ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+        }
     }
     
     func changeScreenMode(to: ScreenMode) {
@@ -266,14 +275,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                     CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
                 }
                 image = UIImage.init(contentsOfFile: imagePath)
-            }
-            
-        } else {
-            
-            // AUTOMATIC DOWNLOAD FOR GIF
-            
-            if (ext == "GIF" || ext == "SVG") && metadata.session == "" {
-                NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
             }
         }
         
