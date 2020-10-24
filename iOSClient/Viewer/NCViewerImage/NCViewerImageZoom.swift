@@ -1,10 +1,6 @@
 
 import UIKit
 
-protocol NCViewerImageZoomDelegate: class {
-    func viewerImageZoom(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView)
-}
-
 class NCViewerImageZoom: UIViewController {
     
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
@@ -14,9 +10,8 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
-    
-    weak var delegate: NCViewerImageZoomDelegate?
-    
+        
+    weak var delegate: NCViewerImagePageContainer?
     var image: UIImage!
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -50,7 +45,7 @@ class NCViewerImageZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationItem.title = metadata.fileNameView
+        delegate?.navigationItem.title = metadata.fileNameView
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -120,6 +115,5 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.delegate?.viewerImageZoom(self, scrollViewDidScroll: scrollView)
     }
 }
