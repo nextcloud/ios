@@ -51,10 +51,19 @@ class NCViewerImageZoom: UIViewController {
         
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
-        imageView.image = self.image
-        imageView.frame = CGRect(x: self.imageView.frame.origin.x, y: self.imageView.frame.origin.y, width: self.image.size.width, height: self.image.size.height)
         
-        view.addGestureRecognizer(self.doubleTapGestureRecognizer)
+        imageView.image = image
+        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
+        
+        if NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) != nil {
+            statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)
+        } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .gray)
+        } else {
+            statusViewImage.image = nil
+        }
+        
+        view.addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,8 +90,8 @@ class NCViewerImageZoom: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
-        let pointInView = gestureRecognizer.location(in: self.imageView)
-        var newZoomScale = self.scrollView.maximumZoomScale
+        let pointInView = gestureRecognizer.location(in: imageView)
+        var newZoomScale = scrollView.maximumZoomScale
         
         if scrollView.zoomScale >= newZoomScale || abs(scrollView.zoomScale - newZoomScale) <= 0.01 {
             newZoomScale = scrollView.minimumZoomScale
@@ -94,7 +103,7 @@ class NCViewerImageZoom: UIViewController {
         let originY = pointInView.y - (height / 2.0)
         
         let rectToZoomTo = CGRect(x: originX, y: originY, width: width, height: height)
-        self.scrollView.zoom(to: rectToZoomTo, animated: true)
+        scrollView.zoom(to: rectToZoomTo, animated: true)
     }
     
     //MARK: - Function
@@ -120,7 +129,7 @@ class NCViewerImageZoom: UIViewController {
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
 
-        let contentHeight = yOffset * 2 + self.imageView.frame.height
+        let contentHeight = yOffset * 2 + imageView.frame.height
         view.layoutIfNeeded()
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
@@ -133,7 +142,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraintsForSize(self.view.bounds.size)
+        updateConstraintsForSize(view.bounds.size)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
