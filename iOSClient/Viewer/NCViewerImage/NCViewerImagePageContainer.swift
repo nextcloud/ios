@@ -74,6 +74,21 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
         pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
+        /*
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+               
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadImage(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuDownloadImage), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
+        */
+        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,6 +104,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
+    }
+    
+    //MARK: - NotificationCenter
+
+    @objc func changeTheming() {
+        if currentMode == .normal {
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        }
     }
     
     //MARK: - Gesture
@@ -152,12 +175,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        if self.currentMode == .full {
+        if currentMode == .full {
             changeScreenMode(to: .normal)
-            self.currentMode = .normal
+            currentMode = .normal
         } else {
             changeScreenMode(to: .full)
-            self.currentMode = .full
+            currentMode = .full
         }
     }
     
