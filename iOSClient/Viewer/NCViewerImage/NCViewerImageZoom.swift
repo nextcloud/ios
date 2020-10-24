@@ -18,6 +18,7 @@ class NCViewerImageZoom: UIViewController {
     weak var delegate: NCViewerImageZoomDelegate?
     
     var image: UIImage!
+    var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
 
     var doubleTapGestureRecognizer: UITapGestureRecognizer!
@@ -46,6 +47,12 @@ class NCViewerImageZoom: UIViewController {
         updateConstraintsForSize(view.bounds.size)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationItem.title = metadata.fileNameView
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
