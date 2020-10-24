@@ -138,7 +138,11 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
                     let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                     let progress = progressNumber.floatValue
-                    self.progressView.progress = progress
+                    if progress == 1 {
+                        self.progressView.progress = 0
+                    } else {
+                        self.progressView.progress = progress
+                    }
                 }
             }
         }
@@ -241,9 +245,11 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         if to == .full {
             navigationController?.setNavigationBarHidden(true, animated: false)
             view.backgroundColor = .black
+            progressView.isHidden = true
         } else {
             navigationController?.setNavigationBarHidden(false, animated: false)
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            progressView.isHidden = false
         }
     }
     
