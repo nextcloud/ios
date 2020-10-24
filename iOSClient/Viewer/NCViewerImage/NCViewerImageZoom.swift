@@ -33,11 +33,11 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
         
     weak var delegate: NCViewerImagePageContainer?
-    var image: UIImage!
+    
+    var image: UIImage = UIImage()
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
-
-    var doubleTapGestureRecognizer: UITapGestureRecognizer!
+    var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -49,20 +49,14 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.scrollView.delegate = self
-        self.scrollView.contentInsetAdjustmentBehavior = .never
-        self.imageView.image = self.image
-        self.imageView.frame = CGRect(x: self.imageView.frame.origin.x, y: self.imageView.frame.origin.y, width: self.image.size.width, height: self.image.size.height)
-        self.view.addGestureRecognizer(self.doubleTapGestureRecognizer)        
+        scrollView.delegate = self
+        scrollView.contentInsetAdjustmentBehavior = .never
+        imageView.image = self.image
+        imageView.frame = CGRect(x: self.imageView.frame.origin.x, y: self.imageView.frame.origin.y, width: self.image.size.width, height: self.image.size.height)
+        
+        view.addGestureRecognizer(self.doubleTapGestureRecognizer)
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        updateZoomScaleForSize(view.bounds.size)
-        updateConstraintsForSize(view.bounds.size)
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -76,21 +70,26 @@ class NCViewerImageZoom: UIViewController {
         updateConstraintsForSize(view.bounds.size)
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        updateZoomScaleForSize(view.bounds.size)
+        updateConstraintsForSize(view.bounds.size)
     }
     
+    //MARK: - Gesture
+
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
         let pointInView = gestureRecognizer.location(in: self.imageView)
         var newZoomScale = self.scrollView.maximumZoomScale
         
-        if self.scrollView.zoomScale >= newZoomScale || abs(self.scrollView.zoomScale - newZoomScale) <= 0.01 {
-            newZoomScale = self.scrollView.minimumZoomScale
+        if scrollView.zoomScale >= newZoomScale || abs(scrollView.zoomScale - newZoomScale) <= 0.01 {
+            newZoomScale = scrollView.minimumZoomScale
         }
         
-        let width = self.scrollView.bounds.width / newZoomScale
-        let height = self.scrollView.bounds.height / newZoomScale
+        let width = scrollView.bounds.width / newZoomScale
+        let height = scrollView.bounds.height / newZoomScale
         let originX = pointInView.x - (width / 2.0)
         let originY = pointInView.y - (height / 2.0)
         
@@ -98,6 +97,8 @@ class NCViewerImageZoom: UIViewController {
         self.scrollView.zoom(to: rectToZoomTo, animated: true)
     }
     
+    //MARK: - Function
+
     fileprivate func updateZoomScaleForSize(_ size: CGSize) {
         
         let widthScale = size.width / imageView.bounds.width
@@ -121,7 +122,7 @@ class NCViewerImageZoom: UIViewController {
 
         let contentHeight = yOffset * 2 + self.imageView.frame.height
         view.layoutIfNeeded()
-        self.scrollView.contentSize = CGSize(width: self.scrollView.contentSize.width, height: contentHeight)
+        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
 }
 
