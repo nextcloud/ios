@@ -1120,12 +1120,12 @@
 			isa = PBXGroup;
 			children = (
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
+				F79018B1240962C7007C9B6D /* NCViewerImage */,
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F71CEB0D253A0B1A00832FFE /* NCViewerVideo */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
 				F7239861253C95D500257F49 /* NCViewerRichdocument */,
-				F79018B1240962C7007C9B6D /* NCViewerImage */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";

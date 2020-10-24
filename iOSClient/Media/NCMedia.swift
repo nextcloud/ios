@@ -123,6 +123,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // hide nagigation controller
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+
         self.reloadDataSourceWithCompletion { (_) in
             self.searchNewPhotoVideo()
         }
@@ -392,8 +395,6 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -520,6 +521,7 @@ extension NCMedia: UICollectionViewDelegate {
             
         } else {
             
+            appDelegate.activeServerUrl = metadataTouch!.serverUrl
             NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
         }
     }
