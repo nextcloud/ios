@@ -38,17 +38,16 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         panGestureRecognizer.delegate = self
         pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
-        
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
-        viewerImageZoom.delegate = self
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        
+        viewerImageZoom.delegate = self
+
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
         pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
@@ -172,10 +171,10 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
-        viewerImageZoom.delegate = self
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.index = currentIndex - 1
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
+        viewerImageZoom.delegate = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -189,13 +188,14 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         }
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
-        viewerImageZoom.delegate = self
         
-        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         viewerImageZoom.index = currentIndex + 1
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerImageZoom.metadata = metadatas[currentIndex + 1]
+        viewerImageZoom.delegate = self
         
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+
         return viewerImageZoom
     }
     
@@ -221,16 +221,4 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         self.nextIndex = nil
     }
-    
 }
-
-extension NCViewerImagePageContainer: NCViewerImageZoomDelegate {
-    
-    func viewerImageZoom(_ viewerImageZoom: NCViewerImageZoom, scrollViewDidScroll scrollView: UIScrollView) {
-        if scrollView.zoomScale != scrollView.minimumZoomScale && currentMode != .full {
-            changeScreenMode(to: .full)
-            currentMode = .full
-        }
-    }
-}
-
