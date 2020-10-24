@@ -1,9 +1,9 @@
 //
-//  NCSharesCell.h
+//  NCSettings.h
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 05/06/17.
-//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
+//  Created by Marino Faggiana on 24/11/14.
+//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -22,22 +22,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
+#import <XLForm/XLForm.h>
+#import "CCUtility.h"
+#import "CCHud.h"
 
-@interface NCSharesCell : UITableViewCell
+@interface NCSettings : XLFormViewController
 
-@property(nonatomic, weak) IBOutlet UIImageView *fileImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *statusImageView;
-@property(nonatomic, weak) IBOutlet UIImageView *offlineImageView;
-
-@property(nonatomic, weak) IBOutlet UILabel *labelTitle;
-@property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
-
-@property (strong, nonatomic) IBOutletCollection(NSLayoutConstraint) NSArray *constraints;
-
-//Last position of the scroll of the swipe
-@property (nonatomic, assign) CGFloat lastContentOffset;
-
-//Index path of the cell swipe gesture ocured
-@property (nonatomic, strong) NSIndexPath *indexPath;
+- (void)reloadForm;
 
 @end

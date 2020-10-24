@@ -25,7 +25,7 @@ import Foundation
 import KTVHTTPCache
 
 class NCViewerVideoCommon: NSObject {
-    @objc static let sharedInstance: NCViewerVideoCommon = {
+    @objc static let shared: NCViewerVideoCommon = {
         let viewVideo = NCViewerVideoCommon()
         viewVideo.setupHTTPCache()
         return viewVideo

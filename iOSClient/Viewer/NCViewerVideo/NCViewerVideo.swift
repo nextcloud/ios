@@ -45,7 +45,7 @@ class NCViewerVideo: UIViewController {
         
         view.backgroundColor = .black
         let frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-        NCViewerVideoCommon.sharedInstance.viewMedia(metadata, view: backgroundView, frame: frame)
+        NCViewerVideoCommon.shared.viewMedia(metadata, view: backgroundView, frame: frame)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,6 +54,7 @@ class NCViewerVideo: UIViewController {
         let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         navigationItem.rightBarButtonItem = buttonMore
         
+        navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
 
@@ -119,7 +120,7 @@ extension NCViewerVideo : UINavigationControllerDelegate {
             
             if appDelegate.isMediaObserver {
                 appDelegate.isMediaObserver = false
-                NCViewerVideoCommon.sharedInstance.removeObserver()
+                NCViewerVideoCommon.shared.removeObserver()
             }
         }
      }

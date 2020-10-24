@@ -1,5 +1,5 @@
 //
-//  CCMore.swift
+//  NCMore.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 03/04/17.
@@ -25,7 +25,7 @@
 import UIKit
 import NCCommunication
 
-class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
@@ -109,12 +109,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Shares
-        item = NCCommunicationExternalSite()
-        item.name = "_list_shares_"
-        item.icon = "shareFill"
-        item.url = "segueShares"
-        functionMenu.append(item)
-
+        let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        if isFilesSharingEnabled {
+            item = NCCommunicationExternalSite()
+            item.name = "_list_shares_"
+            item.icon = "shareFill"
+            item.url = "segueShares"
+            functionMenu.append(item)
+        }
+        
         // ITEM : Offline
         item = NCCommunicationExternalSite()
         item.name = "_manage_file_offline_"
@@ -357,6 +360,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as! NCBrowserWeb
             browserWebVC.urlBase = item.url
             browserWebVC.isHiddenButtonExit = true
+            browserWebVC.titleBrowser = item.name
 
             self.navigationController?.pushViewController(browserWebVC, animated: true)
             self.navigationController?.navigationBar.isHidden = false

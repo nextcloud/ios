@@ -35,6 +35,7 @@ class NCBrowserWeb: UIViewController {
     
     @objc var urlBase = ""
     @objc var isHiddenButtonExit = false
+    @objc var titleBrowser: String? = nil
     @objc weak var delegate: NCBrowserWebDelegate?
     
     @IBOutlet weak var buttonExit: UIButton!
@@ -59,6 +60,14 @@ class NCBrowserWeb: UIViewController {
         }
         
         loadWebPage(webView: webView!, url: URL(string: urlBase)!)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let titleBrowser = titleBrowser {
+            navigationItem.title = titleBrowser
+        }
     }
     
     func loadWebPage(webView: WKWebView, url: URL)  {

@@ -29,21 +29,20 @@
 #import <TOPasscodeViewController/TOPasscodeViewController.h>
 
 #import "CCUtility.h"
-#import "CCSettings.h"
 #import "CCLogin.h"
 
 @class NCFiles;
 @class NCFileViewInFolder;
 @class NCRecent;
-@class CCMore;
+@class NCMore;
 @class NCMedia;
 @class NCOffline;
 @class NCTransfers;
 @class NCFavorite;
+@class NCShares;
 @class NCTrash;
 @class NCAppConfigView;
 @class IMImagemeterViewer;
-@class NCDetailViewController;
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
 @class FileProviderDomain;
@@ -97,11 +96,12 @@
 @property (nonatomic, retain) NCFileViewInFolder *activeFileViewInFolder;
 @property (nonatomic, retain) NCFavorite *activeFavorite;
 @property (nonatomic, retain) NCRecent *activeRecent;
+@property (nonatomic, retain) NCShares *activeShares;
 @property (nonatomic, retain) NCMedia *activeMedia;
 @property (nonatomic, retain) NCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) NCLoginWeb *activeLoginWeb;
-@property (nonatomic, retain) CCMore *activeMore;
+@property (nonatomic, retain) NCMore *activeMore;
 @property (nonatomic, retain) NCOffline *activeOffline;
 @property (nonatomic, retain) NCTrash *activeTrash;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;

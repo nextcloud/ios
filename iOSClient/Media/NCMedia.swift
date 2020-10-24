@@ -24,10 +24,11 @@
 import Foundation
 import NCCommunication
 
-class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, NCSelectDelegate {
+class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     
     @IBOutlet weak var collectionView : UICollectionView!
     
+    private var emptyDataSet: NCEmptyDataSet?
     private var mediaCommandView: NCMediaCommandView?
     private var gridLayout: NCGridMediaLayout!
 
@@ -86,9 +87,8 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
 
         collectionView.collectionViewLayout = gridLayout
         
-        // empty Data Source
-        collectionView.emptyDataSetDelegate = self
-        collectionView.emptyDataSetSource = self
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 80, delegate: self)
                 
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -123,6 +123,9 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // hide nagigation controller
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+
         self.reloadDataSourceWithCompletion { (_) in
             self.searchNewPhotoVideo()
         }
@@ -392,8 +395,6 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
         cacheImages.cellLivePhotoImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .white)
         cacheImages.cellPlayImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .white)
         cacheImages.cellFavouriteImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 100, height: 100, color: NCBrandColor.sharedInstance.yellowFavorite)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -455,46 +456,18 @@ class NCMedia: UIViewController, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate,
             }
         }
     }
-    
-    // MARK: DZNEmpty
-    
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: .gray)
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
         
-        var text = "\n" + NSLocalizedString("_tutorial_photo_view_", comment: "")
-
+    // MARK: - Empty
+    
+    func emptyDataSetView(_ view: NCEmptyView) {
+        
+        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: 300, height: 300, color: .gray)
         if oldInProgress || newInProgress {
-            text = "\n" + NSLocalizedString("_search_in_progress_", comment: "")
+            view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
+        } else {
+            view.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
         }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
-    }
-    
-    // MARK: SEGUE
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-            
-                segueViewController.metadata = metadataTouch
-                segueViewController.metadatas = metadatas
-                segueViewController.mediaFilterImage = true
-                segueViewController.layoutKey = k_layout_view_media
-            }
-        }
+        view.emptyDescription.text = ""
     }
 }
 
@@ -546,10 +519,11 @@ extension NCMedia: UICollectionViewDelegate {
                 collectionView.reloadItems(at: [indexPath])
             }
             
-            return
+        } else {
+            
+            appDelegate.activeServerUrl = metadataTouch!.serverUrl
+            NCViewer.shared.view(viewController: self, metadata: metadataTouch!, metadatas: metadatas)
         }
-        
-        performSegue(withIdentifier: "segueDetail", sender: self)
     }
 }
 
@@ -569,7 +543,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
+        emptyDataSet?.numberOfItemsInSection(metadatas.count, section: section)
         return metadatas.count
     }
 

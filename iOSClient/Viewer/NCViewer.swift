@@ -33,10 +33,12 @@ class NCViewer: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
-    
-    func view(viewController: UIViewController, metadata: tableMetadata) {
+    private var metadatas: [tableMetadata] = []
+
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata]) {
 
         self.metadata = metadata
+        self.metadatas = metadatas
         
         // VIDEO AUDIO
         if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
@@ -48,6 +50,27 @@ class NCViewer: NSObject {
 
                 navigationController.pushViewController(viewController, animated: true)
             }
+            return
+        }
+        
+        // IMAGE
+        if metadata.typeFile == k_metadataTypeFile_image {
+            
+            if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                
+                let viewerImagePageContainer:NCViewerImagePageContainer = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImagePageContainer
+                var index = 0
+                for medatasImage in metadatas {
+                    if medatasImage.ocId == metadata.ocId {
+                        viewerImagePageContainer.currentIndex = index
+                        break
+                    }
+                    index += 1
+                }
+                viewerImagePageContainer.metadatas = metadatas
+                navigationController.pushViewController(viewerImagePageContainer, animated: true)
+            }
+    
             return
         }
         
@@ -125,6 +148,44 @@ class NCViewer: NSObject {
                 return
             }
             
+            // RichDocument: Collabora
+            if NCUtility.shared.isRichDocument(metadata) &&  NCCommunication.shared.isNetworkReachable() {
+                                
+                if metadata.url == "" {
+                    
+                    NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
+                        
+                        if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                            
+                            if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                                let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                            
+                                viewController.metadata = metadata
+                                viewController.link = url!
+                            
+                                navigationController.pushViewController(viewController, animated: true)
+                            }
+                            
+                        } else if errorCode != 0 {
+                            
+                            NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        }
+                    }
+                    
+                } else {
+                    
+                    if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                        let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
+                    
+                        viewController.metadata = metadata
+                        viewController.link = metadata.url
+                    
+                        navigationController.pushViewController(viewController, animated: true)
+                    }
+                }
+                
+                return
+            }
         }
         
         // OTHER
@@ -138,7 +199,7 @@ class NCViewer: NSObject {
     
     private func getPushNavigationController(viewController: UIViewController, serverUrl: String) -> UINavigationController? {
         
-        if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder {
+        if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder || viewController is NCMedia {
             if serverUrl == appDelegate.activeServerUrl {
                 return viewController.navigationController
             }
@@ -147,7 +208,7 @@ class NCViewer: NSObject {
     }
 }
 
-//MARK: -
+//MARK: - SELECT
 
 extension NCViewer: NCSelectDelegate {
     
@@ -169,5 +230,3 @@ extension NCViewer: NCSelectDelegate {
         }
     }
 }
-
-

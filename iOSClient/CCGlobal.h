@@ -265,6 +265,7 @@
 #define k_layout_view_transfers                         @"LayoutTransfers"
 #define k_layout_view_media                             @"LayoutMedia"
 #define k_layout_view_recent                            @"LayoutRecent"
+#define k_layout_view_shares                            @"LayoutShares"
 
 // Button Type in Cell list/grid
 #define k_buttonMoreMore                                @"more"

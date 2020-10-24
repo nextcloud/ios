@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, UIAdaptivePresentationControllerDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, UIAdaptivePresentationControllerDelegate, NCEmptyDataSetDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -32,6 +32,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
+    internal var emptyDataSet: NCEmptyDataSet?
     
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
@@ -67,13 +68,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     
     internal var isReloadDataSourceNetworkInProgress: Bool = false
     
+    var selectedIndexPath: IndexPath!
+   
+    
     // DECLARE
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
-    internal var DZNimage: UIImage?
-    internal var DZNtitle: String = ""
-    internal var DZNdescription: String = ""
+    internal var emptyImage: UIImage?
+    internal var emptyTitle: String = ""
+    internal var emptyDescription: String = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -113,9 +117,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
-        // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self
-        self.collectionView.emptyDataSetSource = self
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 80, delegate: self)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -179,7 +182,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.setNavigationBarHidden(false, animated: true)
         setNavigationItem()
         
         reloadDataSource()
@@ -549,63 +552,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
         
-    // MARK: - DZNEmpty
+    // MARK: - Empty
     
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+    func emptyDataSetView(_ view: NCEmptyView) {
         
         if searchController?.isActive ?? false {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
-        }
-        
-        if isReloadDataSourceNetworkInProgress {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
-        }
-        
-        return DZNimage
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        
-        var text = "\n"+NSLocalizedString(DZNtitle, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = "\n"+NSLocalizedString("_request_in_progress_", comment: "")
-        }
-        
-        if searchController?.isActive ?? false {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
             if isReloadDataSourceNetworkInProgress {
-                text = "\n"+NSLocalizedString("_search_in_progress_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
-                text = "\n"+NSLocalizedString("_search_no_record_found_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
             }
+            view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
+        } else if isReloadDataSourceNetworkInProgress {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+            view.emptyDescription.text = ""
+        } else {
+            view.emptyImage.image = emptyImage
+            view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+            view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
         }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        
-        var text = "\n"+NSLocalizedString(DZNdescription, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = ""
-        }
-        
-        if searchController?.isActive ?? false {
-            text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
-        }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
     }
     
     // MARK: - SEARCH
@@ -932,34 +899,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
     
-    // MARK: - SEGUE
-    
-    @objc func segue(metadata: tableMetadata) {
-        self.metadataTouch = metadata
-        performSegue(withIdentifier: "segueDetail", sender: self)
-    }
-        
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let photoDataSource: NSMutableArray = []
-        
-        for metadata in (dataSource.metadatas) {
-            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                photoDataSource.add(metadata)
-            }
-        }
-        
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? NCDetailViewController {
-                segueViewController.metadata = metadataTouch
-                segueViewController.layoutKey = layoutKey
-            }
-        } else if let segueViewController = segue.destination as? NCDetailViewController {
-            segueViewController.metadata = metadataTouch
-            segueViewController.layoutKey = layoutKey
-        }
-    }
-    
     // MARK: - DataSource + NC Endpoint
     
     @objc func reloadDataSource() {
@@ -1107,6 +1046,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
         metadataTouch = metadata
+        selectedIndexPath = indexPath
         
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -1222,6 +1162,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 }
             }
             
+            //VIEW IN FOLDER
             if layoutKey == k_layout_view_viewInFolder {
                 
                 let vcFileViewInFolder:NCFileViewInFolder = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
@@ -1232,13 +1173,37 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 self.navigationController?.pushViewController(vcFileViewInFolder, animated: true)
             }
             
+            // SHARES ( for push use Files ... he he he )
+            if layoutKey == k_layout_view_shares {
+                
+                if let viewController = appDelegate.listFilesVC.value(forKey: serverUrlPush) {
+                    guard let vcFiles = (viewController as? NCFiles) else { return }
+                    
+                    if vcFiles.isViewLoaded {
+                        self.navigationController?.pushViewController(vcFiles, animated: true)
+                    }
+                    
+                } else {
+                    
+                    let vcFiles:NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as! NCFiles
+                    
+                    vcFiles.isRoot = false
+                    vcFiles.serverUrl = serverUrlPush
+                    vcFiles.titleCurrentFolder = metadataTouch!.fileNameView
+                    
+                    appDelegate.listFilesVC.setValue(vcFiles, forKey: serverUrlPush)
+                    
+                    self.navigationController?.pushViewController(vcFiles, animated: true)
+                }
+            }
+            
         } else {
             
             guard let metadataTouch = metadataTouch else { return }
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil {
                 if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
@@ -1247,7 +1212,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             
             if metadata.typeFile == k_metadataTypeFile_document && NCUtility.shared.isRichDocument(metadata) {
                 if NCCommunication.shared.isNetworkReachable() {
-                    NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                    NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
                 } else {
                     NCContentPresenter.shared.messageNotification("_info_", description: "_go_online_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorOffline), forced: true)
                 }
@@ -1255,12 +1220,23 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             
             if metadata.typeFile == k_metadataTypeFile_video {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
+                return
+            }
+            
+            if metadata.typeFile == k_metadataTypeFile_image {
+                var metadatas: [tableMetadata] = []
+                for metadata in dataSource.metadatas {
+                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
+                        metadatas.append(metadata)
+                    }
+                }
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: metadatas)
                 return
             }
             
             if CCUtility.fileProviderStorageExists(metadataTouch.ocId, fileNameView: metadataTouch.fileNameView) {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch)
+                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
             } else {
                 NCNetworking.shared.download(metadata: metadataTouch, selector: selectorLoadFileView) { (_) in }
             }
@@ -1326,7 +1302,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItems()
+        let numberItems = dataSource.numberOfItems()
+        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
+        return numberItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -1670,3 +1648,4 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         return CGSize(width: collectionView.frame.width, height: footerHeight)
     }
 }
+

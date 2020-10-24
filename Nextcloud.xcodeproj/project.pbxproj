@@ -38,6 +38,9 @@
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
+		F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */; };
+		F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */; };
+		F70753F72542A9C000972D44 /* NCViewerImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerImage.storyboard */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70A58BD24D0349500DED00D /* NCCapabilitiesViewController.swift */; };
@@ -50,7 +53,6 @@
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
 		F710C5F02471A6D1009AD8B7 /* Sentry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F710C5EF2471A6D1009AD8B7 /* Sentry.framework */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
-		F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F824057C9D00A6033D /* NCDetailViewController.swift */; };
 		F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FB24057E5E00A6033D /* NCActionSheetHeader.swift */; };
 		F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1FC24057E5E00A6033D /* NCActionSheetHeaderView.swift */; };
 		F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */; };
@@ -65,13 +67,13 @@
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
 		F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
-		F7169A1C1EE590930086BD69 /* NCShares.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A181EE590930086BD69 /* NCShares.m */; };
-		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
-		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
+		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
+		F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7239870253D86B600257F49 /* NCEmptyDataSet.swift */; };
+		F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7239876253D86D300257F49 /* NCEmptyView.xib */; };
 		F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729289F253B0937009CA4FD /* NCMainNavigationController.swift */; };
@@ -81,7 +83,6 @@
 		F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72E0B9C21AD60BC00898D7B /* WeScan.framework */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
-		F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
 		F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381EDE218218C9000B1560 /* NCOffline.storyboard */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
@@ -93,7 +94,7 @@
 		F73D5E48246DE09200DF6467 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
 		F73D5E49246DE09200DF6467 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
 		F73D5E4A246DE09200DF6467 /* NCElementsJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */; };
-		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
+		F73F537F1E929C8500F8678D /* NCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* NCMore.swift */; };
 		F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */; };
 		F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7421EAE2294044B00C4B7C1 /* Accelerate.framework */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
@@ -112,6 +113,8 @@
 		F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74AF3A7247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */; };
 		F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74AFCE822E8B024003DE61F /* FSCalendar.framework */; };
+		F74C0436253F1CDC009762AB /* NCShares.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74C0434253F1CDC009762AB /* NCShares.swift */; };
+		F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74C0435253F1CDC009762AB /* NCShares.storyboard */; };
 		F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
 		F74DE14325135B6800917068 /* NCTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74DE14125135B6800917068 /* NCTransfers.swift */; };
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
@@ -182,7 +185,7 @@
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
-		F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
+		F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* NCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
@@ -235,10 +238,6 @@
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
 		F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */; };
-		F79018B6240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B2240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift */; };
-		F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B3240962C7007C9B6D /* NCViewerImageContentView.swift */; };
-		F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B4240962C7007C9B6D /* NCViewerImageViewController.swift */; };
-		F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79018B5240962C7007C9B6D /* NCViewerImageContentTransformers.swift */; };
 		F79630EE215527D40015EEA5 /* NCViewerVideoCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79630ED215527D40015EEA5 /* NCViewerVideoCommon.swift */; };
 		F79728D422F96F2E003CACA7 /* NCShareLinkFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D322F96F2D003CACA7 /* NCShareLinkFolderMenuView.xib */; };
 		F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F79728D522F9A0B0003CACA7 /* NCShareUserFolderMenuView.xib */; };
@@ -246,7 +245,6 @@
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
-		F7A68AB625382F0D00A7C2E8 /* NCDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A68AB525382F0D00A7C2E8 /* NCDetail.storyboard */; };
 		F7A80BCA252624C100C7CD01 /* NCFileViewInFolder.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */; };
 		F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
@@ -264,11 +262,12 @@
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BF1B401D51E893000854F6 /* CCLogin.m */; };
 		F7C1EEA525053A9C00866ACC /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
-		F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BE621998F410004137E /* DZNEmptyDataSet.framework */; };
 		F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BEE219994ED0004137E /* KTVCocoaHTTPServer.framework */; };
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
 		F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7C4D88D2534887E00C142DA /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7C4D88C2534887E00C142DA /* Parchment */; };
+		F7C6E0D1254411D0007E35FE /* NCViewerImageVideo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */; };
+		F7C6E0D7254411D9007E35FE /* NCViewerImageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */; };
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
 		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
@@ -281,6 +280,8 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
+		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
+		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
 		F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */; };
 		F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7D2C772246470CA008513AE /* XLForm.framework */; };
@@ -378,6 +379,9 @@
 		F7063DEC2199E55F003F38DA /* SVGKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVGKit.framework; path = Carthage/Build/iOS/SVGKit.framework; sourceTree = "<group>"; };
 		F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjackSwift.framework; path = Carthage/Build/iOS/CocoaLumberjackSwift.framework; sourceTree = "<group>"; };
+		F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImagePageContainer.swift; sourceTree = "<group>"; };
+		F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageZoom.swift; sourceTree = "<group>"; };
+		F70753F62542A9C000972D44 /* NCViewerImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImage.storyboard; sourceTree = "<group>"; };
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -391,7 +395,6 @@
 		F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZIPFoundation.framework; path = Carthage/Build/iOS/ZIPFoundation.framework; sourceTree = "<group>"; };
 		F710C5EF2471A6D1009AD8B7 /* Sentry.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sentry.framework; path = Carthage/Build/iOS/Sentry.framework; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
-		F710D1F824057C9D00A6033D /* NCDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDetailViewController.swift; sourceTree = "<group>"; };
 		F710D1FB24057E5E00A6033D /* NCActionSheetHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeader.swift; sourceTree = "<group>"; };
 		F710D1FC24057E5E00A6033D /* NCActionSheetHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeaderView.swift; sourceTree = "<group>"; };
 		F710D1FD24057E5E00A6033D /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
@@ -400,11 +403,6 @@
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F7151A811D477A4B00E6AF45 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		F7169A171EE590930086BD69 /* NCShares.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCShares.h; sourceTree = "<group>"; };
-		F7169A181EE590930086BD69 /* NCShares.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCShares.m; sourceTree = "<group>"; };
-		F7169A191EE590930086BD69 /* NCSharesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCSharesCell.h; sourceTree = "<group>"; };
-		F7169A1A1EE590930086BD69 /* NCSharesCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCSharesCell.m; sourceTree = "<group>"; };
-		F7169A1B1EE590930086BD69 /* NCSharesCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSharesCell.xib; sourceTree = "<group>"; };
 		F7169A301EE59BB70086BD69 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7169A4C1EE59C640086BD69 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F716FE7723795E5000FABE50 /* NCCommunication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NCCommunication.framework; path = Carthage/Build/iOS/NCCommunication.framework; sourceTree = "<group>"; };
@@ -413,6 +411,9 @@
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F722814223C8C34500C41898 /* NCRichWorkspace.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCRichWorkspace.xib; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
+		F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichdocument.storyboard; sourceTree = "<group>"; };
+		F7239870253D86B600257F49 /* NCEmptyDataSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCEmptyDataSet.swift; sourceTree = "<group>"; };
+		F7239876253D86D300257F49 /* NCEmptyView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCEmptyView.xib; sourceTree = "<group>"; };
 		F723B3DC22FC6D1C00301EFE /* NCShareCommentsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareCommentsCell.xib; sourceTree = "<group>"; };
 		F7267A81225DFCE100D6DB7D /* AFNetworking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AFNetworking.framework; path = Carthage/Build/iOS/AFNetworking.framework; sourceTree = "<group>"; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
@@ -432,7 +433,6 @@
 		F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TLPhotoPicker.framework; path = Carthage/Build/iOS/TLPhotoPicker.framework; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
-		F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageCommon.swift; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
@@ -443,7 +443,7 @@
 		F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCBridgeSwift.h; sourceTree = "<group>"; };
 		F73D11F9253C5F4800DF9BEC /* NCViewerNextcloudText.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerNextcloudText.storyboard; sourceTree = "<group>"; };
 		F73D5E46246DE09200DF6467 /* NCElementsJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCElementsJSON.swift; sourceTree = "<group>"; };
-		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
+		F73F537E1E929C8500F8678D /* NCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMore.swift; sourceTree = "<group>"; };
 		F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F7421EAE2294044B00C4B7C1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -458,6 +458,8 @@
 		F749C10A23C4A5340027D966 /* NCIntroCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCIntroCollectionViewCell.xib; sourceTree = "<group>"; };
 		F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtilityFileSystem.swift; sourceTree = "<group>"; };
 		F74AFCE822E8B024003DE61F /* FSCalendar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FSCalendar.framework; path = Carthage/Build/iOS/FSCalendar.framework; sourceTree = "<group>"; };
+		F74C0434253F1CDC009762AB /* NCShares.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCShares.swift; sourceTree = "<group>"; };
+		F74C0435253F1CDC009762AB /* NCShares.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCShares.storyboard; sourceTree = "<group>"; };
 		F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenSSL.framework; path = Carthage/Build/iOS/OpenSSL.framework; sourceTree = "<group>"; };
 		F74DE14125135B6800917068 /* NCTransfers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTransfers.swift; sourceTree = "<group>"; };
 		F74DE14225135B6800917068 /* NCTransfers.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCTransfers.storyboard; sourceTree = "<group>"; };
@@ -585,10 +587,6 @@
 		F78F74352163781100C2ADAD /* NCTrash.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrash.swift; sourceTree = "<group>"; };
 		F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichdocument.swift; sourceTree = "<group>"; };
 		F79018A424092EF4007C9B6D /* ATGMediaBrowser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ATGMediaBrowser.framework; path = Carthage/Build/iOS/ATGMediaBrowser.framework; sourceTree = "<group>"; };
-		F79018B2240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageDismissAnimationController.swift; sourceTree = "<group>"; };
-		F79018B3240962C7007C9B6D /* NCViewerImageContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageContentView.swift; sourceTree = "<group>"; };
-		F79018B4240962C7007C9B6D /* NCViewerImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageViewController.swift; sourceTree = "<group>"; };
-		F79018B5240962C7007C9B6D /* NCViewerImageContentTransformers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageContentTransformers.swift; sourceTree = "<group>"; };
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
@@ -604,7 +602,6 @@
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
-		F7A68AB525382F0D00A7C2E8 /* NCDetail.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCDetail.storyboard; sourceTree = "<group>"; };
 		F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFileViewInFolder.storyboard; sourceTree = "<group>"; };
 		F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileViewInFolder.swift; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
@@ -614,8 +611,8 @@
 		F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAccount.m; sourceTree = "<group>"; };
 		F7ACE42E1BAC0268006C0017 /* CCManageAutoUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCManageAutoUpload.h; sourceTree = "<group>"; };
 		F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCManageAutoUpload.m; sourceTree = "<group>"; };
-		F7ACE4301BAC0268006C0017 /* CCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSettings.h; sourceTree = "<group>"; };
-		F7ACE4311BAC0268006C0017 /* CCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSettings.m; sourceTree = "<group>"; };
+		F7ACE4301BAC0268006C0017 /* NCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCSettings.h; sourceTree = "<group>"; };
+		F7ACE4311BAC0268006C0017 /* NCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCSettings.m; sourceTree = "<group>"; };
 		F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWeb.swift; sourceTree = "<group>"; };
 		F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCBrowserWeb.swift; sourceTree = "<group>"; };
 		F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCBrowserWeb.storyboard; sourceTree = "<group>"; };
@@ -649,6 +646,8 @@
 		F7C40BF22199978B0004137E /* MBProgressHUD.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MBProgressHUD.framework; path = Carthage/Build/iOS/MBProgressHUD.framework; sourceTree = "<group>"; };
 		F7C40C0F2199BA5D0004137E /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		F7C40C112199BA620004137E /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = "<group>"; };
+		F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerImageVideo.storyboard; sourceTree = "<group>"; };
+		F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageVideo.swift; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
 		F7C742D01E7BD35B00D9C973 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Share.entitlements; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
@@ -674,6 +673,8 @@
 		F7CA1ECD20E7E3FE002CC65E /* PKCircleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCircleView.h; sourceTree = "<group>"; };
 		F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+PKDownloadButton.m"; sourceTree = "<group>"; };
 		F7CA1ECF20E7E3FE002CC65E /* PKPendingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKPendingView.h; sourceTree = "<group>"; };
+		F7CB68992541676B0050EC94 /* NCMore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMore.storyboard; sourceTree = "<group>"; };
+		F7CB689F254169530050EC94 /* NCSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSettings.storyboard; sourceTree = "<group>"; };
 		F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSortMenu.swift; sourceTree = "<group>"; };
 		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -765,7 +766,6 @@
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
 				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
-				F7C40BE721998F410004137E /* DZNEmptyDataSet.framework in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
@@ -816,7 +816,6 @@
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F7603298252F0E550015A421 /* Colleaction Common */,
-				F73F537E1E929C8500F8678D /* CCMore.swift */,
 				370D26AE248A3D7A00121797 /* NCImageCellProtocol.swift */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
@@ -879,11 +878,8 @@
 		F7169A161EE590930086BD69 /* Shares */ = {
 			isa = PBXGroup;
 			children = (
-				F7169A171EE590930086BD69 /* NCShares.h */,
-				F7169A181EE590930086BD69 /* NCShares.m */,
-				F7169A191EE590930086BD69 /* NCSharesCell.h */,
-				F7169A1A1EE590930086BD69 /* NCSharesCell.m */,
-				F7169A1B1EE590930086BD69 /* NCSharesCell.xib */,
+				F74C0435253F1CDC009762AB /* NCShares.storyboard */,
+				F74C0434253F1CDC009762AB /* NCShares.swift */,
 			);
 			path = Shares;
 			sourceTree = "<group>";
@@ -905,6 +901,32 @@
 				F77444F422281649000D5EB0 /* NCGridMediaCell.xib */,
 			);
 			path = Cell;
+			sourceTree = "<group>";
+		};
+		F7239861253C95D500257F49 /* NCViewerRichdocument */ = {
+			isa = PBXGroup;
+			children = (
+				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
+				F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */,
+			);
+			path = NCViewerRichdocument;
+			sourceTree = "<group>";
+		};
+		F723986A253C9C0E00257F49 /* NCViewerQuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */,
+			);
+			path = NCViewerQuickLook;
+			sourceTree = "<group>";
+		};
+		F723986F253D867900257F49 /* EmptyView */ = {
+			isa = PBXGroup;
+			children = (
+				F7239870253D86B600257F49 /* NCEmptyDataSet.swift */,
+				F7239876253D86D300257F49 /* NCEmptyView.xib */,
+			);
+			path = EmptyView;
 			sourceTree = "<group>";
 		};
 		F728CE741BF6322C00E69702 /* Share */ = {
@@ -970,9 +992,9 @@
 			isa = PBXGroup;
 			children = (
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
-				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */,
 				F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */,
+				F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift */,
 				F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
@@ -983,9 +1005,9 @@
 		F758B41E212C516300515F55 /* ScanDocument */ = {
 			isa = PBXGroup;
 			children = (
-				F758B45F212C56A400515F55 /* ScanCollectionView.swift */,
-				F758B45D212C569C00515F55 /* ScanCell.swift */,
 				F758B457212C564000515F55 /* Scan.storyboard */,
+				F758B45D212C569C00515F55 /* ScanCell.swift */,
+				F758B45F212C56A400515F55 /* ScanCollectionView.swift */,
 			);
 			path = ScanDocument;
 			sourceTree = "<group>";
@@ -1016,8 +1038,8 @@
 		F765F72E25237E3F00391DBE /* Recent */ = {
 			isa = PBXGroup;
 			children = (
-				F765F72F25237E3F00391DBE /* NCRecent.swift */,
 				F765F73025237E3F00391DBE /* NCRecent.storyboard */,
+				F765F72F25237E3F00391DBE /* NCRecent.swift */,
 			);
 			path = Recent;
 			sourceTree = "<group>";
@@ -1080,10 +1102,10 @@
 		F78F74322163753B00C2ADAD /* Trash */ = {
 			isa = PBXGroup;
 			children = (
-				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
-				F78F74352163781100C2ADAD /* NCTrash.swift */,
 				F78ACD4721903F850088454D /* Cell */,
 				F7632FC32183667400721B71 /* Section */,
+				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
+				F78F74352163781100C2ADAD /* NCTrash.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -1091,11 +1113,11 @@
 		F79018B1240962C7007C9B6D /* NCViewerImage */ = {
 			isa = PBXGroup;
 			children = (
-				F79018B2240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift */,
-				F79018B3240962C7007C9B6D /* NCViewerImageContentView.swift */,
-				F7381439240FE48D00404AC7 /* NCViewerImageCommon.swift */,
-				F79018B4240962C7007C9B6D /* NCViewerImageViewController.swift */,
-				F79018B5240962C7007C9B6D /* NCViewerImageContentTransformers.swift */,
+				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
+				F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */,
+				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
+				F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */,
+				F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */,
 			);
 			path = NCViewerImage;
 			sourceTree = "<group>";
@@ -1104,12 +1126,12 @@
 			isa = PBXGroup;
 			children = (
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
-				F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */,
+				F79018B1240962C7007C9B6D /* NCViewerImage */,
+				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F71CEB0D253A0B1A00832FFE /* NCViewerVideo */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
-				F79018B1240962C7007C9B6D /* NCViewerImage */,
-				F790110D21415BF600D7B136 /* NCViewerRichdocument.swift */,
+				F7239861253C95D500257F49 /* NCViewerRichdocument */,
 			);
 			path = Viewer;
 			sourceTree = "<group>";
@@ -1141,15 +1163,6 @@
 			path = Activity;
 			sourceTree = "<group>";
 		};
-		F7A68AAC25382EE300A7C2E8 /* Detail */ = {
-			isa = PBXGroup;
-			children = (
-				F7A68AB525382F0D00A7C2E8 /* NCDetail.storyboard */,
-				F710D1F824057C9D00A6033D /* NCDetailViewController.swift */,
-			);
-			path = Detail;
-			sourceTree = "<group>";
-		};
 		F7A80BC7252624C100C7CD01 /* FileViewInFolder */ = {
 			isa = PBXGroup;
 			children = (
@@ -1162,6 +1175,7 @@
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				F7CB689F254169530050EC94 /* NCSettings.storyboard */,
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
@@ -1172,8 +1186,8 @@
 				F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */,
 				F7ACE42E1BAC0268006C0017 /* CCManageAutoUpload.h */,
 				F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */,
-				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
-				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
+				F7ACE4301BAC0268006C0017 /* NCSettings.h */,
+				F7ACE4311BAC0268006C0017 /* NCSettings.m */,
 				F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */,
 				F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */,
 				F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */,
@@ -1184,8 +1198,8 @@
 		F7AE00F6230E8191007ACF8A /* BrowserWeb */ = {
 			isa = PBXGroup;
 			children = (
-				F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */,
 				F7AE00F9230E81EB007ACF8A /* NCBrowserWeb.storyboard */,
+				F7AE00F7230E81CB007ACF8A /* NCBrowserWeb.swift */,
 			);
 			path = BrowserWeb;
 			sourceTree = "<group>";
@@ -1376,6 +1390,15 @@
 			path = RichWorkspace;
 			sourceTree = "<group>";
 		};
+		F7CB68942541670D0050EC94 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				F7CB68992541676B0050EC94 /* NCMore.storyboard */,
+				F73F537E1E929C8500F8678D /* NCMore.swift */,
+			);
+			path = More;
+			sourceTree = "<group>";
+		};
 		F7DFB7E9219C5A0500680748 /* Create cloud */ = {
 			isa = PBXGroup;
 			children = (
@@ -1396,8 +1419,8 @@
 		F7E0E1DA22327885006B0911 /* AudioRecorder */ = {
 			isa = PBXGroup;
 			children = (
-				F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */,
 				F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */,
+				F7E0E1DB22327885006B0911 /* NCAudioRecorderViewController.swift */,
 			);
 			path = AudioRecorder;
 			sourceTree = "<group>";
@@ -1454,14 +1477,15 @@
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7AE00F6230E8191007ACF8A /* BrowserWeb */,
 				F7BAAD951ED5A63D00B7EAD4 /* Data */,
-				F7A68AAC25382EE300A7C2E8 /* Detail */,
 				F73FAEE224D2CA830090692E /* Diagnostics */,
+				F723986F253D867900257F49 /* EmptyView */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7725A5D251F33BB00D125E0 /* Files */,
 				F7A80BC7252624C100C7CD01 /* FileViewInFolder */,
 				F7BFFA621A24D7300044ED85 /* Login */,
 				F7BFCCBD1B68C21900548E76 /* ManageLocation+ManageAsset */,
 				F7EC9CB921185F2000F1C5CE /* Media */,
+				F7CB68942541670D0050EC94 /* More */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7381ED9218218A4000B1560 /* Offline */,
@@ -1569,9 +1593,9 @@
 		F7FCFFD51D70798C000E6E29 /* PeekPop */ = {
 			isa = PBXGroup;
 			children = (
-				F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */,
 				F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */,
 				F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */,
+				F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */,
 			);
 			path = PeekPop;
 			sourceTree = "<group>";
@@ -1579,11 +1603,11 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
+				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
+				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
 				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
 				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
-				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
-				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 			);
 			path = Security;
 			sourceTree = "<group>";
@@ -1845,13 +1869,14 @@
 				F76D3CF52428D0C1005DFA87 /* NCViewerPDF.storyboard in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
 				F710D20024057E5E00A6033D /* NCActionSheetHeaderView.xib in Resources */,
+				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
+				F7C6E0D1254411D0007E35FE /* NCViewerImageVideo.storyboard in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
-				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */,
 				3704EB2A23D5A58400455C5B /* NCMenu.storyboard in Resources */,
@@ -1859,6 +1884,7 @@
 				F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
+				F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
 				F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */,
@@ -1869,14 +1895,15 @@
 				F7725A61251F33BB00D125E0 /* NCFiles.storyboard in Resources */,
 				F700510122DF63AC003A3356 /* NCShare.storyboard in Resources */,
 				F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */,
+				F70753F72542A9C000972D44 /* NCViewerImage.storyboard in Resources */,
 				F70A58C024D0545100DED00D /* NCCapabilitiesViewController.storyboard in Resources */,
 				F749C10D23C4A5340027D966 /* NCIntro.storyboard in Resources */,
+				F7239877253D86D300257F49 /* NCEmptyView.xib in Resources */,
 				F747BA1F22354D2000971601 /* NCCreateFormUploadVoiceNote.storyboard in Resources */,
 				F7B2DEF11F976859007CF4D2 /* english.txt in Resources */,
 				F7651A8A23A2A3F2001403D2 /* NCCreateFormUploadDocuments.storyboard in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F79728D622F9A0B1003CACA7 /* NCShareUserFolderMenuView.xib in Resources */,
-				F7A68AB625382F0D00A7C2E8 /* NCDetail.storyboard in Resources */,
 				F7DFAA8A22E22EF100FC4527 /* NCShareLinkMenuView.xib in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
@@ -1890,6 +1917,7 @@
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
 				F774264A22EB4D0000B23912 /* NCShareUserDropDownCell.xib in Resources */,
 				F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */,
+				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
@@ -1899,6 +1927,7 @@
 				F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */,
 				F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */,
 				F774DF111FCC26BE002AF9FC /* iTunesArtwork@3x.png in Resources */,
+				F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1913,7 +1942,6 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/TLPhotoPicker.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/DZNEmptyDataSet.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVHTTPCache.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/KTVCocoaHTTPServer.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MBProgressHUD.framework",
@@ -2021,18 +2049,17 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
+				F7C6E0D7254411D9007E35FE /* NCViewerImageVideo.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
 				37ECC83B23D0C7410082EFA2 /* NCMenuAction.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCNetworkingNotificationCenter.swift in Sources */,
-				F79018B8240962C7007C9B6D /* NCViewerImageViewController.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
 				F78ACD4221903CE00088454D /* NCListCell.swift in Sources */,
 				F76D3CF12428B40E005DFA87 /* NCViewerPDFSearch.swift in Sources */,
-				F73F537F1E929C8500F8678D /* CCMore.swift in Sources */,
-				F79018B7240962C7007C9B6D /* NCViewerImageContentView.swift in Sources */,
+				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
 				F78E7065219F096B006F23E4 /* NCAvatar.swift in Sources */,
 				F7DFB7F0219C5B8000680748 /* NCCreateFormUploadAssets.swift in Sources */,
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
@@ -2042,6 +2069,7 @@
 				F769454622E9F1B0000A798A /* NCShareCommon.swift in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
+				F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */,
 				F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
@@ -2076,16 +2104,16 @@
 				F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */,
 				F760329F252F0F8E0015A421 /* NCTransferCell.swift in Sources */,
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
-				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
+				F77B0E5F1D118A16002130FE /* NCSettings.m in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				F7651A8B23A2A3F2001403D2 /* NCCreateFormUploadDocuments.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
+				F7239871253D86B600257F49 /* NCEmptyDataSet.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7DBC37C23325E02001A85BA /* NCAppConfigView.swift in Sources */,
-				F738143A240FE48D00404AC7 /* NCViewerImageCommon.swift in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F73D5E47246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
@@ -2104,32 +2132,29 @@
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
-				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F70006FC2416500B00F214A5 /* NCViewerVideo.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
-				F79018B6240962C7007C9B6D /* NCViewerImageDismissAnimationController.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
 				F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */,
 				F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
-				F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */,
+				F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */,
+				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,
 				F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
-				F79018B9240962C7007C9B6D /* NCViewerImageContentTransformers.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
 				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
-				F7169A1C1EE590930086BD69 /* NCShares.m in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
