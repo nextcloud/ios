@@ -244,9 +244,8 @@ extension NCViewer {
         //
         // IMAGE - VIDEO - AUDIO
         //
-        /*
         if metadata.session == "" {
-            if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) && !CCUtility.fileProviderStorageExists(appDelegate.activeDetail.metadata?.ocId, fileNameView: appDelegate.activeDetail.metadata?.fileNameView) && metadata.session == "" && metadata.typeFile == k_metadataTypeFile_image {
+            if metadata.typeFile == k_metadataTypeFile_image && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
                 actions.append(
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -257,7 +256,6 @@ extension NCViewer {
                 )
             }
         }
-        */
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
