@@ -83,6 +83,13 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
+    @objc func viewUnload() {
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    //MARK: - Gesture
+
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         
         if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
@@ -151,6 +158,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
+    //MARK: - Function
+
     func changeScreenMode(to: ScreenMode) {
         if to == .full {
             navigationController?.setNavigationBarHidden(true, animated: false)
@@ -168,11 +177,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         } else {
             return NCCollectionCommon.images.cellFileImage
         }
-    }
-    
-    @objc func viewUnload() {
-        
-        navigationController?.popViewController(animated: true)
     }
     
     //MARK: - Action
