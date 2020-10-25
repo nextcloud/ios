@@ -84,9 +84,6 @@
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
 
-// ProgressView Detail
-@property (nonatomic, strong) UIProgressView *progressViewDetail;
-
 @property (nonatomic, retain) TOPasscodeViewController *passcodeViewController;
 
 @property (nonatomic, retain) NSString *activeServerUrl;

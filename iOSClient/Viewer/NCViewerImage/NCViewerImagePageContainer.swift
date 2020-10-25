@@ -23,8 +23,11 @@
 
 import UIKit
 import SVGKit
+import NCCommunication
 
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
+
+    @IBOutlet weak var progressView: UIProgressView!
 
     enum ScreenMode {
         case full, normal
@@ -40,7 +43,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     var metadatas: [tableMetadata] = []
-    var metadata: tableMetadata = tableMetadata()
+    var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
    
@@ -49,6 +52,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
     
+    var currentViewerImageZoom: NCViewerImageZoom?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
         
@@ -63,13 +67,11 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
         
-        metadata = metadatas[currentIndex]
-
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadata)
-        viewerImageZoom.metadata = metadata
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -77,19 +79,22 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: true, completion: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
-        
-        /*
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_downloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+        /*
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_uploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_progressTask), object:nil)
+       
                
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadImage(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuDownloadImage), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
         */
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
+        
+        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.trackTintColor = .clear
+        progressView.progress = 0
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -114,15 +119,37 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.ocId == self.metadata.ocId && errorCode == 0 {
-                    
+                if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
+                    let image = getImageMetadata(metadata)
+                    currentViewerImageZoom?.updateImage(image)
                 }
-                //progress(0)
+                if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
+                    progressView.progress = 0
+                }
+            }
+        }
+    }
+    
+    @objc func triggerProgressTask(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let ocId = userInfo["ocId"] as? String {
+                if self.metadatas.first(where: { $0.ocId == ocId }) != nil {
+                    let progressNumber = userInfo["progress"] as? NSNumber ?? 0
+                    let progress = progressNumber.floatValue
+                    if progress == 1 {
+                        self.progressView.progress = 0
+                    } else {
+                        self.progressView.progress = progress
+                    }
+                }
             }
         }
     }
     
     @objc func changeTheming() {
+        
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
@@ -198,15 +225,45 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
-    //MARK: - Function
+    //MARK: - Delegate Image Zoom
 
+    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        
+        currentMetadata = metadata
+        currentViewerImageZoom = viewerImageZoom
+        
+        navigationItem.title = metadata.fileNameView
+        
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+        }
+        
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                if errorCode == 0 {
+                    viewerImageZoom.updateImage(imagePreview)
+                }
+            }
+        }
+    }
+    
+    //MARK: - Function
+    
     func changeScreenMode(to: ScreenMode) {
         if to == .full {
             navigationController?.setNavigationBarHidden(true, animated: false)
             view.backgroundColor = .black
+            progressView.isHidden = true
         } else {
             navigationController?.setNavigationBarHidden(false, animated: false)
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            progressView.isHidden = false
         }
     }
     
@@ -217,12 +274,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            if let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                return UIImage.init(contentsOfFile: imagePath)
+            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                return UIImage.init(contentsOfFile: imagePreviewPath)
             } 
         }
         
-        return NCCollectionCommon.images.cellFileImage
+        return nil
     }
     
     private func getImage(metadata: tableMetadata) -> UIImage? {
@@ -263,14 +320,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 }
                 image = UIImage.init(contentsOfFile: imagePath)
             }
-            
-        } else {
-            
-            // AUTOMATIC DOWNLOAD FOR GIF
-            
-            if (ext == "GIF" || ext == "SVG") && metadata.session == "" {
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuDownloadImage, userInfo: ["metadata": metadata])
-            }
         }
         
         return image
@@ -279,7 +328,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     //MARK: - Action
     
     @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
     }
 }
 
@@ -288,13 +337,11 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         if currentIndex == 0 { return nil }
         
-        metadata = metadatas[currentIndex - 1]
-
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
                 
-        viewerImageZoom.image = getImageMetadata(metadata)
         viewerImageZoom.index = currentIndex - 1
-        viewerImageZoom.metadata = metadata
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
+        viewerImageZoom.metadata = metadatas[currentIndex - 1]
         viewerImageZoom.delegate = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -304,14 +351,12 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         if currentIndex == (self.metadatas.count - 1) { return nil }
-        
-        metadata = metadatas[currentIndex + 1]
-        
+                
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex + 1
-        viewerImageZoom.image = getImageMetadata(metadata)
-        viewerImageZoom.metadata = metadata
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
+        viewerImageZoom.metadata = metadatas[currentIndex + 1]
         viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -331,11 +376,11 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
         if (completed && self.nextIndex != nil) {
+            
             previousViewControllers.forEach { vc in
                 let viewerImageZoom = vc as! NCViewerImageZoom
                 viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
             }
-
             currentIndex = nextIndex!
         }
         

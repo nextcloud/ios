@@ -27,11 +27,21 @@
                                     <segue destination="A4d-OP-AMT" kind="embed" id="sDx-bX-1Jt"/>
                                 </connections>
                             </containerView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="sD9-1i-ZdY">
+                                <rect key="frame" x="0.0" y="44" width="414" height="1"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="F4E-lI-3jZ"/>
+                                </constraints>
+                            </progressView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ozy-9S-dMl"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="fpt-Rz-5fT" secondAttribute="bottom" id="4Xy-Dl-e47"/>
+                            <constraint firstItem="sD9-1i-ZdY" firstAttribute="leading" secondItem="Ozy-9S-dMl" secondAttribute="leading" id="8Dv-gf-lFy"/>
+                            <constraint firstItem="fpt-Rz-5fT" firstAttribute="leading" secondItem="Ozy-9S-dMl" secondAttribute="leading" id="J6h-qF-6dx"/>
+                            <constraint firstItem="sD9-1i-ZdY" firstAttribute="top" secondItem="Ozy-9S-dMl" secondAttribute="top" id="JUh-my-qNG"/>
+                            <constraint firstItem="Ozy-9S-dMl" firstAttribute="trailing" secondItem="sD9-1i-ZdY" secondAttribute="trailing" id="KQa-Ni-1TC"/>
                             <constraint firstItem="fpt-Rz-5fT" firstAttribute="leading" secondItem="wvY-tB-6ZK" secondAttribute="leading" id="Kzi-Hg-Ocf"/>
                             <constraint firstItem="fpt-Rz-5fT" firstAttribute="top" secondItem="wvY-tB-6ZK" secondAttribute="top" id="NnL-9A-ht1"/>
                             <constraint firstAttribute="trailing" secondItem="fpt-Rz-5fT" secondAttribute="trailing" id="xh9-IP-ti7"/>
@@ -39,10 +49,13 @@
                     </view>
                     <navigationItem key="navigationItem" id="azh-DM-TLz"/>
                     <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="progressView" destination="sD9-1i-ZdY" id="nag-cc-Up3"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qhs-BU-mEq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2911.1999999999998" y="777.66116941529242"/>
+            <point key="canvasLocation" x="2910.144927536232" y="777.45535714285711"/>
         </scene>
         <!--Page View Controller-->
         <scene sceneID="qwx-FP-Pov">

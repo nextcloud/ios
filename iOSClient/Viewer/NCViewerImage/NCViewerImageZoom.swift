@@ -52,6 +52,10 @@ class NCViewerImageZoom: UIViewController {
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
         
+        if image == nil {
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
+        }
+        
         if let image = image {
             imageView.image = image
             imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
@@ -68,24 +72,17 @@ class NCViewerImageZoom: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        delegate?.navigationItem.title = metadata.fileNameView
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        updateZoomScaleForSize(view.bounds.size)
-        updateConstraintsForSize(view.bounds.size)
+        delegate?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        updateZoomScaleForSize(view.bounds.size)
-        updateConstraintsForSize(view.bounds.size)
+        updateZoomScale()
+        updateConstraints()
     }
     
     //MARK: - Gesture
@@ -110,8 +107,9 @@ class NCViewerImageZoom: UIViewController {
     
     //MARK: - Function
 
-    fileprivate func updateZoomScaleForSize(_ size: CGSize) {
+    func updateZoomScale() {
         
+        let size = view.bounds.size
         let widthScale = size.width / imageView.bounds.width
         let heightScale = size.height / imageView.bounds.height
         let minScale = min(widthScale, heightScale)
@@ -121,8 +119,9 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = minScale * 4
     }
     
-    fileprivate func updateConstraintsForSize(_ size: CGSize) {
+    func updateConstraints() {
         
+        let size = view.bounds.size
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
         imageViewTopConstraint.constant = yOffset
         imageViewBottomConstraint.constant = yOffset
@@ -131,9 +130,25 @@ class NCViewerImageZoom: UIViewController {
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
 
-        let contentHeight = yOffset * 2 + imageView.frame.height
         view.layoutIfNeeded()
+
+        let contentHeight = yOffset * 2 + imageView.frame.height
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
+    }
+    
+    func updateImage(_ image: UIImage?) {
+        guard let image = image else { return }
+        
+        self.image = image
+        imageView.image = image
+        
+        if delegate?.navigationController?.navigationBar.isHidden ?? false {
+            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
+            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
+        } else {
+            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
+            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
+        }
     }
 }
 
@@ -144,7 +159,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraintsForSize(view.bounds.size)
+        updateConstraints()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
