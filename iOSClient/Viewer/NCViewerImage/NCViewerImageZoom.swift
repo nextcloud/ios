@@ -80,13 +80,6 @@ class NCViewerImageZoom: UIViewController {
         delegate?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        updateZoomScale()
-        updateConstraints()
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
