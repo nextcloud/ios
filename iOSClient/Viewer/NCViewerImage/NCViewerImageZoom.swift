@@ -142,8 +142,15 @@ class NCViewerImageZoom: UIViewController {
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
     
-    func updateImage() {
+    func updateImage(_ image: UIImage?) {
+        guard let image = image else { return }
         
+        self.image = image
+        self.imageView.image = image
+        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
+        
+        updateZoomScaleForSize(view.bounds.size)
+        updateConstraintsForSize(view.bounds.size)
     }
 }
 

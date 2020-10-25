@@ -23,6 +23,7 @@
 
 import UIKit
 import SVGKit
+import NCCommunication
 
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
@@ -120,8 +121,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
                     let image = getImageMetadata(metadata)
-                    currentViewerImageZoom?.image = image
-                    currentViewerImageZoom?.imageView.image = image
+                    currentViewerImageZoom?.updateImage(image)
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -235,8 +235,21 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         navigationItem.title = metadata.fileNameView
         
         let ext = CCUtility.getExtension(metadata.fileNameView)
-        if (ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
             NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+        }
+        
+        if viewerImageZoom.isDefaultImage && metadata.hasPreview {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                if errorCode == 0 {
+                    viewerImageZoom.updateImage(imagePreview)
+                }
+            }
         }
     }
     
