@@ -80,5 +80,16 @@ public class NCEmptyView: UIView {
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
+    
+    public override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        changeTheming()
+    }
+    
+    @objc func changeTheming() {
+        emptyTitle.textColor = NCBrandColor.sharedInstance.textView
+    }
 }
 
