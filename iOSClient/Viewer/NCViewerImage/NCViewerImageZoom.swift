@@ -139,8 +139,9 @@ class NCViewerImageZoom: UIViewController {
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
 
-        let contentHeight = yOffset * 2 + imageView.frame.height
         view.layoutIfNeeded()
+
+        let contentHeight = yOffset * 2 + imageView.frame.height
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
     
@@ -148,10 +149,8 @@ class NCViewerImageZoom: UIViewController {
         guard let image = image else { return }
         
         self.image = image
-        imageView.image = image
         imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
-        
-        self.view.setNeedsLayout()
+        imageView.image = image
     }
 }
 
