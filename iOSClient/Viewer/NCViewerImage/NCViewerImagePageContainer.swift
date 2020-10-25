@@ -261,12 +261,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            if let imagePath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
-                return UIImage.init(contentsOfFile: imagePath)
+            if let imagePreviewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag) {
+                return UIImage.init(contentsOfFile: imagePreviewPath)
             } 
         }
         
-        return NCCollectionCommon.images.cellFileImage
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: view.frame.width-50, height: view.frame.width-50, color: .gray)
     }
     
     private func getImage(metadata: tableMetadata) -> UIImage? {

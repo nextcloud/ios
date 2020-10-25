@@ -110,7 +110,7 @@ class NCViewerImageZoom: UIViewController {
     
     //MARK: - Function
 
-    fileprivate func updateZoomScaleForSize(_ size: CGSize) {
+    func updateZoomScaleForSize(_ size: CGSize) {
         
         let widthScale = size.width / imageView.bounds.width
         let heightScale = size.height / imageView.bounds.height
@@ -121,7 +121,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = minScale * 4
     }
     
-    fileprivate func updateConstraintsForSize(_ size: CGSize) {
+    func updateConstraintsForSize(_ size: CGSize) {
         
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
         imageViewTopConstraint.constant = yOffset
