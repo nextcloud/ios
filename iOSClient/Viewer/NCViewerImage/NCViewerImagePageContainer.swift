@@ -149,6 +149,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     @objc func changeTheming() {
+        
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
@@ -325,8 +326,8 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
                 
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.index = currentIndex - 1
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
         viewerImageZoom.delegate = self
         
