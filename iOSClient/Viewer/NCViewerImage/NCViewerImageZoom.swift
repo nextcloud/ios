@@ -83,15 +83,15 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        updateZoomScaleForSize()
-        updateConstraintsForSize()
+        updateZoomScale()
+        updateConstraints()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        updateZoomScaleForSize()
-        updateConstraintsForSize()
+        updateZoomScale()
+        updateConstraints()
     }
     
     //MARK: - Gesture
@@ -116,7 +116,7 @@ class NCViewerImageZoom: UIViewController {
     
     //MARK: - Function
 
-    func updateZoomScaleForSize() {
+    func updateZoomScale() {
         
         let size = view.bounds.size
         let widthScale = size.width / imageView.bounds.width
@@ -128,7 +128,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = minScale * 4
     }
     
-    func updateConstraintsForSize() {
+    func updateConstraints() {
         
         let size = view.bounds.size
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
@@ -162,7 +162,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraintsForSize()
+        updateConstraints()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
