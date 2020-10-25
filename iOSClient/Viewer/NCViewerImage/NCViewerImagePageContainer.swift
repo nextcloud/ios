@@ -227,7 +227,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     //MARK: - Delegate Image Zoom
 
-    func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
         
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom

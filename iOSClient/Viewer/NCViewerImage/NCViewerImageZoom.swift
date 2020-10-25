@@ -74,10 +74,10 @@ class NCViewerImageZoom: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
-        delegate?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegate?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {
@@ -143,7 +143,14 @@ class NCViewerImageZoom: UIViewController {
         
         self.image = image
         imageView.image = image
-        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
+        
+        if delegate?.navigationController?.navigationBar.isHidden ?? false {
+            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
+            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
+        } else {
+            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
+            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
+        }
     }
 }
 
