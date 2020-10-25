@@ -49,6 +49,12 @@ carthage build --platform ios
 ```
 to fetch and compile the dependencies.
 
+#### Carthage XCode 12 issues
+Due to issues with carthage and XCode 12, use the following command when building dependencies for XCode 12
+```
+./wcarthage update --no-use-binaries --platform iOS --cache-builds
+```
+
 ### Creating Pull requests
 
 #### DCO Signoff
