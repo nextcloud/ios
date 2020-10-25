@@ -266,7 +266,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             } 
         }
         
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: view.frame.width-50, height: view.frame.width-50, color: .gray)
+        return nil
     }
     
     private func getImage(metadata: tableMetadata) -> UIImage? {

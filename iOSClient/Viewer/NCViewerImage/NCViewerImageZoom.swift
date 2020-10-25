@@ -34,6 +34,7 @@ class NCViewerImageZoom: UIViewController {
         
     weak var delegate: NCViewerImagePageContainer?
     
+    var isDefaultImage: Bool = false
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -51,6 +52,11 @@ class NCViewerImageZoom: UIViewController {
         
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
+        
+        if image == nil {
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: view.frame.width, height: view.frame.width, color: .gray)
+            isDefaultImage = true
+        }
         
         if let image = image {
             imageView.image = image
@@ -134,6 +140,10 @@ class NCViewerImageZoom: UIViewController {
         let contentHeight = yOffset * 2 + imageView.frame.height
         view.layoutIfNeeded()
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
+    }
+    
+    func updateImage() {
+        
     }
 }
 
