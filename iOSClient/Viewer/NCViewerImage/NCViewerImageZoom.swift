@@ -34,7 +34,6 @@ class NCViewerImageZoom: UIViewController {
         
     weak var delegate: NCViewerImagePageContainer?
     
-    var isDefaultImage: Bool = false
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -55,7 +54,6 @@ class NCViewerImageZoom: UIViewController {
         
         if image == nil {
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
-            isDefaultImage = true
         }
         
         if let image = image {

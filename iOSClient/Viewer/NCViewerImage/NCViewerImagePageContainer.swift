@@ -239,7 +239,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
         }
         
-        if viewerImageZoom.isDefaultImage && metadata.hasPreview {
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
             
             let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
             let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
