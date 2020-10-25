@@ -149,8 +149,8 @@ class NCViewerImageZoom: UIViewController {
         guard let image = image else { return }
         
         self.image = image
-        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
         imageView.image = image
+        imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
     }
 }
 
