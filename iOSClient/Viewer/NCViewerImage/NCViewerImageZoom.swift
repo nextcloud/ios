@@ -54,7 +54,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.contentInsetAdjustmentBehavior = .never
         
         if image == nil {
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "media"), width: view.frame.width, height: view.frame.width, color: .gray)
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
             isDefaultImage = true
         }
         
