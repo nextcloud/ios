@@ -282,8 +282,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             self.progressView.progress = 0
         }
         
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
-        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" {
+        
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" {
             NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false, forceDownload: false)
         }
         
@@ -319,6 +321,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 
         if let image = getImage(metadata: metadata) {
             return image
+        }
+        
+        if metadata.typeFile == k_metadataTypeFile_video && !metadata.hasPreview {
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
         }
         
         if CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
