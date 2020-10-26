@@ -1219,15 +1219,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 return
             }
             
-            if metadata.typeFile == k_metadataTypeFile_video {
-                NCViewer.shared.view(viewController: self, metadata: metadataTouch, metadatas: [metadataTouch])
-                return
-            }
-            
-            if metadata.typeFile == k_metadataTypeFile_image {
+            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
                 var metadatas: [tableMetadata] = []
                 for metadata in dataSource.metadatas {
-                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
+                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
                         metadatas.append(metadata)
                     }
                 }

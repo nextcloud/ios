@@ -72,6 +72,12 @@ class NCViewerImageZoom: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        delegate?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         

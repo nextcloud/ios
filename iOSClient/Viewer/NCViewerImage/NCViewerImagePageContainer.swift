@@ -46,6 +46,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
+    var autostratVideo: Bool = false
    
     var startPanLocation = CGPoint.zero
     let panDistanceForPopViewController: CGFloat = 150
@@ -69,9 +70,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
+        let metadata = metadatas[currentIndex]
+        if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+            autostratVideo = true
+        }
+        
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerImageZoom.metadata = metadatas[currentIndex]
+        viewerImageZoom.image = getImageMetadata(metadata)
+        viewerImageZoom.metadata = metadata
         viewerImageZoom.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -279,13 +285,24 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     //MARK: - Delegate Image Zoom
 
-    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-        
+    func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+
+        navigationItem.title = metadata.fileNameView
+
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         
-        navigationItem.title = metadata.fileNameView
-        
+        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) && autostratVideo {
+            autostratVideo = false
+            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
+                viewerImageVideo.metadata = currentMetadata
+                present(viewerImageVideo, animated: false) { }
+            }
+        }
+    }
+    
+    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+                
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
             self.progressView.progress = 0
         }

@@ -40,21 +40,8 @@ class NCViewer: NSObject {
         self.metadata = metadata
         self.metadatas = metadatas
         
-        // VIDEO AUDIO
-        if metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
-            
-            if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
-                let viewController:NCViewerVideo = UIStoryboard(name: "NCViewerVideo", bundle: nil).instantiateInitialViewController() as! NCViewerVideo
-            
-                viewController.metadata = metadata
-
-                navigationController.pushViewController(viewController, animated: true)
-            }
-            return
-        }
-        
-        // IMAGE
-        if metadata.typeFile == k_metadataTypeFile_image {
+        // IMAGE AUDIO VIDEO
+        if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
             if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                 
