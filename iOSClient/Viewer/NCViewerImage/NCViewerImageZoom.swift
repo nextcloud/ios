@@ -142,6 +142,7 @@ class NCViewerImageZoom: UIViewController {
         self.image = image
         imageView.image = image
         
+        // horrible but works very good
         if delegate?.navigationController?.navigationBar.isHidden ?? false {
             delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
             delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
