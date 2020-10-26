@@ -169,7 +169,13 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
-                
+                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
+                    metadatas[index] = metadata
+                    if index == currentIndex {
+                        navigationItem.title = metadata.fileNameView
+                        currentViewerImageZoom?.metadata = metadata
+                    }
+                }
             }
         }
     }
@@ -178,8 +184,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
-                
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
+                    deleteFile(notification)
+                }
             }
         }
     }

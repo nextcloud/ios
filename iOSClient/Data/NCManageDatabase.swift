@@ -1798,6 +1798,7 @@ class NCManageDatabase: NSObject {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     result.fileName = fileNameTo
                     result.fileNameView = fileNameTo
+                    result.fileNameWithoutExt = (fileNameTo as NSString).deletingPathExtension
                 }
             }
         } catch let error {

@@ -151,6 +151,7 @@ extension NCViewer {
                     
                     viewController.delegate = NCViewer.shared
                     viewController.hideButtonCreateFolder = false
+                    viewController.items = [metadata]
                     viewController.selectFile = false
                     viewController.includeDirectoryE2EEncryption = false
                     viewController.includeImages = false
