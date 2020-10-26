@@ -661,19 +661,19 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        var maxHeight: Float = 595.2        // A4
-        var maxWidth: Float = 841.8    // A4
+        var maxHeight: Float = 595.2    // A4
+        var maxWidth: Float = 841.8     // A4
 
         switch dpiQuality {
         case typeDpiQuality.low:
             compressionQuality = 0.1
         case typeDpiQuality.medium:
-            maxHeight*=2
-            maxWidth*=2
+            maxHeight *= 2
+            maxWidth *= 2
             compressionQuality = 0.5
         case typeDpiQuality.hight:
-            maxHeight*=4
-            maxWidth*=4
+            maxHeight *= 4
+            maxWidth *= 4
             compressionQuality = 0.9
         }
         
