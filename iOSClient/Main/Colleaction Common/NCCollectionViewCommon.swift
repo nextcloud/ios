@@ -1277,8 +1277,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             
             header.delegate = self
-            header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             header.setStatusButton(count: dataSource.metadatas.count)
             header.setTitleSorted(datasourceTitleButton: titleButton)
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight

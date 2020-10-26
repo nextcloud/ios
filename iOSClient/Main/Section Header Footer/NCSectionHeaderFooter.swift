@@ -51,10 +51,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
         buttonOrder.setTitleColor(NCBrandColor.sharedInstance.brandElement, for: .normal)
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
-        
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
-        self.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        
+                
         // Gradient
         gradient.startPoint = CGPoint(x: 0, y: 0.60)
         gradient.endPoint = CGPoint(x: 0, y: 1)
@@ -75,6 +72,10 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     }
     
     @objc func changeTheming() {
+        
+        backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        
         if textViewColor != NCBrandColor.sharedInstance.textView {
             markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
