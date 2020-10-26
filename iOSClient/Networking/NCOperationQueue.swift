@@ -64,6 +64,14 @@ import NCCommunication
     @objc func downloadCount() -> Int {
         return downloadQueue.operationCount
     }
+    @objc func downloadExists(metadata: tableMetadata) -> Bool {
+        for operation in downloadQueue.operations as! [NCOperationDownload]  {
+            if operation.metadata.ocId == metadata.ocId {
+                return true
+            }
+        }
+        return false
+    }
     
     // Delete file
     

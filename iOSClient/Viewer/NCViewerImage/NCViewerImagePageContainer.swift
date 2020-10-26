@@ -234,9 +234,13 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         navigationItem.title = metadata.fileNameView
         
+        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
+            self.progressView.progress = 0
+        }
+        
         let ext = CCUtility.getExtension(metadata.fileNameView)
         if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
-            NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
+            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
         }
         
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
