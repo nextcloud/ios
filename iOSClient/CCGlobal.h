@@ -170,6 +170,7 @@
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
+#define selectorSaveAlbum                               @"saveAlbum"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
