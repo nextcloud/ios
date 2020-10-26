@@ -105,6 +105,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     func openSelectView(viewController: UIViewController, items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+        let top_vc = navigationController.topViewController as! NCSelect
         var vc_list = [NCSelect]()
         var copyItems: [Any] = []
         for item in items {
@@ -117,7 +118,20 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
         while true {
-            guard let vc = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            // If not in the topmost directory, create a new view controller and set correct title.
+            // If in the topmost directory, use the default view controller as the base.
+            var viewController: NCSelect?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+            } else {
+                viewController = top_vc
+            }
+            guard let vc = viewController else { return }
+
             vc.delegate = self
             vc.hideButtonCreateFolder = false
             vc.selectFile = false
@@ -130,6 +144,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             vc.isOverwriteHide = false
             vc.items = copyItems
             vc.serverUrl = serverUrl
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             vc_list.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
