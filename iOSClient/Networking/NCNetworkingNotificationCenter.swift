@@ -105,6 +105,32 @@ import Foundation
                         
                         NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: true)
                         
+                    case selectorSaveAlbum:
+                        
+                        let fileNamePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                        let status = PHPhotoLibrary.authorizationStatus()
+
+                        if metadata.typeFile == k_metadataTypeFile_image && status == PHAuthorizationStatus.authorized {
+                            
+                            if let image = UIImage.init(contentsOfFile: fileNamePath) {
+                                UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                            }
+                            
+                        } else if metadata.typeFile == k_metadataTypeFile_video && status == PHAuthorizationStatus.authorized {
+                            
+                            if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
+                                UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
+                            } else {
+                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                            }
+                            
+                        } else if status != PHAuthorizationStatus.authorized {
+                            
+                            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                        }
+                       
                     default:
                         
                         break
@@ -185,6 +211,13 @@ import Foundation
             (self.appDelegate.activeViewController as! NCRecent).segue(metadata: metadata)
         } else if self.appDelegate.activeViewController is NCFileViewInFolder {
             (self.appDelegate.activeViewController as! NCFileViewInFolder).segue(metadata: metadata)
+        }
+    }
+    
+    @objc func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        
+        if error != nil {
+            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
         }
     }
     
