@@ -260,6 +260,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        // VIDEO
+        if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
+            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
+                viewerImageVideo.metadata = currentMetadata
+                present(viewerImageVideo, animated: false) { }
+            }
+            return
+        }
         if currentMode == .full {
             changeScreenMode(to: .normal)
             currentMode = .normal
