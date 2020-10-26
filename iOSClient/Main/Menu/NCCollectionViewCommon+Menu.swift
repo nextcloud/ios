@@ -383,7 +383,7 @@ extension NCCollectionViewCommon {
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                             if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false, forceDownload: false)
                             }
                         }
                     }

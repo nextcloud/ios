@@ -50,7 +50,11 @@ import NCCommunication
     
     // Download file
     
-    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool) {
+    @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool, forceDownload: Bool) {
+        if !forceDownload && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":0, "errorDescription":""])
+            return
+        }
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
             if operation.metadata.ocId == metadata.ocId {
                 return
@@ -281,7 +285,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     } else {
                                         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                         if localFile == nil || localFile?.etag != metadata.etag {
-                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                            NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
                                         }
                                     }
                                 }
@@ -297,7 +301,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                 }
                                 
                                 for metadata in metadatasChanged.metadatasLocalUpdate {
-                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                                    NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
                                 }
                             }
                             // Update etag directory
@@ -313,7 +317,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                 if self.download {
                     let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if localFile == nil || localFile?.etag != metadata.etag {
-                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false)
+                        NCOperationQueue.shared.download(metadata: metadata, selector: self.selector, setFavorite: false, forceDownload: true)
                     }
                 }
                 self.finish()

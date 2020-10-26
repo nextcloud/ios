@@ -239,8 +239,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
         
         let ext = CCUtility.getExtension(metadata.fileNameView)
-        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
-            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG") && metadata.session == "" {
+            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false, forceDownload: false)
         }
         
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
