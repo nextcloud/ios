@@ -26,7 +26,7 @@ import Foundation
 
 class NCViewerVideo: UIViewController {
     
-    @IBOutlet weak var backgroundView: UIView!
+    @IBOutlet weak var videoView: UIView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
@@ -44,8 +44,7 @@ class NCViewerVideo: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
         view.backgroundColor = .black
-        let frame = CGRect(x: 0, y: 0, width: backgroundView.frame.width, height: backgroundView.frame.height)
-        NCViewerVideoCommon.shared.viewMedia(metadata, view: backgroundView, frame: frame)
+        NCViewerVideoCommon.shared.viewMedia(metadata, view: videoView, frame: CGRect(x: 0, y: 0, width: videoView.frame.width, height: videoView.frame.height))
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -18,19 +18,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U2u-Ng-quR">
-                                <rect key="frame" x="0.0" y="69" width="414" height="773"/>
+                                <rect key="frame" x="0.0" y="79" width="414" height="763"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oHy-h6-oBZ">
-                                <rect key="frame" x="8" y="20" width="45" height="26"/>
+                                <rect key="frame" x="8" y="30" width="45" height="26"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QdX-GD-p2D">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QdX-GD-p2D">
                                         <rect key="frame" x="11.5" y="2" width="22" height="22"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="22" id="dQc-qo-agC"/>
                                             <constraint firstAttribute="width" constant="22" id="xnb-gI-bEr"/>
                                         </constraints>
-                                        <state key="normal">
+                                        <color key="tintColor" systemColor="systemGrayColor"/>
+                                        <state key="normal" image="closeVideo">
                                             <color key="titleColor" systemColor="systemGrayColor"/>
                                         </state>
                                         <connections>
@@ -50,10 +51,10 @@
                         <viewLayoutGuide key="safeArea" id="I8r-2q-gEp"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="U2u-Ng-quR" firstAttribute="top" secondItem="I8r-2q-gEp" secondAttribute="top" constant="25" id="JMx-LP-euj"/>
+                            <constraint firstItem="U2u-Ng-quR" firstAttribute="top" secondItem="I8r-2q-gEp" secondAttribute="top" constant="35" id="JMx-LP-euj"/>
                             <constraint firstItem="I8r-2q-gEp" firstAttribute="bottom" secondItem="U2u-Ng-quR" secondAttribute="bottom" constant="20" id="OB5-oL-uWd"/>
                             <constraint firstItem="oHy-h6-oBZ" firstAttribute="leading" secondItem="ZUd-xF-jbc" secondAttribute="leading" constant="8" id="V0z-bW-qho"/>
-                            <constraint firstItem="oHy-h6-oBZ" firstAttribute="top" secondItem="ZUd-xF-jbc" secondAttribute="top" constant="20" id="WU4-yL-oxZ"/>
+                            <constraint firstItem="oHy-h6-oBZ" firstAttribute="top" secondItem="ZUd-xF-jbc" secondAttribute="top" constant="30" id="WU4-yL-oxZ"/>
                             <constraint firstAttribute="trailing" secondItem="U2u-Ng-quR" secondAttribute="trailing" id="fK9-2n-mIB"/>
                             <constraint firstItem="U2u-Ng-quR" firstAttribute="leading" secondItem="ZUd-xF-jbc" secondAttribute="leading" id="zBR-Jl-ZtK"/>
                         </constraints>
@@ -70,6 +71,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="closeVideo" width="425" height="425"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
