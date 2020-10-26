@@ -387,6 +387,7 @@ extension NCCollectionViewCommon {
                             }
                         }
                     }
+                    self.tapSelect(sender: self)
                 }
             )
         )
