@@ -305,7 +305,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.viewMOV(metadata: metadata)
+                    self.playerMov(metadata: metadata)
                     
                 } else {
                     
@@ -326,7 +326,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                             
                             NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                             AudioServicesPlaySystemSound(1519) // peek feedback
-                            self.viewMOV(metadata: metadata)
+                            self.playerMov(metadata: metadata)
                         }
                     }
                 }
@@ -462,7 +462,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         return image
     }
     
-    func viewMOV(metadata: tableMetadata) {
+    func playerMov(metadata: tableMetadata) {
         
         currentViewerImageZoom?.statusViewImage.isHidden = true
         
