@@ -277,11 +277,6 @@
     // Setting Theming
     [[NCBrandColor sharedInstance] settingThemingColor];
     
-    // If AVPlayer in play -> Stop
-    if (NCVideoCommon.shared.player != nil && NCVideoCommon.shared.player.rate != 0) {
-        [NCVideoCommon.shared.player pause];
-    }
-    
     // close detail
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];
     

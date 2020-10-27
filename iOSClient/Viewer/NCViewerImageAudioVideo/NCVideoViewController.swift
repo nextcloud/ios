@@ -19,6 +19,7 @@ class NCVideoViewController: AVPlayerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupHTTPCache()
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -56,10 +57,11 @@ class NCVideoViewController: AVPlayerViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-    }
-    
-    deinit {
-        
+        player?.pause()
+        removeObserver()
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
     }
     
     //MARK: - Observer
@@ -100,6 +102,9 @@ class NCVideoViewController: AVPlayerViewController {
     
     @objc func setupHTTPCache() {
         
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
         KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
@@ -123,3 +128,19 @@ class NCVideoViewController: AVPlayerViewController {
         }
     }
 }
+
+/*
+ @IBAction func touchUpInsidecloseButton(_ sender: Any) {
+     
+     if NCVideoCommon.shared.player != nil && NCVideoCommon.shared.player.rate != 0 {
+         NCVideoCommon.shared.player.pause()
+     }
+     
+     if NCVideoCommon.shared.isMediaObserver {
+         NCVideoCommon.shared.isMediaObserver = false
+         NCVideoCommon.shared.removeObserver()
+     }
+
+     dismiss(animated: false) { }
+ }
+ */
