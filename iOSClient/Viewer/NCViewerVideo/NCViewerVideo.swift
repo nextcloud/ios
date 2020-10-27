@@ -113,12 +113,12 @@ extension NCViewerVideo : UINavigationControllerDelegate {
         super.willMove(toParent: parent)
         
         if parent == nil {
-            if appDelegate.player != nil && appDelegate.player.rate != 0 {
-                appDelegate.player.pause()
+            if NCViewerVideoCommon.shared.player != nil && NCViewerVideoCommon.shared.player.rate != 0 {
+                NCViewerVideoCommon.shared.player.pause()
             }
             
-            if appDelegate.isMediaObserver {
-                appDelegate.isMediaObserver = false
+            if NCViewerVideoCommon.shared.isMediaObserver {
+                NCViewerVideoCommon.shared.isMediaObserver = false
                 NCViewerVideoCommon.shared.removeObserver()
             }
         }

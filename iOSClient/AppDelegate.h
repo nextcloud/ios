@@ -76,11 +76,6 @@
 // Passcode lockDirectory
 @property (nonatomic, strong) NSDate *sessionePasscodeLock;
 
-// Audio Video
-@property (nonatomic, strong) AVPlayer *player;
-@property (nonatomic, strong) AVPlayerViewController *playerController;
-@property BOOL isMediaObserver;
-
 // Push Norification Token
 @property (nonatomic, strong) NSString *pushKitToken;
 

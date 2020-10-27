@@ -278,8 +278,8 @@
     [[NCBrandColor sharedInstance] settingThemingColor];
     
     // If AVPlayer in play -> Stop
-    if (self.player != nil && self.player.rate != 0) {
-        [self.player pause];
+    if (NCViewerVideoCommon.shared.player != nil && NCViewerVideoCommon.shared.player.rate != 0) {
+        [NCViewerVideoCommon.shared.player pause];
     }
     
     // close detail

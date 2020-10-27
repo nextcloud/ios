@@ -31,6 +31,11 @@ class NCViewerVideoCommon: NSObject {
         return viewVideo
     }()
     
+    // Audio Video
+    @objc var player: AVPlayer!
+    @objc var playerController: AVPlayerViewController!
+    @objc var isMediaObserver: Bool = false
+    
     var metadata: tableMetadata!
     var videoURL: URL?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -63,14 +68,14 @@ class NCViewerVideoCommon: NSObject {
             KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
         }
         
-        appDelegate.player = AVPlayer(url: videoURLProxy)
-        appDelegate.playerController = AVPlayerViewController()
+        player = AVPlayer(url: videoURLProxy)
+        playerController = AVPlayerViewController()
         
-        appDelegate.playerController.player = appDelegate.player
-        appDelegate.playerController.view.frame = frame
-        appDelegate.playerController.allowsPictureInPicturePlayback = false
+        playerController.player = player
+        playerController.view.frame = frame
+        playerController.allowsPictureInPicturePlayback = false
         
-        view.addSubview(appDelegate.playerController.view)
+        view.addSubview(playerController.view)
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
             let player = notification.object as! AVPlayerItem
@@ -79,10 +84,10 @@ class NCViewerVideoCommon: NSObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             
-            self.appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-            self.appDelegate.isMediaObserver = true
+            self.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            self.isMediaObserver = true
             
-            self.appDelegate.player.play()
+            self.player.play()
         }
     }
     
@@ -90,7 +95,7 @@ class NCViewerVideoCommon: NSObject {
         
         if keyPath != nil && keyPath == "rate" {
             
-            if appDelegate.player.rate == 1 {
+            if player.rate == 1 {
                 print("start")
             } else {
                 print("stop")
@@ -114,7 +119,7 @@ class NCViewerVideoCommon: NSObject {
     
     @objc func removeObserver() {
         
-        appDelegate.player.removeObserver(self, forKeyPath: "rate", context: nil)
+        player.removeObserver(self, forKeyPath: "rate", context: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
