@@ -63,10 +63,6 @@
 @property (nonatomic, strong) NSString *userID;
 @property (nonatomic, strong) NSString *password;
 
-// next version ... ? ...
-@property double currentLatitude;
-@property double currentLongitude;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 
