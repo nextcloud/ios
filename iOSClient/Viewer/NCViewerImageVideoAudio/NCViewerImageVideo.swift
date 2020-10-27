@@ -45,18 +45,18 @@ class NCViewerImageVideo: UIViewController {
         closeView.layer.cornerRadius = 7
         closeView.backgroundColor = UIColor(red: 36.0/255.0, green: 36.0/255.0, blue: 36.0/255.0, alpha: 1.0)
         
-        NCViewerVideoCommon.shared.viewMedia(metadata, view: videoView, frame: CGRect(x: 0, y: 0, width: videoView.frame.width, height: videoView.frame.height))
+        NCVideoCommon.shared.viewMedia(metadata, view: videoView, frame: CGRect(x: 0, y: 0, width: videoView.frame.width, height: videoView.frame.height))
     }
     
     @IBAction func touchUpInsidecloseButton(_ sender: Any) {
         
-        if NCViewerVideoCommon.shared.player != nil && NCViewerVideoCommon.shared.player.rate != 0 {
-            NCViewerVideoCommon.shared.player.pause()
+        if NCVideoCommon.shared.player != nil && NCVideoCommon.shared.player.rate != 0 {
+            NCVideoCommon.shared.player.pause()
         }
         
-        if NCViewerVideoCommon.shared.isMediaObserver {
-            NCViewerVideoCommon.shared.isMediaObserver = false
-            NCViewerVideoCommon.shared.removeObserver()
+        if NCVideoCommon.shared.isMediaObserver {
+            NCVideoCommon.shared.isMediaObserver = false
+            NCVideoCommon.shared.removeObserver()
         }
 
         dismiss(animated: false) { }
