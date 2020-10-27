@@ -79,9 +79,8 @@ class NCVideoViewController: AVPlayerViewController {
             // Save cache
             if !CCUtility.fileProviderStorageExists(self.metadata.ocId, fileNameView:self.metadata.fileNameView) {
                 
-                guard let url = KTVHTTPCache.cacheCompleteFileURL(with: self.videoURL) else {
-                    return
-                }
+                guard let videoURL = self.videoURL else { return }
+                guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
                 
                 CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                 NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
