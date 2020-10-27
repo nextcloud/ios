@@ -269,7 +269,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
-            let video = NCVideoViewController()
+            let video = NCViewerVideoAudio()
             video.metadata = currentMetadata
             present(video, animated: false) { }
             
@@ -298,7 +298,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             
             autostratVideo = false
             
-            let video = NCVideoViewController()
+            let video = NCViewerVideoAudio()
             video.metadata = currentMetadata
             present(video, animated: false) { }
         }

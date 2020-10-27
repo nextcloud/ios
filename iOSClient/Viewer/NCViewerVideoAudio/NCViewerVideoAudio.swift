@@ -1,5 +1,5 @@
 //
-//  NCVideo.swift
+//  NCViewerVideoAudio.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/10/2020.
@@ -24,7 +24,7 @@
 import Foundation
 import KTVHTTPCache
 
-class NCVideoViewController: AVPlayerViewController {
+class NCViewerVideoAudio: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
