@@ -266,20 +266,22 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        // VIDEO
+        
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
-            if let viewerImageVideo = UIStoryboard(name: "NCVideo", bundle: nil).instantiateInitialViewController() as? NCVideo {
-                viewerImageVideo.metadata = currentMetadata
-                present(viewerImageVideo, animated: false) { }
-            }
-            return
-        }
-        if currentMode == .full {
-            changeScreenMode(to: .normal)
-            currentMode = .normal
+            
+            let video = NCVideoViewController()
+            video.metadata = currentMetadata
+            present(video, animated: false) { }
+            
         } else {
-            changeScreenMode(to: .full)
-            currentMode = .full
+        
+            if currentMode == .full {
+                changeScreenMode(to: .normal)
+                currentMode = .normal
+            } else {
+                changeScreenMode(to: .full)
+                currentMode = .full
+            }
         }
     }
     
@@ -293,11 +295,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         currentViewerImageZoom = viewerImageZoom
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) && autostratVideo {
+            
             autostratVideo = false
-            if let viewerImageVideo = UIStoryboard(name: "NCVideo", bundle: nil).instantiateInitialViewController() as? NCVideo {
-                viewerImageVideo.metadata = currentMetadata
-                present(viewerImageVideo, animated: false) { }
-            }
+            
+            let video = NCVideoViewController()
+            video.metadata = currentMetadata
+            present(video, animated: false) { }
         }
     }
     
