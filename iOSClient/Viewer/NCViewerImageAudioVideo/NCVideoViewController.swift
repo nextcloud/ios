@@ -14,7 +14,6 @@ class NCVideoViewController: AVPlayerViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var videoURL: URL?
-    var videoURLProxy: URL?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,8 +30,7 @@ class NCVideoViewController: AVPlayerViewController {
                 return
             }
             
-            videoURL = URL(string: stringURL)
-            videoURLProxy = KTVHTTPCache.proxyURL(withOriginalURL: videoURL)
+            videoURL = KTVHTTPCache.proxyURL(withOriginalURL: URL(string: stringURL))
             
             guard let authData = (appDelegate.user + ":" + appDelegate.password).data(using: .utf8) else {
                 return
@@ -42,16 +40,18 @@ class NCVideoViewController: AVPlayerViewController {
             KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
         }
         
-        let video = AVPlayer(url: videoURL!)
-        player = video
+        if let videoURL = videoURL {
+            let video = AVPlayer(url: videoURL)
+            player = video
         
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
-            let player = notification.object as! AVPlayerItem
-            player.seek(to: CMTime.zero, completionHandler: nil)
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
+                let player = notification.object as! AVPlayerItem
+                player.seek(to: CMTime.zero, completionHandler: nil)
+            }
+        
+            player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            player?.play()
         }
-        
-        player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-        player?.play()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -128,19 +128,3 @@ class NCVideoViewController: AVPlayerViewController {
         }
     }
 }
-
-/*
- @IBAction func touchUpInsidecloseButton(_ sender: Any) {
-     
-     if NCVideoCommon.shared.player != nil && NCVideoCommon.shared.player.rate != 0 {
-         NCVideoCommon.shared.player.pause()
-     }
-     
-     if NCVideoCommon.shared.isMediaObserver {
-         NCVideoCommon.shared.isMediaObserver = false
-         NCVideoCommon.shared.removeObserver()
-     }
-
-     dismiss(animated: false) { }
- }
- */
