@@ -56,17 +56,24 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var currentViewerImageZoom: NCViewerImageZoom?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
+    var longtapGestureRecognizer: UILongPressGestureRecognizer!
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
-
+        longtapGestureRecognizer = UILongPressGestureRecognizer()
+        longtapGestureRecognizer.delaysTouchesBegan = true
+        longtapGestureRecognizer.minimumPressDuration = 0.3
+        longtapGestureRecognizer.delegate = self
+        longtapGestureRecognizer.addTarget(self, action: #selector(didLongpressGestureEvent(gestureRecognizer:)))
+        
         pageViewController.delegate = self
         pageViewController.dataSource = self
-        pageViewController.view.addGestureRecognizer(self.panGestureRecognizer)
-        pageViewController.view.addGestureRecognizer(self.singleTapGestureRecognizer)
+        pageViewController.view.addGestureRecognizer(panGestureRecognizer)
+        pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
+        pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
@@ -285,6 +292,50 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         }
     }
     
+    @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
+        
+        if gestureRecognizer.state == .began {
+            
+            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
+                
+                if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                    
+                    AudioServicesPlaySystemSound(1519) // peek feedback
+                    //viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+                    
+                } else {
+                    
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
+                    let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                                    
+                    NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                        
+                    }, progressHandler: { (progress) in
+                                        
+                        self.progressView.progress = Float(progress.fractionCompleted)
+                        
+                    }) { (account, etag, date, length, error, errorCode, errorDescription) in
+                        
+                        self.progressView.progress = 0
+                        
+                        if errorCode == 0 && account == metadata.account {
+                            
+                            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                            AudioServicesPlaySystemSound(1519) // peek feedback
+                            //self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+                        }
+                    }
+                }
+            }
+            
+        } else if gestureRecognizer.state == .ended {
+            
+            //appDelegate.player?.pause()
+            //videoLayer?.removeFromSuperlayer()
+        }
+    }
+    
     //MARK: - Delegate Image Zoom
 
     func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
@@ -493,3 +544,53 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         self.nextIndex = nil
     }
 }
+
+/*
+ func viewerImageViewControllerLongPressBegan(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+     
+     viewerImageViewController.statusView.isHidden = true
+     viewerImageViewControllerLongPressInProgress = true
+     
+     let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".mov"
+     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", metadata.account, metadata.serverUrl, fileName)) {
+         
+         if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+             
+             AudioServicesPlaySystemSound(1519) // peek feedback
+             viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+             
+         } else {
+             
+             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileNameView
+             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
+                             
+             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                 
+             }, progressHandler: { (progress) in
+                                 
+                 self.progress(Float(progress.fractionCompleted))
+                 
+             }) { (account, etag, date, length, error, errorCode, errorDescription) in
+                 
+                 self.progress(0)
+                 
+                 if errorCode == 0 && account == metadata.account {
+                     
+                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                     AudioServicesPlaySystemSound(1519) // peek feedback
+                     self.viewMOV(viewerImageViewController: viewerImageViewController, metadata: metadata)
+                 }
+             }
+         }
+     }
+ }
+ 
+ func viewerImageViewControllerLongPressEnded(_ viewerImageViewController: NCViewerImageViewController, metadata: tableMetadata) {
+     
+     viewerImageViewControllerLongPressInProgress = false
+     
+     viewerImageViewController.statusView.isHidden = false
+     appDelegate.player?.pause()
+     videoLayer?.removeFromSuperlayer()
+ }
+ */
