@@ -264,8 +264,8 @@
 		F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF0219994F20004137E /* KTVHTTPCache.framework */; };
 		F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7C40BF22199978B0004137E /* MBProgressHUD.framework */; };
 		F7C4D88D2534887E00C142DA /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = F7C4D88C2534887E00C142DA /* Parchment */; };
-		F7C6E0D1254411D0007E35FE /* NCViewerImageVideo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */; };
-		F7C6E0D7254411D9007E35FE /* NCViewerImageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */; };
+		F7C6E0D1254411D0007E35FE /* NCVideo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C6E0D0254411D0007E35FE /* NCVideo.storyboard */; };
+		F7C6E0D7254411D9007E35FE /* NCVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C6E0D6254411D8007E35FE /* NCVideo.swift */; };
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
 		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
@@ -642,8 +642,8 @@
 		F7C40BF22199978B0004137E /* MBProgressHUD.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MBProgressHUD.framework; path = Carthage/Build/iOS/MBProgressHUD.framework; sourceTree = "<group>"; };
 		F7C40C0F2199BA5D0004137E /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = "<group>"; };
 		F7C40C112199BA620004137E /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = "<group>"; };
-		F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCViewerImageVideo.storyboard; sourceTree = "<group>"; };
-		F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageVideo.swift; sourceTree = "<group>"; };
+		F7C6E0D0254411D0007E35FE /* NCVideo.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCVideo.storyboard; sourceTree = "<group>"; };
+		F7C6E0D6254411D8007E35FE /* NCVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCVideo.swift; sourceTree = "<group>"; };
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
 		F7C742D01E7BD35B00D9C973 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Share.entitlements; sourceTree = "<group>"; };
 		F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLook.swift; sourceTree = "<group>"; };
@@ -1096,24 +1096,24 @@
 			path = Trash;
 			sourceTree = "<group>";
 		};
-		F79018B1240962C7007C9B6D /* NCViewerImageVideoAudio */ = {
+		F79018B1240962C7007C9B6D /* NCViewerImageAudioVideo */ = {
 			isa = PBXGroup;
 			children = (
+				F7C6E0D0254411D0007E35FE /* NCVideo.storyboard */,
+				F7C6E0D6254411D8007E35FE /* NCVideo.swift */,
 				F79630ED215527D40015EEA5 /* NCVideoCommon.swift */,
 				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */,
-				F7C6E0D0254411D0007E35FE /* NCViewerImageVideo.storyboard */,
-				F7C6E0D6254411D8007E35FE /* NCViewerImageVideo.swift */,
 				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
 			);
-			path = NCViewerImageVideoAudio;
+			path = NCViewerImageAudioVideo;
 			sourceTree = "<group>";
 		};
 		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
-				F79018B1240962C7007C9B6D /* NCViewerImageVideoAudio */,
+				F79018B1240962C7007C9B6D /* NCViewerImageAudioVideo */,
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
@@ -1859,7 +1859,7 @@
 				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
-				F7C6E0D1254411D0007E35FE /* NCViewerImageVideo.storyboard in Resources */,
+				F7C6E0D1254411D0007E35FE /* NCVideo.storyboard in Resources */,
 				F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
@@ -2034,7 +2034,7 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
-				F7C6E0D7254411D9007E35FE /* NCViewerImageVideo.swift in Sources */,
+				F7C6E0D7254411D9007E35FE /* NCVideo.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichdocument.swift in Sources */,

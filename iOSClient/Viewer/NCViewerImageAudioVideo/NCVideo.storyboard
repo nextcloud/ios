@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Viewer Image Video-->
+        <!--Video-->
         <scene sceneID="puT-XC-QL4">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="Mmv-kq-uRN" customClass="NCViewerImageVideo" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController modalPresentationStyle="fullScreen" id="Mmv-kq-uRN" customClass="NCVideo" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ZUd-xF-jbc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

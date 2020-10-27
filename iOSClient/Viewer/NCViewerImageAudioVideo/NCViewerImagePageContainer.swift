@@ -268,7 +268,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         // VIDEO
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
-            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
+            if let viewerImageVideo = UIStoryboard(name: "NCVideo", bundle: nil).instantiateInitialViewController() as? NCVideo {
                 viewerImageVideo.metadata = currentMetadata
                 present(viewerImageVideo, animated: false) { }
             }
@@ -294,7 +294,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) && autostratVideo {
             autostratVideo = false
-            if let viewerImageVideo = UIStoryboard(name: "NCViewerImageVideo", bundle: nil).instantiateInitialViewController() as? NCViewerImageVideo {
+            if let viewerImageVideo = UIStoryboard(name: "NCVideo", bundle: nil).instantiateInitialViewController() as? NCVideo {
                 viewerImageVideo.metadata = currentMetadata
                 present(viewerImageVideo, animated: false) { }
             }
