@@ -286,9 +286,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         } else {
         
             if currentMode == .full {
+                
                 changeScreenMode(to: .normal)
                 currentMode = .normal
+                
             } else {
+                
                 changeScreenMode(to: .full)
                 currentMode = .full
             }
@@ -389,11 +392,15 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     //MARK: - Function
     
     func changeScreenMode(to: ScreenMode) {
+        
         if to == .full {
+            
             navigationController?.setNavigationBarHidden(true, animated: false)
             view.backgroundColor = .black
             progressView.isHidden = true
+            
         } else {
+            
             navigationController?.setNavigationBarHidden(false, animated: false)
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             progressView.isHidden = false
