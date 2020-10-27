@@ -13,12 +13,14 @@ class NCVideoViewController: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
-    var videoURL: URL?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var videoURL: URL?
+
         setupHTTPCache()
+        saveCache()
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -40,9 +42,9 @@ class NCVideoViewController: AVPlayerViewController {
             KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
         }
         
-        if let videoURL = videoURL {
+        if let url = videoURL {
             
-            let video = AVPlayer(url: videoURL)
+            let video = AVPlayer(url: url)
             player = video
         
             // At end go back to start
@@ -68,6 +70,25 @@ class NCVideoViewController: AVPlayerViewController {
         }
     }
     
+    //MARK: -
+    
+    func saveCache() {
+        
+        if !CCUtility.fileProviderStorageExists(self.metadata.ocId, fileNameView:self.metadata.fileNameView) {
+            
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+            
+            let videoURL = URL(string: stringURL)
+            guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
+            
+            CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+            NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+            KTVHTTPCache.cacheDelete(with: videoURL)
+            
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":self.metadata.ocId, "serverUrl":self.metadata.serverUrl])
+        }
+    }
+    
     //MARK: - Observer
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -80,18 +101,7 @@ class NCVideoViewController: AVPlayerViewController {
                 print("stop")
             }
             
-            // Save cache
-            if !CCUtility.fileProviderStorageExists(self.metadata.ocId, fileNameView:self.metadata.fileNameView) {
-                
-                guard let videoURL = self.videoURL else { return }
-                guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
-                
-                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
-                KTVHTTPCache.cacheDelete(with: self.videoURL)
-                
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":self.metadata.ocId, "serverUrl":self.metadata.serverUrl])
-            }
+            saveCache()
         }
     }
     
