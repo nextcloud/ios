@@ -328,8 +328,11 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                         if errorCode == 0 && account == metadata.account {
                             
                             NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                            AudioServicesPlaySystemSound(1519) // peek feedback
-                            self.playerMov(metadata: metadata)
+                            
+                            if gestureRecognizer.state == .began {
+                                AudioServicesPlaySystemSound(1519) // peek feedback
+                                self.playerMov(metadata: metadata)
+                            }
                         }
                     }
                 }
@@ -482,6 +485,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             player?.play()
         }
     }
+    
+    
     
     //MARK: - Action
     

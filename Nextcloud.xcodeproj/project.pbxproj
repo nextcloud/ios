@@ -267,15 +267,6 @@
 		F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C7B488245EBA4100D93E60 /* NCViewerQuickLook.swift */; };
 		F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7C9555221F0C4CA0024296E /* NCActivity.storyboard */; };
 		F7C9555521F0C5470024296E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9555421F0C5470024296E /* NCActivity.swift */; };
-		F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */; };
-		F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EBE20E7E3FE002CC65E /* PKCircleProgressView.m */; };
-		F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC120E7E3FE002CC65E /* PKCircleView.m */; };
-		F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */; };
-		F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */; };
-		F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */; };
-		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
-		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
-		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
 		F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB68992541676B0050EC94 /* NCMore.storyboard */; };
 		F7CB68A0254169530050EC94 /* NCSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CB689F254169530050EC94 /* NCSettings.storyboard */; };
 		F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */; };
@@ -646,25 +637,6 @@
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
 		F7C9555221F0C4CA0024296E /* NCActivity.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCActivity.storyboard; sourceTree = "<group>"; };
 		F7C9555421F0C5470024296E /* NCActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivity.swift; sourceTree = "<group>"; };
-		F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PKDownloadButton.m"; sourceTree = "<group>"; };
-		F7CA1EBD20E7E3FE002CC65E /* PKBorderedButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKBorderedButton.h; sourceTree = "<group>"; };
-		F7CA1EBE20E7E3FE002CC65E /* PKCircleProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCircleProgressView.m; sourceTree = "<group>"; };
-		F7CA1EBF20E7E3FE002CC65E /* PKDownloadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKDownloadButton.h; sourceTree = "<group>"; };
-		F7CA1EC020E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+PKDownloadButtonAnimations.h"; sourceTree = "<group>"; };
-		F7CA1EC120E7E3FE002CC65E /* PKCircleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCircleView.m; sourceTree = "<group>"; };
-		F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKStopDownloadButton.m; sourceTree = "<group>"; };
-		F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKPendingView.m; sourceTree = "<group>"; };
-		F7CA1EC420E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+PKDownloadButton.h"; sourceTree = "<group>"; };
-		F7CA1EC620E7E3FE002CC65E /* PKMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKMacros.h; sourceTree = "<group>"; };
-		F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+PKDownloadButtonAnimations.m"; sourceTree = "<group>"; };
-		F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKDownloadButton.m; sourceTree = "<group>"; };
-		F7CA1EC920E7E3FE002CC65E /* PKCircleProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCircleProgressView.h; sourceTree = "<group>"; };
-		F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKBorderedButton.m; sourceTree = "<group>"; };
-		F7CA1ECB20E7E3FE002CC65E /* UIImage+PKDownloadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+PKDownloadButton.h"; sourceTree = "<group>"; };
-		F7CA1ECC20E7E3FE002CC65E /* PKStopDownloadButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKStopDownloadButton.h; sourceTree = "<group>"; };
-		F7CA1ECD20E7E3FE002CC65E /* PKCircleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCircleView.h; sourceTree = "<group>"; };
-		F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+PKDownloadButton.m"; sourceTree = "<group>"; };
-		F7CA1ECF20E7E3FE002CC65E /* PKPendingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKPendingView.h; sourceTree = "<group>"; };
 		F7CB68992541676B0050EC94 /* NCMore.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCMore.storyboard; sourceTree = "<group>"; };
 		F7CB689F254169530050EC94 /* NCSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSettings.storyboard; sourceTree = "<group>"; };
 		F7CBC31B24F78E79004D3812 /* NCSortMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSortMenu.swift; sourceTree = "<group>"; };
@@ -840,7 +812,6 @@
 			children = (
 				F704FA5A232A341800BBA952 /* Imagemeter */,
 				F7B2DEEB1F976785007CF4D2 /* NYMnemonic */,
-				F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */,
 			);
 			path = "Libraries external";
 			sourceTree = SOURCE_ROOT;
@@ -1337,32 +1308,6 @@
 				F7496B83208F5652004B299C /* Share.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		F7CA1EBB20E7E3FE002CC65E /* PKDownloadButton */ = {
-			isa = PBXGroup;
-			children = (
-				F7CA1EBC20E7E3FE002CC65E /* UIImage+PKDownloadButton.m */,
-				F7CA1EBD20E7E3FE002CC65E /* PKBorderedButton.h */,
-				F7CA1EBE20E7E3FE002CC65E /* PKCircleProgressView.m */,
-				F7CA1EBF20E7E3FE002CC65E /* PKDownloadButton.h */,
-				F7CA1EC020E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.h */,
-				F7CA1EC120E7E3FE002CC65E /* PKCircleView.m */,
-				F7CA1EC220E7E3FE002CC65E /* PKStopDownloadButton.m */,
-				F7CA1EC320E7E3FE002CC65E /* PKPendingView.m */,
-				F7CA1EC420E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.h */,
-				F7CA1EC620E7E3FE002CC65E /* PKMacros.h */,
-				F7CA1EC720E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m */,
-				F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */,
-				F7CA1EC920E7E3FE002CC65E /* PKCircleProgressView.h */,
-				F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */,
-				F7CA1ECB20E7E3FE002CC65E /* UIImage+PKDownloadButton.h */,
-				F7CA1ECC20E7E3FE002CC65E /* PKStopDownloadButton.h */,
-				F7CA1ECD20E7E3FE002CC65E /* PKCircleView.h */,
-				F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */,
-				F7CA1ECF20E7E3FE002CC65E /* PKPendingView.h */,
-			);
-			path = PKDownloadButton;
 			sourceTree = "<group>";
 		};
 		F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */ = {
@@ -2068,15 +2013,12 @@
 				3757A35523D9D76300EC369E /* NCMenuPanelController.swift in Sources */,
 				F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */,
 				F72928A0253B0937009CA4FD /* NCMainNavigationController.swift in Sources */,
-				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,
 				F755E6472525946C008DAB45 /* NCCollectionCommon.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F700510522DF6A89003A3356 /* NCShare.swift in Sources */,
-				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
-				F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */,
 				F769454222E9F0EE000A798A /* NCShareLinkMenuView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
@@ -2115,12 +2057,10 @@
 				F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BF1B431D51E893000854F6 /* CCLogin.m in Sources */,
 				F769454422E9F142000A798A /* NCShareUserMenuView.swift in Sources */,
-				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
-				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
@@ -2137,21 +2077,17 @@
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F704FA5C232A343F00BBA952 /* IMImagemeterViewer.swift in Sources */,
-				F7CA1ED220E7E3FE002CC65E /* PKCircleView.m in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F7CBC31C24F78E79004D3812 /* NCSortMenu.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
 				F7725A60251F33BB00D125E0 /* NCFiles.swift in Sources */,
-				F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */,
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */,
 				F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */,
-				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
-				F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */,
 				F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */,
 				F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */,
 				F7D96FCC246ED7E200536D73 /* NCNetworkingCheckRemoteUser.swift in Sources */,
