@@ -124,8 +124,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         super.viewWillAppear(animated)
         
         // hide nagigation controller
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
         self.reloadDataSourceWithCompletion { (_) in
             self.searchNewPhotoVideo()
         }

@@ -118,7 +118,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         navigationItem.rightBarButtonItem = buttonMore
         
         navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     @objc func viewUnload() {
