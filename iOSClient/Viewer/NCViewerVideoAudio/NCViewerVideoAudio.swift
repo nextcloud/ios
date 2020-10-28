@@ -33,8 +33,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
 
         var videoURL: URL?
 
-        NCKTVHTTPCache.shared.startProxy()
-        NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -47,7 +46,6 @@ class NCViewerVideoAudio: AVPlayerViewController {
             }
             
             videoURL = NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
-            NCKTVHTTPCache.shared.setAuth(user: appDelegate.user, password: appDelegate.password)
         }
         
         if let url = videoURL {
@@ -76,25 +74,6 @@ class NCViewerVideoAudio: AVPlayerViewController {
         NCKTVHTTPCache.shared.stopProxy()
     }
     
-    //MARK: -
-    
-    func saveCache() {
-        
-        if !CCUtility.fileProviderStorageExists(self.metadata.ocId, fileNameView:self.metadata.fileNameView) {
-            
-            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
-            
-            let videoURL = URL(string: stringURL)
-            guard let url = NCKTVHTTPCache.shared.getCompleteFileURL(videoURL: videoURL) else { return }
-            
-            CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
-            NCKTVHTTPCache.shared.deleteCache(videoURL: videoURL)
-            
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":self.metadata.ocId, "serverUrl":self.metadata.serverUrl])
-        }
-    }
-    
     //MARK: - Observer
 
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -107,7 +86,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
                 print("pause")
             }
             
-            saveCache()
+            NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         }
     }
     

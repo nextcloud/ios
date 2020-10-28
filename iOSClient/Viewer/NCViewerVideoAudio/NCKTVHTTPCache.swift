@@ -16,12 +16,25 @@ class NCKTVHTTPCache: NSObject {
         return instance
     }()
     
-    func setAuth(user: String, password: String) {
+    func startProxy(user: String, password: String, metadata: tableMetadata) {
         
         guard let authData = (user + ":" + password).data(using: .utf8) else { return }
         
         let authValue = "Basic " + authData.base64EncodedString(options: [])
         KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
+        
+        if !KTVHTTPCache.proxyIsRunning() {
+            try? KTVHTTPCache.proxyStart()
+        }
+        
+        saveCache(metadata: metadata)
+    }
+    
+    func stopProxy() {
+        
+        if KTVHTTPCache.proxyIsRunning() {
+            KTVHTTPCache.proxyStop()
+        }
     }
     
     func getProxyURL(stringURL: String) -> URL {
@@ -29,7 +42,7 @@ class NCKTVHTTPCache: NSObject {
         return KTVHTTPCache.proxyURL(withOriginalURL: URL(string: stringURL))
     }
     
-    func getCompleteFileURL(videoURL: URL?) -> URL? {
+    func getCacheCompleteFileURL(videoURL: URL?) -> URL? {
         
         return KTVHTTPCache.cacheCompleteFileURL(with: videoURL)
     }
@@ -52,20 +65,6 @@ class NCKTVHTTPCache: NSObject {
             KTVHTTPCache.cacheDelete(with: videoURL)
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
-        }
-    }
-    
-    func stopProxy() {
-        
-        if KTVHTTPCache.proxyIsRunning() {
-            KTVHTTPCache.proxyStop()
-        }
-    }
-    
-    func startProxy() {
-        
-        if !KTVHTTPCache.proxyIsRunning() {
-            try? KTVHTTPCache.proxyStart()
         }
     }
     
