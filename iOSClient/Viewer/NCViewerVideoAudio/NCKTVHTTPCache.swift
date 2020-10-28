@@ -39,7 +39,11 @@ class NCKTVHTTPCache: NSObject {
         KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
         
         if !KTVHTTPCache.proxyIsRunning() {
-            try? KTVHTTPCache.proxyStart()
+            do {
+                try KTVHTTPCache.proxyStart()
+            } catch let error {
+                print("Proxy Start error : \(error)")
+            }
         }
         
         saveCache(metadata: metadata)
@@ -63,6 +67,7 @@ class NCKTVHTTPCache: NSObject {
     }
     
     func deleteCache(videoURL: URL?) {
+        
         KTVHTTPCache.cacheDelete(with: videoURL)
     }
     
