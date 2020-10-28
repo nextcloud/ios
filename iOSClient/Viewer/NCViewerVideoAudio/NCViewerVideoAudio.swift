@@ -55,13 +55,10 @@ class NCViewerVideoAudio: AVPlayerViewController {
         
             // At end go back to start
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
-                
-                let player = notification.object as! AVPlayerItem
-                player.seek(to: CMTime.zero, completionHandler: nil)
+                self.player?.seek(to: CMTime.zero)
             }
         
             player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-            
             player?.play()
         }
     }
