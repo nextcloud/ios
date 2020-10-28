@@ -53,7 +53,7 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
         self.title = NSLocalizedString("_activity_", comment: "")
 
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 80, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
