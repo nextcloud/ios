@@ -76,13 +76,6 @@ class NCViewerVideoAudio: AVPlayerViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
-            
-            if player?.rate == 1 {
-                print("start")
-            } else {
-                print("pause")
-            }
-            
             NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         }
     }
