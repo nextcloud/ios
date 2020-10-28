@@ -3,7 +3,7 @@
     <device id="retina3_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -29,7 +29,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4p-sI-mNB">
-                    <rect key="frame" x="0.0" y="224" width="320" height="17"/>
+                    <rect key="frame" x="20" y="224" width="280" height="17"/>
                     <constraints>
                         <constraint firstAttribute="height" relation="lessThanOrEqual" constant="50" id="u7B-jW-bWI"/>
                     </constraints>
@@ -43,10 +43,10 @@
             <constraints>
                 <constraint firstItem="crs-DO-owR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="CMU-Tp-bUM"/>
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Fyb-so-iAw"/>
-                <constraint firstItem="D4p-sI-mNB" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="egV-G4-wax"/>
+                <constraint firstItem="D4p-sI-mNB" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="egV-G4-wax"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="crs-DO-owR" secondAttribute="trailing" id="hHl-iN-Gev"/>
                 <constraint firstItem="crs-DO-owR" firstAttribute="top" secondItem="W3d-Us-kU4" secondAttribute="bottom" constant="30" id="hLN-L6-0gH"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="D4p-sI-mNB" secondAttribute="trailing" id="imv-AK-mqu"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="D4p-sI-mNB" secondAttribute="trailing" constant="20" id="imv-AK-mqu"/>
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="kma-1Q-c3Q"/>
                 <constraint firstItem="D4p-sI-mNB" firstAttribute="top" secondItem="crs-DO-owR" secondAttribute="bottom" constant="20" id="zbi-5P-raN"/>
             </constraints>
@@ -55,7 +55,7 @@
                 <outlet property="emptyImage" destination="W3d-Us-kU4" id="xtd-nV-OUc"/>
                 <outlet property="emptyTitle" destination="crs-DO-owR" id="IkU-6d-P64"/>
             </connections>
-            <point key="canvasLocation" x="135" y="38.75"/>
+            <point key="canvasLocation" x="-146" y="65"/>
         </view>
     </objects>
     <resources>

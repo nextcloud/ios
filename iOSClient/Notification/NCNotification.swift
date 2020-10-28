@@ -42,7 +42,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmpty
         self.tableView.allowsSelection = false
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 80, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         
