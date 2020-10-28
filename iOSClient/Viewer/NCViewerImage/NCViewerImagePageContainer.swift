@@ -478,10 +478,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
         videoLayer = AVPlayerLayer(player: player)
+        
         if videoLayer != nil && currentViewerImageZoom != nil {
-            videoLayer!.frame = currentViewerImageZoom!.imageView.frame
-            videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspect
-            currentViewerImageZoom!.view.layer.addSublayer(videoLayer!)
+            
+            videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
+            videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            
+            currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
+                        
             player?.play()
         }
     }
