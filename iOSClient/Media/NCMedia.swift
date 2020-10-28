@@ -88,7 +88,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         collectionView.collectionViewLayout = gridLayout
         
         // Empty
-        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 80, delegate: self)
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
                 
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {

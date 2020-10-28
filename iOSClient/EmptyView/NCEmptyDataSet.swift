@@ -27,19 +27,23 @@ class NCEmptyDataSet: NSObject {
             self.delegate = delegate
             self.emptyView = emptyView
             
-            emptyView.frame =  CGRect(x:0, y: 0, width:300, height:300)
             emptyView.isHidden = true
             emptyView.translatesAutoresizingMaskIntoConstraints = false
-
+            
+            //emptyView.backgroundColor = .red
+            //emptyView.isHidden = false
+            
             emptyView.emptyTitle.sizeToFit()
             emptyView.emptyDescription.sizeToFit()
             
             view.addSubview(emptyView)
-
-            let constantY: CGFloat = (view.frame.height - emptyView.frame.height) / 2 - offset
             
+            let constantTop: CGFloat = (view.frame.height - emptyView.frame.height) / 2 - offset
+            
+            emptyView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
+            emptyView.heightAnchor.constraint(equalToConstant: 350).isActive = true
             emptyView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-            emptyView.topAnchor.constraint(equalTo: view.topAnchor, constant: constantY).isActive = true
+            emptyView.topAnchor.constraint(equalTo: view.topAnchor, constant: constantTop).isActive = true
         }
     }
     
