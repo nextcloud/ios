@@ -61,7 +61,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     private var playerVideo: AVPlayer?
     private var videoLayer: AVPlayerLayer?
     private var durationVideo: Float = 0
-    
+    private var timeObserverToken: Any?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -513,26 +514,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
             
             currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
-            
-            // At end go back to start
-            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
-                self.playerVideo?.seek(to: CMTime.zero)
-            }
-                        
-            playerVideo?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+    
             videoPlay()
         }
     }
-    
-    /*
-    @objc func updateTimer() {
-        if let durationVideo = playerVideo?.currentItem?.asset.duration {
-            timerCounter += 1
-            let floatTime = Float(CMTimeGetSeconds(durationVideo))
-            progressView.progress = timerCounter / floatTime
-        }
-    }
-    */
     
     //MARK: - Action
     
@@ -561,15 +546,35 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     @objc func videoPlay() {
-        playerVideo?.play()
+        
+        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
+                
         if let duration = playerVideo?.currentItem?.asset.duration {
             durationVideo = Float(CMTimeGetSeconds(duration))
         }
+        
+        timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
+            print(time)
+        }
+        
+        // At end go back to start
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
+            self.playerVideo?.seek(to: CMTime.zero)
+        }
+                    
+        playerVideo?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+        
+        playerVideo?.play()
     }
     
     @objc func videoStop() {
         playerVideo?.pause()
         self.playerVideo?.seek(to: CMTime.zero)
+        if let timeObserverToken = timeObserverToken {
+            playerVideo?.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
+        }
     }
 }
 
