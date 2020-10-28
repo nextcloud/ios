@@ -100,11 +100,20 @@
                                             <constraint firstAttribute="width" constant="30" id="mSt-o6-S1g"/>
                                         </constraints>
                                     </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAi-gz-qGP">
+                                        <rect key="frame" x="48" y="60.5" width="252" height="17"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="DAi-gz-qGP" firstAttribute="centerY" secondItem="2AU-85-K8y" secondAttribute="centerY" id="Lls-5R-JBM"/>
+                                    <constraint firstAttribute="trailing" secondItem="DAi-gz-qGP" secondAttribute="trailing" constant="20" id="QWE-Iy-fcM"/>
                                     <constraint firstItem="kPV-JM-UnM" firstAttribute="leading" secondItem="CdQ-LC-Trx" secondAttribute="leading" id="asL-Ft-Lmc"/>
                                     <constraint firstAttribute="trailing" secondItem="kPV-JM-UnM" secondAttribute="trailing" id="fBN-70-6ry"/>
+                                    <constraint firstItem="DAi-gz-qGP" firstAttribute="leading" secondItem="2AU-85-K8y" secondAttribute="trailing" constant="8" symbolic="YES" id="q8N-jc-KHs"/>
                                     <constraint firstItem="kPV-JM-UnM" firstAttribute="top" secondItem="CdQ-LC-Trx" secondAttribute="top" id="tdo-XY-uqv"/>
                                     <constraint firstAttribute="bottom" secondItem="kPV-JM-UnM" secondAttribute="bottom" id="xTI-ae-JfJ"/>
                                 </constraints>
@@ -128,12 +137,13 @@
                         <outlet property="imageViewTopConstraint" destination="tdo-XY-uqv" id="9Ty-3b-gkL"/>
                         <outlet property="imageViewTrailingConstraint" destination="fBN-70-6ry" id="dZZ-2L-0VJ"/>
                         <outlet property="scrollView" destination="CdQ-LC-Trx" id="3np-FR-s39"/>
+                        <outlet property="statusLabel" destination="DAi-gz-qGP" id="zZH-1B-HiI"/>
                         <outlet property="statusViewImage" destination="2AU-85-K8y" id="22h-Ec-bj0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbE-Jv-mLH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4548" y="778"/>
+            <point key="canvasLocation" x="4547.826086956522" y="777.45535714285711"/>
         </scene>
     </scenes>
     <resources>

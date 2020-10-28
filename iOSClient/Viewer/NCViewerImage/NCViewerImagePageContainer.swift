@@ -364,6 +364,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         } else if gestureRecognizer.state == .ended {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
+            currentViewerImageZoom?.statusLabel.isHidden = false
             playerVideo?.pause()
             videoLayer?.removeFromSuperlayer()
         }
@@ -500,6 +501,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     func playVideo(metadata: tableMetadata) {
                 
         currentViewerImageZoom?.statusViewImage.isHidden = true
+        currentViewerImageZoom?.statusLabel.isHidden = true
         
         playerVideo = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
         videoLayer = AVPlayerLayer(player: playerVideo)

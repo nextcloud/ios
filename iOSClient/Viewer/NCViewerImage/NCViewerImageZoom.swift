@@ -31,7 +31,8 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
-        
+    @IBOutlet weak var statusLabel: UILabel!
+
     weak var delegate: NCViewerImagePageContainer?
     
     var image: UIImage?
@@ -63,10 +64,15 @@ class NCViewerImageZoom: UIViewController {
         
         if NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)
+            statusLabel.text = NSLocalizedString("_LIVE_", comment: "")
         } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .gray)
+            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+                statusLabel.text = NSLocalizedString("_video_streaming_", comment: "")
+            }
         } else {
             statusViewImage.image = nil
+            statusLabel.text = ""
         }
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
