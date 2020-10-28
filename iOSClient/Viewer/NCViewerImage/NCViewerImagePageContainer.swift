@@ -46,7 +46,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
-    var autostratVideo: Bool = false
    
     var startPanLocation = CGPoint.zero
     let panDistanceForPopViewController: CGFloat = 150
@@ -58,7 +57,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
-    var player: AVPlayer?
+    var playerVideo: AVPlayer?
     var videoLayer: AVPlayerLayer?
     
     override func viewDidLoad() {
@@ -79,15 +78,10 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
-        
-        let metadata = metadatas[currentIndex]
-        if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            autostratVideo = true
-        }
-        
+                
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadata)
-        viewerImageZoom.metadata = metadata
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
@@ -305,6 +299,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
+            playerVideo?.pause()
+
             let video = NCViewerVideoAudio()
             video.metadata = currentMetadata
             present(video, animated: false) { }
@@ -334,7 +330,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.playerMov(metadata: metadata)
+                    self.playVideo(metadata: metadata)
                     
                 } else {
                     
@@ -357,7 +353,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                             
                             if gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                self.playerMov(metadata: metadata)
+                                self.playVideo(metadata: metadata)
                             }
                         }
                     }
@@ -366,9 +362,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             
         } else if gestureRecognizer.state == .ended {
             
-            self.currentViewerImageZoom?.statusViewImage.isHidden = false
-            self.player?.pause()
-            self.videoLayer?.removeFromSuperlayer()
+            currentViewerImageZoom?.statusViewImage.isHidden = false
+            playerVideo?.pause()
+            videoLayer?.removeFromSuperlayer()
         }
     }
     
@@ -381,13 +377,13 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         
-        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) && autostratVideo {
-            
-            autostratVideo = false
-            
-            let video = NCViewerVideoAudio()
-            video.metadata = currentMetadata
-            present(video, animated: false) { }
+        playerVideo?.pause()
+        
+        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
+
+            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                playVideo(metadata: metadata)
+            }
         }
     }
     
@@ -498,12 +494,12 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         return image
     }
     
-    func playerMov(metadata: tableMetadata) {
+    func playVideo(metadata: tableMetadata) {
         
         currentViewerImageZoom?.statusViewImage.isHidden = true
         
-        player = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
-        videoLayer = AVPlayerLayer(player: player)
+        playerVideo = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
+        videoLayer = AVPlayerLayer(player: playerVideo)
         
         if videoLayer != nil && currentViewerImageZoom != nil {
             
@@ -512,11 +508,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             
             currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                         
-            player?.play()
+            playerVideo?.play()
         }
     }
-    
-    
     
     //MARK: - Action
     
