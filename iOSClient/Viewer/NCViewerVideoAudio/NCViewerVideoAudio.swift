@@ -22,7 +22,6 @@
 //
 
 import Foundation
-import KTVHTTPCache
 
 class NCViewerVideoAudio: AVPlayerViewController {
     
@@ -34,8 +33,8 @@ class NCViewerVideoAudio: AVPlayerViewController {
 
         var videoURL: URL?
 
-        setupHTTPCache()
-        saveCache()
+        NCKTVHTTPCache.shared.setupHTTPCache()
+        NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             
@@ -47,14 +46,8 @@ class NCViewerVideoAudio: AVPlayerViewController {
                 return
             }
             
-            videoURL = KTVHTTPCache.proxyURL(withOriginalURL: URL(string: stringURL))
-            
-            guard let authData = (appDelegate.user + ":" + appDelegate.password).data(using: .utf8) else {
-                return
-            }
-            
-            let authValue = "Basic " + authData.base64EncodedString(options: [])
-            KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
+            videoURL = NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
+            NCKTVHTTPCache.shared.setAuth(user: appDelegate.user, password: appDelegate.password)
         }
         
         if let url = videoURL {
@@ -80,9 +73,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
         
         player?.pause()
         removeObserver()
-        if KTVHTTPCache.proxyIsRunning() {
-            KTVHTTPCache.proxyStop()
-        }
+        NCKTVHTTPCache.shared.stopProxy()
     }
     
     //MARK: -
@@ -94,11 +85,11 @@ class NCViewerVideoAudio: AVPlayerViewController {
             guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
             
             let videoURL = URL(string: stringURL)
-            guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
+            guard let url = NCKTVHTTPCache.shared.getCompleteFileURL(videoURL: videoURL) else { return }
             
             CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
             NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
-            KTVHTTPCache.cacheDelete(with: videoURL)
+            NCKTVHTTPCache.shared.deleteCache(videoURL: videoURL)
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":self.metadata.ocId, "serverUrl":self.metadata.serverUrl])
         }
@@ -124,35 +115,5 @@ class NCViewerVideoAudio: AVPlayerViewController {
         
         player?.removeObserver(self, forKeyPath: "rate", context: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-    }
-    
-    //MARK: - KTVHTTPCache
-    
-    @objc func setupHTTPCache() {
-        
-        if KTVHTTPCache.proxyIsRunning() {
-            KTVHTTPCache.proxyStop()
-        }
-        KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
-        
-        if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
-            KTVHTTPCache.logSetConsoleLogEnable(true)
-        }
-        
-        do {
-            try KTVHTTPCache.proxyStart()
-        } catch let error {
-            print("Proxy Start error : \(error)")
-        }
-        
-        KTVHTTPCache.encodeSetURLConverter { (url) -> URL? in
-            print("URL Filter reviced URL : " + String(describing: url))
-            return url
-        }
-        
-        KTVHTTPCache.downloadSetUnacceptableContentTypeDisposer { (url, contentType) -> Bool in
-            print("Unsupport Content-Type Filter reviced URL : " + String(describing: url) + " " + String(describing: contentType))
-            return false
-        }
     }
 }
