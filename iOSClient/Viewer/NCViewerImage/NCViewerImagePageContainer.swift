@@ -100,10 +100,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-       
-        /*
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
-        */
+        
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
@@ -204,6 +202,32 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
                     deleteFile(notification)
                 }
+            }
+        }
+    }
+    
+    @objc func saveLivePhoto(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataMov = userInfo["metadataMov"] as? tableMetadata {
+                let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
+                let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
+                
+                NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
+                    self.progressView.progress = Float(progress)
+                }, completion: { livePhoto, resources in
+                    self.progressView.progress = 0
+                    if resources != nil {
+                        NCLivePhoto.saveToLibrary(resources!) { (result) in
+                            if !result {
+                                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                            }
+                        }
+                    } else {
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    }
+                })
             }
         }
     }
