@@ -58,8 +58,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
-    var playerVideo: AVPlayer?
-    var videoLayer: AVPlayerLayer?
+    private var playerVideo: AVPlayer?
+    private var videoLayer: AVPlayerLayer?
+    private var durationVideo: Float = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -300,7 +301,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
-            playerVideo?.pause()
+            videoStop()
 
             let video = NCViewerVideoAudio()
             video.metadata = currentMetadata
@@ -365,7 +366,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            playerVideo?.pause()
+            videoStop()
             videoLayer?.removeFromSuperlayer()
         }
     }
@@ -380,7 +381,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         currentViewerImageZoom = viewerImageZoom
         toolBar.isHidden = true
         
-        playerVideo?.pause()
+        videoStop()
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
@@ -519,9 +520,19 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             }
                         
             playerVideo?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-            playerVideo?.play()
+            videoPlay()
         }
     }
+    
+    /*
+    @objc func updateTimer() {
+        if let durationVideo = playerVideo?.currentItem?.asset.duration {
+            timerCounter += 1
+            let floatTime = Float(CMTimeGetSeconds(durationVideo))
+            progressView.progress = timerCounter / floatTime
+        }
+    }
+    */
     
     //MARK: - Action
     
@@ -536,7 +547,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             } else {
                 print("pause")
                 let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(self.videoPlay))
-                self.toolBar.setItems([item], animated: true)
+                toolBar.setItems([item], animated: true)
             }
         }
     }
@@ -551,6 +562,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     @objc func videoPlay() {
         playerVideo?.play()
+        if let duration = playerVideo?.currentItem?.asset.duration {
+            durationVideo = Float(CMTimeGetSeconds(duration))
+        }
+    }
+    
+    @objc func videoStop() {
+        playerVideo?.pause()
+        self.playerVideo?.seek(to: CMTime.zero)
     }
 }
 
