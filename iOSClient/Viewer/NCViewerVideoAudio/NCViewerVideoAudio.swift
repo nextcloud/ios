@@ -113,7 +113,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
             if player?.rate == 1 {
                 print("start")
             } else {
-                print("stop")
+                print("pause")
             }
             
             saveCache()

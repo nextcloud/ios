@@ -33,6 +33,12 @@
                                     <constraint firstAttribute="height" constant="1" id="F4E-lI-3jZ"/>
                                 </constraints>
                             </progressView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NSc-sb-T8L">
+                                <rect key="frame" x="0.0" y="813" width="414" height="49"/>
+                                <items>
+                                    <barButtonItem systemItem="play" id="hHF-Q3-tyB"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ozy-9S-dMl"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -44,6 +50,9 @@
                             <constraint firstItem="Ozy-9S-dMl" firstAttribute="trailing" secondItem="sD9-1i-ZdY" secondAttribute="trailing" id="KQa-Ni-1TC"/>
                             <constraint firstItem="fpt-Rz-5fT" firstAttribute="leading" secondItem="wvY-tB-6ZK" secondAttribute="leading" id="Kzi-Hg-Ocf"/>
                             <constraint firstItem="fpt-Rz-5fT" firstAttribute="top" secondItem="wvY-tB-6ZK" secondAttribute="top" id="NnL-9A-ht1"/>
+                            <constraint firstItem="Ozy-9S-dMl" firstAttribute="bottom" secondItem="NSc-sb-T8L" secondAttribute="bottom" id="OeM-QW-eVv"/>
+                            <constraint firstItem="Ozy-9S-dMl" firstAttribute="trailing" secondItem="NSc-sb-T8L" secondAttribute="trailing" id="eQ1-te-slQ"/>
+                            <constraint firstItem="NSc-sb-T8L" firstAttribute="leading" secondItem="Ozy-9S-dMl" secondAttribute="leading" id="psi-dc-yia"/>
                             <constraint firstAttribute="trailing" secondItem="fpt-Rz-5fT" secondAttribute="trailing" id="xh9-IP-ti7"/>
                         </constraints>
                     </view>
@@ -51,6 +60,7 @@
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="progressView" destination="sD9-1i-ZdY" id="nag-cc-Up3"/>
+                        <outlet property="toolBar" destination="NSc-sb-T8L" id="cKx-kX-JPa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qhs-BU-mEq" userLabel="First Responder" sceneMemberID="firstResponder"/>

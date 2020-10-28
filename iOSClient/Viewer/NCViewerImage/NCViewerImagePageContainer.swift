@@ -28,6 +28,7 @@ import NCCommunication
 class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var toolBar: UIToolbar!
 
     enum ScreenMode {
         case full, normal
@@ -376,12 +377,14 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
 
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
+        toolBar.isHidden = true
         
         playerVideo?.pause()
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
             if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                toolBar.isHidden = false
                 playVideo(metadata: metadata)
             }
         }
@@ -495,7 +498,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
     
     func playVideo(metadata: tableMetadata) {
-        
+                
         currentViewerImageZoom?.statusViewImage.isHidden = true
         
         playerVideo = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
@@ -507,15 +510,45 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
             
             currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
+            
+            // At end go back to start
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
+                self.playerVideo?.seek(to: CMTime.zero)
+            }
                         
+            playerVideo?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             playerVideo?.play()
         }
     }
     
     //MARK: - Action
     
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if keyPath != nil && keyPath == "rate" {
+            
+            if playerVideo?.rate == 1 {
+                print("start")
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(videoPause))
+                toolBar.setItems([item], animated: true)
+            } else {
+                print("pause")
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(self.videoPlay))
+                self.toolBar.setItems([item], animated: true)
+            }
+        }
+    }
+    
     @objc func openMenuMore() {
         NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
+    }
+    
+    @objc func videoPause() {
+        playerVideo?.pause()
+    }
+    
+    @objc func videoPlay() {
+        playerVideo?.play()
     }
 }
 
