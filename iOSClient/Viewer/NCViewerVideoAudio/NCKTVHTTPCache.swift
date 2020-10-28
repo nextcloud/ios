@@ -12,14 +12,13 @@ import KTVHTTPCache
 class NCKTVHTTPCache: NSObject {
     @objc static let shared: NCKTVHTTPCache = {
         let instance = NCKTVHTTPCache()
+        instance.setupHTTPCache()
         return instance
     }()
     
     func setAuth(user: String, password: String) {
         
-        guard let authData = (user + ":" + password).data(using: .utf8) else {
-            return
-        }
+        guard let authData = (user + ":" + password).data(using: .utf8) else { return }
         
         let authValue = "Basic " + authData.base64EncodedString(options: [])
         KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
@@ -63,7 +62,14 @@ class NCKTVHTTPCache: NSObject {
         }
     }
     
-    func setupHTTPCache() {
+    func startProxy() {
+        
+        if !KTVHTTPCache.proxyIsRunning() {
+            try? KTVHTTPCache.proxyStart()
+        }
+    }
+    
+    private func setupHTTPCache() {
         
         if KTVHTTPCache.proxyIsRunning() {
             KTVHTTPCache.proxyStop()

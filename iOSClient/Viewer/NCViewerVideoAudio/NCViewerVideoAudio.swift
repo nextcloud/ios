@@ -33,7 +33,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
 
         var videoURL: URL?
 
-        NCKTVHTTPCache.shared.setupHTTPCache()
+        NCKTVHTTPCache.shared.startProxy()
         NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
