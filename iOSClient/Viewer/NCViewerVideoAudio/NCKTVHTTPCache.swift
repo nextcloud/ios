@@ -71,10 +71,6 @@ class NCKTVHTTPCache: NSObject {
     
     private func setupHTTPCache() {
         
-        if KTVHTTPCache.proxyIsRunning() {
-            KTVHTTPCache.proxyStop()
-        }
-        
         KTVHTTPCache.cacheSetMaxCacheLength(Int64(k_maxHTTPCache))
         
         if ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil {
