@@ -505,17 +505,16 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         if metadatas.count == 0 { return false }
         
         var direction: UIPageViewController.NavigationDirection = .forward
-        var index = currentIndex
-        if index == metadatas.count {
-            index -= 1
+        if currentIndex == metadatas.count {
+            currentIndex -= 1
             direction = .reverse
         }
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
-        viewerImageZoom.index = index
-        viewerImageZoom.image = getImageMetadata(metadatas[index])
-        viewerImageZoom.metadata = metadatas[index]
+        viewerImageZoom.index = currentIndex
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
