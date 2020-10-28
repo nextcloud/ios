@@ -215,7 +215,9 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
                 let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
                 
                 NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
-                    self.progressView.progress = Float(progress)
+                    DispatchQueue.main.async {
+                        self.progressView.progress = Float(progress)
+                    }
                 }, completion: { livePhoto, resources in
                     self.progressView.progress = 0
                     if resources != nil {
