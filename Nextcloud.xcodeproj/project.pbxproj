@@ -36,7 +36,7 @@
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
-		F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */; };
+		F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753EA2542A99800972D44 /* NCViewerImage.swift */; };
 		F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */; };
 		F70753F72542A9C000972D44 /* NCViewerImage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70753F62542A9C000972D44 /* NCViewerImage.storyboard */; };
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
@@ -365,7 +365,7 @@
 		F7063DEC2199E55F003F38DA /* SVGKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVGKit.framework; path = Carthage/Build/iOS/SVGKit.framework; sourceTree = "<group>"; };
 		F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = Carthage/Build/iOS/CocoaLumberjack.framework; sourceTree = "<group>"; };
 		F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjackSwift.framework; path = Carthage/Build/iOS/CocoaLumberjackSwift.framework; sourceTree = "<group>"; };
-		F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImagePageContainer.swift; sourceTree = "<group>"; };
+		F70753EA2542A99800972D44 /* NCViewerImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImage.swift; sourceTree = "<group>"; };
 		F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerImageZoom.swift; sourceTree = "<group>"; };
 		F70753F62542A9C000972D44 /* NCViewerImage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerImage.storyboard; sourceTree = "<group>"; };
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
@@ -1069,7 +1069,7 @@
 			isa = PBXGroup;
 			children = (
 				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
-				F70753EA2542A99800972D44 /* NCViewerImagePageContainer.swift */,
+				F70753EA2542A99800972D44 /* NCViewerImage.swift */,
 				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
 			);
 			path = NCViewerImage;
@@ -2073,7 +2073,7 @@
 				F7FAC2672549E1B5008EE2C4 /* NCKTVHTTPCache.swift in Sources */,
 				F7E0E1DC22327885006B0911 /* NCAudioRecorderViewController.swift in Sources */,
 				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
-				F70753EB2542A99800972D44 /* NCViewerImagePageContainer.swift in Sources */,
+				F70753EB2542A99800972D44 /* NCViewerImage.swift in Sources */,
 				F74C0436253F1CDC009762AB /* NCShares.swift in Sources */,
 				F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */,
 				F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */,

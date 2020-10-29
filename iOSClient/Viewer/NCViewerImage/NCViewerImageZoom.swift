@@ -33,7 +33,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
 
-    weak var delegate: NCViewerImagePageContainer?
+    weak var delegate: NCViewerImage?
     
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()

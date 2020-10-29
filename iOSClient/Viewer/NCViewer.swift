@@ -45,7 +45,7 @@ class NCViewer: NSObject {
             
             if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                 
-                let viewerImagePageContainer:NCViewerImagePageContainer = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImagePageContainer
+                let viewerImagePageContainer:NCViewerImage = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImage
                 var index = 0
                 for medatasImage in metadatas {
                     if medatasImage.ocId == metadata.ocId {

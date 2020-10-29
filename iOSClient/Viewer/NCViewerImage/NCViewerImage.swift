@@ -1,5 +1,5 @@
 //
-//  NCViewerImagePageContainer.swift
+//  NCViewerImage.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 24/10/2020.
@@ -25,7 +25,7 @@ import UIKit
 import SVGKit
 import NCCommunication
 
-class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate {
+class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var toolBar: UIToolbar!
@@ -578,7 +578,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     }
 }
 
-extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
+extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
     func shiftCurrentPage() -> Bool {
         if metadatas.count == 0 { return false }
