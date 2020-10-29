@@ -144,6 +144,8 @@
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_video_streaming_"         = "Video in streaming";
+
+/* TRANSLATORS Comment here */
 "_LIVE_"                    = "LIVE";
 
 // App
