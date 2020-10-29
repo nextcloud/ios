@@ -67,7 +67,10 @@ class NCViewerVideoAudio: AVPlayerViewController {
         super.viewDidDisappear(animated)
         
         player?.pause()
-        removeObserver()
+        
+        player?.removeObserver(self, forKeyPath: "rate", context: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        
         NCKTVHTTPCache.shared.stopProxy()
     }
     
@@ -78,11 +81,5 @@ class NCViewerVideoAudio: AVPlayerViewController {
         if keyPath != nil && keyPath == "rate" {
             NCKTVHTTPCache.shared.saveCache(metadata: metadata)
         }
-    }
-    
-    @objc func removeObserver() {
-        
-        player?.removeObserver(self, forKeyPath: "rate", context: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
 }

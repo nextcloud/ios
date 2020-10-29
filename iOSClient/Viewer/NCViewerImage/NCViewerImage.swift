@@ -43,6 +43,8 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         return self.pageViewController.viewControllers![0] as! NCViewerImageZoom
     }
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     var metadatas: [tableMetadata] = []
     var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
@@ -58,9 +60,10 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
-    private var playerVideo: AVPlayer?
+    private var player: AVPlayer?
     private var videoLayer: AVPlayerLayer?
     private var timeObserverToken: Any?
+    private var didPlayToEndTimeObserverToken: Any?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,6 +121,12 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        videoStop()
     }
     
     //MARK: - NotificationCenter
@@ -331,7 +340,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.playVideo(metadata: metadata)
+                    self.videoPlayWith(metadata: metadata)
                     
                 } else {
                     
@@ -354,7 +363,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                             
                             if gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                self.playVideo(metadata: metadata)
+                                self.videoPlayWith(metadata: metadata)
                             }
                         }
                     }
@@ -384,10 +393,8 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
-            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                toolBar.isHidden = false
-                playVideo(metadata: metadata)
-            }
+            toolBar.isHidden = false
+            videoPlayWith(metadata: metadata)
         }
     }
     
@@ -498,22 +505,42 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         return image
     }
     
-    func playVideo(metadata: tableMetadata) {
+    func videoPlayWith(metadata: tableMetadata) {
                 
+        var videoURL: URL?
+        
         currentViewerImageZoom?.statusViewImage.isHidden = true
         currentViewerImageZoom?.statusLabel.isHidden = true
         
-        playerVideo = AVPlayer(url: URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!))
-        videoLayer = AVPlayerLayer(player: playerVideo)
+        NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
+
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            
+        } else {
+            
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+                return
+            }
+            
+            videoURL = NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
+        }
         
-        if videoLayer != nil && currentViewerImageZoom != nil {
+        if let url = videoURL {
             
-            videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
-            videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            player = AVPlayer(url: url)
+            videoLayer = AVPlayerLayer(player: player)
             
-            currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
-    
-            videoPlay()
+            if videoLayer != nil && currentViewerImageZoom != nil {
+            
+                videoLayer!.frame = currentViewerImageZoom!.imageView.bounds
+                videoLayer!.videoGravity = AVLayerVideoGravity.resizeAspectFill
+                
+                currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
+                
+                videoPlay()
+            }
         }
     }
     
@@ -523,13 +550,13 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         
         if keyPath != nil && keyPath == "rate" {
             
-            if playerVideo?.rate == 1 {
+            if player?.rate == 1 {
                 print("start")
                 let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(videoPause))
                 toolBar.setItems([item], animated: true)
             } else {
                 print("pause")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(self.videoPlay))
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(videoPlay))
                 toolBar.setItems([item], animated: true)
             }
         }
@@ -540,7 +567,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func videoPause() {
-        playerVideo?.pause()
+        player?.pause()
     }
     
     @objc func videoPlay() {
@@ -560,21 +587,31 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         
         // At end go back to start
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
-            self.playerVideo?.seek(to: CMTime.zero)
+            self.player?.seek(to: CMTime.zero)
         }
                     
-        playerVideo?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+        didPlayToEndTimeObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         
-        playerVideo?.play()
+        player?.play()
     }
     
     @objc func videoStop() {
-        playerVideo?.pause()
-        self.playerVideo?.seek(to: CMTime.zero)
+        
+        player?.pause()
+        player?.seek(to: CMTime.zero)
+        
+        if didPlayToEndTimeObserverToken != nil {
+            player?.removeObserver(self, forKeyPath: "rate", context: nil)
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            self.didPlayToEndTimeObserverToken = nil
+        }
+        
         if let timeObserverToken = timeObserverToken {
-            playerVideo?.removeTimeObserver(timeObserverToken)
+            player?.removeTimeObserver(timeObserverToken)
             self.timeObserverToken = nil
         }
+        
+        NCKTVHTTPCache.shared.stopProxy()
     }
 }
 
