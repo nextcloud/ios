@@ -330,9 +330,15 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    //
+    // Detect for LIVE
+    //
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-        
+                
         if gestureRecognizer.state == .began {
+            
+            currentViewerImageZoom?.statusViewImage.isHidden = true
+            currentViewerImageZoom?.statusLabel.isHidden = true
             
             let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
@@ -508,10 +514,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     func videoPlayWith(metadata: tableMetadata) {
                 
         var videoURL: URL?
-        
-        currentViewerImageZoom?.statusViewImage.isHidden = true
-        currentViewerImageZoom?.statusLabel.isHidden = true
-        
+                
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
 
         if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {

@@ -27,10 +27,15 @@ class NCViewerVideoAudio: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
+    private var rateObserverToken: Any?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
         var videoURL: URL?
 
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
@@ -58,7 +63,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
                 self.player?.seek(to: CMTime.zero)
             }
         
-            player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             player?.play()
         }
     }
@@ -68,10 +73,12 @@ class NCViewerVideoAudio: AVPlayerViewController {
         
         player?.pause()
         
-        player?.removeObserver(self, forKeyPath: "rate")
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-        
-        NCKTVHTTPCache.shared.stopProxy()
+        if rateObserverToken != nil {
+            player?.removeObserver(self, forKeyPath: "rate")
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            NCKTVHTTPCache.shared.stopProxy()
+            self.rateObserverToken = nil
+        }
     }
     
     //MARK: - Observer

@@ -65,12 +65,7 @@ class NCViewerImageZoom: UIViewController {
         if NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)
             statusLabel.text = NSLocalizedString("_LIVE_", comment: "")
-        } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .gray)
-            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-                statusLabel.text = NSLocalizedString("_video_streaming_", comment: "")
-            }
-        } else {
+        }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
