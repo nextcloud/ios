@@ -367,7 +367,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                             
                             NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                             
-                            if gestureRecognizer.state == .began {
+                            if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
                                 self.videoPlayWith(metadata: metadata)
                             }
