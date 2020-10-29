@@ -143,6 +143,9 @@
 "_leave_share_"             = "Leave this share";
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
+"_video_streaming_"         = "Streaming video";
+
+/* TRANSLATORS Comment here */
 "_LIVE_"                    = "LIVE";
 
 // App
