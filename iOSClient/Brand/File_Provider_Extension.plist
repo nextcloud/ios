@@ -28,7 +28,7 @@
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderDocumentGroup</key>
-		<string>group.ch.gandalf.Crypto-Cloud</string>
+		<string>group.it.twsweb.Crypto-Cloud</string>
 		<key>NSExtensionFileProviderSupportsEnumeration</key>
 		<true/>
 		<key>NSExtensionPointIdentifier</key>

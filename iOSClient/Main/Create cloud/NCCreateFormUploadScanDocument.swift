@@ -32,7 +32,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     enum typeDpiQuality {
         case low
         case medium
-        case high
+        case hight
     }
     var dpiQuality: typeDpiQuality = typeDpiQuality.medium
     
@@ -261,7 +261,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 dpiQuality = typeDpiQuality.medium
             } else if compressionQuality > 0.6 && compressionQuality <= 1.0 {
                 formRow.title = NSLocalizedString("_quality_high_", comment: "")
-                dpiQuality = typeDpiQuality.high
+                dpiQuality = typeDpiQuality.hight
             }
             
             self.updateFormRow(formRow)
@@ -659,24 +659,20 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        var scale: Float = 1.0
-        
+        let maxHeight: Float = 595.2        // A4
+        let maxWidth: Float = 841.8         // A4
+
         switch dpiQuality {
-        case typeDpiQuality.low: // set to 72 dpi
+        case typeDpiQuality.low:
             compressionQuality = 0.1
-        case typeDpiQuality.medium: // at 150 dpi
+        case typeDpiQuality.medium:
             compressionQuality = 0.5
-            scale = (150.0 / 72.0)
-        case typeDpiQuality.high: // at 300 dpi
+        case typeDpiQuality.hight:
             compressionQuality = 0.9
-            scale = (200.0 / 72.0)
         }
         
-        let maxHeight: Float = Float(595.2) * scale      // A4
-        let maxWidth: Float = Float(841.8) * scale       // A4
-
-        var actualHeight = Float(image.size.height * image.scale)
-        var actualWidth = Float(image.size.width * image.scale)
+        var actualHeight = Float(image.size.height)
+        var actualWidth = Float(image.size.width)
         var imgRatio: Float = actualWidth / actualHeight
         let maxRatio: Float = maxWidth / maxHeight
 
@@ -700,7 +696,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, image.scale)
+        UIGraphicsBeginImageContext(rect.size)
         image.draw(in: rect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
