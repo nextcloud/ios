@@ -129,8 +129,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
-                    let image = getImageMetadata(metadata)
-                    currentViewerImageZoom?.updateImage(image)
+                    self.reloadCurrentPage()
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -402,8 +401,8 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
-        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" {
-            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false, forceDownload: false)
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
         }
         
         if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
@@ -414,7 +413,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 {
-                    viewerImageZoom.updateImage(imagePreview)
+                    self.reloadCurrentPage()
                 }
             }
         }
@@ -601,6 +600,20 @@ extension NCViewerImagePageContainer: UIPageViewControllerDelegate, UIPageViewCo
         pageViewController.setViewControllers([viewerImageZoom], direction: direction, animated: true, completion: nil)
         
         return true
+    }
+    
+    func reloadCurrentPage() {
+        
+        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+        
+        viewerImageZoom.index = currentIndex
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.metadata = metadatas[currentIndex]
+        viewerImageZoom.delegate = self
+        
+        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+        
+        pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {

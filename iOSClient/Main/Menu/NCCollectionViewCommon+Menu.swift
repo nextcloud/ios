@@ -382,8 +382,8 @@ extension NCCollectionViewCommon {
                 action: { menuAction in
                     for ocId in selectOcId {
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false, forceDownload: false)
+                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false)
                             }
                         }
                     }

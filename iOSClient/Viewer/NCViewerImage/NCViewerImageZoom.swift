@@ -147,22 +147,6 @@ class NCViewerImageZoom: UIViewController {
         let contentHeight = yOffset * 2 + imageView.frame.height
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
-    
-    func updateImage(_ image: UIImage?) {
-        guard let image = image else { return }
-        
-        self.image = image
-        imageView.image = image
-        
-        // horrible but works very good
-        if delegate?.navigationController?.navigationBar.isHidden ?? false {
-            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
-            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
-        } else {
-            delegate?.navigationController?.setNavigationBarHidden(true, animated: false)
-            delegate?.navigationController?.setNavigationBarHidden(false, animated: false)
-        }
-    }
 }
 
 extension NCViewerImageZoom: UIScrollViewDelegate {

@@ -101,7 +101,7 @@ class NCFiles: NCCollectionViewCommon  {
                     if !metadata.directory {
                         let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
+                            NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
                         }
                     }
                 }
