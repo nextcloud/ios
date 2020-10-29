@@ -60,7 +60,6 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     private var playerVideo: AVPlayer?
     private var videoLayer: AVPlayerLayer?
-    private var durationVideo: Float = 0
     private var timeObserverToken: Any?
 
     override func viewDidLoad() {
@@ -546,16 +545,18 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
     
     @objc func videoPlay() {
         
-        let timeScale = CMTimeScale(NSEC_PER_SEC)
-        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-                
+        /*
         if let duration = playerVideo?.currentItem?.asset.duration {
             durationVideo = Float(CMTimeGetSeconds(duration))
         }
         
+       
+        let timeScale = CMTimeScale(NSEC_PER_SEC)
+        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
         timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
             print(time)
         }
+        */
         
         // At end go back to start
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
