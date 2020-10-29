@@ -31,7 +31,7 @@ import UIKit
         return instance
     }()
     
-    @objc public let configuration_bundleId:            String = "it.twsweb.Nextcloud"
+    @objc public let configuration_bundleId:            String = "ch.gandalf.Nextcloud"
     @objc public let configuration_serverUrl:           String = "serverUrl"
     @objc public let configuration_username:            String = "username"
     @objc public let configuration_password:            String = "password"
@@ -62,7 +62,7 @@ import UIKit
     @objc public var folderDefaultAutoUpload:           String = "Photos"
     
     // Capabilities Group
-    @objc public var capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
+    @objc public var capabilitiesGroups:                String = "group.ch.gandalf.Crypto-Cloud"
     
     // User Agent
     @objc public var userAgent:                         String = "Nextcloud-iOS"                                    // Don't touch me !!
