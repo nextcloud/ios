@@ -27,6 +27,8 @@ class NCViewerVideoAudio: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
+    var seekTime: CMTime?
+    weak var delegateViewerImage: NCViewerImage?
     private var rateObserverToken: Any?
 
     override func viewDidLoad() {
@@ -65,6 +67,10 @@ class NCViewerVideoAudio: AVPlayerViewController {
         
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             player?.play()
+            if seekTime != nil {
+                player?.seek(to: seekTime!)
+                seekTime = nil
+            }
         }
     }
     
@@ -77,6 +83,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
             NCKTVHTTPCache.shared.stopProxy()
+            self.delegateViewerImage?.seekTime = player?.currentTime()
             self.rateObserverToken = nil
         }
     }

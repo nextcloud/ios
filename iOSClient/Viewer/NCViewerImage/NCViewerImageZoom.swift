@@ -33,7 +33,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
 
-    weak var delegate: NCViewerImage?
+    weak var delegateViewerImage: NCViewerImage?
     
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
@@ -76,13 +76,13 @@ class NCViewerImageZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        delegate?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegateViewerImage?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        delegate?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegateViewerImage?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {

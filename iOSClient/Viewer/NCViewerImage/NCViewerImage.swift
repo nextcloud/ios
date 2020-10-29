@@ -64,6 +64,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     private var videoLayer: AVPlayerLayer?
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
+    var seekTime: CMTime?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,7 +88,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
+        viewerImageZoom.delegateViewerImage = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -313,6 +314,8 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
 
             let video = NCViewerVideoAudio()
             video.metadata = currentMetadata
+            video.seekTime = player?.currentTime()
+            video.delegateViewerImage = self
             present(video, animated: false) { }
             
         } else {
@@ -596,6 +599,10 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         
         player?.play()
+        if seekTime != nil {
+            player?.seek(to: seekTime!)
+            seekTime = nil
+        }
     }
     
     @objc func videoStop() {
@@ -635,7 +642,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
+        viewerImageZoom.delegateViewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -651,7 +658,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
+        viewerImageZoom.delegateViewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -666,7 +673,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex - 1
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
-        viewerImageZoom.delegate = self
+        viewerImageZoom.delegateViewerImage = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -681,7 +688,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex + 1
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerImageZoom.metadata = metadatas[currentIndex + 1]
-        viewerImageZoom.delegate = self
+        viewerImageZoom.delegateViewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
 
