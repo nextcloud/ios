@@ -328,7 +328,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
             let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
                 
-                if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+                if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
                     self.playVideo(metadata: metadata)
@@ -384,7 +384,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
-            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
+            if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 toolBar.isHidden = false
                 playVideo(metadata: metadata)
             }
@@ -460,7 +460,7 @@ class NCViewerImagePageContainer: UIViewController, UIGestureRecognizerDelegate 
         let ext = CCUtility.getExtension(metadata.fileNameView)
         var image: UIImage?
         
-        if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 && metadata.typeFile == k_metadataTypeFile_image {
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.typeFile == k_metadataTypeFile_image {
            
             let previewPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
             let imagePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!

@@ -67,7 +67,7 @@ class NCViewerImageZoom: UIViewController {
             statusLabel.text = NSLocalizedString("_LIVE_", comment: "")
         } else if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "play"), width: 100, height: 100, color: .gray)
-            if CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) == 0 {
+            if !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 statusLabel.text = NSLocalizedString("_video_streaming_", comment: "")
             }
         } else {
