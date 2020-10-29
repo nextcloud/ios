@@ -97,3 +97,14 @@ class NCViewerVideoAudio: AVPlayerViewController {
         }
     }
 }
+
+extension NCViewerVideoAudio: AVPlayerViewControllerDelegate {
+    
+    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+        delegateViewerImage?.activatedPictureInPicture = false
+    }
+    
+    func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+        delegateViewerImage?.activatedPictureInPicture = true
+    }
+}

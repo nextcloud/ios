@@ -65,6 +65,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
     var seekTime: CMTime?
+    var activatedPictureInPicture: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
