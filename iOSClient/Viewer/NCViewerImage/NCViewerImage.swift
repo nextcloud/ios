@@ -63,7 +63,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
     private var player: AVPlayer?
     private var videoLayer: AVPlayerLayer?
     private var timeObserverToken: Any?
-    private var didPlayToEndTimeObserverToken: Any?
+    private var rateObserverToken: Any?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -590,7 +590,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
             self.player?.seek(to: CMTime.zero)
         }
                     
-        didPlayToEndTimeObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+        rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         
         player?.play()
     }
@@ -600,10 +600,10 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         player?.pause()
         player?.seek(to: CMTime.zero)
         
-        if didPlayToEndTimeObserverToken != nil {
-            player?.removeObserver(self, forKeyPath: "rate", context: nil)
+        if rateObserverToken != nil {
+            player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            self.didPlayToEndTimeObserverToken = nil
+            self.rateObserverToken = nil
         }
         
         if let timeObserverToken = timeObserverToken {
