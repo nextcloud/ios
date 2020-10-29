@@ -50,13 +50,13 @@ class NCViewerVideoAudio: AVPlayerViewController {
                 return
             }
             
+            allowsPictureInPicturePlayback = false
             videoURL = NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
         }
         
         if let url = videoURL {
             
-            let video = AVPlayer(url: url)
-            player = video
+            player = AVPlayer(url: url)
         
             // At end go back to start
             NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
