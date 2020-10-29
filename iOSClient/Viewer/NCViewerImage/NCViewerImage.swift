@@ -123,9 +123,9 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         navigationController?.popViewController(animated: true)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+   
         videoStop()
     }
     
@@ -603,6 +603,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         if rateObserverToken != nil {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+            NCKTVHTTPCache.shared.stopProxy()
             self.rateObserverToken = nil
         }
         
@@ -611,7 +612,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
             self.timeObserverToken = nil
         }
         
-        NCKTVHTTPCache.shared.stopProxy()
+        
     }
 }
 
