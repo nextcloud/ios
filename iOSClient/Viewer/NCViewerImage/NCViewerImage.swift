@@ -390,16 +390,16 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         toolBar.isHidden = true
         
         videoStop()
-        
+    }
+    
+    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+                
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
             toolBar.isHidden = false
             videoPlayWith(metadata: metadata)
         }
-    }
-    
-    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-                
+        
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
             self.progressView.progress = 0
         }

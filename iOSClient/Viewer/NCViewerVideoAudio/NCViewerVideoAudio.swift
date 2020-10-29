@@ -63,12 +63,12 @@ class NCViewerVideoAudio: AVPlayerViewController {
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
         player?.pause()
         
-        player?.removeObserver(self, forKeyPath: "rate", context: nil)
+        player?.removeObserver(self, forKeyPath: "rate")
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
         
         NCKTVHTTPCache.shared.stopProxy()
