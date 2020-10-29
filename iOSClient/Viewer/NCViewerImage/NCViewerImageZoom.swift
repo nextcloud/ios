@@ -82,6 +82,9 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        updateZoomScale()
+        updateConstraints()
+        
         delegateViewerImage?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
@@ -120,10 +123,10 @@ class NCViewerImageZoom: UIViewController {
         let widthScale = size.width / imageView.bounds.width
         let heightScale = size.height / imageView.bounds.height
         let minScale = min(widthScale, heightScale)
-        scrollView.minimumZoomScale = minScale
         
+        scrollView.minimumZoomScale = minScale
         scrollView.zoomScale = minScale
-        scrollView.maximumZoomScale = minScale * 4
+        scrollView.maximumZoomScale = 1
     }
     
     func updateConstraints() {
