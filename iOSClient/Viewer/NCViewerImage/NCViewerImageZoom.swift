@@ -25,7 +25,6 @@ import UIKit
 protocol NCViewerImageZoomDelegate {
     func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
-    func disappearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
 }
 
 class NCViewerImageZoom: UIViewController {
@@ -91,12 +90,6 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidAppear(animated)
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        delegate?.disappearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {

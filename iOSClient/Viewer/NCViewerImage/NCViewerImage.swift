@@ -125,11 +125,8 @@ class NCViewerImage: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-    
     @objc func openMenuMore() {
+        
         NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
     }
     
@@ -676,7 +673,9 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     }
     
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-                    
+        
+        videoStop()
+
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
             if pictureInPictureOcId != metadata.ocId {
                 videoPlay(metadata: metadata)
@@ -709,10 +708,6 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
                 }
             }
         }
-    }
-    
-    func disappearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-        videoStop()
     }
 }
 
