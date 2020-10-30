@@ -516,7 +516,7 @@ class NCViewerImage: UIViewController {
     @objc func playerPlay() { player?.play() }
 }
 
-//MARK: - UIPageViewController Delegate Datasource
+//MARK: -
 
 extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
@@ -611,7 +611,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     }
 }
 
-//MARK: - UIGestureRecognizerDelegate
+//MARK: -
 
 extension NCViewerImage: UIGestureRecognizerDelegate {
 
@@ -706,6 +706,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         }
     }
 }
+
+//MARK: -
 
 extension NCViewerImage: NCViewerVideoDelegate {
     
