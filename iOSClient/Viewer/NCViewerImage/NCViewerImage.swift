@@ -679,10 +679,10 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             videoStop()
 
-            let video = NCViewerVideoAudio()
+            let video = NCViewerVideo()
             video.metadata = currentMetadata
             video.seekTime = player?.currentTime()
-            video.delegateViewerImage = self
+            video.delegateViewerVideo = self
             present(video, animated: false) { }
             
         } else {
@@ -707,3 +707,15 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     }
 }
 
+extension NCViewerImage: NCViewerVideoDelegate {
+    
+    func playerViewControllerDidStopPictureInPicture(metadata: tableMetadata) {
+    }
+    
+    func playerViewControllerDidStartPictureInPicture(metadata: tableMetadata) {
+    }
+    
+    func playerCurrentTime(_ time: CMTime?) {
+        self.seekTime = time
+    }
+}

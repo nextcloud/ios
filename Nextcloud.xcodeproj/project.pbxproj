@@ -118,7 +118,7 @@
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
-		F752011D25480387000BF3A7 /* NCViewerVideoAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752011C25480387000BF3A7 /* NCViewerVideoAudio.swift */; };
+		F752011D25480387000BF3A7 /* NCViewerVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F752011C25480387000BF3A7 /* NCViewerVideo.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755E6462525946C008DAB45 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755E6442525946C008DAB45 /* NCCollectionViewCommon.swift */; };
 		F755E6472525946C008DAB45 /* NCCollectionCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755E6452525946C008DAB45 /* NCCollectionCommon.swift */; };
@@ -454,7 +454,7 @@
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
 		F75153232226920200323DDC /* FastScroll.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FastScroll.framework; path = Carthage/Build/iOS/FastScroll.framework; sourceTree = "<group>"; };
-		F752011C25480387000BF3A7 /* NCViewerVideoAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerVideoAudio.swift; sourceTree = "<group>"; };
+		F752011C25480387000BF3A7 /* NCViewerVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerVideo.swift; sourceTree = "<group>"; };
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1080,7 +1080,7 @@
 			children = (
 				F7F9D1BA25397CE000D9BFF5 /* NCViewer.swift */,
 				F79018B1240962C7007C9B6D /* NCViewerImage */,
-				F7A5281B254834500039CA15 /* NCViewerVideoAudio */,
+				F7A5281B254834500039CA15 /* NCViewerVideo */,
 				F723986A253C9C0E00257F49 /* NCViewerQuickLook */,
 				F76D3CEF2428B3DD005DFA87 /* NCViewerPDF */,
 				F73D11FF253C5F5400DF9BEC /* NCViewerNextcloudText */,
@@ -1116,13 +1116,13 @@
 			path = Activity;
 			sourceTree = "<group>";
 		};
-		F7A5281B254834500039CA15 /* NCViewerVideoAudio */ = {
+		F7A5281B254834500039CA15 /* NCViewerVideo */ = {
 			isa = PBXGroup;
 			children = (
-				F752011C25480387000BF3A7 /* NCViewerVideoAudio.swift */,
+				F752011C25480387000BF3A7 /* NCViewerVideo.swift */,
 				F7FAC2662549E1B5008EE2C4 /* NCKTVHTTPCache.swift */,
 			);
-			path = NCViewerVideoAudio;
+			path = NCViewerVideo;
 			sourceTree = "<group>";
 		};
 		F7A80BC7252624C100C7CD01 /* FileViewInFolder */ = {
@@ -1982,7 +1982,7 @@
 				F77444F522281649000D5EB0 /* NCGridMediaCell.swift in Sources */,
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F70A58BE24D0349500DED00D /* NCCapabilitiesViewController.swift in Sources */,
-				F752011D25480387000BF3A7 /* NCViewerVideoAudio.swift in Sources */,
+				F752011D25480387000BF3A7 /* NCViewerVideo.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCImageCellProtocol.swift in Sources */,
 				F77B0DF51D118A16002130FE /* CCUtility.m in Sources */,
 				F710D1FE24057E5E00A6033D /* NCActionSheetHeader.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  NCViewerVideoAudio.swift
+//  NCViewerVideo.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 27/10/2020.
@@ -23,12 +23,21 @@
 
 import Foundation
 
-class NCViewerVideoAudio: AVPlayerViewController {
+protocol NCViewerVideoDelegate {
+    func playerViewControllerDidStopPictureInPicture(metadata: tableMetadata)
+    func playerViewControllerDidStartPictureInPicture(metadata: tableMetadata)
+    func playerCurrentTime(_ time: CMTime?)
+}
+
+class NCViewerVideo: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var seekTime: CMTime?
-    weak var delegateViewerImage: NCViewerImage?
+    
+   // weak var delegateViewerImage: NCViewerImage?
+    var delegateViewerVideo: NCViewerVideoDelegate?
+    
     private var rateObserverToken: Any?
 
     override func viewDidLoad() {
@@ -83,7 +92,7 @@ class NCViewerVideoAudio: AVPlayerViewController {
             player?.removeObserver(self, forKeyPath: "rate")
             NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
             NCKTVHTTPCache.shared.stopProxy()
-            self.delegateViewerImage?.seekTime = player?.currentTime()
+            self.delegateViewerVideo?.playerCurrentTime(player?.currentTime())
             self.rateObserverToken = nil
         }
     }
@@ -98,13 +107,13 @@ class NCViewerVideoAudio: AVPlayerViewController {
     }
 }
 
-extension NCViewerVideoAudio: AVPlayerViewControllerDelegate {
-    
-    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        delegateViewerImage?.activatedPictureInPicture = false
-    }
+extension NCViewerVideo: AVPlayerViewControllerDelegate {
     
     func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        delegateViewerImage?.activatedPictureInPicture = true
+        delegateViewerVideo?.playerViewControllerDidStartPictureInPicture(metadata: metadata)
+    }
+    
+    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+        delegateViewerVideo?.playerViewControllerDidStopPictureInPicture(metadata: metadata)
     }
 }
