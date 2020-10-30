@@ -55,7 +55,9 @@ class NCViewerImage: UIViewController {
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
     
-    var currentViewerImageZoom: NCViewerImageZoom?
+    weak var currentViewerImageZoom: NCViewerImageZoom?
+    weak var currentViewerVideo: NCViewerVideo?
+    
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -643,11 +645,13 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             videoStop()
             
             if pictureInPictureOcId != currentMetadata.ocId {
-                let video = NCViewerVideo()
-                video.metadata = currentMetadata
-                video.seekTime = player?.currentTime()
-                video.delegateViewerVideo = self
-                present(video, animated: false) { }
+                currentViewerVideo = NCViewerVideo()
+                currentViewerVideo?.metadata = currentMetadata
+                currentViewerVideo?.seekTime = player?.currentTime()
+                currentViewerVideo?.delegateViewerVideo = self
+                if let currentViewerVideo = self.currentViewerVideo {
+                    present(currentViewerVideo, animated: false) { }
+                }
             }
             
         } else {
