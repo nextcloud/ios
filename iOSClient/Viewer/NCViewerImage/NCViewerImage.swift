@@ -314,10 +314,6 @@ class NCViewerImage: UIViewController {
     
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
                 
-        if pictureInPictureOcId == metadata.ocId {
-            return UIImage.init(named: "pip")
-        }
-        
         if let image = getImage(metadata: metadata) {
             return image
         }
@@ -430,10 +426,12 @@ class NCViewerImage: UIViewController {
                             
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
                 
-                player?.play()
-                if seekTime != nil {
-                    player?.seek(to: seekTime!)
-                    seekTime = nil
+                if pictureInPictureOcId != metadata.ocId {
+                    player?.play()
+                    if seekTime != nil {
+                        player?.seek(to: seekTime!)
+                        seekTime = nil
+                    }
                 }
             }
         }
@@ -695,12 +693,8 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         videoStop()
 
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
-            if pictureInPictureOcId != metadata.ocId {
-                if UIApplication.shared.applicationState != .background {
-                    videoPlay(metadata: metadata)
-                }
-                toolBar.isHidden = false
-            }
+            videoPlay(metadata: metadata)
+            toolBar.isHidden = false
         }
             
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
@@ -735,16 +729,10 @@ extension NCViewerImage: NCViewerVideoDelegate {
     
     func startPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = metadata.ocId
-        if metadata.ocId == currentMetadata.ocId {
-            reloadCurrentPage()
-        }
     }
     
     func stopPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = ""
-        if metadata.ocId == currentMetadata.ocId {
-            reloadCurrentPage()
-        }
     }
     
     func playerCurrentTime(_ time: CMTime?) {
