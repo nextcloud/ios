@@ -88,6 +88,11 @@ class NCViewerImageZoom: UIViewController {
         delegateViewerImage?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         

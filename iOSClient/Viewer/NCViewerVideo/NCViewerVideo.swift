@@ -42,6 +42,8 @@ class NCViewerVideo: AVPlayerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        delegate = self
     }
     
     override func viewDidAppear(_ animated: Bool) {

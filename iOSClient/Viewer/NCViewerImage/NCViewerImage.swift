@@ -65,7 +65,7 @@ class NCViewerImage: UIViewController {
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
     var seekTime: CMTime?
-    var activatedPictureInPicture: Bool = false
+    var pictureInPictureOcId: String = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -143,7 +143,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
-                    self.reloadCurrentPage(image: getImageMetadata(metadatas[currentIndex]))
+                    self.reloadCurrentPage()
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -345,7 +345,7 @@ class NCViewerImage: UIViewController {
             
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 {
-                    self.reloadCurrentPage(image: self.getImageMetadata(self.metadatas[self.currentIndex]))
+                    self.reloadCurrentPage()
                 }
             }
         }
@@ -355,6 +355,10 @@ class NCViewerImage: UIViewController {
     
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
                 
+        if pictureInPictureOcId == metadata.ocId {
+            return UIImage.init(named: "pip")
+        }
+        
         if let image = getImage(metadata: metadata) {
             return image
         }
@@ -543,12 +547,12 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         return true
     }
     
-    func reloadCurrentPage(image: UIImage?) {
+    func reloadCurrentPage() {
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = image
+        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegateViewerImage = self
         
@@ -712,9 +716,11 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 extension NCViewerImage: NCViewerVideoDelegate {
     
     func playerViewControllerDidStopPictureInPicture(metadata: tableMetadata) {
+        self.pictureInPictureOcId = ""
     }
     
     func playerViewControllerDidStartPictureInPicture(metadata: tableMetadata) {
+        self.pictureInPictureOcId = metadata.ocId
     }
     
     func playerCurrentTime(_ time: CMTime?) {
