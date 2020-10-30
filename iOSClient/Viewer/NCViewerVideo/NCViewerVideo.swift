@@ -109,6 +109,10 @@ protocol NCViewerVideoDelegate {
 
 extension NCViewerVideo: AVPlayerViewControllerDelegate {
     
+    func playerViewControllerShouldAutomaticallyDismissAtPictureInPictureStart(_ playerViewController: AVPlayerViewController) -> Bool {
+        false
+    }
+    
     func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
         pictureInPicture = true
         delegateViewerVideo?.startPictureInPicture(metadata: metadata)

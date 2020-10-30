@@ -696,7 +696,9 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
 
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
             if pictureInPictureOcId != metadata.ocId {
-                videoPlay(metadata: metadata)
+                if UIApplication.shared.applicationState != .background {
+                    videoPlay(metadata: metadata)
+                }
                 toolBar.isHidden = false
             }
         }
