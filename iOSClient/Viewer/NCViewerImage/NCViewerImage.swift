@@ -302,7 +302,6 @@ class NCViewerImage: UIViewController {
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
             videoStop()
-            videoLayer?.removeFromSuperlayer()
         }
     }
     
@@ -352,23 +351,7 @@ class NCViewerImage: UIViewController {
         }
     }
     
-    //MARK: - Function
-    
-    func changeScreenMode(to: ScreenMode) {
-        
-        if to == .full {
-            
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            view.backgroundColor = .black
-            progressView.isHidden = true
-            
-        } else {
-            
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            progressView.isHidden = false
-        }
-    }
+    //MARK: - Image
     
     func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
                 
@@ -509,6 +492,8 @@ class NCViewerImage: UIViewController {
             player?.removeTimeObserver(timeObserverToken)
             self.timeObserverToken = nil
         }
+        
+        videoLayer?.removeFromSuperlayer()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -517,15 +502,18 @@ class NCViewerImage: UIViewController {
             
             if player?.rate == 1 {
                 print("start")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(player?.pause))
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
                 toolBar.setItems([item], animated: true)
             } else {
                 print("pause")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(player?.play))
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
                 toolBar.setItems([item], animated: true)
             }
         }
     }
+    
+    @objc func playerPause() { player?.pause() }
+    @objc func playerPlay() { player?.play() }
 }
 
 //MARK: - UIPageViewController Delegate Datasource
@@ -701,14 +689,21 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
             if currentMode == .full {
                 
-                changeScreenMode(to: .normal)
+                navigationController?.setNavigationBarHidden(false, animated: false)
+                view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+                progressView.isHidden = false
+                
                 currentMode = .normal
                 
             } else {
                 
-                changeScreenMode(to: .full)
+                navigationController?.setNavigationBarHidden(true, animated: false)
+                view.backgroundColor = .black
+                progressView.isHidden = true
+                
                 currentMode = .full
             }
         }
     }
 }
+
