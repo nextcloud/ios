@@ -143,7 +143,7 @@ class NCViewerImage: UIViewController {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
                 if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
-                    self.reloadCurrentPage()
+                    self.reloadCurrentPage(image: getImageMetadata(metadatas[currentIndex]))
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
                     progressView.progress = 0
@@ -345,7 +345,7 @@ class NCViewerImage: UIViewController {
             
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
                 if errorCode == 0 {
-                    self.reloadCurrentPage()
+                    self.reloadCurrentPage(image: self.getImageMetadata(self.metadatas[self.currentIndex]))
                 }
             }
         }
@@ -516,7 +516,7 @@ class NCViewerImage: UIViewController {
     @objc func playerPlay() { player?.play() }
 }
 
-//MARK: -
+//MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
@@ -543,12 +543,12 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         return true
     }
     
-    func reloadCurrentPage() {
+    func reloadCurrentPage(image: UIImage?) {
         
         let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
         
         viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+        viewerImageZoom.image = image
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegateViewerImage = self
         
@@ -611,7 +611,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     }
 }
 
-//MARK: -
+//MARK: - UIGestureRecognizerDelegate
 
 extension NCViewerImage: UIGestureRecognizerDelegate {
 
@@ -707,7 +707,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     }
 }
 
-//MARK: -
+//MARK: - NCViewerVideoDelegate
 
 extension NCViewerImage: NCViewerVideoDelegate {
     
