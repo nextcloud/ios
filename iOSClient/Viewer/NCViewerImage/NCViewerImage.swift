@@ -120,6 +120,16 @@ class NCViewerImage: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = false
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            if !navigationController.viewControllers.contains(self) {
+                videoStop()
+            }
+        }
+    }
+    
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
