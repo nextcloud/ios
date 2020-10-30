@@ -641,12 +641,14 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
             videoStop()
-
-            let video = NCViewerVideo()
-            video.metadata = currentMetadata
-            video.seekTime = player?.currentTime()
-            video.delegateViewerVideo = self
-            present(video, animated: false) { }
+            
+            if pictureInPictureOcId != currentMetadata.ocId {
+                let video = NCViewerVideo()
+                video.metadata = currentMetadata
+                video.seekTime = player?.currentTime()
+                video.delegateViewerVideo = self
+                present(video, animated: false) { }
+            }
             
         } else {
         
@@ -690,8 +692,6 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
             if pictureInPictureOcId != metadata.ocId {
                 videoPlay(metadata: metadata)
                 toolBar.isHidden = false
-            } else {
-                toolBar.isHidden = true
             }
         }
             
@@ -726,14 +726,16 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
 extension NCViewerImage: NCViewerVideoDelegate {
     
     func startPictureInPicture(metadata: tableMetadata) {
-        self.pictureInPictureOcId = metadata.ocId
+        pictureInPictureOcId = metadata.ocId
+        reloadCurrentPage()
     }
     
     func stopPictureInPicture(metadata: tableMetadata) {
-        self.pictureInPictureOcId = ""
+        pictureInPictureOcId = ""
+        reloadCurrentPage()
     }
     
     func playerCurrentTime(_ time: CMTime?) {
-        self.seekTime = time
+        seekTime = time
     }
 }
