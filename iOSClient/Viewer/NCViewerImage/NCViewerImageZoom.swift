@@ -42,6 +42,7 @@ class NCViewerImageZoom: UIViewController {
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
+    var minScale: CGFloat = 0
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     
     required init?(coder aDecoder: NSCoder) {
@@ -109,6 +110,9 @@ class NCViewerImageZoom: UIViewController {
         if scrollView.zoomScale >= newZoomScale || abs(scrollView.zoomScale - newZoomScale) <= 0.01 {
             newZoomScale = scrollView.minimumZoomScale
         }
+        if newZoomScale > scrollView.maximumZoomScale {
+            return
+        }
         
         let width = scrollView.bounds.width / newZoomScale
         let height = scrollView.bounds.height / newZoomScale
@@ -126,7 +130,7 @@ class NCViewerImageZoom: UIViewController {
         let size = view.bounds.size
         let widthScale = size.width / imageView.bounds.width
         let heightScale = size.height / imageView.bounds.height
-        let minScale = min(widthScale, heightScale)
+        minScale = min(widthScale, heightScale)
         
         scrollView.minimumZoomScale = minScale
         scrollView.zoomScale = minScale
