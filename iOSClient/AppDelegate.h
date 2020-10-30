@@ -46,6 +46,7 @@
 @class NCNetworkingAutoUpload;
 @class NCDocumentPickerViewController;
 @class FileProviderDomain;
+@class NCViewerVideo;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
 
@@ -94,6 +95,7 @@
 @property (nonatomic, retain) NCTrash *activeTrash;
 @property (nonatomic, retain) NCAppConfigView *appConfigView;
 @property (nonatomic, retain) IMImagemeterViewer *activeImagemeterView;
+@property (nonatomic, retain) NCViewerVideo *activeViewerVideo;
 
 @property (nonatomic, strong) NSMutableDictionary *listFilesVC;
 @property (nonatomic, strong) NSMutableDictionary *listFavoriteVC;

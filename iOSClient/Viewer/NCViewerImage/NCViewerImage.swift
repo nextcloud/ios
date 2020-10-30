@@ -55,9 +55,7 @@ class NCViewerImage: UIViewController {
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
     
-    weak var currentViewerImageZoom: NCViewerImageZoom?
-    weak var currentViewerVideo: NCViewerVideo?
-    
+    var currentViewerImageZoom: NCViewerImageZoom?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
@@ -645,11 +643,15 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             videoStop()
             
             if pictureInPictureOcId != currentMetadata.ocId {
-                currentViewerVideo = NCViewerVideo()
-                currentViewerVideo?.metadata = currentMetadata
-                currentViewerVideo?.seekTime = player?.currentTime()
-                currentViewerVideo?.delegateViewerVideo = self
-                if let currentViewerVideo = self.currentViewerVideo {
+                
+                // Kill PIP
+                appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
+
+                appDelegate.activeViewerVideo = NCViewerVideo()
+                appDelegate.activeViewerVideo?.metadata = currentMetadata
+                appDelegate.activeViewerVideo?.seekTime = player?.currentTime()
+                appDelegate.activeViewerVideo?.delegateViewerVideo = self
+                if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
                 }
             }
@@ -731,12 +733,16 @@ extension NCViewerImage: NCViewerVideoDelegate {
     
     func startPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = metadata.ocId
-        reloadCurrentPage()
+        if metadata.ocId == currentMetadata.ocId {
+            reloadCurrentPage()
+        }
     }
     
     func stopPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = ""
-        reloadCurrentPage()
+        if metadata.ocId == currentMetadata.ocId {
+            reloadCurrentPage()
+        }
     }
     
     func playerCurrentTime(_ time: CMTime?) {

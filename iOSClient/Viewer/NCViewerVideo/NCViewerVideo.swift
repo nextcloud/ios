@@ -29,16 +29,13 @@ protocol NCViewerVideoDelegate {
     func playerCurrentTime(_ time: CMTime?)
 }
 
-class NCViewerVideo: AVPlayerViewController {
+@objc class NCViewerVideo: AVPlayerViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var seekTime: CMTime?
     var pictureInPicture: Bool = false
-    
-   // weak var delegateViewerImage: NCViewerImage?
     var delegateViewerVideo: NCViewerVideoDelegate?
-    
     private var rateObserverToken: Any?
 
     override func viewDidLoad() {
