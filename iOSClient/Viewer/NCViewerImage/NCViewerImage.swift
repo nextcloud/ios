@@ -25,7 +25,7 @@ import UIKit
 import SVGKit
 import NCCommunication
 
-class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
+class NCViewerImage: UIViewController {
 
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var toolBar: UIToolbar!
@@ -129,6 +129,10 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         super.viewWillDisappear(animated)
    
         videoStop()
+    }
+    
+    @objc func openMenuMore() {
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
     }
     
     //MARK: - NotificationCenter
@@ -247,93 +251,6 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    //MARK: - Gesture
-
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-            let velocity = gestureRecognizer.velocity(in: self.view)
-            
-            var velocityCheck : Bool = false
-            
-            if UIDevice.current.orientation.isLandscape {
-                velocityCheck = velocity.x < 0
-            }
-            else {
-                velocityCheck = velocity.y < 0
-            }
-            if velocityCheck {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
-            if self.currentViewController.scrollView.contentOffset.y == 0 {
-                return true
-            }
-        }
-        
-        return false
-    }
-
-    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-        let currentLocation = gestureRecognizer.translation(in: self.view)
-
-        switch gestureRecognizer.state {
-        case .began:
-            startPanLocation = currentLocation
-            defaultImageViewTopConstraint = currentViewController.imageViewTopConstraint.constant
-            defaultImageViewBottomConstraint = currentViewController.imageViewBottomConstraint.constant
-            currentViewController.scrollView.isScrollEnabled = false
-        case .ended:
-            currentViewController.scrollView.isScrollEnabled = true
-            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint
-            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
-        case .changed:
-            let dy = currentLocation.y - startPanLocation.y
-            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
-            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
-            if dy >= panDistanceForPopViewController {
-                self.navigationController?.popViewController(animated: true)
-            }
-            print(dy)
-        default:
-            break
-        }
-    }
-    
-    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-        
-        if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
-            
-            videoStop()
-
-            let video = NCViewerVideoAudio()
-            video.metadata = currentMetadata
-            video.seekTime = player?.currentTime()
-            video.delegateViewerImage = self
-            present(video, animated: false) { }
-            
-        } else {
-        
-            if currentMode == .full {
-                
-                changeScreenMode(to: .normal)
-                currentMode = .normal
-                
-            } else {
-                
-                changeScreenMode(to: .full)
-                currentMode = .full
-            }
-        }
-    }
-    
     //
     // Detect for LIVE
     //
@@ -350,7 +267,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
                     AudioServicesPlaySystemSound(1519) // peek feedback
-                    self.videoPlayWith(metadata: metadata)
+                    self.videoPlay(metadata: metadata)
                     
                 } else {
                     
@@ -373,7 +290,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
-                                self.videoPlayWith(metadata: metadata)
+                                self.videoPlay(metadata: metadata)
                             }
                         }
                     }
@@ -407,7 +324,7 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
 
             toolBar.isHidden = false
-            videoPlayWith(metadata: metadata)
+            videoPlay(metadata: metadata)
         }
         
         if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
@@ -514,8 +431,10 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
         
         return image
     }
+        
+    //MARK: - Video
     
-    func videoPlayWith(metadata: tableMetadata) {
+    func videoPlay(metadata: tableMetadata) {
                 
         var videoURL: URL?
                 
@@ -546,67 +465,35 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
                 
                 currentViewerImageZoom!.imageView.layer.addSublayer(videoLayer!)
                 
-                videoPlay()
+                /*
+                if let duration = playerVideo?.currentItem?.asset.duration {
+                    durationVideo = Float(CMTimeGetSeconds(duration))
+                }
+               
+                let timeScale = CMTimeScale(NSEC_PER_SEC)
+                let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
+                timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
+                    print(time)
+                }
+                */
+                
+                // At end go back to start
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
+                    self.player?.seek(to: CMTime.zero)
+                }
+                            
+                rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+                
+                player?.play()
+                if seekTime != nil {
+                    player?.seek(to: seekTime!)
+                    seekTime = nil
+                }
             }
         }
     }
     
-    //MARK: - Action
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        
-        if keyPath != nil && keyPath == "rate" {
-            
-            if player?.rate == 1 {
-                print("start")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(videoPause))
-                toolBar.setItems([item], animated: true)
-            } else {
-                print("pause")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(videoPlay))
-                toolBar.setItems([item], animated: true)
-            }
-        }
-    }
-    
-    @objc func openMenuMore() {
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
-    }
-    
-    @objc func videoPause() {
-        player?.pause()
-    }
-    
-    @objc func videoPlay() {
-        
-        /*
-        if let duration = playerVideo?.currentItem?.asset.duration {
-            durationVideo = Float(CMTimeGetSeconds(duration))
-        }
-        
-       
-        let timeScale = CMTimeScale(NSEC_PER_SEC)
-        let time = CMTime(seconds: 0.5, preferredTimescale: timeScale)
-        timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
-            print(time)
-        }
-        */
-        
-        // At end go back to start
-        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
-            self.player?.seek(to: CMTime.zero)
-        }
-                    
-        rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
-        
-        player?.play()
-        if seekTime != nil {
-            player?.seek(to: seekTime!)
-            seekTime = nil
-        }
-    }
-    
-    @objc func videoStop() {
+    func videoStop() {
         
         player?.pause()
         player?.seek(to: CMTime.zero)
@@ -622,10 +509,26 @@ class NCViewerImage: UIViewController, UIGestureRecognizerDelegate {
             player?.removeTimeObserver(timeObserverToken)
             self.timeObserverToken = nil
         }
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
-        
+        if keyPath != nil && keyPath == "rate" {
+            
+            if player?.rate == 1 {
+                print("start")
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(player?.pause))
+                toolBar.setItems([item], animated: true)
+            } else {
+                print("pause")
+                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(player?.play))
+                toolBar.setItems([item], animated: true)
+            }
+        }
     }
 }
+
+//MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
     
@@ -717,5 +620,95 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         }
         
         self.nextIndex = nil
+    }
+}
+
+//MARK: - UIGestureRecognizerDelegate
+
+extension NCViewerImage: UIGestureRecognizerDelegate {
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let velocity = gestureRecognizer.velocity(in: self.view)
+            
+            var velocityCheck : Bool = false
+            
+            if UIDevice.current.orientation.isLandscape {
+                velocityCheck = velocity.x < 0
+            }
+            else {
+                velocityCheck = velocity.y < 0
+            }
+            if velocityCheck {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
+            if self.currentViewController.scrollView.contentOffset.y == 0 {
+                return true
+            }
+        }
+        
+        return false
+    }
+
+    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        let currentLocation = gestureRecognizer.translation(in: self.view)
+
+        switch gestureRecognizer.state {
+        case .began:
+            startPanLocation = currentLocation
+            defaultImageViewTopConstraint = currentViewController.imageViewTopConstraint.constant
+            defaultImageViewBottomConstraint = currentViewController.imageViewBottomConstraint.constant
+            currentViewController.scrollView.isScrollEnabled = false
+        case .ended:
+            currentViewController.scrollView.isScrollEnabled = true
+            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint
+            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
+        case .changed:
+            let dy = currentLocation.y - startPanLocation.y
+            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
+            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
+            if dy >= panDistanceForPopViewController {
+                self.navigationController?.popViewController(animated: true)
+            }
+            print(dy)
+        default:
+            break
+        }
+    }
+    
+    @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
+        
+        if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
+            
+            videoStop()
+
+            let video = NCViewerVideoAudio()
+            video.metadata = currentMetadata
+            video.seekTime = player?.currentTime()
+            video.delegateViewerImage = self
+            present(video, animated: false) { }
+            
+        } else {
+        
+            if currentMode == .full {
+                
+                changeScreenMode(to: .normal)
+                currentMode = .normal
+                
+            } else {
+                
+                changeScreenMode(to: .full)
+                currentMode = .full
+            }
+        }
     }
 }
