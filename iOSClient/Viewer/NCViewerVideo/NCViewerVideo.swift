@@ -24,8 +24,8 @@
 import Foundation
 
 protocol NCViewerVideoDelegate {
-    func playerViewControllerDidStopPictureInPicture(metadata: tableMetadata)
-    func playerViewControllerDidStartPictureInPicture(metadata: tableMetadata)
+    func stopPictureInPicture(metadata: tableMetadata)
+    func startPictureInPicture(metadata: tableMetadata)
     func playerCurrentTime(_ time: CMTime?)
 }
 
@@ -34,6 +34,7 @@ class NCViewerVideo: AVPlayerViewController {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
     var seekTime: CMTime?
+    var pictureInPicture: Bool = false
     
    // weak var delegateViewerImage: NCViewerImage?
     var delegateViewerVideo: NCViewerVideoDelegate?
@@ -88,19 +89,19 @@ class NCViewerVideo: AVPlayerViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        player?.pause()
-        
-        if rateObserverToken != nil {
-            player?.removeObserver(self, forKeyPath: "rate")
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy()
-            self.delegateViewerVideo?.playerCurrentTime(player?.currentTime())
-            self.rateObserverToken = nil
+        if !pictureInPicture {
+            player?.pause()
+            
+            if rateObserverToken != nil {
+                player?.removeObserver(self, forKeyPath: "rate")
+                NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+                NCKTVHTTPCache.shared.stopProxy()
+                self.delegateViewerVideo?.playerCurrentTime(player?.currentTime())
+                self.rateObserverToken = nil
+            }
         }
     }
     
-    //MARK: - Observer
-
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
@@ -112,10 +113,12 @@ class NCViewerVideo: AVPlayerViewController {
 extension NCViewerVideo: AVPlayerViewControllerDelegate {
     
     func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        delegateViewerVideo?.playerViewControllerDidStartPictureInPicture(metadata: metadata)
+        pictureInPicture = true
+        delegateViewerVideo?.startPictureInPicture(metadata: metadata)
     }
     
     func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        delegateViewerVideo?.playerViewControllerDidStopPictureInPicture(metadata: metadata)
+        pictureInPicture = false
+        delegateViewerVideo?.stopPictureInPicture(metadata: metadata)
     }
 }

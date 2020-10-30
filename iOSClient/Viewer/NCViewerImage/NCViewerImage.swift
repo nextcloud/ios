@@ -89,7 +89,7 @@ class NCViewerImage: UIViewController {
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegateViewerImage = self
+        viewerImageZoom.delegate = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -127,8 +127,6 @@ class NCViewerImage: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-   
-        videoStop()
     }
     
     @objc func openMenuMore() {
@@ -302,52 +300,6 @@ class NCViewerImage: UIViewController {
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
             videoStop()
-        }
-    }
-    
-    //MARK: - Delegate Image Zoom
-
-    func viewWillAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-
-        navigationItem.title = metadata.fileNameView
-
-        currentMetadata = metadata
-        currentViewerImageZoom = viewerImageZoom
-        toolBar.isHidden = true
-        
-        videoStop()
-    }
-    
-    func viewDidAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-                
-        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
-
-            toolBar.isHidden = false
-            videoPlay(metadata: metadata)
-        }
-        
-        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
-            self.progressView.progress = 0
-        }
-        
-        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
-        let ext = CCUtility.getExtension(metadata.fileNameView)
-        
-        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
-        }
-        
-        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
-            
-            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
-            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
-            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
-            
-            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
-                if errorCode == 0 {
-                    self.reloadCurrentPage()
-                }
-            }
         }
     }
     
@@ -538,7 +490,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegateViewerImage = self
+        viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -554,7 +506,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegateViewerImage = self
+        viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -569,7 +521,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex - 1
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
-        viewerImageZoom.delegateViewerImage = self
+        viewerImageZoom.delegate = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -584,7 +536,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.index = currentIndex + 1
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerImageZoom.metadata = metadatas[currentIndex + 1]
-        viewerImageZoom.delegateViewerImage = self
+        viewerImageZoom.delegate = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
 
@@ -711,16 +663,69 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     }
 }
 
+//MARK: - NCViewerImageZoomDelegate
+
+extension NCViewerImage: NCViewerImageZoomDelegate {
+   
+    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        
+        navigationItem.title = metadata.fileNameView
+        currentMetadata = metadata
+        currentViewerImageZoom = viewerImageZoom
+        toolBar.isHidden = true
+    }
+    
+    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+                    
+        if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
+            if pictureInPictureOcId != metadata.ocId {
+                videoPlay(metadata: metadata)
+                toolBar.isHidden = false
+            } else {
+                toolBar.isHidden = true
+            }
+        }
+            
+        if !NCOperationQueue.shared.downloadExists(metadata: metadata) {
+            self.progressView.progress = 0
+        }
+        
+        let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
+        let ext = CCUtility.getExtension(metadata.fileNameView)
+        
+        if ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
+        }
+            
+        if !CCUtility.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) && metadata.hasPreview {
+            
+            let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
+            let fileNamePreviewLocalPath = CCUtility.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)!
+            let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
+            
+            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(k_sizePreview), heightPreview: Int(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: Int(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
+                if errorCode == 0 {
+                    self.reloadCurrentPage()
+                }
+            }
+        }
+    }
+    
+    func disappearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        videoStop()
+    }
+}
+
 //MARK: - NCViewerVideoDelegate
 
 extension NCViewerImage: NCViewerVideoDelegate {
     
-    func playerViewControllerDidStopPictureInPicture(metadata: tableMetadata) {
-        self.pictureInPictureOcId = ""
+    func startPictureInPicture(metadata: tableMetadata) {
+        self.pictureInPictureOcId = metadata.ocId
     }
     
-    func playerViewControllerDidStartPictureInPicture(metadata: tableMetadata) {
-        self.pictureInPictureOcId = metadata.ocId
+    func stopPictureInPicture(metadata: tableMetadata) {
+        self.pictureInPictureOcId = ""
     }
     
     func playerCurrentTime(_ time: CMTime?) {

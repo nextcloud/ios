@@ -22,6 +22,12 @@
 //
 import UIKit
 
+protocol NCViewerImageZoomDelegate {
+    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+    func disappearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+}
+
 class NCViewerImageZoom: UIViewController {
     
     @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
@@ -32,9 +38,8 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
-
-    weak var delegateViewerImage: NCViewerImage?
     
+    var delegate: NCViewerImageZoomDelegate?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -79,18 +84,19 @@ class NCViewerImageZoom: UIViewController {
         updateZoomScale()
         updateConstraints()
         
-        delegateViewerImage?.viewWillAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-                
-        delegateViewerImage?.viewDidAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+        
+        delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+        delegate?.disappearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {
