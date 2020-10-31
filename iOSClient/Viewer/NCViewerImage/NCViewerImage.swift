@@ -695,6 +695,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
         
         videoStop()
+        currentViewerImageZoom?.detailView.updateExifLocal(metadata: metadata)
 
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
             videoPlay(metadata: metadata)
