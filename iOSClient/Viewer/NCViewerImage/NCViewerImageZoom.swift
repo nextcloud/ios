@@ -103,8 +103,8 @@ class NCViewerImageZoom: UIViewController {
         updateConstraints()
         
         startY = imageView.frame.origin.y
-        panDistanceClose = view.bounds.height / 3
-        panDistanceForDetailView = view.bounds.height / 4
+        panDistanceClose = view.bounds.height / 4
+        panDistanceForDetailView = view.bounds.height / 7
         
         detailView.updateExifLocal(metadata: metadata)
 
@@ -191,6 +191,9 @@ class NCViewerImageZoom: UIViewController {
                 let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
                 isOpenDetailView = true
+                
+//                imageViewTopConstraint.constant = tempImageViewTopConstraint - detailViewHeightConstraint.constant
+//                imageViewBottomConstraint.constant = tempImageViewBottomConstraint + detailViewHeightConstraint.constant
             }
             
             // CLOSE DETAIL

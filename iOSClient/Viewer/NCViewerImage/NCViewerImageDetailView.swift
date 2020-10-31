@@ -24,6 +24,9 @@ class NCViewerImageDetailView: UIView {
         super.awakeFromNib()
            
         mapView.layer.cornerRadius = 6
+        mapView.isZoomEnabled = false
+        mapView.isScrollEnabled = false
+        mapView.isUserInteractionEnabled = false
     }
     
     func updateExifLocal(metadata: tableMetadata) {
@@ -46,20 +49,15 @@ class NCViewerImageDetailView: UIView {
                 }
                 
                 DispatchQueue.main.async {
-                    self.insertDataDetail()
+                    if self.latitude > 0 && self.longitude > 0 {
+                        
+                        self.annotation.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
+                        self.mapView.addAnnotation(self.annotation)
+                        self.mapView.setRegion(MKCoordinateRegion(center: self.annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+                        self.locationButton.setTitle(self.location, for: .normal)
+                    }
                 }
             }
-        }
-    }
-    
-    func insertDataDetail() {
-        
-        if self.latitude > 0 && self.longitude > 0 {
-            
-            annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-            mapView.addAnnotation(annotation)
-            mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-            locationButton.setTitle(location, for: .normal)
         }
     }
     
