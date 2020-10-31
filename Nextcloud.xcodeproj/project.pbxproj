@@ -1047,9 +1047,9 @@
 		F78ACD50219046AC0088454D /* Section Header Footer */ = {
 			isa = PBXGroup;
 			children = (
+				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
 				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
 				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
-				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
 			);
 			path = "Section Header Footer";
 			sourceTree = "<group>";

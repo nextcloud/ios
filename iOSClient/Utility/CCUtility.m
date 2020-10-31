@@ -707,6 +707,17 @@
     [UICKeyChainStore setString:valueString forKey:@"logLevel" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getAudioMute
+{
+    return [[UICKeyChainStore stringForKey:@"audioMute" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setAudioMute:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"audioMute" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

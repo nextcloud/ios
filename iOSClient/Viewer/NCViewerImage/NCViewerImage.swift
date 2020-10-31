@@ -108,6 +108,8 @@ class NCViewerImage: UIViewController {
         progressView.tintColor = NCBrandColor.sharedInstance.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
+        
+        setToolBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -398,6 +400,7 @@ class NCViewerImage: UIViewController {
         if let url = videoURL {
             
             player = AVPlayer(url: url)
+            player?.isMuted = CCUtility.getAudioMute()
             videoLayer = AVPlayerLayer(player: player)
             
             if videoLayer != nil && currentViewerImageZoom != nil {
@@ -460,22 +463,43 @@ class NCViewerImage: UIViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
-            
-            if player?.rate == 1 {
-                print("start")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
-                toolBar.setItems([item], animated: true)
-            } else {
-                print("pause")
-                let item = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
-                toolBar.setItems([item], animated: true)
-            }
+           setToolBar()
         }
     }
     
+    //MARK: - Tool Bar
+
+    func setToolBar() {
+        
+        let mute = CCUtility.getAudioMute()
+        
+        var itemPlay = toolBar.items![0]
+        let itemFlexibleSpace = toolBar.items![1]
+        var itemMute = toolBar.items![2]
+        
+        if player?.rate == 1 {
+            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
+        } else {
+            itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
+        }
+        if mute {
+            itemMute = UIBarButtonItem(image: UIImage(named: "audioOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+        } else {
+            itemMute = UIBarButtonItem(image: UIImage(named: "audioOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
+        }
+        toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
+    }
+
     @objc func playerPause() { player?.pause() }
     @objc func playerPlay() { player?.play() }
+    @objc func SetMute() {
+        let mute = CCUtility.getAudioMute()
+        CCUtility.setAudioMute(!mute)
+        player?.isMuted = !mute
+        setToolBar()
+    }
 }
+
 
 //MARK: - UIPageViewController Delegate Datasource
 

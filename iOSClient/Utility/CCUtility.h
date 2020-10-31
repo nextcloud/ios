@@ -173,6 +173,9 @@
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;
 
++ (BOOL)getAudioMute;
++ (void)setAudioMute:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;

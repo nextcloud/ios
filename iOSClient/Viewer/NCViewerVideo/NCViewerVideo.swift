@@ -80,11 +80,16 @@ protocol NCViewerVideoDelegate {
                 player?.seek(to: seekTime!)
                 seekTime = nil
             }
+            player?.isMuted = CCUtility.getAudioMute()
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        if let player = self.player {
+            CCUtility.setAudioMute(player.isMuted)
+        }
         
         if !pictureInPicture {
             player?.pause()
