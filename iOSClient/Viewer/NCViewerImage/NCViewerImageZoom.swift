@@ -61,6 +61,9 @@ class NCViewerImageZoom: UIViewController {
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        
+        doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2
     }
     
     override func viewDidLoad() {
@@ -68,9 +71,6 @@ class NCViewerImageZoom: UIViewController {
         
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
-        
-        doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
@@ -172,7 +172,7 @@ class NCViewerImageZoom: UIViewController {
 
             // OPEN DETAIL
             if dy < panDistanceForDetailView {
-                let offsetBottom = self.view.safeAreaInsets.bottom - 10
+                let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
                 openDetailView = true
             }
