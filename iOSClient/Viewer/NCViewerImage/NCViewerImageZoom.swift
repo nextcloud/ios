@@ -165,7 +165,8 @@ class NCViewerImageZoom: UIViewController {
         case .changed:
             
             let dy = currentLocation.y - startPanLocation.y
-            
+            print(dy)
+
             imageViewTopConstraint.constant = tempImageViewTopConstraint + dy
             imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
             
@@ -188,7 +189,6 @@ class NCViewerImageZoom: UIViewController {
                 openDetailView = false
             }
             
-            print(dy)
         default:
             break
         }
