@@ -112,14 +112,14 @@
                                         <rect key="frame" x="5" y="662" width="404" height="200"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="0.0" y="50" width="404" height="150"/>
+                                                <rect key="frame" x="0.0" y="30" width="404" height="140"/>
                                             </mapView>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemPinkColor"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="Cbn-gO-P9h"/>
-                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="50" id="bjV-ga-4qI"/>
-                                            <constraint firstAttribute="bottom" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="y8c-iL-fAs"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="30" id="bjV-ga-4qI"/>
+                                            <constraint firstAttribute="bottom" secondItem="Typ-A8-XIO" secondAttribute="bottom" constant="30" id="y8c-iL-fAs"/>
                                             <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" id="yaK-cw-jqm"/>
                                             <constraint firstAttribute="height" constant="200" id="z82-KD-lOv"/>
                                         </constraints>
@@ -177,9 +177,6 @@
         <image name="audioOn" width="28" height="28"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemPinkColor">
-            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

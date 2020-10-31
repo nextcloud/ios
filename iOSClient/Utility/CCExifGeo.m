@@ -41,7 +41,7 @@
     }
 }
 
-- (void)setExifLocalTableEtag:(tableMetadata *)metadata
+- (void)setExif:(tableMetadata *)metadata
 {
     NSString *dateTime;
     NSString *latitudeRef;
@@ -112,10 +112,10 @@
     }
 
     // Wite data EXIF in TableLocalFile
-    /*
-    if (tiff || gps)
-        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil etag:nil];
-    */
+    if (tiff || gps) {
+        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude];
+    }
+       
     CFRelease(originalSource);
     CFRelease(imageProperties);
 }

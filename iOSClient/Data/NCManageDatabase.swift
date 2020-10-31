@@ -1536,6 +1536,23 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
+                    result.exifDate = exifDate
+                    result.exifLatitude = exifLatitude
+                    result.exifLongitude = exifLongitude
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
         
         let realm = try! Realm()
