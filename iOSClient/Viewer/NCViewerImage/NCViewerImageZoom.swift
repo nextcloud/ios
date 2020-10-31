@@ -47,12 +47,12 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var minScale: CGFloat = 0
-    var frameY: CGFloat = 0
+    var startY: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var startPanLocation = CGPoint.zero
-    let panDistanceClose: CGFloat = 300
-    let panDistanceForDetailView: CGFloat = -20
+    let panDistanceClose: CGFloat = 0
+    var panDistanceForDetailView: CGFloat = 0
     
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
@@ -100,7 +100,10 @@ class NCViewerImageZoom: UIViewController {
 
         updateZoomScale()
         updateConstraints()
-        frameY = imageView.frame.origin.y
+        
+        startY = imageView.frame.origin.y
+        panDistanceClose = view.bounds.height / 3
+        panDistanceForDetailView = view.bounds.height / 5
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -156,6 +159,7 @@ class NCViewerImageZoom: UIViewController {
         case .ended:
             
             if !openDetailView {
+                
                 scrollView.isScrollEnabled = true
                 imageViewTopConstraint.constant = defaultImageViewTopConstraint
                 imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
@@ -171,12 +175,13 @@ class NCViewerImageZoom: UIViewController {
             imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
             
             // DISMISS
-            if imageView.frame.origin.y > panDistanceClose + frameY {
+            if imageView.frame.origin.y > panDistanceClose + startY {
+                
                 delegate?.dismiss()
             }
 
             // OPEN DETAIL
-            if dy < panDistanceForDetailView {
+            if imageView.frame.origin.y < startY - panDistanceForDetailView {
                 
                 if !detailView.hasData() { return }
 
@@ -188,7 +193,8 @@ class NCViewerImageZoom: UIViewController {
             }
             
             // CLOSE DETAIL
-            if dy > 0 {
+            if imageView.frame.origin.y > startY - panDistanceForDetailView {
+                
                 defaultDetailViewConstraint()
                 openDetailView = false
             }
