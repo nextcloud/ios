@@ -172,7 +172,8 @@ class NCViewerImageZoom: UIViewController {
 
             // OPEN DETAIL
             if dy < panDistanceForDetailView {
-                detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - 40
+                let offsetBottom = self.view.safeAreaInsets.bottom - 10
+                detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
                 openDetailView = true
             }
             
