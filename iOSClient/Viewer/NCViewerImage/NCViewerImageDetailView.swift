@@ -11,5 +11,18 @@ import MapKit
 
 class NCViewerImageDetailView: UIView {
     
-    @IBOutlet private var mapView: MKMapView!
+    @IBOutlet weak var mapView: MKMapView!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+           
+        mapView.layer.cornerRadius = 6
+    }
+    
+    func updateExifLocal(metadata: tableMetadata) {
+        if metadata.typeFile == k_metadataTypeFile_image {
+            let metadata = tableMetadata.init(value: metadata)
+            CCExifGeo.sharedInstance()?.setExifLocalTable(metadata)
+        }
+    }
 }

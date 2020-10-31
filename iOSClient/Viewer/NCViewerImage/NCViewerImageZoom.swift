@@ -35,10 +35,12 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
     @IBOutlet weak var detailViewBottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
     @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var detailView: NCViewerImageDetailView!
     
     var delegate: NCViewerImageZoomDelegate?
     var image: UIImage?
@@ -74,7 +76,7 @@ class NCViewerImageZoom: UIViewController {
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
-
+        
         if image == nil {
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
         }
@@ -91,6 +93,8 @@ class NCViewerImageZoom: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
+        
+        detailView.updateExifLocal(metadata: metadata)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -172,6 +176,7 @@ class NCViewerImageZoom: UIViewController {
 
             // OPEN DETAIL
             if dy < panDistanceForDetailView {
+                detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
                 let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
                 openDetailView = true
@@ -188,7 +193,6 @@ class NCViewerImageZoom: UIViewController {
             break
         }
     }
-    
     
     //MARK: - Function
 

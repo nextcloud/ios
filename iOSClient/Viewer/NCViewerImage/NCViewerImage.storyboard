@@ -109,10 +109,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="5" y="662" width="404" height="200"/>
+                                        <rect key="frame" x="15" y="662" width="384" height="200"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="0.0" y="30" width="404" height="140"/>
+                                                <rect key="frame" x="0.0" y="30" width="384" height="140"/>
                                             </mapView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -147,16 +147,18 @@
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" constant="200" id="Dld-07-ORT"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
-                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" constant="5" id="Mam-W3-bNj"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" constant="15" id="Mam-W3-bNj"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="5" id="acV-SP-xLs"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="15" id="acV-SP-xLs"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="leading" secondItem="fIE-H6-KKc" secondAttribute="leading" id="g8C-2m-KkX"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="top" secondItem="fIE-H6-KKc" secondAttribute="top" id="hcQ-lB-JwU"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
                         <outlet property="detailViewBottomConstraint" destination="Dld-07-ORT" id="Dm1-wX-drj"/>
+                        <outlet property="detailViewHeightConstraint" destination="z82-KD-lOv" id="3r0-5o-11L"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
                         <outlet property="imageViewBottomConstraint" destination="xTI-ae-JfJ" id="vdW-Ma-BV1"/>
                         <outlet property="imageViewLeadingConstraint" destination="asL-Ft-Lmc" id="4cu-ey-QS1"/>
