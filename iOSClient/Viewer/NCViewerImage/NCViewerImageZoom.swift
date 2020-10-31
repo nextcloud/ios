@@ -50,15 +50,16 @@ class NCViewerImageZoom: UIViewController {
     var startY: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-    var startPanLocation = CGPoint.zero
-    let panDistanceClose: CGFloat = 0
+    var startPanLocation: CGPoint = CGPoint.zero
+    var panDistanceClose: CGFloat = 0
     var panDistanceForDetailView: CGFloat = 0
     
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
+    var defaultDetailViewTopConstraint: CGFloat = 0
+    
     var tempImageViewTopConstraint: CGFloat = 0
     var tempImageViewBottomConstraint: CGFloat = 0
-    var defaultDetailViewTopConstraint: CGFloat = 0
     
     var openDetailView: Bool = false
 
