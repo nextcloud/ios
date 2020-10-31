@@ -61,7 +61,7 @@ class NCViewerImageZoom: UIViewController {
     var tempImageViewTopConstraint: CGFloat = 0
     var tempImageViewBottomConstraint: CGFloat = 0
     
-    var openDetailView: Bool = false
+    var isOpenDetailView: Bool = false
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -128,6 +128,8 @@ class NCViewerImageZoom: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
+        if isOpenDetailView { return }
+        
         let pointInView = gestureRecognizer.location(in: imageView)
         var newZoomScale = scrollView.maximumZoomScale
         
@@ -161,7 +163,7 @@ class NCViewerImageZoom: UIViewController {
             
         case .ended:
             
-            if !openDetailView {
+            if !isOpenDetailView {
                 
                 scrollView.isScrollEnabled = true
                 imageViewTopConstraint.constant = defaultImageViewTopConstraint
@@ -171,9 +173,6 @@ class NCViewerImageZoom: UIViewController {
         case .changed:
             
             let dy = currentLocation.y - startPanLocation.y
-            print(dy)
-            print(imageView.frame.origin.y)
-
             imageViewTopConstraint.constant = tempImageViewTopConstraint + dy
             imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
             
@@ -191,14 +190,14 @@ class NCViewerImageZoom: UIViewController {
                 detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
                 let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
-                openDetailView = true
+                isOpenDetailView = true
             }
             
             // CLOSE DETAIL
             if imageView.frame.origin.y > startY - panDistanceForDetailView {
                 
-                defaultDetailViewConstraint()
-                openDetailView = false
+                detailViewBottomConstraint.constant = -40
+                isOpenDetailView = false
             }
             
         default:
@@ -233,17 +232,14 @@ class NCViewerImageZoom: UIViewController {
         
         defaultImageViewTopConstraint = imageViewTopConstraint.constant
         defaultImageViewBottomConstraint = imageViewBottomConstraint.constant
-        defaultDetailViewConstraint()
+        detailViewBottomConstraint.constant = -40
+        
+        isOpenDetailView = false
         
         view.layoutIfNeeded()
 
         let contentHeight = yOffset * 2 + imageView.frame.height
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
-    }
-    
-    func defaultDetailViewConstraint() {
-        detailViewBottomConstraint.constant = -40
-        openDetailView = false
     }
 }
 

@@ -636,6 +636,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
+        if currentViewerImageZoom?.isOpenDetailView ?? false { return }
+        
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
             videoStop()
@@ -655,7 +657,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             }
             
         } else {
-        
+                    
             if currentMode == .full {
                 
                 navigationController?.setNavigationBarHidden(false, animated: false)
