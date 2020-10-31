@@ -51,7 +51,7 @@ class NCViewerImage: UIViewController {
     var nextIndex: Int?
        
     var currentViewerImageZoom: NCViewerImageZoom?
-    
+    var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
@@ -66,6 +66,7 @@ class NCViewerImage: UIViewController {
         super.viewDidLoad()
         
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
         longtapGestureRecognizer.delaysTouchesBegan = true
         longtapGestureRecognizer.minimumPressDuration = 0.3
@@ -74,6 +75,7 @@ class NCViewerImage: UIViewController {
         
         pageViewController.delegate = self
         pageViewController.dataSource = self
+        pageViewController.view.addGestureRecognizer(panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
@@ -595,6 +597,43 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
 
 extension NCViewerImage: UIGestureRecognizerDelegate {
 
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
+            let velocity = gestureRecognizer.velocity(in: self.view)
+            
+            var velocityCheck : Bool = false
+            
+            if UIDevice.current.orientation.isLandscape {
+                velocityCheck = velocity.x < 0
+            }
+            else {
+                velocityCheck = velocity.y < 0
+            }
+            if velocityCheck {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        
+        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
+            if self.currentViewController.scrollView.contentOffset.y == 0 {
+                return true
+            }
+        }
+        
+        return false
+    }
+
+    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        
+        currentViewerImageZoom?.didPanWith(gestureRecognizer: gestureRecognizer)
+    }
+    
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {

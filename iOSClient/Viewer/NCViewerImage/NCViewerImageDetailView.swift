@@ -25,23 +25,29 @@ class NCViewerImageDetailView: UIView {
     }
     
     func updateExifLocal(metadata: tableMetadata) {
-        if metadata.typeFile == k_metadataTypeFile_image {
-            CCExifGeo.sharedInstance()?.setExif(metadata)
-        }
         
-        if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        DispatchQueue.global().async {
             
-            latitude = Double(localFile.exifLatitude) ?? 0
-            longitude = Double(localFile.exifLongitude) ?? 0
+            if metadata.typeFile == k_metadataTypeFile_image {
+                CCExifGeo.sharedInstance()?.setExif(metadata)
+            }
+        
+            if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             
-            if latitude > 0 && longitude > 0 {
+                self.latitude = Double(localFile.exifLatitude) ?? 0
+                self.longitude = Double(localFile.exifLongitude) ?? 0
             
-                annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                mapView.addAnnotation(annotation)
-                mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+                if self.latitude > 0 && self.longitude > 0 {
+            
+                    /*
+                    annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    mapView.addAnnotation(annotation)
+                    mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
                 
-                if let location = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(localFile.exifLatitude, longitude: localFile.exifLongitude) {
-                    locationButton.setTitle(location, for: .normal)
+                    if let location = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(localFile.exifLatitude, longitude: localFile.exifLongitude) {
+                        locationButton.setTitle(location, for: .normal)
+                    }
+                    */
                 }
             }
         }

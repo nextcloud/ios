@@ -75,7 +75,6 @@ class NCViewerImageZoom: UIViewController {
         scrollView.contentInsetAdjustmentBehavior = .never
         
         view.addGestureRecognizer(doubleTapGestureRecognizer)
-        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
         
         if image == nil {
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
@@ -94,7 +93,7 @@ class NCViewerImageZoom: UIViewController {
             statusLabel.text = ""
         }
         
-        detailView.updateExifLocal(metadata: metadata)
+        //detailView.updateExifLocal(metadata: metadata)
     }
     
     override func viewWillAppear(_ animated: Bool) {
