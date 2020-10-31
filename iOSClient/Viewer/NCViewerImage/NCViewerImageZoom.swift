@@ -47,10 +47,11 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var minScale: CGFloat = 0
+    var frameY: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var startPanLocation = CGPoint.zero
-    let panDistanceForPopViewController: CGFloat = 150
+    let panDistanceClose: CGFloat = 300
     let panDistanceForDetailView: CGFloat = -20
     
     var defaultImageViewTopConstraint: CGFloat = 0
@@ -99,6 +100,7 @@ class NCViewerImageZoom: UIViewController {
 
         updateZoomScale()
         updateConstraints()
+        frameY = imageView.frame.origin.y
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -141,8 +143,6 @@ class NCViewerImageZoom: UIViewController {
     
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         let currentLocation = gestureRecognizer.translation(in: self.view)
-
-        if !detailView.hasData() { return }
         
         switch gestureRecognizer.state {
         case .began:
@@ -165,17 +165,21 @@ class NCViewerImageZoom: UIViewController {
             
             let dy = currentLocation.y - startPanLocation.y
             print(dy)
+            print(imageView.frame.origin.y)
 
             imageViewTopConstraint.constant = tempImageViewTopConstraint + dy
             imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
             
             // DISMISS
-            if dy > panDistanceForPopViewController {
+            if imageView.frame.origin.y > panDistanceClose + frameY {
                 delegate?.dismiss()
             }
 
             // OPEN DETAIL
             if dy < panDistanceForDetailView {
+                
+                if !detailView.hasData() { return }
+
                 detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
                 let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
