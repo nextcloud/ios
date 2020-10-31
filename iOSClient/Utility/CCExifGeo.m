@@ -41,7 +41,7 @@
     }
 }
 
-- (void)setExif:(tableMetadata *)metadata
+- (void)setExifLocalTable:(tableMetadata *)metadata
 {
     NSString *dateTime;
     NSString *latitudeRef;
@@ -120,7 +120,7 @@
     CFRelease(imageProperties);
 }
 
-- (void)setGeocoderEtag:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
+- (void)setGeocoder:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
 {
     // If exists already geocoder data in TableGPS exit
     if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:latitude longitude:longitude])

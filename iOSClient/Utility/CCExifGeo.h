@@ -32,7 +32,7 @@
 
 + (CCExifGeo *)sharedInstance;
 
-- (void)setExifLocalTableEtag:(tableMetadata *)metadata;
-- (void)setGeocoderEtag:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
+- (void)setExifLocalTable:(tableMetadata *)metadata;
+- (void)setGeocoder:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude;
 
 @end

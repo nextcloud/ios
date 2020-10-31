@@ -503,6 +503,11 @@ import Queuer
                         appDelegate.networkingAutoUpload.startProcess()
                     }
                 }
+                // EXIF
+                if metadata.typeFile == k_metadataTypeFile_image {
+                    let metadata = tableMetadata.init(value: metadata)
+                    CCExifGeo.sharedInstance()?.setExifLocalTable(metadata)
+                }
                 #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
