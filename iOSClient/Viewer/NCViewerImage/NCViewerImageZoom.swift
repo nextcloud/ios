@@ -91,9 +91,7 @@ class NCViewerImageZoom: UIViewController {
         }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
-        }
-        
-        //detailView.updateExifLocal(metadata: metadata)
+        }        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -144,6 +142,8 @@ class NCViewerImageZoom: UIViewController {
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
+        if !detailView.hasData() { return }
+        
         switch gestureRecognizer.state {
         case .began:
             
@@ -179,6 +179,7 @@ class NCViewerImageZoom: UIViewController {
                 detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
                 let offsetBottom = self.view.safeAreaInsets.bottom + 20
                 detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
+                detailView.insertDataDetail()
                 openDetailView = true
             }
             
