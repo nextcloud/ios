@@ -109,11 +109,23 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="30" y="862" width="354" height="128"/>
-                                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                                        <rect key="frame" x="5" y="662" width="404" height="200"/>
+                                        <subviews>
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
+                                                <rect key="frame" x="0.0" y="50" width="404" height="150"/>
+                                            </mapView>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemPinkColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="128" id="z82-KD-lOv"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="Cbn-gO-P9h"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="50" id="bjV-ga-4qI"/>
+                                            <constraint firstAttribute="bottom" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="y8c-iL-fAs"/>
+                                            <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" id="yaK-cw-jqm"/>
+                                            <constraint firstAttribute="height" constant="200" id="z82-KD-lOv"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
+                                        </connections>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -133,11 +145,11 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
-                            <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" id="Dld-07-ORT"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" constant="200" id="Dld-07-ORT"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
-                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" constant="30" id="Mam-W3-bNj"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" constant="5" id="Mam-W3-bNj"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="30" id="acV-SP-xLs"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="5" id="acV-SP-xLs"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="leading" secondItem="fIE-H6-KKc" secondAttribute="leading" id="g8C-2m-KkX"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="top" secondItem="fIE-H6-KKc" secondAttribute="top" id="hcQ-lB-JwU"/>
@@ -166,8 +178,8 @@
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemPinkColor">
+            <color red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

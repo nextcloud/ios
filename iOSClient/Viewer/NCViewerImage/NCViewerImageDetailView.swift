@@ -7,7 +7,9 @@
 //
 
 import Foundation
+import MapKit
 
 class NCViewerImageDetailView: UIView {
     
+    @IBOutlet private var mapView: MKMapView!
 }

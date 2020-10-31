@@ -53,9 +53,6 @@ class NCViewerImage: UIViewController {
     var startPanLocation = CGPoint.zero
     let panDistanceForPopViewController: CGFloat = 150
     let panDistanceForDetailView: CGFloat = -150
-    var defaultImageViewTopConstraint: CGFloat = 0
-    var defaultImageViewBottomConstraint: CGFloat = 0
-    var defaultDetailViewTopConstraint: CGFloat = 0
     
     var currentViewerImageZoom: NCViewerImageZoom?
     var panGestureRecognizer: UIPanGestureRecognizer!
@@ -642,18 +639,17 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         switch gestureRecognizer.state {
         case .began:
             startPanLocation = currentLocation
-            defaultImageViewTopConstraint = currentViewController.imageViewTopConstraint.constant
-            defaultImageViewBottomConstraint = currentViewController.imageViewBottomConstraint.constant
             currentViewController.scrollView.isScrollEnabled = false
         case .ended:
-            currentViewController.scrollView.isScrollEnabled = true
-            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint
-            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
-           // currentViewController.detailViewTopConstraint.constant = defaultDetailViewTopConstraint
+            if !currentViewController.openDetailView {
+                currentViewController.scrollView.isScrollEnabled = true
+                currentViewController.imageViewTopConstraint.constant = currentViewController.defaultImageViewTopConstraint
+                currentViewController.imageViewBottomConstraint.constant = currentViewController.defaultImageViewBottomConstraint
+            }
         case .changed:
             let dy = currentLocation.y - startPanLocation.y
-            currentViewController.imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
-            currentViewController.imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
+            currentViewController.imageViewTopConstraint.constant = currentViewController.defaultImageViewTopConstraint + dy
+            currentViewController.imageViewBottomConstraint.constant = currentViewController.defaultImageViewBottomConstraint - dy
             
             if dy > panDistanceForPopViewController {
                 self.navigationController?.popViewController(animated: true)
@@ -661,10 +657,12 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 
             if dy < panDistanceForDetailView {
                 currentViewController.detailViewBottomConstraint.constant = 200
+                currentViewController.openDetailView = true
             }
             
             if dy > 0 {
-                currentViewController.defaultDetailViewTopConstraint()
+                currentViewController.defaultDetailViewConstraint()
+                currentViewController.openDetailView = false
             }
             
             print(dy)

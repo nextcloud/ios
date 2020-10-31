@@ -46,6 +46,12 @@ class NCViewerImageZoom: UIViewController {
     var minScale: CGFloat = 0
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     
+    var defaultImageViewTopConstraint: CGFloat = 0
+    var defaultImageViewBottomConstraint: CGFloat = 0
+    var defaultDetailViewTopConstraint: CGFloat = 0
+    
+    var openDetailView: Bool = false
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
@@ -148,8 +154,10 @@ class NCViewerImageZoom: UIViewController {
         let xOffset = max(0, (size.width - imageView.frame.width) / 2)
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
-
-        defaultDetailViewTopConstraint()
+        
+        defaultImageViewTopConstraint = imageViewTopConstraint.constant
+        defaultImageViewBottomConstraint = imageViewBottomConstraint.constant
+        defaultDetailViewConstraint()
         
         view.layoutIfNeeded()
 
@@ -157,8 +165,9 @@ class NCViewerImageZoom: UIViewController {
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: contentHeight)
     }
     
-    func defaultDetailViewTopConstraint() {
+    func defaultDetailViewConstraint() {
         detailViewBottomConstraint.constant = -40
+        openDetailView = false
     }
 }
 
