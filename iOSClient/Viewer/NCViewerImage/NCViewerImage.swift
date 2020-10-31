@@ -256,6 +256,7 @@ class NCViewerImage: UIViewController {
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         }
+        toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
     
     //
@@ -488,6 +489,7 @@ class NCViewerImage: UIViewController {
             itemMute = UIBarButtonItem(image: UIImage(named: "audioOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
         }
         toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
+        toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
 
     @objc func playerPause() { player?.pause() }
