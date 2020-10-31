@@ -44,6 +44,10 @@ class NCViewerImageDetailView: UIView {
                 if let location = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                     self.location = location
                 }
+                
+                DispatchQueue.main.async {
+                    self.insertDataDetail()
+                }
             }
         }
     }
