@@ -12,6 +12,7 @@ import MapKit
 class NCViewerImageDetailView: UIView {
     
     @IBOutlet weak var mapView: MKMapView!
+    var annotation = MKPointAnnotation()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,8 +22,16 @@ class NCViewerImageDetailView: UIView {
     
     func updateExifLocal(metadata: tableMetadata) {
         if metadata.typeFile == k_metadataTypeFile_image {
-            let metadata = tableMetadata.init(value: metadata)
-            CCExifGeo.sharedInstance()?.setExifLocalTable(metadata)
+            CCExifGeo.sharedInstance()?.setExif(metadata)
+        }
+        
+        if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            
+            let latitude = Double(localFile.exifLatitude) ?? 0
+            let longitude = Double(localFile.exifLongitude) ?? 0
+            
+            annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            mapView.addAnnotation(annotation)
         }
     }
 }
