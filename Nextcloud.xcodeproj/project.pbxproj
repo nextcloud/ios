@@ -67,6 +67,7 @@
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F717402B24F699A5000C87D5 /* NCFavorite.storyboard */; };
 		F717402E24F699A5000C87D5 /* NCFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717402C24F699A5000C87D5 /* NCFavorite.swift */; };
+		F718C24E254D507B00C5C256 /* NCViewerImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718C24D254D507B00C5C256 /* NCViewerImageDetailView.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F722814323C8C34500C41898 /* NCRichWorkspace.xib in Resources */ = {isa = PBXBuildFile; fileRef = F722814223C8C34500C41898 /* NCRichWorkspace.xib */; };
 		F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F723985B253C95CE00257F49 /* NCViewerRichdocument.storyboard */; };
@@ -394,6 +395,7 @@
 		F716FE7723795E5000FABE50 /* NCCommunication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NCCommunication.framework; path = Carthage/Build/iOS/NCCommunication.framework; sourceTree = "<group>"; };
 		F717402B24F699A5000C87D5 /* NCFavorite.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFavorite.storyboard; sourceTree = "<group>"; };
 		F717402C24F699A5000C87D5 /* NCFavorite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFavorite.swift; sourceTree = "<group>"; };
+		F718C24D254D507B00C5C256 /* NCViewerImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerImageDetailView.swift; sourceTree = "<group>"; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F722814223C8C34500C41898 /* NCRichWorkspace.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCRichWorkspace.xib; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
@@ -1071,6 +1073,7 @@
 				F70753F62542A9C000972D44 /* NCViewerImage.storyboard */,
 				F70753EA2542A99800972D44 /* NCViewerImage.swift */,
 				F70753F02542A9A200972D44 /* NCViewerImageZoom.swift */,
+				F718C24D254D507B00C5C256 /* NCViewerImageDetailView.swift */,
 			);
 			path = NCViewerImage;
 			sourceTree = "<group>";
@@ -2054,6 +2057,7 @@
 				F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */,
 				F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */,
 				F749C10B23C4A5340027D966 /* NCIntroCollectionViewCell.swift in Sources */,
+				F718C24E254D507B00C5C256 /* NCViewerImageDetailView.swift in Sources */,
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,

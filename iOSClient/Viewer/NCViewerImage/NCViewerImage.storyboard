@@ -108,9 +108,17 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="30" y="862" width="354" height="128"/>
+                                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="128" id="z82-KD-lOv"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
+                                    <constraint firstItem="P8R-4f-zAl" firstAttribute="centerX" secondItem="CdQ-LC-Trx" secondAttribute="centerX" id="7h7-Y9-WNZ"/>
                                     <constraint firstItem="DAi-gz-qGP" firstAttribute="centerY" secondItem="2AU-85-K8y" secondAttribute="centerY" id="Lls-5R-JBM"/>
                                     <constraint firstAttribute="trailing" secondItem="DAi-gz-qGP" secondAttribute="trailing" constant="20" id="QWE-Iy-fcM"/>
                                     <constraint firstItem="kPV-JM-UnM" firstAttribute="leading" secondItem="CdQ-LC-Trx" secondAttribute="leading" id="asL-Ft-Lmc"/>
@@ -125,14 +133,18 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" id="Dld-07-ORT"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" constant="30" id="Mam-W3-bNj"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="30" id="acV-SP-xLs"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="leading" secondItem="fIE-H6-KKc" secondAttribute="leading" id="g8C-2m-KkX"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="top" secondItem="fIE-H6-KKc" secondAttribute="top" id="hcQ-lB-JwU"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="detailViewBottomConstraint" destination="Dld-07-ORT" id="Dm1-wX-drj"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
                         <outlet property="imageViewBottomConstraint" destination="xTI-ae-JfJ" id="vdW-Ma-BV1"/>
                         <outlet property="imageViewLeadingConstraint" destination="asL-Ft-Lmc" id="4cu-ey-QS1"/>
@@ -153,6 +165,9 @@
         <image name="audioOn" width="28" height="28"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemYellowColor">
+            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
