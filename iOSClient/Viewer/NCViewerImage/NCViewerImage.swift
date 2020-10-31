@@ -49,13 +49,9 @@ class NCViewerImage: UIViewController {
     var currentMetadata: tableMetadata = tableMetadata()
     var currentIndex = 0
     var nextIndex: Int?
-   
-    var startPanLocation = CGPoint.zero
-    let panDistanceForPopViewController: CGFloat = 150
-    let panDistanceForDetailView: CGFloat = -150
-    
+       
     var currentViewerImageZoom: NCViewerImageZoom?
-    var panGestureRecognizer: UIPanGestureRecognizer!
+    
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
     
@@ -70,7 +66,6 @@ class NCViewerImage: UIViewController {
         super.viewDidLoad()
         
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
-        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
         longtapGestureRecognizer.delaysTouchesBegan = true
         longtapGestureRecognizer.minimumPressDuration = 0.3
@@ -79,7 +74,6 @@ class NCViewerImage: UIViewController {
         
         pageViewController.delegate = self
         pageViewController.dataSource = self
-        pageViewController.view.addGestureRecognizer(panGestureRecognizer)
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
         
@@ -601,76 +595,6 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
 
 extension NCViewerImage: UIGestureRecognizerDelegate {
 
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-        if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer {
-            let velocity = gestureRecognizer.velocity(in: self.view)
-            
-            var velocityCheck : Bool = false
-            
-            if UIDevice.current.orientation.isLandscape {
-                velocityCheck = velocity.x < 0
-            }
-            else {
-                velocityCheck = velocity.y < 0
-            }
-            if velocityCheck {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        
-        if otherGestureRecognizer == currentViewController.scrollView.panGestureRecognizer {
-            if self.currentViewController.scrollView.contentOffset.y == 0 {
-                return true
-            }
-        }
-        
-        return false
-    }
-
-    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-        let currentLocation = gestureRecognizer.translation(in: self.view)
-
-        switch gestureRecognizer.state {
-        case .began:
-            startPanLocation = currentLocation
-            currentViewController.scrollView.isScrollEnabled = false
-        case .ended:
-            if !currentViewController.openDetailView {
-                currentViewController.scrollView.isScrollEnabled = true
-                currentViewController.imageViewTopConstraint.constant = currentViewController.defaultImageViewTopConstraint
-                currentViewController.imageViewBottomConstraint.constant = currentViewController.defaultImageViewBottomConstraint
-            }
-        case .changed:
-            let dy = currentLocation.y - startPanLocation.y
-            currentViewController.imageViewTopConstraint.constant = currentViewController.defaultImageViewTopConstraint + dy
-            currentViewController.imageViewBottomConstraint.constant = currentViewController.defaultImageViewBottomConstraint - dy
-            
-            if dy > panDistanceForPopViewController {
-                self.navigationController?.popViewController(animated: true)
-            }
-
-            if dy < panDistanceForDetailView {
-                currentViewController.detailViewBottomConstraint.constant = 200
-                currentViewController.openDetailView = true
-            }
-            
-            if dy > 0 {
-                currentViewController.defaultDetailViewConstraint()
-                currentViewController.openDetailView = false
-            }
-            
-            print(dy)
-        default:
-            break
-        }
-    }
-    
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
@@ -717,6 +641,10 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 
 extension NCViewerImage: NCViewerImageZoomDelegate {
    
+    func dismiss() {
+        self.navigationController?.popViewController(animated: true)
+    }
+    
     func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
         
         navigationItem.title = metadata.fileNameView

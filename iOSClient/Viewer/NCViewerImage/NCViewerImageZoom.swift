@@ -25,6 +25,7 @@ import UIKit
 protocol NCViewerImageZoomDelegate {
     func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+    func dismiss()
 }
 
 class NCViewerImageZoom: UIViewController {
@@ -44,7 +45,11 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var minScale: CGFloat = 0
+    
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
+    var startPanLocation = CGPoint.zero
+    let panDistanceForPopViewController: CGFloat = 150
+    let panDistanceForDetailView: CGFloat = -150
     
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
@@ -54,9 +59,6 @@ class NCViewerImageZoom: UIViewController {
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        
-        self.doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
-        self.doubleTapGestureRecognizer.numberOfTapsRequired = 2
     }
     
     override func viewDidLoad() {
@@ -82,7 +84,11 @@ class NCViewerImageZoom: UIViewController {
             statusLabel.text = ""
         }
         
+        doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2
         view.addGestureRecognizer(doubleTapGestureRecognizer)
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -129,6 +135,45 @@ class NCViewerImageZoom: UIViewController {
         let rectToZoomTo = CGRect(x: originX, y: originY, width: width, height: height)
         scrollView.zoom(to: rectToZoomTo, animated: true)
     }
+    
+    @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        let currentLocation = gestureRecognizer.translation(in: self.view)
+
+        switch gestureRecognizer.state {
+        case .began:
+            startPanLocation = currentLocation
+            scrollView.isScrollEnabled = false
+        case .ended:
+            if !openDetailView {
+                scrollView.isScrollEnabled = true
+                imageViewTopConstraint.constant = defaultImageViewTopConstraint
+                imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
+            }
+        case .changed:
+            let dy = currentLocation.y - startPanLocation.y
+            imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
+            imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
+            
+            if dy > panDistanceForPopViewController {
+                delegate?.dismiss()
+            }
+
+            if dy < panDistanceForDetailView {
+                detailViewBottomConstraint.constant = 200
+                openDetailView = true
+            }
+            
+            if dy > 0 {
+                defaultDetailViewConstraint()
+                openDetailView = false
+            }
+            
+            print(dy)
+        default:
+            break
+        }
+    }
+    
     
     //MARK: - Function
 
