@@ -49,10 +49,12 @@ class NCViewerImageZoom: UIViewController {
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
     var startPanLocation = CGPoint.zero
     let panDistanceForPopViewController: CGFloat = 150
-    let panDistanceForDetailView: CGFloat = -150
+    let panDistanceForDetailView: CGFloat = -20
     
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
+    var tempImageViewTopConstraint: CGFloat = 0
+    var tempImageViewBottomConstraint: CGFloat = 0
     var defaultDetailViewTopConstraint: CGFloat = 0
     
     var openDetailView: Bool = false
@@ -67,6 +69,12 @@ class NCViewerImageZoom: UIViewController {
         scrollView.delegate = self
         scrollView.contentInsetAdjustmentBehavior = .never
         
+        doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
+        doubleTapGestureRecognizer.numberOfTapsRequired = 2
+        
+        view.addGestureRecognizer(doubleTapGestureRecognizer)
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
+
         if image == nil {
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
         }
@@ -83,12 +91,6 @@ class NCViewerImageZoom: UIViewController {
             statusViewImage.image = nil
             statusLabel.text = ""
         }
-        
-        doubleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didDoubleTapWith(gestureRecognizer:)))
-        doubleTapGestureRecognizer.numberOfTapsRequired = 2
-        view.addGestureRecognizer(doubleTapGestureRecognizer)
-        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:))))
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -141,28 +143,40 @@ class NCViewerImageZoom: UIViewController {
 
         switch gestureRecognizer.state {
         case .began:
+            
             startPanLocation = currentLocation
             scrollView.isScrollEnabled = false
+            
+            tempImageViewTopConstraint = imageViewTopConstraint.constant
+            tempImageViewBottomConstraint = imageViewBottomConstraint.constant
+            
         case .ended:
+            
             if !openDetailView {
                 scrollView.isScrollEnabled = true
                 imageViewTopConstraint.constant = defaultImageViewTopConstraint
                 imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
             }
-        case .changed:
-            let dy = currentLocation.y - startPanLocation.y
-            imageViewTopConstraint.constant = defaultImageViewTopConstraint + dy
-            imageViewBottomConstraint.constant = defaultImageViewBottomConstraint - dy
             
+        case .changed:
+            
+            let dy = currentLocation.y - startPanLocation.y
+            
+            imageViewTopConstraint.constant = tempImageViewTopConstraint + dy
+            imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
+            
+            // DISMISS
             if dy > panDistanceForPopViewController {
                 delegate?.dismiss()
             }
 
+            // OPEN DETAIL
             if dy < panDistanceForDetailView {
-                detailViewBottomConstraint.constant = 200
+                detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - 40
                 openDetailView = true
             }
             
+            // CLOSE DETAIL
             if dy > 0 {
                 defaultDetailViewConstraint()
                 openDetailView = false
