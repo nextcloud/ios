@@ -34,10 +34,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
-    
-    @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
-    
+        
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
@@ -220,11 +217,7 @@ class NCViewerImageZoom: UIViewController {
         let xOffset = max(0, (size.width - imageView.frame.width) / 2)
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
-                        
-        // detail
-        detailViewHeightConstraint.constant = (view.bounds.width / 3) * 2
-        detailViewTopConstraint.constant = 0
-
+        
         view.layoutIfNeeded()
 
         let contentHeight = yOffset * 2 + imageView.frame.height
