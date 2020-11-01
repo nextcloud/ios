@@ -50,17 +50,16 @@ class NCViewerImageZoom: UIViewController {
     var startY: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-    var startPanLocation: CGPoint = CGPoint.zero
+
+    var imageViewCenter: CGPoint!
+
     var panDistanceClose: CGFloat = 0
     var panDistanceForDetailView: CGFloat = 0
     
     var defaultImageViewTopConstraint: CGFloat = 0
     var defaultImageViewBottomConstraint: CGFloat = 0
     var defaultDetailViewTopConstraint: CGFloat = 0
-    
-    var tempImageViewTopConstraint: CGFloat = 0
-    var tempImageViewBottomConstraint: CGFloat = 0
-    
+        
     var isOpenDetailView: Bool = false
 
     required init?(coder aDecoder: NSCoder) {
@@ -100,7 +99,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewWillAppear(animated)
 
         updateZoomScale()
-        baseConstraints()
+        updateConstraints()
         
         startY = imageView.frame.origin.y
         panDistanceClose = view.bounds.height / 4
@@ -121,7 +120,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidLayoutSubviews()
         
         updateZoomScale()
-        baseConstraints()
+        updateConstraints()
     }
     
     //MARK: - Gesture
@@ -150,32 +149,28 @@ class NCViewerImageZoom: UIViewController {
     }
     
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
+        
         let currentLocation = gestureRecognizer.translation(in: self.view)
+        guard let target = gestureRecognizer.view else { return }
         
         switch gestureRecognizer.state {
         case .began:
             
-            startPanLocation = currentLocation
             scrollView.isScrollEnabled = false
-            
-            tempImageViewTopConstraint = imageViewTopConstraint.constant
-            tempImageViewBottomConstraint = imageViewBottomConstraint.constant
+            imageViewCenter = target.center
             
         case .ended:
             
             if !isOpenDetailView {
                 
                 scrollView.isScrollEnabled = true
-                baseConstraints()
-//                imageViewTopConstraint.constant = defaultImageViewTopConstraint
-//                imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
+                target.center = self.view.center
+                updateConstraints()
             }
             
         case .changed:
             
-            let dy = currentLocation.y - startPanLocation.y
-            imageViewTopConstraint.constant = tempImageViewTopConstraint + dy
-            imageViewBottomConstraint.constant = tempImageViewBottomConstraint - dy
+            target.center = CGPoint(x: imageViewCenter!.x, y: imageViewCenter!.y + currentLocation.y)
             
             // DISMISS
             if imageView.frame.origin.y > panDistanceClose + startY {
@@ -223,7 +218,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = 1
     }
     
-    func baseConstraints() {
+    func updateConstraints() {
         
         let size = view.bounds.size
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
@@ -254,7 +249,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        baseConstraints()
+        updateConstraints()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
