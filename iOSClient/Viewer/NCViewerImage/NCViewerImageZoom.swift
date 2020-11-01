@@ -178,8 +178,6 @@ class NCViewerImageZoom: UIViewController {
             if target.center.y < view.center.y - panDistanceForDetailView {
                 
                 if !detailView.hasData() { return }
-
-                detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
                 
                 isOpenDetailView = true
             }
@@ -220,6 +218,10 @@ class NCViewerImageZoom: UIViewController {
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
                         
+        // detail
+        detailViewTopConstraint.constant = view.bounds.size.height / 2
+        detailViewHeightConstraint.constant = (view.bounds.width / 3) * 2
+
         view.layoutIfNeeded()
 
         let contentHeight = yOffset * 2 + imageView.frame.height
