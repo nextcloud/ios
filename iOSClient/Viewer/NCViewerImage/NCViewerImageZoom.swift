@@ -37,7 +37,6 @@ class NCViewerImageZoom: UIViewController {
         
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
-
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
@@ -52,9 +51,6 @@ class NCViewerImageZoom: UIViewController {
     var minScale: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-
-    var panDistanceClose: CGFloat = 0
-    var panDistanceForDetailView: CGFloat = 50
             
     var isOpenDetailView: Bool = false
     
@@ -99,11 +95,11 @@ class NCViewerImageZoom: UIViewController {
 
         updateZoomScale()
         updateConstraints()
-        
-        panDistanceClose = view.bounds.height / 7
-        
+                
         detailView.updateExifLocal(metadata: metadata)
-
+        detailViewHeightConstraint.constant = (imageView.bounds.height / 3) * 2
+        detailViewTopConstraint.constant = 0
+        
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
@@ -117,7 +113,9 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidLayoutSubviews()
         
         updateZoomScale()
-        updateConstraints()
+        if !isOpenDetailView {
+            updateConstraints()
+        }
     }
     
     //MARK: - Gesture
@@ -169,22 +167,24 @@ class NCViewerImageZoom: UIViewController {
                         
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-            
+                        
             // DISMISS
-            if imageView.center.y > view.center.y + panDistanceClose {
+            if imageView.center.y > view.center.y + 100 {
                 
                 delegate?.dismiss()
             }
 
             // OPEN DETAIL
-            if imageView.center.y < view.center.y - panDistanceForDetailView {
+            if imageView.center.y < view.center.y - 50 {
                 
+                detailViewTopConstraint.constant = imageViewBottomConstraint.constant
                 isOpenDetailView = true
             }
             
             // CLOSE DETAIL
-            if imageView.center.y >  view.center.y + panDistanceForDetailView {
+            if imageView.center.y >  view.center.y + 50 {
                 
+                detailViewTopConstraint.constant = 0
                 isOpenDetailView = false
             }
             
