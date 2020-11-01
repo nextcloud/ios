@@ -97,8 +97,9 @@ class NCViewerImageZoom: UIViewController {
         updateConstraints()
                 
         detailView.updateExifLocal(metadata: metadata)
-        detailViewHeightConstraint.constant = (imageView.bounds.height / 3) * 2
-        detailViewTopConstraint.constant = 0
+        //detailViewHeightConstraint.constant = (imageView.bounds.height / 3) * 2
+        //detailViewTopConstraint.constant = 0
+        detailView.isHidden = true
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -112,8 +113,8 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        updateZoomScale()
         if !isOpenDetailView {
+            updateZoomScale()
             updateConstraints()
         }
     }
@@ -167,7 +168,10 @@ class NCViewerImageZoom: UIViewController {
                         
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-                        
+            if isOpenDetailView {
+                detailViewTopConstraint.constant = imageViewBottomConstraint.constant
+            }
+            
             // DISMISS
             if imageView.center.y > view.center.y + 100 {
                 
@@ -177,14 +181,14 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                detailViewTopConstraint.constant = imageViewBottomConstraint.constant
+                detailView.isHidden = false
                 isOpenDetailView = true
             }
             
             // CLOSE DETAIL
             if imageView.center.y > view.center.y + 50 {
                 
-                detailViewTopConstraint.constant = 0
+                detailView.isHidden = true
                 isOpenDetailView = false
             }
             
