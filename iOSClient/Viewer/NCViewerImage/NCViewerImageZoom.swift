@@ -182,7 +182,7 @@ class NCViewerImageZoom: UIViewController {
             }
             
             // CLOSE DETAIL
-            if imageView.center.y >  view.center.y + 50 {
+            if imageView.center.y > view.center.y + 50 {
                 
                 detailViewTopConstraint.constant = 0
                 isOpenDetailView = false
