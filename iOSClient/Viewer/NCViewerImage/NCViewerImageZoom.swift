@@ -35,6 +35,10 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
         
+    @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
+    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
+
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!

@@ -164,6 +164,8 @@
                     </view>
                     <connections>
                         <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
+                        <outlet property="detailViewHeightConstraint" destination="zD7-Vw-cAA" id="4pI-xn-Z4y"/>
+                        <outlet property="detailViewTopConstraint" destination="WZj-5E-zmw" id="UII-KE-yeg"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
                         <outlet property="imageViewBottomConstraint" destination="xTI-ae-JfJ" id="vdW-Ma-BV1"/>
                         <outlet property="imageViewLeadingConstraint" destination="asL-Ft-Lmc" id="4cu-ey-QS1"/>
