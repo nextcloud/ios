@@ -109,7 +109,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="15" y="500" width="384" height="200"/>
+                                        <rect key="frame" x="15" y="448" width="384" height="200"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
                                                 <rect key="frame" x="0.0" y="30" width="384" height="140"/>
@@ -139,7 +139,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="CdQ-LC-Trx" secondAttribute="top" constant="500" id="4o4-cy-XLC"/>
+                                    <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="CdQ-LC-Trx" secondAttribute="centerY" id="4o4-cy-XLC"/>
                                     <constraint firstItem="P8R-4f-zAl" firstAttribute="centerX" secondItem="CdQ-LC-Trx" secondAttribute="centerX" id="7h7-Y9-WNZ"/>
                                     <constraint firstItem="DAi-gz-qGP" firstAttribute="centerY" secondItem="2AU-85-K8y" secondAttribute="centerY" id="Lls-5R-JBM"/>
                                     <constraint firstAttribute="trailing" secondItem="DAi-gz-qGP" secondAttribute="trailing" constant="20" id="QWE-Iy-fcM"/>

@@ -219,7 +219,7 @@ class NCViewerImageZoom: UIViewController {
         imageViewTrailingConstraint.constant = xOffset
                         
         // detail
-        detailViewTopConstraint.constant = view.bounds.size.height / 2
+        detailViewTopConstraint.constant = (view.bounds.size.height / 2) - 50
         detailViewHeightConstraint.constant = (view.bounds.width / 3) * 2
 
         view.layoutIfNeeded()
