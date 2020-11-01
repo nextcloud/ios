@@ -99,7 +99,7 @@ class NCViewerImageZoom: UIViewController {
         updateConstraints()
         
         panDistanceClose = view.bounds.height / 7
-        panDistanceForDetailView = view.bounds.height / 7
+        panDistanceForDetailView = 50
         
         detailView.updateExifLocal(metadata: metadata)
 
@@ -178,14 +178,16 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if target.center.y < view.center.y - panDistanceForDetailView {
                 
-                if !detailView.hasData() { return }
-                
+                //if !detailView.hasData() { return }
+                let newDetailViewY = imageView.frame.origin.y + imageView.frame.height
+                detailView.frame.origin.y = newDetailViewY
                 isOpenDetailView = true
             }
             
             // CLOSE DETAIL
             if target.center.y > view.center.y - panDistanceForDetailView {
                 
+                detailView.frame.origin.y = view.bounds.height
                 isOpenDetailView = false
             }
             
