@@ -100,7 +100,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewWillAppear(animated)
 
         updateZoomScale()
-        updateConstraints()
+        baseConstraints()
         
         startY = imageView.frame.origin.y
         panDistanceClose = view.bounds.height / 4
@@ -121,7 +121,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidLayoutSubviews()
         
         updateZoomScale()
-        updateConstraints()
+        baseConstraints()
     }
     
     //MARK: - Gesture
@@ -166,8 +166,9 @@ class NCViewerImageZoom: UIViewController {
             if !isOpenDetailView {
                 
                 scrollView.isScrollEnabled = true
-                imageViewTopConstraint.constant = defaultImageViewTopConstraint
-                imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
+                baseConstraints()
+//                imageViewTopConstraint.constant = defaultImageViewTopConstraint
+//                imageViewBottomConstraint.constant = defaultImageViewBottomConstraint
             }
             
         case .changed:
@@ -222,7 +223,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = 1
     }
     
-    func updateConstraints() {
+    func baseConstraints() {
         
         let size = view.bounds.size
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
@@ -253,7 +254,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraints()
+        baseConstraints()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
