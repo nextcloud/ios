@@ -59,6 +59,9 @@ class NCViewerImageZoom: UIViewController {
     var panDistanceForDetailView: CGFloat = 0
             
     var isOpenDetailView: Bool = false
+    
+    var startImageViewTopConstraint: CGFloat = 0
+    var startImageViewBottomConstraint: CGFloat = 0
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -154,21 +157,22 @@ class NCViewerImageZoom: UIViewController {
         case .began:
             
             scrollView.isScrollEnabled = false
-            imageViewCenter = target.center
+            // save start
+            startImageViewTopConstraint = imageViewTopConstraint.constant
+            startImageViewBottomConstraint = imageViewBottomConstraint.constant
             
         case .ended:
             
             if !isOpenDetailView {
                 
                 scrollView.isScrollEnabled = true
-                target.center = self.view.center
-                updateConstraints()
             }
             
         case .changed:
-            
-            target.center = CGPoint(x: imageViewCenter!.x, y: imageViewCenter!.y + currentLocation.y)
-            
+                        
+            imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
+            imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
+                        
             // DISMISS
             if target.center.y > view.center.y + panDistanceClose {
                 
