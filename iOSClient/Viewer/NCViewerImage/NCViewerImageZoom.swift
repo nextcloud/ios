@@ -168,7 +168,6 @@ class NCViewerImageZoom: UIViewController {
         case .changed:
             
             target.center = CGPoint(x: imageViewCenter!.x, y: imageViewCenter!.y + currentLocation.y)
-            detailView.frame.origin.y = imageViewCenter!.y
             
             // DISMISS
             if target.center.y > view.center.y + panDistanceClose {
@@ -179,16 +178,12 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if target.center.y < view.center.y - panDistanceForDetailView {
                 
-                //if !detailView.hasData() { return }
-                let newDetailViewY = imageView.frame.origin.y + imageView.frame.height
-                detailView.frame.origin.y = newDetailViewY
                 isOpenDetailView = true
             }
             
             // CLOSE DETAIL
             if target.center.y > view.center.y - panDistanceForDetailView {
                 
-                detailView.frame.origin.y = view.bounds.height
                 isOpenDetailView = false
             }
             
