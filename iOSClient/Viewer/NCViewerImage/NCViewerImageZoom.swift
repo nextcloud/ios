@@ -34,8 +34,10 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var detailViewBottomConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var statusViewImage: UIImageView!
@@ -47,7 +49,6 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var minScale: CGFloat = 0
-    var startY: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
 
@@ -55,11 +56,7 @@ class NCViewerImageZoom: UIViewController {
 
     var panDistanceClose: CGFloat = 0
     var panDistanceForDetailView: CGFloat = 0
-    
-    var defaultImageViewTopConstraint: CGFloat = 0
-    var defaultImageViewBottomConstraint: CGFloat = 0
-    var defaultDetailViewTopConstraint: CGFloat = 0
-        
+            
     var isOpenDetailView: Bool = false
 
     required init?(coder aDecoder: NSCoder) {
@@ -101,8 +98,7 @@ class NCViewerImageZoom: UIViewController {
         updateZoomScale()
         updateConstraints()
         
-        startY = imageView.frame.origin.y
-        panDistanceClose = view.bounds.height / 4
+        panDistanceClose = view.bounds.height / 7
         panDistanceForDetailView = view.bounds.height / 7
         
         detailView.updateExifLocal(metadata: metadata)
@@ -171,31 +167,26 @@ class NCViewerImageZoom: UIViewController {
         case .changed:
             
             target.center = CGPoint(x: imageViewCenter!.x, y: imageViewCenter!.y + currentLocation.y)
-            
+
             // DISMISS
-            if imageView.frame.origin.y > panDistanceClose + startY {
+            if target.center.y > view.center.y + panDistanceClose {
                 
                 delegate?.dismiss()
             }
 
             // OPEN DETAIL
-            if imageView.frame.origin.y < startY - panDistanceForDetailView {
+            if target.center.y < view.center.y - panDistanceForDetailView {
                 
                 if !detailView.hasData() { return }
 
                 detailViewHeightConstraint.constant = (view.frame.width / 3) * 2
-                let offsetBottom = self.view.safeAreaInsets.bottom + 20
-                detailViewBottomConstraint.constant = imageViewBottomConstraint.constant - offsetBottom
-                isOpenDetailView = true
                 
-//                imageViewTopConstraint.constant = tempImageViewTopConstraint - detailViewHeightConstraint.constant
-//                imageViewBottomConstraint.constant = tempImageViewBottomConstraint + detailViewHeightConstraint.constant
+                isOpenDetailView = true
             }
             
             // CLOSE DETAIL
-            if imageView.frame.origin.y > startY - panDistanceForDetailView {
+            if target.center.y > view.center.y - panDistanceForDetailView {
                 
-                detailViewBottomConstraint.constant = -40
                 isOpenDetailView = false
             }
             
@@ -228,13 +219,7 @@ class NCViewerImageZoom: UIViewController {
         let xOffset = max(0, (size.width - imageView.frame.width) / 2)
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
-        
-        defaultImageViewTopConstraint = imageViewTopConstraint.constant
-        defaultImageViewBottomConstraint = imageViewBottomConstraint.constant
-        detailViewBottomConstraint.constant = -40
-        
-        isOpenDetailView = false
-        
+                        
         view.layoutIfNeeded()
 
         let contentHeight = yOffset * 2 + imageView.frame.height
