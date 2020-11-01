@@ -167,7 +167,10 @@ class NCViewerImageZoom: UIViewController {
         case .changed:
             
             target.center = CGPoint(x: imageViewCenter!.x, y: imageViewCenter!.y + currentLocation.y)
-
+            
+            print(currentLocation.y)
+            detailViewTopConstraint.constant = -currentLocation.y
+            
             // DISMISS
             if target.center.y > view.center.y + panDistanceClose {
                 
@@ -219,8 +222,8 @@ class NCViewerImageZoom: UIViewController {
         imageViewTrailingConstraint.constant = xOffset
                         
         // detail
-        detailViewTopConstraint.constant = (view.bounds.size.height / 2) - 50
         detailViewHeightConstraint.constant = (view.bounds.width / 3) * 2
+        detailViewTopConstraint.constant = 0
 
         view.layoutIfNeeded()
 
