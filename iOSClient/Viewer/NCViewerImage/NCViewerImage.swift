@@ -699,15 +699,15 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
     }
     
     func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-        
-        navigationItem.title = metadata.fileNameView
-        currentMetadata = metadata
-        currentViewerImageZoom = viewerImageZoom
-        toolBar.isHidden = true
     }
     
     func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
                 
+        navigationItem.title = metadata.fileNameView
+        currentMetadata = metadata
+        currentViewerImageZoom = viewerImageZoom
+        toolBar.isHidden = true
+        
         videoStop()
 
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {

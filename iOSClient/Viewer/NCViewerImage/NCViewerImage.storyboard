@@ -92,8 +92,8 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="4" translatesAutoresizingMaskIntoConstraints="NO" id="CdQ-LC-Trx">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="1" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="206"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="downloadImageFullRes" translatesAutoresizingMaskIntoConstraints="NO" id="kPV-JM-UnM">
+                                        <rect key="frame" x="0.0" y="0.0" width="283" height="283"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="2AU-85-K8y">
                                         <rect key="frame" x="10" y="54" width="30" height="30"/>
@@ -103,7 +103,7 @@
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DAi-gz-qGP">
-                                        <rect key="frame" x="48" y="60.5" width="252" height="17"/>
+                                        <rect key="frame" x="48" y="60.5" width="215" height="17"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -195,8 +195,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="1" width="320" height="206"/>
         <image name="audioOn" width="28" height="28"/>
+        <image name="downloadImageFullRes" width="283" height="283"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
