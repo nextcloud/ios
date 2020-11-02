@@ -51,9 +51,7 @@ class NCViewerImageZoom: UIViewController {
     var minScale: CGFloat = 0
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
-            
-    private var isOpenDetailView: Bool = false
-    
+                
     private var startImageViewTopConstraint: CGFloat = 0
     private var startImageViewBottomConstraint: CGFloat = 0
 
@@ -99,8 +97,7 @@ class NCViewerImageZoom: UIViewController {
         detailView.updateExifLocal(metadata: metadata)
         detailViewHeightConstraint.constant = view.bounds.width
         detailViewTopConstraint.constant = 0
-        isOpenDetailView = false
-        detailView.isHidden = true
+        detailView.hide()
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -122,7 +119,7 @@ class NCViewerImageZoom: UIViewController {
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
         
-        if isOpenDetailView { return }
+        if detailView.isShow() { return }
         
         let pointInView = gestureRecognizer.location(in: imageView)
         var newZoomScale = scrollView.maximumZoomScale
@@ -158,7 +155,7 @@ class NCViewerImageZoom: UIViewController {
             
         case .ended:
             
-            if !isOpenDetailView {
+            if !detailView.isShow() {
                 updateConstraints()
                 scrollView.isScrollEnabled = true
             }
@@ -178,15 +175,13 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                detailView.isHidden = false
-                isOpenDetailView = true
+                detailView.show()
             }
             
             // CLOSE DETAIL
             if imageView.center.y > view.center.y + 50 {
                 
-                detailView.isHidden = true
-                isOpenDetailView = false
+                detailView.hide()
             }
             
         default:
@@ -221,8 +216,7 @@ class NCViewerImageZoom: UIViewController {
         
         // reset detail
         detailViewTopConstraint.constant = 0
-        isOpenDetailView = false
-        detailView.isHidden = true
+        detailView.hide()
         
         view.layoutIfNeeded()
 

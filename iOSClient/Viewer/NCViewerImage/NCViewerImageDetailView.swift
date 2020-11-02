@@ -84,6 +84,7 @@ class NCViewerImageDetailView: UIView {
                             let dateString = formatter.string(from: date as Date)
                             formatter.dateFormat = "HH:mm"
                             let timeString = formatter.string(from: date as Date)
+                            
                             self.dateLabel.text = dateString + ", " + timeString
                         }
                         
@@ -103,5 +104,18 @@ class NCViewerImageDetailView: UIView {
         } else {
             return false
         }
+    }
+    
+    func show() {
+        self.dateLabel.textColor = NCBrandColor.sharedInstance.textView
+        self.isHidden = false
+    }
+    
+    func hide() {
+        self.isHidden = true
+    }
+    
+    func isShow() -> Bool {
+        return !self.isHidden
     }
 }
