@@ -31,10 +31,27 @@ class NCViewerImageDetailView: UIView {
     
     @IBAction func touchLocation(_ sender: Any) {
         if self.latitude > 0 && self.longitude > 0 {
-            let url = URL(string: "http://maps.apple.com/maps?saddr=&daddr=\(latitude),\(longitude)")
-            UIApplication.shared.open(url!)
+            openMapForPlace()
         }
     }
+    
+    func openMapForPlace() {
+
+        let latitude: CLLocationDegrees = self.latitude
+        let longitude: CLLocationDegrees = self.longitude
+
+            let regionDistance:CLLocationDistance = 10000
+            let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+            let options = [
+                MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+                MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+            ]
+            let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
+            let mapItem = MKMapItem(placemark: placemark)
+            mapItem.name = location
+            mapItem.openInMaps(launchOptions: options)
+        }
     
     func updateExifLocal(metadata: tableMetadata) {
         
