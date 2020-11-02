@@ -161,6 +161,11 @@ class NCViewerImageZoom: UIViewController {
             
             let deltaY = startPoint.y - currentLocation.y
             print(deltaY)
+            
+            // close
+            if deltaY < -50 && detailView.isShow() {
+                
+            }
                         
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
