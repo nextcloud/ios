@@ -694,14 +694,11 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 
 extension NCViewerImage: NCViewerImageZoomDelegate {
    
-    func dismiss() {
+    func dismissImageZoom() {
         self.navigationController?.popViewController(animated: true)
     }
     
-    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
-    }
-    
-    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+    func presentImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
                 
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
