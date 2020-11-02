@@ -275,6 +275,7 @@ import Queuer
                     
                     NCEndToEndEncryption.sharedManager()?.decryptFileName(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
+                CCUtility.setExif(metadata)
                 #endif
                                 
             } else {
@@ -503,6 +504,7 @@ import Queuer
                         appDelegate.networkingAutoUpload.startProcess()
                     }
                 }
+                CCUtility.setExif(metadata)
                 #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")

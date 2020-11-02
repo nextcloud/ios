@@ -1698,8 +1698,9 @@
     NSDate *date = [NSDate new];
     
     // test
-    if (![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView])
+    if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         return;
+    }
     
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 
