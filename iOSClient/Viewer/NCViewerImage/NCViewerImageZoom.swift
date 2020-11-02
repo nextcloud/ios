@@ -99,7 +99,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidAppear(animated)
         
         detailView.updateExifLocal(metadata: metadata)
-        detailViewHeightConstraint.constant = view.bounds.width
+        detailViewHeightConstraint.constant = (view.bounds.width / 2)
         detailViewTopConstraint.constant = 0
         detailView.hide()
         
