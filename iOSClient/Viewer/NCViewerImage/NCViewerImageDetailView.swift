@@ -29,6 +29,13 @@ class NCViewerImageDetailView: UIView {
         mapView.isUserInteractionEnabled = false
     }
     
+    @IBAction func touchLocation(_ sender: Any) {
+        if self.latitude > 0 && self.longitude > 0 {
+            let url = URL(string: "http://maps.apple.com/maps?saddr=&daddr=\(latitude),\(longitude)")
+            UIApplication.shared.open(url!)
+        }
+    }
+    
     func updateExifLocal(metadata: tableMetadata) {
         
         DispatchQueue.global().async {

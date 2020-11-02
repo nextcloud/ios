@@ -144,6 +144,7 @@ class NCViewerImageZoom: UIViewController {
     
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         
+        if !detailView.hasData() { return }
         let currentLocation = gestureRecognizer.translation(in: self.view)
         
         switch gestureRecognizer.state {
@@ -168,7 +169,7 @@ class NCViewerImageZoom: UIViewController {
             detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
-            if imageView.center.y > view.center.y + 100 {
+            if imageView.center.y > view.center.y + 150 {
                 
                 delegate?.dismiss()
             }
