@@ -98,7 +98,7 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        //detailView.updateExifLocal(metadata: metadata)
+        detailView.updateExifLocal(metadata: metadata)
         detailViewHeightConstraint.constant = view.bounds.width
         detailViewTopConstraint.constant = 0
         detailView.hide()
