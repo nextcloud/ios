@@ -1697,7 +1697,6 @@
     
     NSDate *date = [NSDate new];
     
-    // test
     if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         return;
     }
@@ -1705,12 +1704,14 @@
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
 
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
-    if (!originalSource)
+    if (!originalSource) {
         return;
+    }
     
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
-    if (!imageProperties)
+    if (!imageProperties) {
         return;
+    }
     
     CFDictionaryRef tiff = CFDictionaryGetValue(imageProperties, kCGImagePropertyTIFFDictionary);
     CFDictionaryRef gps = CFDictionaryGetValue(imageProperties, kCGImagePropertyGPSDictionary);
@@ -1736,20 +1737,22 @@
         
         // conversion 4 decimal +N -S
         // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
-        if ([latitudeRef isEqualToString:@"N"])
+        if ([latitudeRef isEqualToString:@"N"]) {
             stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
-        else
+        } else {
             stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+        }
         
         // conversion 4 decimal +E -W
         // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
         // and negative values extending west of the meridian.
-        if ([longitudeRef isEqualToString:@"E"])
+        if ([longitudeRef isEqualToString:@"E"]) {
             stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
-        else
+        } else {
             stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+        }
         
-        if (latitude == 0 || longitude == 0){
+        if (latitude == 0 || longitude == 0) {
             
             stringLatitude = @"0";
             stringLongitude = @"0";
