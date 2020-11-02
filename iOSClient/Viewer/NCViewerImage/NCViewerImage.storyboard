@@ -108,6 +108,33 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="562" width="414" height="300"/>
+                                        <subviews>
+                                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
+                                                <rect key="frame" x="0.0" y="30" width="414" height="239"/>
+                                            </mapView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
+                                                <rect key="frame" x="0.0" y="269" width="52" height="29"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <state key="normal" title="location"/>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemRedColor"/>
+                                        <constraints>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="30" id="1o6-BQ-z66"/>
+                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="Typ-A8-XIO" secondAttribute="leading" id="HKa-ns-hP8"/>
+                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="TZs-UV-VG8"/>
+                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="269" id="faO-OA-Jmc"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="jre-DM-hm3"/>
+                                            <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" id="nAm-fh-5Px"/>
+                                            <constraint firstAttribute="height" constant="300" id="zD7-Vw-cAA"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
+                                            <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
+                                        </connections>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -120,52 +147,25 @@
                                     <constraint firstAttribute="bottom" secondItem="kPV-JM-UnM" secondAttribute="bottom" id="xTI-ae-JfJ"/>
                                 </constraints>
                             </scrollView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="846" width="414" height="300"/>
-                                <subviews>
-                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                        <rect key="frame" x="0.0" y="30" width="414" height="239"/>
-                                    </mapView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
-                                        <rect key="frame" x="0.0" y="269" width="52" height="29"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <state key="normal" title="location"/>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" systemColor="systemRedColor"/>
-                                <constraints>
-                                    <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="30" id="1o6-BQ-z66"/>
-                                    <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="Typ-A8-XIO" secondAttribute="leading" id="HKa-ns-hP8"/>
-                                    <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="TZs-UV-VG8"/>
-                                    <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="269" id="faO-OA-Jmc"/>
-                                    <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="jre-DM-hm3"/>
-                                    <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" id="nAm-fh-5Px"/>
-                                    <constraint firstAttribute="height" constant="300" id="zD7-Vw-cAA"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
-                                    <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
-                                </connections>
-                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Yo6-7W-moG"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="trailing" secondItem="Yo6-7W-moG" secondAttribute="trailing" id="2kP-JC-gnJ"/>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="Yo6-7W-moG" secondAttribute="bottom" constant="-300" id="B4O-kU-vwy"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
-                            <constraint firstAttribute="bottom" secondItem="P8R-4f-zAl" secondAttribute="top" constant="50" id="WZj-5E-zmw"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" id="dly-i5-fPW"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="leading" secondItem="fIE-H6-KKc" secondAttribute="leading" id="g8C-2m-KkX"/>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" id="hRC-TX-1AD"/>
                             <constraint firstItem="CdQ-LC-Trx" firstAttribute="top" secondItem="fIE-H6-KKc" secondAttribute="top" id="hcQ-lB-JwU"/>
+                            <constraint firstItem="Yo6-7W-moG" firstAttribute="trailing" secondItem="P8R-4f-zAl" secondAttribute="trailing" id="jf2-Nv-gFi"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
                         <outlet property="detailViewHeightConstraint" destination="zD7-Vw-cAA" id="4pI-xn-Z4y"/>
-                        <outlet property="detailViewTopConstraint" destination="WZj-5E-zmw" id="UII-KE-yeg"/>
+                        <outlet property="detailViewTopConstraint" destination="B4O-kU-vwy" id="8Av-5H-ygG"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
                         <outlet property="imageViewBottomConstraint" destination="xTI-ae-JfJ" id="vdW-Ma-BV1"/>
                         <outlet property="imageViewLeadingConstraint" destination="asL-Ft-Lmc" id="4cu-ey-QS1"/>

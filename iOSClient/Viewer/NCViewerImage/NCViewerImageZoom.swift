@@ -113,10 +113,8 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        if !isOpenDetailView {
-            updateZoomScale()
-            updateConstraints()
-        }
+        updateZoomScale()
+        updateConstraints()
     }
     
     //MARK: - Gesture
@@ -169,7 +167,7 @@ class NCViewerImageZoom: UIViewController {
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
             if isOpenDetailView {
-                detailViewTopConstraint.constant = imageViewBottomConstraint.constant
+                detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             }
             
             // DISMISS
