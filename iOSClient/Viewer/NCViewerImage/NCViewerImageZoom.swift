@@ -52,10 +52,10 @@ class NCViewerImageZoom: UIViewController {
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
             
-    var isOpenDetailView: Bool = false
+    private var isOpenDetailView: Bool = false
     
-    var startImageViewTopConstraint: CGFloat = 0
-    var startImageViewBottomConstraint: CGFloat = 0
+    private var startImageViewTopConstraint: CGFloat = 0
+    private var startImageViewBottomConstraint: CGFloat = 0
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
