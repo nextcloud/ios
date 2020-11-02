@@ -189,7 +189,7 @@ class NCViewerImageZoom: UIViewController {
             if imageView.center.y > view.center.y + 50 {
                 
                 detailView.isHidden = true
-                isOpenDetailView = false
+               // isOpenDetailView = false
             }
             
         default:
