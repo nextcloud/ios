@@ -112,7 +112,7 @@
                                         <rect key="frame" x="0.0" y="562" width="414" height="300"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="15" y="50" width="384" height="221"/>
+                                                <rect key="frame" x="15" y="97" width="384" height="174"/>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
                                                 <rect key="frame" x="15" y="271" width="384" height="29"/>
@@ -122,19 +122,28 @@
                                                     <action selector="touchLocation:" destination="P8R-4f-zAl" eventType="touchUpInside" id="Z9s-pM-WsS"/>
                                                 </connections>
                                             </button>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Son-CZ-zFa">
+                                                <rect key="frame" x="15" y="70" width="384" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="50" id="1o6-BQ-z66"/>
+                                            <constraint firstItem="Son-CZ-zFa" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="70" id="7LC-Ml-lxV"/>
+                                            <constraint firstAttribute="trailing" secondItem="Son-CZ-zFa" secondAttribute="trailing" constant="15" id="8Jj-fx-eQP"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="Son-CZ-zFa" secondAttribute="bottom" constant="10" id="IOL-oZ-F3c"/>
                                             <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="MUo-UC-1d4"/>
                                             <constraint firstAttribute="bottom" secondItem="oov-9f-Oeu" secondAttribute="bottom" id="YuK-2v-kzk"/>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="jre-DM-hm3"/>
                                             <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="lXY-IM-uQB"/>
                                             <constraint firstAttribute="trailing" secondItem="oov-9f-Oeu" secondAttribute="trailing" constant="15" id="mpQ-4V-Yfc"/>
                                             <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" constant="15" id="nAm-fh-5Px"/>
+                                            <constraint firstItem="Son-CZ-zFa" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="vsg-gX-rNv"/>
                                             <constraint firstAttribute="height" constant="300" id="zD7-Vw-cAA"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="dateLabel" destination="Son-CZ-zFa" id="0Wi-XW-0hw"/>
                                             <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
                                             <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
                                         </connections>

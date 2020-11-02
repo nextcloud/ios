@@ -99,6 +99,7 @@ class NCViewerImageZoom: UIViewController {
         detailView.updateExifLocal(metadata: metadata)
         detailViewHeightConstraint.constant = view.bounds.width
         detailViewTopConstraint.constant = 0
+        isOpenDetailView = false
         detailView.isHidden = true
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
@@ -218,8 +219,10 @@ class NCViewerImageZoom: UIViewController {
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
         
-        // detail
-        detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
+        // reset detail
+        detailViewTopConstraint.constant = 0
+        isOpenDetailView = false
+        detailView.isHidden = true
         
         view.layoutIfNeeded()
 
