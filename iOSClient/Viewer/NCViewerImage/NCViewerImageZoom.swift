@@ -181,7 +181,10 @@ class NCViewerImageZoom: UIViewController {
             // CLOSE DETAIL
             if imageView.center.y > view.center.y + 50 {
                 
-                detailView.hide()
+                if detailView.isShow() {
+                    detailView.hide()
+                    gestureRecognizer.state = .ended
+                }
             }
             
         default:
