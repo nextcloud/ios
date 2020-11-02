@@ -718,6 +718,18 @@
     [UICKeyChainStore setString:sSet forKey:@"audioMute" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getAutomaticDownloadImage
+{
+    return [[UICKeyChainStore stringForKey:@"automaticDownloadImage" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setAutomaticDownloadImage:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"automaticDownloadImage" service:k_serviceShareKeyChain];
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Various =====
 #pragma --------------------------------------------------------------------------------------------

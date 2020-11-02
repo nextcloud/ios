@@ -143,6 +143,8 @@
 "_leave_share_"             = "Leave this share";
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
+"_automatic_Download_Image_" = "Use images in full resolution";
+"_automatic_Download_Image_footer_" = "When viewing images always download, if not available locally, the images in full resolution";
 
 // App
 

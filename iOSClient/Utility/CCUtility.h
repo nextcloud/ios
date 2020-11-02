@@ -176,6 +176,9 @@
 + (BOOL)getAudioMute;
 + (void)setAudioMute:(BOOL)set;
 
++ (BOOL)getAutomaticDownloadImage;
++ (void)setAutomaticDownloadImage:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
