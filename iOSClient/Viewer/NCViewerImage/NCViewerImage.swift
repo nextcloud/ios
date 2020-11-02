@@ -723,7 +723,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
         // DOWNLOAD FILE
-        if (metadata.typeFile == k_metadataTypeFile_image && CCUtility.getAutomaticDownloadImage()) || ((metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+        if ((metadata.typeFile == k_metadataTypeFile_image && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)
         }
             
