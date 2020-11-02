@@ -106,8 +106,8 @@ class NCViewerImageDetailView: UIView {
         }
     }
     
-    func show() {
-        self.dateLabel.textColor = NCBrandColor.sharedInstance.textView
+    func show(textColor: UIColor) {
+        self.dateLabel.textColor = textColor
         self.isHidden = false
     }
     

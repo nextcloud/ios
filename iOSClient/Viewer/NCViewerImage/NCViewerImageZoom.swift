@@ -45,6 +45,7 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var detailView: NCViewerImageDetailView!
     
     var delegate: NCViewerImageZoomDelegate?
+    var viewerImage: NCViewerImage?
     var image: UIImage?
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
@@ -175,7 +176,9 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                detailView.show()
+                if let textColor = self.viewerImage?.textColor {
+                    detailView.show(textColor: textColor)
+                }
             }
             
             // CLOSE DETAIL

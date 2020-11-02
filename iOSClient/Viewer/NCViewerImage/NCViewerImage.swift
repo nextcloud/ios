@@ -61,6 +61,7 @@ class NCViewerImage: UIViewController {
     private var rateObserverToken: Any?
     var seekTime: CMTime?
     var pictureInPictureOcId: String = ""
+    var textColor: UIColor = NCBrandColor.sharedInstance.textView
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +86,7 @@ class NCViewerImage: UIViewController {
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
 
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -250,6 +252,7 @@ class NCViewerImage: UIViewController {
         
         if currentMode == .normal {
             view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            textColor = NCBrandColor.sharedInstance.textView
         }
         toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
@@ -517,6 +520,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -533,6 +537,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
         viewerImageZoom.metadata = metadatas[currentIndex]
         viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -548,6 +553,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex - 1])
         viewerImageZoom.metadata = metadatas[currentIndex - 1]
         viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
         
         self.singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
         
@@ -563,6 +569,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
         viewerImageZoom.image = getImageMetadata(metadatas[currentIndex + 1])
         viewerImageZoom.metadata = metadatas[currentIndex + 1]
         viewerImageZoom.delegate = self
+        viewerImageZoom.viewerImage = self
         
         singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
 
@@ -635,7 +642,12 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     }
     
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-                
+             
+        if currentViewerImageZoom?.detailView.isShow() ?? false {
+            currentViewerImageZoom?.updateConstraints()
+            return
+        }
+        
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
             videoStop()
@@ -660,6 +672,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 
                 navigationController?.setNavigationBarHidden(false, animated: false)
                 view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+                textColor = NCBrandColor.sharedInstance.textView
                 progressView.isHidden = false
                 
                 currentMode = .normal
@@ -668,6 +681,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 
                 navigationController?.setNavigationBarHidden(true, animated: false)
                 view.backgroundColor = .black
+                textColor = .white
                 progressView.isHidden = true
                 
                 currentMode = .full
