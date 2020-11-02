@@ -9,4 +9,3 @@
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
 #import "CCPeekPop.h"
-#import "CCExifGeo.h"

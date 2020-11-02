@@ -25,6 +25,7 @@
 #import "CCGraphics.h"
 #import "NCBridgeSwift.h"
 #import <OpenSSL/OpenSSL.h>
+#import <CoreLocation/CoreLocation.h>
 
 #define INTRO_MessageType       @"MessageType_"
 
@@ -1676,6 +1677,134 @@
     BOOL canEdit = (canCreate && canChange && canRead);
     
     return canEdit;
+    
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== EXIF =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (void)setExif:(tableMetadata *)metadata
+{
+    NSString *dateTime;
+    NSString *latitudeRef;
+    NSString *longitudeRef;
+    NSString *stringLatitude = @"0";
+    NSString *stringLongitude = @"0";
+    
+    double latitude = 0;
+    double longitude = 0;
+    
+    NSDate *date = [NSDate new];
+    
+    // test
+    if (![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView])
+        return;
+    
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
+
+    CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
+    if (!originalSource)
+        return;
+    
+    CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
+    if (!imageProperties)
+        return;
+    
+    CFDictionaryRef tiff = CFDictionaryGetValue(imageProperties, kCGImagePropertyTIFFDictionary);
+    CFDictionaryRef gps = CFDictionaryGetValue(imageProperties, kCGImagePropertyGPSDictionary);
+
+    if (tiff) {
+        
+        dateTime = (NSString *)CFDictionaryGetValue(tiff, kCGImagePropertyTIFFDateTime);
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+    
+        date = [dateFormatter dateFromString:dateTime];
+        if (!date) date = metadata.date;
+    }
+    
+    if (gps) {
+        
+        latitude = [(NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitude) doubleValue];
+        longitude = [(NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitude) doubleValue];
+        
+        latitudeRef = (NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitudeRef);
+        longitudeRef = (NSString *)CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitudeRef);
+        
+        // conversion 4 decimal +N -S
+        // The latitude in degrees. Positive values indicate latitudes north of the equator. Negative values indicate latitudes south of the equator.
+        if ([latitudeRef isEqualToString:@"N"])
+            stringLatitude = [NSString stringWithFormat:@"+%.4f", latitude];
+        else
+            stringLatitude = [NSString stringWithFormat:@"-%.4f", latitude];
+        
+        // conversion 4 decimal +E -W
+        // The longitude in degrees. Measurements are relative to the zero meridian, with positive values extending east of the meridian
+        // and negative values extending west of the meridian.
+        if ([longitudeRef isEqualToString:@"E"])
+            stringLongitude = [NSString stringWithFormat:@"+%.4f", longitude];
+        else
+            stringLongitude = [NSString stringWithFormat:@"-%.4f", longitude];
+        
+        if (latitude == 0 || longitude == 0){
+            
+            stringLatitude = @"0";
+            stringLongitude = @"0";
+        }
+    }
+
+    // Wite data EXIF in DB
+    if (tiff || gps) {
+        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude];
+        if ([stringLatitude doubleValue] != 0 || [stringLongitude doubleValue] != 0) {
+            
+            // If exists already geocoder data in TableGPS exit
+            if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude]) {
+                return;
+            }
+            
+            CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:latitude longitude:longitude];
+            
+            [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+                        
+                if (error == nil && [placemarks count] > 0) {
+                    
+                    CLPlacemark *placemark = [placemarks lastObject];
+                    
+                    NSString *thoroughfare = @"";
+                    NSString *postalCode = @"";
+                    NSString *locality = @"";
+                    NSString *administrativeArea = @"";
+                    NSString *country = @"";
+                    
+                    if (placemark.thoroughfare) thoroughfare = placemark.thoroughfare;
+                    if (placemark.postalCode) postalCode = placemark.postalCode;
+                    if (placemark.locality) locality = placemark.locality;
+                    if (placemark.administrativeArea) administrativeArea = placemark.administrativeArea;
+                    if (placemark.country) country = placemark.country;
+                    
+                    NSString *location = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", thoroughfare, postalCode, locality, administrativeArea, country];
+                    location = [location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                    
+                    // GPS
+                    if ([location length] > 0) {
+                        
+                        [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
+                    }
+                }
+            }];
+        }
+    }
+       
+    CFRelease(originalSource);
+    CFRelease(imageProperties);
+}
+
+- (void)setGeocoder:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
+{
     
 }
 

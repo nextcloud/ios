@@ -265,6 +265,10 @@
 + (BOOL)isPermissionToRead:(NSInteger) permissionValue;
 + (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
 
+// ===== EXIF =====
+
++ (void)setExif:(tableMetadata *)metadata;
+
 // ===== Third parts =====
 
 + (NSString *)stringValueForKey:(id)key conDictionary:(NSDictionary *)dictionary;
