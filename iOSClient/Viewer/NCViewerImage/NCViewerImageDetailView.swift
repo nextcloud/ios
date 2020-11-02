@@ -11,12 +11,12 @@ import MapKit
 
 class NCViewerImageDetailView: UIView {
     
+    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
     var annotation = MKPointAnnotation()
-    
     var latitude: Double = 0
     var longitude: Double = 0
     var location: String = ""
@@ -94,23 +94,24 @@ class NCViewerImageDetailView: UIView {
     }
     
     func hasData() -> Bool {
-        if self.latitude > 0 && self.longitude > 0 {
+        if latitude > 0 && longitude > 0 {
             return true
         } else {
             return false
         }
     }
     
-    func show(textColor: UIColor) {
-        self.dateLabel.textColor = textColor
-        self.isHidden = false
+    func show(height: CGFloat, textColor: UIColor) {
+        detailViewHeightConstraint.constant = height
+        dateLabel.textColor = textColor
+        isHidden = false
     }
     
     func hide() {
-        self.isHidden = true
+        isHidden = true
     }
     
     func isShow() -> Bool {
-        return !self.isHidden
+        return !isHidden
     }
 }

@@ -144,6 +144,7 @@
                                         </constraints>
                                         <connections>
                                             <outlet property="dateLabel" destination="Son-CZ-zFa" id="0Wi-XW-0hw"/>
+                                            <outlet property="detailViewHeightConstraint" destination="zD7-Vw-cAA" id="gUw-lv-4eV"/>
                                             <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
                                             <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
                                         </connections>
@@ -177,7 +178,6 @@
                     </view>
                     <connections>
                         <outlet property="detailView" destination="P8R-4f-zAl" id="xFW-qq-Cdi"/>
-                        <outlet property="detailViewHeightConstraint" destination="zD7-Vw-cAA" id="4pI-xn-Z4y"/>
                         <outlet property="detailViewTopConstraint" destination="B4O-kU-vwy" id="8Av-5H-ygG"/>
                         <outlet property="imageView" destination="kPV-JM-UnM" id="TEv-Tc-8pu"/>
                         <outlet property="imageViewBottomConstraint" destination="xTI-ae-JfJ" id="vdW-Ma-BV1"/>

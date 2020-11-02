@@ -35,7 +35,6 @@ class NCViewerImageZoom: UIViewController {
     @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
         
     @IBOutlet weak var detailViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var imageView: UIImageView!
@@ -54,6 +53,7 @@ class NCViewerImageZoom: UIViewController {
                 
     private var startImageViewTopConstraint: CGFloat = 0
     private var startImageViewBottomConstraint: CGFloat = 0
+    private var startPoint = CGPoint.zero
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -99,7 +99,6 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidAppear(animated)
         
         detailView.updateExifLocal(metadata: metadata)
-        detailViewHeightConstraint.constant = (view.bounds.width / 2)
         detailViewTopConstraint.constant = 0
         detailView.hide()
         
@@ -140,12 +139,12 @@ class NCViewerImageZoom: UIViewController {
     
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
         
-        if !detailView.hasData() { return }
         let currentLocation = gestureRecognizer.translation(in: self.view)
         
         switch gestureRecognizer.state {
         case .began:
             
+            startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
             scrollView.isScrollEnabled = false
             // save start
             startImageViewTopConstraint = imageViewTopConstraint.constant
@@ -159,6 +158,9 @@ class NCViewerImageZoom: UIViewController {
             }
             
         case .changed:
+            
+            let deltaY = startPoint.y - currentLocation.y
+            print(deltaY)
                         
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
@@ -173,9 +175,11 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                if let textColor = self.viewerImage?.textColor {
-                    detailView.show(textColor: textColor)
-                }
+                if !detailView.hasData() { return }
+                guard let textColor = self.viewerImage?.textColor else {return }
+                
+                let height = (view.bounds.width / 3) * 2
+                detailView.show(height: height, textColor: textColor)
             }
             
             // CLOSE DETAIL
