@@ -112,10 +112,10 @@
                                         <rect key="frame" x="0.0" y="562" width="414" height="300"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="0.0" y="30" width="414" height="239"/>
+                                                <rect key="frame" x="0.0" y="30" width="414" height="241"/>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
-                                                <rect key="frame" x="0.0" y="269" width="52" height="29"/>
+                                                <rect key="frame" x="0.0" y="271" width="414" height="29"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <state key="normal" title="location"/>
                                             </button>
@@ -123,10 +123,11 @@
                                         <color key="backgroundColor" systemColor="systemRedColor"/>
                                         <constraints>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="30" id="1o6-BQ-z66"/>
-                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="Typ-A8-XIO" secondAttribute="leading" id="HKa-ns-hP8"/>
-                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="TZs-UV-VG8"/>
-                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="269" id="faO-OA-Jmc"/>
+                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="MUo-UC-1d4"/>
+                                            <constraint firstAttribute="bottom" secondItem="oov-9f-Oeu" secondAttribute="bottom" id="YuK-2v-kzk"/>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="jre-DM-hm3"/>
+                                            <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" id="lXY-IM-uQB"/>
+                                            <constraint firstAttribute="trailing" secondItem="oov-9f-Oeu" secondAttribute="trailing" id="mpQ-4V-Yfc"/>
                                             <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" id="nAm-fh-5Px"/>
                                             <constraint firstAttribute="height" constant="300" id="zD7-Vw-cAA"/>
                                         </constraints>
