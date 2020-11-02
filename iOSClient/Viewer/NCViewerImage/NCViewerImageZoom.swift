@@ -99,7 +99,7 @@ class NCViewerImageZoom: UIViewController {
         detailView.updateExifLocal(metadata: metadata)
         detailViewHeightConstraint.constant = view.bounds.width
         detailViewTopConstraint.constant = 0
-        //detailView.isHidden = true
+        detailView.isHidden = true
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -157,8 +157,7 @@ class NCViewerImageZoom: UIViewController {
         case .ended:
             
             if !isOpenDetailView {
-                
-                //updateConstraints()
+                updateConstraints()
                 scrollView.isScrollEnabled = true
             }
             
@@ -166,9 +165,7 @@ class NCViewerImageZoom: UIViewController {
                         
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
-            if isOpenDetailView {
-                detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
-            }
+            detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
             if imageView.center.y > view.center.y + 100 {
@@ -179,14 +176,14 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                //detailView.isHidden = false
+                detailView.isHidden = false
                 isOpenDetailView = true
             }
             
             // CLOSE DETAIL
             if imageView.center.y > view.center.y + 50 {
                 
-                //detailView.isHidden = true
+                detailView.isHidden = true
                 isOpenDetailView = false
             }
             
@@ -219,6 +216,9 @@ class NCViewerImageZoom: UIViewController {
         let xOffset = max(0, (size.width - imageView.frame.width) / 2)
         imageViewLeadingConstraint.constant = xOffset
         imageViewTrailingConstraint.constant = xOffset
+        
+        // detail
+        detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
         
         view.layoutIfNeeded()
 
