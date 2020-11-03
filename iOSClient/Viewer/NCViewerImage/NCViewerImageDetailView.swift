@@ -80,7 +80,6 @@ class NCViewerImageDetailView: UIView {
                     let dateString = formatter.string(from: date as Date)
                     formatter.dateFormat = "HH:mm"
                     let timeString = formatter.string(from: date as Date)
-                    
                     self.dateLabel.text = dateString + ", " + timeString
                 }
                 
@@ -94,31 +93,26 @@ class NCViewerImageDetailView: UIView {
         }
     }
     
-    //MARK: - Map
-    
-    func openMapForPlace() {
-
-        let latitude: CLLocationDegrees = self.latitude
-        let longitude: CLLocationDegrees = self.longitude
-
-        let regionDistance:CLLocationDistance = 10000
-        let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
-        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
-        let options = [
-            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
-            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
-        ]
-        let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
-        let mapItem = MKMapItem(placemark: placemark)
-        mapItem.name = location
-        mapItem.openInMaps(launchOptions: options)
-    }
-    
     //MARK: - Action
 
     @IBAction func touchLocation(_ sender: Any) {
+        
         if self.latitude > 0 && self.longitude > 0 {
-            openMapForPlace()
+            
+            let latitude: CLLocationDegrees = self.latitude
+            let longitude: CLLocationDegrees = self.longitude
+
+            let regionDistance:CLLocationDistance = 10000
+            let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+            let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+            let options = [
+                MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+                MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+            ]
+            let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
+            let mapItem = MKMapItem(placemark: placemark)
+            mapItem.name = location
+            mapItem.openInMaps(launchOptions: options)
         }
     }
 }
