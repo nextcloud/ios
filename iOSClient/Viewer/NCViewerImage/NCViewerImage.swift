@@ -578,19 +578,15 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         
-        guard let nextVC = pendingViewControllers.first as? NCViewerImageZoom else {
-            return
-        }
-        
-        self.nextIndex = nextVC.index
+        guard let nextViewController = pendingViewControllers.first as? NCViewerImageZoom else { return }
+        nextIndex = nextViewController.index
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
         if (completed && self.nextIndex != nil) {
-            
-            previousViewControllers.forEach { vc in
-                let viewerImageZoom = vc as! NCViewerImageZoom
+            previousViewControllers.forEach { viewController in
+                let viewerImageZoom = viewController as! NCViewerImageZoom
                 viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
             }
             currentIndex = nextIndex!

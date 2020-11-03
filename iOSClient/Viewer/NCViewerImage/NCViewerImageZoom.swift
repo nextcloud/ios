@@ -85,7 +85,10 @@ class NCViewerImageZoom: UIViewController {
         }  else {
             statusViewImage.image = nil
             statusLabel.text = ""
-        }        
+        }
+        
+        updateZoomScale()
+        updateConstraints()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -101,6 +104,9 @@ class NCViewerImageZoom: UIViewController {
         detailView.updateExifLocal(metadata: metadata)
         detailViewTopConstraint.constant = 0
         detailView.hide()
+        
+        updateZoomScale()
+        updateConstraints()
         
         delegate?.presentImageZoom(viewerImageZoom: self, metadata: metadata)
     }
