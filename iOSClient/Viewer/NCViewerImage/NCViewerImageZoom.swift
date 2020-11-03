@@ -183,7 +183,10 @@ class NCViewerImageZoom: UIViewController {
                 if !detailView.hasData() { return }
                 guard let textColor = self.viewerImage?.textColor else {return }
                 
-                let height = (view.bounds.width / 3) * 2
+                var height = (view.bounds.height / 3) * 2
+                if view.bounds.width < view.bounds.height {
+                    height = (view.bounds.width / 3) * 2
+                }
                 detailView.show(height: height, textColor: textColor)
             }
             
