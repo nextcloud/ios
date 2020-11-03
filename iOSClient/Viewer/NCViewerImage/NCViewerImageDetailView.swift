@@ -31,29 +31,29 @@ class NCViewerImageDetailView: UIView {
         mapView.isUserInteractionEnabled = false
     }
     
-    @IBAction func touchLocation(_ sender: Any) {
-        if self.latitude > 0 && self.longitude > 0 {
-            openMapForPlace()
+    func hasData() -> Bool {
+        if latitude > 0 && longitude > 0 {
+            return true
+        } else {
+            return false
         }
     }
     
-    func openMapForPlace() {
-
-        let latitude: CLLocationDegrees = self.latitude
-        let longitude: CLLocationDegrees = self.longitude
-
-            let regionDistance:CLLocationDistance = 10000
-            let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
-        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
-            let options = [
-                MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
-                MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
-            ]
-            let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
-            let mapItem = MKMapItem(placemark: placemark)
-            mapItem.name = location
-            mapItem.openInMaps(launchOptions: options)
-        }
+    func show(height: CGFloat, textColor: UIColor) {
+        detailViewHeightConstraint.constant = height
+        dateLabel.textColor = textColor
+        isHidden = false
+    }
+    
+    func hide() {
+        isHidden = true
+    }
+    
+    func isShow() -> Bool {
+        return !isHidden
+    }
+    
+    //MARK: - EXIF
     
     func updateExifLocal(metadata: tableMetadata) {
                     
@@ -93,25 +93,31 @@ class NCViewerImageDetailView: UIView {
         }
     }
     
-    func hasData() -> Bool {
-        if latitude > 0 && longitude > 0 {
-            return true
-        } else {
-            return false
+    //MARK: - Map
+    
+    func openMapForPlace() {
+
+        let latitude: CLLocationDegrees = self.latitude
+        let longitude: CLLocationDegrees = self.longitude
+
+        let regionDistance:CLLocationDistance = 10000
+        let coordinates = CLLocationCoordinate2DMake(latitude, longitude)
+        let regionSpan = MKCoordinateRegion(center: coordinates, latitudinalMeters: regionDistance, longitudinalMeters: regionDistance)
+        let options = [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: regionSpan.center),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: regionSpan.span)
+        ]
+        let placemark = MKPlacemark(coordinate: coordinates, addressDictionary: nil)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = location
+        mapItem.openInMaps(launchOptions: options)
+    }
+    
+    //MARK: - Action
+
+    @IBAction func touchLocation(_ sender: Any) {
+        if self.latitude > 0 && self.longitude > 0 {
+            openMapForPlace()
         }
-    }
-    
-    func show(height: CGFloat, textColor: UIColor) {
-        detailViewHeightConstraint.constant = height
-        dateLabel.textColor = textColor
-        isHidden = false
-    }
-    
-    func hide() {
-        isHidden = true
-    }
-    
-    func isShow() -> Bool {
-        return !isHidden
     }
 }

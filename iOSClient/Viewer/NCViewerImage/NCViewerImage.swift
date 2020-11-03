@@ -584,7 +584,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         
-        if (completed && self.nextIndex != nil) {
+        if (completed && nextIndex != nil) {
             previousViewControllers.forEach { viewController in
                 let viewerImageZoom = viewController as! NCViewerImageZoom
                 viewerImageZoom.scrollView.zoomScale = viewerImageZoom.scrollView.minimumZoomScale
