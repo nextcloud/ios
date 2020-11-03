@@ -16,7 +16,6 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
-    var annotation = MKPointAnnotation()
     var latitude: Double = 0
     var longitude: Double = 0
     var location: String = ""
@@ -85,10 +84,12 @@ class NCViewerImageDetailView: UIView {
                     self.dateLabel.text = dateString + ", " + timeString
                 }
                 
-                self.annotation.coordinate = CLLocationCoordinate2D(latitude: self.latitude, longitude: self.longitude)
-                self.mapView.addAnnotation(self.annotation)
-                self.mapView.setRegion(MKCoordinateRegion(center: self.annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-                self.locationButton.setTitle(self.location, for: .normal)
+                // Maps
+                let annotation = MKPointAnnotation()
+                annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                mapView.addAnnotation(annotation)
+                mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+                locationButton.setTitle(location, for: .normal)
             }
         }
     }
