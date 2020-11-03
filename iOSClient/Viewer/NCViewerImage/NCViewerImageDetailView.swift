@@ -58,7 +58,7 @@ class NCViewerImageDetailView: UIView {
     func updateExifLocal(metadata: tableMetadata) {
                     
         if metadata.typeFile == k_metadataTypeFile_image {
-            //CCExifGeo.sharedInstance()?.setExif(metadata)
+            CCUtility.setExif(tableMetadata.init(value: metadata))
         }
     
         if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
