@@ -88,14 +88,14 @@ class NCViewerImageZoom: UIViewController {
         }
         
         updateZoomScale()
-        updateConstraints()
+        centreConstraints()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateZoomScale()
-        updateConstraints()
+        centreConstraints()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -106,7 +106,7 @@ class NCViewerImageZoom: UIViewController {
         detailView.hide()
         
         updateZoomScale()
-        updateConstraints()
+        centreConstraints()
         
         delegate?.presentImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -115,7 +115,7 @@ class NCViewerImageZoom: UIViewController {
         super.viewDidLayoutSubviews()
         
         updateZoomScale()
-        updateConstraints()
+        centreConstraints()
     }
     
     //MARK: - Gesture
@@ -151,7 +151,6 @@ class NCViewerImageZoom: UIViewController {
         case .began:
             
             startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
-            scrollView.isScrollEnabled = false
             // save start
             startImageViewTopConstraint = imageViewTopConstraint.constant
             startImageViewBottomConstraint = imageViewBottomConstraint.constant
@@ -159,8 +158,7 @@ class NCViewerImageZoom: UIViewController {
         case .ended:
             
             if !detailView.isShow() {
-                updateConstraints()
-                scrollView.isScrollEnabled = true
+                centreConstraints()
             }
             
         case .changed:
@@ -168,17 +166,12 @@ class NCViewerImageZoom: UIViewController {
             let deltaY = startPoint.y - currentLocation.y
             print(deltaY)
             
-            // close
-            if deltaY < -50 && detailView.isShow() {
-                
-            }
-                        
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
             detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
-            if imageView.center.y > view.center.y + 150 {
+            if imageView.center.y > view.center.y + (view.bounds.height / 4) {
                 
                 delegate?.dismissImageZoom()
             }
@@ -201,7 +194,7 @@ class NCViewerImageZoom: UIViewController {
                 
                 if detailView.isShow() {
                     detailView.hide()
-                    gestureRecognizer.state = .ended
+//                    gestureRecognizer.state = .ended
                 }
             }
             
@@ -224,7 +217,7 @@ class NCViewerImageZoom: UIViewController {
         scrollView.maximumZoomScale = 1
     }
     
-    func updateConstraints() {
+    func centreConstraints() {
         
         let size = view.bounds.size
         let yOffset = max(0, (size.height - imageView.frame.height) / 2)
@@ -253,7 +246,7 @@ extension NCViewerImageZoom: UIScrollViewDelegate {
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateConstraints()
+        centreConstraints()
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
