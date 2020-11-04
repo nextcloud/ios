@@ -63,7 +63,7 @@ class NCViewerImageDetailView: UIView {
                     self.longitude = longitude
                     self.location = location
                     self.date = date as NSDate?
-                    self.setMapCoordinate()
+                    self.updateContent()
                 }
             };
         }
@@ -80,13 +80,13 @@ class NCViewerImageDetailView: UIView {
                 location = locationDB
             }
            
-            self.setMapCoordinate()
+            self.updateContent()
         }
     }
     
     //MARK: - Map
     
-    func setMapCoordinate() {
+    func updateContent() {
         
         let annotation = MKPointAnnotation()
         
