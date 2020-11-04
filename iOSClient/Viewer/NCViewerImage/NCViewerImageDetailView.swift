@@ -18,7 +18,7 @@ class NCViewerImageDetailView: UIView {
 
     var latitude: Double = 0
     var longitude: Double = 0
-    var location: String = ""
+    var location: String?
     var date: NSDate?
     
     override func awakeFromNib() {
@@ -57,7 +57,15 @@ class NCViewerImageDetailView: UIView {
     func updateExifLocal(metadata: tableMetadata) {
                     
         if metadata.typeFile == k_metadataTypeFile_image {
-            CCUtility.setExif(tableMetadata.init(value: metadata))
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date) in
+                if latitude > 0 && longitude > 0 {
+                    self.latitude = latitude
+                    self.longitude = longitude
+                    self.location = location
+                    self.date = date as NSDate?
+                    self.setMapCoordinate()
+                }
+            };
         }
     
         if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
@@ -68,29 +76,33 @@ class NCViewerImageDetailView: UIView {
             self.longitude = Double(localFile.exifLongitude) ?? 0
             self.date = localFile.exifDate
             
-            if let location = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
-                self.location = location
+            if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
+                location = locationDB
             }
-            
-            if self.latitude > 0 && self.longitude > 0 {
-                
-                if let date = self.date {
-                    let formatter = DateFormatter()
-                    formatter.dateStyle = .full
-                    let dateString = formatter.string(from: date as Date)
-                    formatter.dateFormat = "HH:mm"
-                    let timeString = formatter.string(from: date as Date)
-                    self.dateLabel.text = dateString + ", " + timeString
-                }
-                
-                // Maps
-                let annotation = MKPointAnnotation()
-                annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                mapView.addAnnotation(annotation)
-                mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-                locationButton.setTitle(location, for: .normal)
-            }
+           
+            self.setMapCoordinate()
         }
+    }
+    
+    //MARK: - Map
+    
+    func setMapCoordinate() {
+        
+        let annotation = MKPointAnnotation()
+        
+        if let date = self.date {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .full
+            let dateString = formatter.string(from: date as Date)
+            formatter.dateFormat = "HH:mm"
+            let timeString = formatter.string(from: date as Date)
+            self.dateLabel.text = dateString + ", " + timeString
+        }
+        
+        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        mapView.addAnnotation(annotation)
+        mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+        locationButton.setTitle(location, for: .normal)
     }
     
     //MARK: - Action

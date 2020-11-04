@@ -1684,13 +1684,14 @@
 #pragma mark ===== EXIF =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)setExif:(tableMetadata *)metadata
++ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date))completition
 {
     NSString *dateTime;
     NSString *latitudeRef;
     NSString *longitudeRef;
     NSString *stringLatitude = @"0";
     NSString *stringLongitude = @"0";
+    __block NSString *location = @"";
     
     double latitude = 0;
     double longitude = 0;
@@ -1698,18 +1699,20 @@
     NSDate *date = [NSDate new];
     
     if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
+        completition(latitude, longitude, location, date);
         return;
     }
     
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
-
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource) {
+        completition(latitude, longitude, location, date);
         return;
     }
     
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
+        completition(latitude, longitude, location,date);
         return;
     }
     
@@ -1765,14 +1768,16 @@
         if ([stringLatitude doubleValue] != 0 || [stringLongitude doubleValue] != 0) {
             
             // If exists already geocoder data in TableGPS exit
-            if ([[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude]) {
+            location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude];
+            if (location != nil) {
+                completition(latitude, longitude, location, date);
                 return;
             }
             
             CLGeocoder *geocoder = [[CLGeocoder alloc] init];
-            CLLocation *location = [[CLLocation alloc] initWithLatitude:latitude longitude:longitude];
+            CLLocation *llocation = [[CLLocation alloc] initWithLatitude:latitude longitude:longitude];
             
-            [geocoder reverseGeocodeLocation:location completionHandler:^(NSArray *placemarks, NSError *error) {
+            [geocoder reverseGeocodeLocation:llocation completionHandler:^(NSArray *placemarks, NSError *error) {
                         
                 if (error == nil && [placemarks count] > 0) {
                     
@@ -1790,7 +1795,7 @@
                     if (placemark.administrativeArea) administrativeArea = placemark.administrativeArea;
                     if (placemark.country) country = placemark.country;
                     
-                    NSString *location = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", thoroughfare, postalCode, locality, administrativeArea, country];
+                    location = [NSString stringWithFormat:@"%@ %@ %@ %@ %@", thoroughfare, postalCode, locality, administrativeArea, country];
                     location = [location stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
                     
                     // GPS
@@ -1798,18 +1803,19 @@
                         
                         [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
                     }
+                    
+                    completition(latitude, longitude, location, date);
                 }
             }];
+        } else {
+            completition(latitude, longitude, location, date);
         }
+    } else {
+        completition(latitude, longitude, location, date);
     }
        
     CFRelease(originalSource);
     CFRelease(imageProperties);
-}
-
-- (void)setGeocoder:(NSString *)ocId exifDate:(NSDate *)exifDate latitude:(NSString*)latitude longitude:(NSString*)longitude
-{
-    
 }
 
 #pragma --------------------------------------------------------------------------------------------

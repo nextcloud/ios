@@ -267,7 +267,7 @@
 
 // ===== EXIF =====
 
-+ (void)setExif:(tableMetadata *)metadata;
++ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date))completition;
 
 // ===== Third parts =====
 
