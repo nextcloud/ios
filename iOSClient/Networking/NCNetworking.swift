@@ -1005,6 +1005,7 @@ import Queuer
         
         let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: urlBase, account: metadata.account)!
         let favorite = !metadata.favorite
+        let ocId = metadata.ocId
         
         NCCommunication.shared.setFavorite(fileName: fileName, favorite: favorite) { (account, errorCode, errorDescription) in
     
@@ -1022,7 +1023,9 @@ import Queuer
                 }
                 #endif
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata])
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata])
+                }
             }
             
             completion(errorCode, errorDescription)

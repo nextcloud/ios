@@ -98,6 +98,7 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_favoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
@@ -202,6 +203,7 @@ class NCViewerImage: UIViewController {
                     if index == currentIndex {
                         navigationItem.title = metadata.fileNameView
                         currentViewerImageZoom?.metadata = metadata
+                        self.currentMetadata = metadata
                     }
                 }
             }
@@ -215,6 +217,23 @@ class NCViewerImage: UIViewController {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
                     deleteFile(notification)
+                }
+            }
+        }
+    }
+    
+    @objc func favoriteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
+                    metadatas[index] = metadata
+                    if index == currentIndex {
+                        currentViewerImageZoom?.metadata = metadata
+                        self.currentMetadata = metadata
+                        self.setToolBar()
+                    }
                 }
             }
         }
@@ -474,19 +493,26 @@ class NCViewerImage: UIViewController {
         
         var itemPlay = toolBar.items![0]
         let itemFlexibleSpace = toolBar.items![1]
-        var itemMute = toolBar.items![2]
+        var itemFavorite = toolBar.items![2]
+        var itemMute = toolBar.items![3]
         
         if player?.rate == 1 {
             itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.pause, target: self, action: #selector(playerPause))
         } else {
             itemPlay = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.play, target: self, action: #selector(playerPlay))
         }
+        if currentMetadata.favorite {
+            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
+        } else {
+            itemFavorite = UIBarButtonItem(image: UIImage(named: "videoFavoriteOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetFavorite))
+        }
         if mute {
             itemMute = UIBarButtonItem(image: UIImage(named: "audioOff"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
         } else {
             itemMute = UIBarButtonItem(image: UIImage(named: "audioOn"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(SetMute))
         }
-        toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
+        
+        toolBar.setItems([itemPlay, itemFlexibleSpace, itemFavorite, itemMute], animated: true)
         toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
 
@@ -497,6 +523,9 @@ class NCViewerImage: UIViewController {
         CCUtility.setAudioMute(!mute)
         player?.isMuted = !mute
         setToolBar()
+    }
+    @objc func SetFavorite() {
+        NCNetworking.shared.favoriteMetadata(currentMetadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in }
     }
 }
 

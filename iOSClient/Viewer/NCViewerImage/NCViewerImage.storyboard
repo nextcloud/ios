@@ -38,6 +38,7 @@
                                 <items>
                                     <barButtonItem systemItem="play" id="hHF-Q3-tyB"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="tYH-bL-I0G"/>
+                                    <barButtonItem image="videoFavoriteOn" id="tuw-Qa-JgR"/>
                                     <barButtonItem image="audioOn" id="6mg-K7-nwa"/>
                                 </items>
                             </toolbar>
@@ -197,6 +198,7 @@
     <resources>
         <image name="audioOn" width="28" height="28"/>
         <image name="downloadImageFullRes" width="283" height="283"/>
+        <image name="videoFavoriteOn" width="28" height="28"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
