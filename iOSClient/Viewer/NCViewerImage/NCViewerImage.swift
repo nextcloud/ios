@@ -146,7 +146,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.ocId == currentViewerImageZoom?.metadata.ocId && errorCode == 0 {
+                if errorCode == 0 {
                     self.reloadCurrentPage()
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
@@ -531,17 +531,19 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     
     func reloadCurrentPage() {
         
-        let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
-        
-        viewerImageZoom.index = currentIndex
-        viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
-        viewerImageZoom.metadata = metadatas[currentIndex]
-        viewerImageZoom.delegate = self
-        viewerImageZoom.viewerImage = self
-        
-        singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
-        
-        pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
+        if currentViewerImageZoom?.metadata.ocId == currentMetadata.ocId {
+            let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
+            
+            viewerImageZoom.index = currentIndex
+            viewerImageZoom.image = getImageMetadata(metadatas[currentIndex])
+            viewerImageZoom.metadata = metadatas[currentIndex]
+            viewerImageZoom.delegate = self
+            viewerImageZoom.viewerImage = self
+            
+            singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
+            
+            pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
+        }
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
