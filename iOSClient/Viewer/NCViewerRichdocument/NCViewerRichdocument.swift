@@ -80,10 +80,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        let buttonMore = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
-        navigationItem.rightBarButtonItem = buttonMore
-        
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.hidesBackButton = true
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
 
         appDelegate.activeViewController = self
@@ -94,7 +92,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
-                
                 let functionJS = "OCA.RichDocuments.documentsMain.onClose()"
                 webView.evaluateJavaScript(functionJS) { (result, error) in
                     print("close")
@@ -170,9 +167,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if (message.name == "RichDocumentsMobileInterface") {
             
             if message.body as? String == "close" {
-                
-                //appDelegate.activeDetail.viewUnload()                                
-                appDelegate.activeFiles.reloadDataSourceNetwork()
+                viewUnload()
             }
             
             if message.body as? String == "insertGraphic" {
