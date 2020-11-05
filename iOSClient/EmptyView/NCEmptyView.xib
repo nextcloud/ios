@@ -39,7 +39,7 @@
                 </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="crs-DO-owR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="CMU-Tp-bUM"/>
                 <constraint firstItem="W3d-Us-kU4" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Fyb-so-iAw"/>
@@ -59,9 +59,6 @@
         </view>
     </objects>
     <resources>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
