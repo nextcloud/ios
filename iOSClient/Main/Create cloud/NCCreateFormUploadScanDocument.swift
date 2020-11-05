@@ -664,6 +664,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         switch quality {
         case .low:
+            maxHeight *= 1
+            maxWidth *= 1
             compressionQuality = 0.1
         case .medium:
             maxHeight *= 2
