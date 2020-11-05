@@ -14,9 +14,9 @@
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
-          "branch": null,
-          "revision": "ffdfebc5ab4e3bce5a65ce48019c8b3fe96fb48f",
-          "version": "0.80.0"
+          "branch": "develop",
+          "revision": "ef31faa26d440a073c07e4a128247ee0594d8ef6",
+          "version": null
         }
       },
       {

@@ -94,8 +94,6 @@ class NCViewerImageZoom: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let imageXX = image?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
         
         updateZoomScale()
         centreConstraints()
