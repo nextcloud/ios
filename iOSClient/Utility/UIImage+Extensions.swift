@@ -59,6 +59,7 @@ extension UIImage {
     }
     
     func fixedOrientation() -> UIImage? {
+        
         guard imageOrientation != UIImage.Orientation.up else {
             // This is default orientation, don't need to do anything
             return self.copy() as? UIImage
