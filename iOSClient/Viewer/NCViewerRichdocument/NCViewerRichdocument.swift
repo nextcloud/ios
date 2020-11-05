@@ -89,6 +89,20 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         appDelegate.activeViewController = self
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            if !navigationController.viewControllers.contains(self) {
+                
+                let functionJS = "OCA.RichDocuments.documentsMain.onClose()"
+                webView.evaluateJavaScript(functionJS) { (result, error) in
+                    print("close")
+                }
+            }
+        }
+    }
+    
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)

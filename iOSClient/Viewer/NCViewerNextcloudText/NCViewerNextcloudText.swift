@@ -91,6 +91,15 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         appDelegate.activeViewController = self
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            if !navigationController.viewControllers.contains(self) {
+            }
+        }
+    }
+    
     @objc func viewUnload() {
         
         navigationController?.popViewController(animated: true)
