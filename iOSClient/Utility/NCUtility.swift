@@ -308,7 +308,7 @@ class NCUtility: NSObject {
     
         guard let view = view else { return }
         
-        activityIndicator.color = NCBrandColor.sharedInstance.brandElement
+        activityIndicator.color = .gray
         activityIndicator.hidesWhenStopped = true
             
         view.addSubview(activityIndicator)

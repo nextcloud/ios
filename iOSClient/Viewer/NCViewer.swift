@@ -92,7 +92,10 @@ class NCViewer: NSObject {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
                         }
                         
+                        NCUtility.shared.startActivityIndicator(view: viewController.view)
                         NCCommunication.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, customUserAgent: customUserAgent) { (account, url, errorCode, errorMessage) in
+                            
+                            NCUtility.shared.stopActivityIndicator()
                             
                             if errorCode == 0 && account == self.appDelegate.account && url != nil {
                                 
@@ -114,10 +117,6 @@ class NCViewer: NSObject {
                         
                     } else {
                         
-                        if editor == k_editor_onlyoffice {
-                            //self.navigationController?.navigationBar.topItem?.title = ""
-                        }
-                            
                         if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                             let viewController:NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
                         
@@ -128,6 +127,7 @@ class NCViewer: NSObject {
                             navigationController.pushViewController(viewController, animated: true)
                         }
                     }
+                    
                 } else {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
                 }
@@ -140,8 +140,11 @@ class NCViewer: NSObject {
                                 
                 if metadata.url == "" {
                     
+                    NCUtility.shared.startActivityIndicator(view: viewController.view)
                     NCCommunication.shared.createUrlRichdocuments(fileID: metadata.fileId) { (account, url, errorCode, errorDescription) in
                         
+                        NCUtility.shared.stopActivityIndicator()
+
                         if errorCode == 0 && account == self.appDelegate.account && url != nil {
                             
                             if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
