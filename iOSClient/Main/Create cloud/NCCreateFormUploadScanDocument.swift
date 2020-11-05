@@ -29,12 +29,12 @@ import Vision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
-    enum typeDpiQuality {
+    enum typeQuality {
         case low
         case medium
         case high
     }
-    var dpiQuality: typeDpiQuality = typeDpiQuality.medium
+    var quality: typeQuality = .medium
     
     var serverUrl = ""
     var titleServerUrl = ""
@@ -255,13 +255,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
                 formRow.title = NSLocalizedString("_quality_low_", comment: "")
-                dpiQuality = typeDpiQuality.low
+                quality = typeQuality.low
             } else if compressionQuality > 0.3 && compressionQuality <= 0.6 {
                 formRow.title = NSLocalizedString("_quality_medium_", comment: "")
-                dpiQuality = typeDpiQuality.medium
+                quality = typeQuality.medium
             } else if compressionQuality > 0.6 && compressionQuality <= 1.0 {
                 formRow.title = NSLocalizedString("_quality_high_", comment: "")
-                dpiQuality = typeDpiQuality.high
+                quality = typeQuality.high
             }
             
             self.updateFormRow(formRow)
@@ -516,7 +516,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             for var image in self.arrayImages {
                 
-                image = changeCompressionImage(image, dpiQuality: dpiQuality)
+                image = changeCompressionImage(image)
                 
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 
@@ -580,7 +580,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         if fileType == "JPG" {
             
-            let image = changeCompressionImage(self.arrayImages[0], dpiQuality: dpiQuality)
+            let image = changeCompressionImage(self.arrayImages[0])
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCUtility.shared.stopActivityIndicator()
@@ -656,26 +656,27 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
-            
-        var compressionQuality: CGFloat = 0.5
-        var scale: Float = 1.0
+    func changeCompressionImage(_ image: UIImage) -> UIImage {
         
-        switch dpiQuality {
-        case typeDpiQuality.low: // set to 72 dpi
+        var compressionQuality: CGFloat = 0.5
+        var maxHeight: Float = 595.2    // A4
+        var maxWidth: Float = 841.8     // A4
+
+        switch quality {
+        case .low:
             compressionQuality = 0.1
-        case typeDpiQuality.medium: // at 150 dpi
+        case .medium:
+            maxHeight *= 2
+            maxWidth *= 2
             compressionQuality = 0.5
-            scale = (150.0 / 72.0)
-        case typeDpiQuality.high: // at 300 dpi
+        case .high:
+            maxHeight *= 4
+            maxWidth *= 4
             compressionQuality = 0.9
-            scale = (200.0 / 72.0)
         }
         
-        let maxHeight: Float = Float(595.2) * scale      // A4
-        let maxWidth: Float = Float(841.8) * scale       // A4
-        var actualHeight = Float(image.size.height * image.scale)
-        var actualWidth = Float(image.size.width * image.scale)
+        var actualHeight = Float(image.size.height)
+        var actualWidth = Float(image.size.width)
         var imgRatio: Float = actualWidth / actualHeight
         let maxRatio: Float = maxWidth / maxHeight
 
@@ -699,7 +700,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         }
         
         let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, image.scale)
+        UIGraphicsBeginImageContext(rect.size)
         image.draw(in: rect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
