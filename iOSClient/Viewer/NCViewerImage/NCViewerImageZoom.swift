@@ -189,9 +189,7 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                if detailView.hasData() {
-                    detailView.show()
-                }
+                detailView.show()
             }
             
             // CLOSE DETAIL

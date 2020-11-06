@@ -61,19 +61,15 @@ class NCViewerImageDetailView: UIView {
         return !isHidden
     }
     
-    func hasData() -> Bool {
-        if localFile != nil {
-            return true
-        }
-        return false
-    }
-    
     //MARK: - EXIF
     
     func update(metadata: tableMetadata, heightMap:  CGFloat, textColor: UIColor) {
                     
         self.heightMap = heightMap
         dateLabel.textColor = textColor
+        
+        self.size = metadata.size
+        self.date = metadata.date
         
         if metadata.typeFile == k_metadataTypeFile_image {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date) in
@@ -92,7 +88,6 @@ class NCViewerImageDetailView: UIView {
             self.latitude = Double(localFile.exifLatitude) ?? 0
             self.longitude = Double(localFile.exifLongitude) ?? 0
             self.date = localFile.exifDate
-            self.size = localFile.size
             
             if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                 location = locationDB
@@ -106,6 +101,9 @@ class NCViewerImageDetailView: UIView {
     
     func updateContent() {
         
+        // Size
+        self.sizeLabel.text = NSLocalizedString("_size_", comment: "") + " " + CCUtility.transformedSize(self.size)
+        
         // Date
         if let date = self.date {
             let formatter = DateFormatter()
@@ -113,11 +111,8 @@ class NCViewerImageDetailView: UIView {
             let dateString = formatter.string(from: date as Date)
             formatter.dateFormat = "HH:mm"
             let timeString = formatter.string(from: date as Date)
-            self.dateLabel.text = dateString + ", " + timeString
+            self.dateLabel.text = NSLocalizedString("_date_", comment: "") + " " + dateString + ", " + timeString
         }
-        
-        // Size
-        self.sizeLabel.text = CCUtility.transformedSize(self.size)
         
         // Map
         if latitude > 0 && longitude > 0 {
