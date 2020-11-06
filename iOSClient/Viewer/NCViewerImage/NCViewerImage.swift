@@ -677,6 +677,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
+            let currentSeekTime = player?.currentTime()
             videoStop()
             
             if pictureInPictureOcId != currentMetadata.ocId {
@@ -686,7 +687,7 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
-                appDelegate.activeViewerVideo?.seekTime = player?.currentTime()
+                appDelegate.activeViewerVideo?.seekTime = currentSeekTime
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
