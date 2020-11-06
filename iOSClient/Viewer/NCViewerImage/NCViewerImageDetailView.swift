@@ -31,6 +31,8 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var sizeValue: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var dateValue: UILabel!
+    @IBOutlet weak var dimLabel: UILabel!
+    @IBOutlet weak var dimValue: UILabel!
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
@@ -42,6 +44,7 @@ class NCViewerImageDetailView: UIView {
     var date: NSDate?
     var heightMap: CGFloat = 0
     var size: Double = 0
+    var image: UIImage?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -50,13 +53,20 @@ class NCViewerImageDetailView: UIView {
         mapView.isZoomEnabled = false
         mapView.isScrollEnabled = false
         mapView.isUserInteractionEnabled = false
-        
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+                
+        sizeLabel.text = ""
+        sizeValue.text = ""
+        dateLabel.text = ""
+        dateValue.text = ""
+        dimLabel.text = ""
+        dimValue.text = ""
     }
     
     func show(textColor: UIColor?) {
         sizeValue.textColor = textColor
         dateValue.textColor = textColor
+        dimValue.textColor = textColor
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
         isHidden = false
     }
     
@@ -70,10 +80,10 @@ class NCViewerImageDetailView: UIView {
     
     //MARK: - EXIF
     
-    func update(metadata: tableMetadata, heightMap:  CGFloat) {
+    func update(metadata: tableMetadata, image: UIImage?, heightMap:  CGFloat) {
                     
         self.heightMap = heightMap
-
+        self.image = image
         self.size = metadata.size
         self.date = metadata.date
         
@@ -121,6 +131,12 @@ class NCViewerImageDetailView: UIView {
             
             dateLabel.text = NSLocalizedString("_date_", comment: "")
             dateValue.text = dateString + ", " + timeString
+        }
+        
+        // Dimensions
+        if let image = self.image {
+            dimLabel.text = NSLocalizedString("_dim_", comment: "")
+            dimValue.text = "\(image.size.width) x \(image.size.height)"
         }
         
         // Map
