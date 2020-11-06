@@ -140,15 +140,16 @@ class NCViewerImageDetailView: UIView {
         // Dimensions / Durations
         if metadata?.typeFile == k_metadataTypeFile_image {
             if let image = self.image {
-                dimLabel.text = NSLocalizedString("_dim_", comment: "")
+                dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
         } else if metadata?.typeFile == k_metadataTypeFile_video {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
-                let player = AVPlayer(url: url)
-                if let duration = player.currentItem?.duration {
-                    let timer = secondsToHoursMinutesSeconds(seconds: Int(CMTimeGetSeconds(duration)))
-                    dimLabel.text = NSLocalizedString("_durations_", comment: "")
+                let playerVideo = AVPlayer(url: url)
+                if let duration = playerVideo.currentItem?.asset.duration {
+                    let durationVideo = Int(CMTimeGetSeconds(duration))
+                    let timer = secondsToHoursMinutesSeconds(seconds: durationVideo)
+                    dimLabel.text = NSLocalizedString("_duration_", comment: "")
                     dimValue.text = "\(timer.0):\(timer.1):\(timer.2)"
                 }
             }
