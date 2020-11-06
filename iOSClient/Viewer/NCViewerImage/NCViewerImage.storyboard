@@ -114,6 +114,9 @@
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
                                                 <rect key="frame" x="15" y="97" width="384" height="174"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="174" id="VRv-eR-bwo"/>
+                                                </constraints>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
                                                 <rect key="frame" x="15" y="271" width="384" height="29"/>
@@ -141,12 +144,11 @@
                                             <constraint firstAttribute="trailing" secondItem="oov-9f-Oeu" secondAttribute="trailing" constant="15" id="mpQ-4V-Yfc"/>
                                             <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" constant="15" id="nAm-fh-5Px"/>
                                             <constraint firstItem="Son-CZ-zFa" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="vsg-gX-rNv"/>
-                                            <constraint firstAttribute="height" constant="300" id="zD7-Vw-cAA"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="dateLabel" destination="Son-CZ-zFa" id="0Wi-XW-0hw"/>
-                                            <outlet property="detailViewHeightConstraint" destination="zD7-Vw-cAA" id="gUw-lv-4eV"/>
                                             <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
+                                            <outlet property="mapHeightConstraint" destination="VRv-eR-bwo" id="jXn-vm-aJk"/>
                                             <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
                                         </connections>
                                     </view>

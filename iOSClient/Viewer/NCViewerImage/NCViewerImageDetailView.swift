@@ -26,7 +26,7 @@ import MapKit
 
 class NCViewerImageDetailView: UIView {
     
-    @IBOutlet weak var detailViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
@@ -35,6 +35,7 @@ class NCViewerImageDetailView: UIView {
     var longitude: Double = 0
     var location: String?
     var date: NSDate?
+    var heightMap: CGFloat = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -45,17 +46,7 @@ class NCViewerImageDetailView: UIView {
         mapView.isUserInteractionEnabled = false
     }
     
-    func hasData() -> Bool {
-        if latitude > 0 && longitude > 0 {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    func show(height: CGFloat, textColor: UIColor) {
-        detailViewHeightConstraint.constant = height
-        dateLabel.textColor = textColor
+    func show() {
         isHidden = false
     }
     
@@ -69,17 +60,18 @@ class NCViewerImageDetailView: UIView {
     
     //MARK: - EXIF
     
-    func updateExifLocal(metadata: tableMetadata) {
+    func update(metadata: tableMetadata, heightMap:  CGFloat, textColor: UIColor) {
                     
+        self.heightMap = heightMap
+        dateLabel.textColor = textColor
+        
         if metadata.typeFile == k_metadataTypeFile_image {
             CCUtility.setExif(metadata) { (latitude, longitude, location, date) in
-                if latitude > 0 && longitude > 0 {
-                    self.latitude = latitude
-                    self.longitude = longitude
-                    self.location = location
-                    self.date = date as NSDate?
-                    self.updateContent()
-                }
+                self.latitude = latitude
+                self.longitude = longitude
+                self.location = location
+                self.date = date as NSDate?
+                self.updateContent()
             };
         }
     
@@ -118,6 +110,8 @@ class NCViewerImageDetailView: UIView {
         mapView.addAnnotation(annotation)
         mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
         locationButton.setTitle(location, for: .normal)
+        
+        mapHeightConstraint.constant = self.heightMap
     }
     
     //MARK: - Action

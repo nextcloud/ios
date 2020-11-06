@@ -105,7 +105,13 @@ class NCViewerImageZoom: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        detailView.updateExifLocal(metadata: metadata)
+        guard let textColor = self.viewerImage?.textColor else {return }
+        var heightMap = (view.bounds.height / 3)
+        if view.bounds.width < view.bounds.height {
+            heightMap = (view.bounds.width / 3)
+        }
+        
+        detailView.update(metadata: metadata, heightMap: heightMap, textColor: textColor)
         detailViewTopConstraint.constant = 0
         detailView.hide()
         
@@ -183,14 +189,7 @@ class NCViewerImageZoom: UIViewController {
             // OPEN DETAIL
             if imageView.center.y < view.center.y - 50 {
                 
-                if !detailView.hasData() { return }
-                guard let textColor = self.viewerImage?.textColor else {return }
-                
-                var height = (view.bounds.height / 3) * 2
-                if view.bounds.width < view.bounds.height {
-                    height = (view.bounds.width / 3) * 2
-                }
-                detailView.show(height: height, textColor: textColor)
+                detailView.show()
             }
             
             // CLOSE DETAIL
@@ -198,7 +197,6 @@ class NCViewerImageZoom: UIViewController {
                 
                 if detailView.isShow() {
                     detailView.hide()
-//                    gestureRecognizer.state = .ended
                 }
             }
             
