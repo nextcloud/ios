@@ -211,12 +211,12 @@ import Alamofire
         }
         
         // Update metadata
-        let metadataUpdate = tableMetadata.init(value: metadata)
-        metadataUpdate.fileName = CCUtility.generateRandomIdentifier()!
-        metadataUpdate.e2eEncrypted = true
-        metadataUpdate.session = NCCommunicationCommon.shared.sessionIdentifierUpload
-        metadataUpdate.sessionError = ""
-        NCManageDatabase.sharedInstance.addMetadata(metadataUpdate)
+        var metadata = tableMetadata.init(value: metadata)
+        metadata.fileName = CCUtility.generateRandomIdentifier()!
+        metadata.e2eEncrypted = true
+        metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
+        metadata.sessionError = ""
+        NCManageDatabase.sharedInstance.addMetadata(metadata)
         
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         let fileNameLocalPathRequest = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
@@ -252,7 +252,12 @@ import Alamofire
         
         NCManageDatabase.sharedInstance.addE2eEncryption(objectE2eEncryption)
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdTemp) else { return }
+        if let getMetadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdTemp) {
+            metadata = getMetadata
+        } else {
+            return
+        }
+        
         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])
         
         NCNetworkingE2EE.shared.sendE2EMetadata(account: metadata.account, serverUrl: serverUrl, fileNameRename: nil, fileNameNewRename: nil, deleteE2eEncryption: nil, urlBase: account.urlBase, upload: true) { (e2eToken, errorCode, errorDescription) in

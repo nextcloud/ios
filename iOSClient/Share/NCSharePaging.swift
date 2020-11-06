@@ -101,7 +101,6 @@ class NCSharePaging: UIViewController {
     //MARK: - NotificationCenter
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: nil, collectionView: nil, form: true)
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm

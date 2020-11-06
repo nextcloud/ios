@@ -373,6 +373,26 @@ extension NCCollectionViewCommon {
         )
         
         //
+        // SAVE TO PHOTO GALLERY
+        //
+        actions.append(
+            NCMenuAction(
+                title: NSLocalizedString("_save_selected_files_", comment: ""),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "saveSelectedFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                action: { menuAction in
+                    for ocId in selectOcId {
+                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                            if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video {
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorSaveAlbum, setFavorite: false, forceDownload: false)
+                            }
+                        }
+                    }
+                    self.tapSelect(sender: self)
+                }
+            )
+        )
+        
+        //
         // DELETE
         //
         actions.append(

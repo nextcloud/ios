@@ -85,6 +85,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
@@ -95,8 +96,9 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
-        
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        tableView.reloadData()
         labelUser.textColor = NCBrandColor.sharedInstance.textView
     }
     

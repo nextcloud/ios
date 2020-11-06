@@ -108,12 +108,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
+        
         changeTheming()
     }
     
     @objc func changeTheming() {
-        appDelegate.changeTheming(self, tableView: tableView, collectionView: nil, form: true)
-        
+        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        tableView.reloadData()
         shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
     }
         

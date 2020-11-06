@@ -25,11 +25,12 @@ import UIKit
 import NCCommunication
 import SwiftyJSON
 
-class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class NCNotification: UITableViewController, NCNotificationCellDelegate, NCEmptyDataSetDelegate {
   
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var notifications: [NCCommunicationNotifications] = []
-    
+    var emptyDataSet: NCEmptyDataSet?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,9 +41,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         self.tableView.estimatedRowHeight = 50.0
         self.tableView.allowsSelection = false
         
-        // empty Data Source
-        self.tableView.emptyDataSetSource = self
-        self.tableView.emptyDataSetDelegate = self
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: tableView, offset: 0, delegate: self)
         
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
         changeTheming()
@@ -66,29 +66,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
         self.dismiss(animated: true, completion: nil)
     }
     
-    // MARK: - DZNEmpty
+    // MARK: - Empty
     
-    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
-        let height = self.tabBarController?.tabBar.frame.size.height ?? 0
-        return -height
-    }
-    
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: .gray)
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_no_notification_", comment: "")
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
+    func emptyDataSetView(_ view: NCEmptyView) {
+        
+        view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "notification"), width: 300, height: 300, color: .gray)
+        view.emptyTitle.text = NSLocalizedString("_no_notification_", comment: "")
+        view.emptyDescription.text = ""
     }
     
     // MARK: - Table
@@ -98,6 +82,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate, DZNEmpt
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        emptyDataSet?.numberOfItemsInSection(notifications.count, section: section)
         return notifications.count
     }
     

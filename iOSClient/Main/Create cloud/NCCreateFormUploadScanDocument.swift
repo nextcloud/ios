@@ -29,12 +29,12 @@ import Vision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
-    enum typeDpiQuality {
+    enum typeQuality {
         case low
         case medium
-        case hight
+        case high
     }
-    var dpiQuality: typeDpiQuality = typeDpiQuality.medium
+    var quality: typeQuality = .medium
     
     var serverUrl = ""
     var titleServerUrl = ""
@@ -255,13 +255,13 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
                 formRow.title = NSLocalizedString("_quality_low_", comment: "")
-                dpiQuality = typeDpiQuality.low
+                quality = typeQuality.low
             } else if compressionQuality > 0.3 && compressionQuality <= 0.6 {
                 formRow.title = NSLocalizedString("_quality_medium_", comment: "")
-                dpiQuality = typeDpiQuality.medium
+                quality = typeQuality.medium
             } else if compressionQuality > 0.6 && compressionQuality <= 1.0 {
                 formRow.title = NSLocalizedString("_quality_high_", comment: "")
-                dpiQuality = typeDpiQuality.hight
+                quality = typeQuality.high
             }
             
             self.updateFormRow(formRow)
@@ -516,7 +516,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             
             for var image in self.arrayImages {
                 
-                image = changeCompressionImage(image, dpiQuality: dpiQuality)
+                image = changeCompressionImage(image)
                 
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 
@@ -580,7 +580,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         if fileType == "JPG" {
             
-            let image = changeCompressionImage(self.arrayImages[0], dpiQuality: dpiQuality)
+            let image = changeCompressionImage(self.arrayImages[0])
             
             guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 NCUtility.shared.stopActivityIndicator()
@@ -656,18 +656,24 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         self.present(navigationController, animated: true, completion: nil)
     }
     
-    func changeCompressionImage(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
+    func changeCompressionImage(_ image: UIImage) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        let maxHeight: Float = 595.2        // A4
-        let maxWidth: Float = 841.8         // A4
+        var maxHeight: Float = 595.2    // A4
+        var maxWidth: Float = 841.8     // A4
 
-        switch dpiQuality {
-        case typeDpiQuality.low:
+        switch quality {
+        case .low:
+            maxHeight *= 1
+            maxWidth *= 1
             compressionQuality = 0.1
-        case typeDpiQuality.medium:
+        case .medium:
+            maxHeight *= 2
+            maxWidth *= 2
             compressionQuality = 0.5
-        case typeDpiQuality.hight:
+        case .high:
+            maxHeight *= 4
+            maxWidth *= 4
             compressionQuality = 0.9
         }
         

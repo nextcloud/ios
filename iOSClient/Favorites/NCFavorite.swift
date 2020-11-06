@@ -33,9 +33,9 @@ class NCFavorite: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_favorites_", comment: "")
         layoutKey = k_layout_view_favorite
         enableSearchBar = true
-        DZNimage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
-        DZNtitle = "_favorite_no_files_"
-        DZNdescription = "_tutorial_favorite_view_"
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), width: 300, height: 300, color: NCBrandColor.sharedInstance.yellowFavorite)
+        emptyTitle = "_favorite_no_files_"
+        emptyDescription = "_tutorial_favorite_view_"
     }
     
     // MARK: - DataSource + NC Endpoint
@@ -82,7 +82,7 @@ class NCFavorite: NCCollectionViewCommon  {
                         if !metadata.directory && CCUtility.getFavoriteOffline() {
                             let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             if localFile == nil || localFile?.etag != metadata.etag {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
                             }
                         }
                     }
@@ -103,7 +103,7 @@ class NCFavorite: NCCollectionViewCommon  {
                         if !metadata.directory {
                             let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                             if (CCUtility.getFavoriteOffline() && localFile == nil) || (localFile != nil && localFile?.etag != metadata.etag) {
-                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false)
+                                NCOperationQueue.shared.download(metadata: metadata, selector: selectorDownloadFile, setFavorite: false, forceDownload: true)
                             }
                         }
                     }

@@ -24,7 +24,7 @@
 import Foundation
 import NCCommunication
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, UIAdaptivePresentationControllerDelegate  {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate, UIAdaptivePresentationControllerDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -32,7 +32,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     internal let refreshControl = UIRefreshControl()
     internal var searchController: UISearchController?
-    
+    internal var emptyDataSet: NCEmptyDataSet?
+
     internal var serverUrl: String = ""
     internal var isEncryptedFolder = false
     internal var isEditMode = false
@@ -71,9 +72,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     internal var layoutKey = ""
     internal var titleCurrentFolder = ""
     internal var enableSearchBar: Bool = false
-    internal var DZNimage: UIImage?
-    internal var DZNtitle: String = ""
-    internal var DZNdescription: String = ""
+    internal var emptyImage: UIImage?
+    internal var emptyTitle: String = ""
+    internal var emptyDescription: String = ""
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -115,9 +116,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.tintColor = .gray
         refreshControl.addTarget(self, action: #selector(reloadDataSourceNetworkRefreshControl), for: .valueChanged)
         
-        // empty Data Source
-        self.collectionView.emptyDataSetDelegate = self
-        self.collectionView.emptyDataSetSource = self
+        // Empty
+        emptyDataSet = NCEmptyDataSet.init(view: collectionView, offset: 0, delegate: self)
         
         // 3D Touch peek and pop
         if traitCollection.forceTouchCapability == .available {
@@ -533,63 +533,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
         
-    // MARK: - DZNEmpty
+    // MARK: - Empty
     
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
-        return NCBrandColor.sharedInstance.backgroundView
-    }
-    
-    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+    func emptyDataSetView(_ view: NCEmptyView) {
         
         if searchController?.isActive ?? false {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
-        }
-        
-        if isReloadDataSourceNetworkInProgress {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
-        }
-        
-        return DZNimage
-    }
-    
-    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        
-        var text = "\n"+NSLocalizedString(DZNtitle, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = "\n"+NSLocalizedString("_request_in_progress_", comment: "")
-        }
-        
-        if searchController?.isActive ?? false {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "search"), width: 300, height: 300, color: .gray)
             if isReloadDataSourceNetworkInProgress {
-                text = "\n"+NSLocalizedString("_search_in_progress_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
-                text = "\n"+NSLocalizedString("_search_no_record_found_", comment: "")
+                view.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
             }
+            view.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
+        } else if isReloadDataSourceNetworkInProgress {
+            view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "networkInProgress"), width: 300, height: 300, color: .gray)
+            view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
+            view.emptyDescription.text = ""
+        } else {
+            view.emptyImage.image = emptyImage
+            view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+            view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
         }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.gray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        
-        var text = "\n"+NSLocalizedString(DZNdescription, comment: "")
-        
-        if isReloadDataSourceNetworkInProgress {
-            text = ""
-        }
-        
-        if searchController?.isActive ?? false {
-            text = "\n"+NSLocalizedString("_search_instruction_", comment: "")
-        }
-        
-        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    
-    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
-        return true
     }
     
     // MARK: - SEARCH
@@ -1280,8 +1244,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             
             header.delegate = self
-            header.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            header.separator.backgroundColor = NCBrandColor.sharedInstance.separator
             header.setStatusButton(count: dataSource.metadatas.count)
             header.setTitleSorted(datasourceTitleButton: titleButton)
             header.viewRichWorkspaceHeightConstraint.constant = headerRichWorkspaceHeight
@@ -1305,7 +1267,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItems()
+        let numberItems = dataSource.numberOfItems()
+        emptyDataSet?.numberOfItemsInSection(numberItems, section: section)
+        return numberItems
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
