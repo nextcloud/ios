@@ -677,21 +677,23 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
-            let currentSeekTime = player?.currentTime()
-            videoStop()
-            
             if pictureInPictureOcId != currentMetadata.ocId {
                 
                 // Kill PIP
                 appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
-
+                //
+                
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
-                appDelegate.activeViewerVideo?.seekTime = currentSeekTime
+                appDelegate.activeViewerVideo?.seekTime = player?.currentTime()
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
                 }
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.videoStop()
             }
             
         } else {
@@ -726,17 +728,19 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         self.navigationController?.popViewController(animated: true)
     }
     
-    func presentImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
+        videoStop()
+    }
+    
+    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata) {
                 
         navigationItem.title = metadata.fileNameView
         currentMetadata = metadata
         currentViewerImageZoom = viewerImageZoom
         toolBar.isHidden = true
         
-        videoStop()
-
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
-            videoPlay(metadata: metadata)
+            //videoPlay(metadata: metadata)
             toolBar.isHidden = false
         }
             

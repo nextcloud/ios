@@ -24,7 +24,8 @@
 import UIKit
 
 protocol NCViewerImageZoomDelegate {
-    func presentImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+    func didAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
+    func willAppearImageZoom(viewerImageZoom: NCViewerImageZoom, metadata: tableMetadata)
     func dismissImageZoom()
 }
 
@@ -97,6 +98,8 @@ class NCViewerImageZoom: UIViewController {
         
         updateZoomScale()
         centreConstraints()
+        
+        delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -109,7 +112,7 @@ class NCViewerImageZoom: UIViewController {
         updateZoomScale()
         centreConstraints()
         
-        delegate?.presentImageZoom(viewerImageZoom: self, metadata: metadata)
+        delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
     
     override func viewDidLayoutSubviews() {
