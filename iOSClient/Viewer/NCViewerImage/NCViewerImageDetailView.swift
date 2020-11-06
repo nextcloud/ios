@@ -31,11 +31,13 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
+    var localFile: tableLocalFile?
     var latitude: Double = 0
     var longitude: Double = 0
     var location: String?
     var date: NSDate?
     var heightMap: CGFloat = 0
+    var size: Double = 0
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -56,6 +58,13 @@ class NCViewerImageDetailView: UIView {
     
     func isShow() -> Bool {
         return !isHidden
+    }
+    
+    func hasData() -> Bool {
+        if localFile != nil {
+            return true
+        }
+        return false
     }
     
     //MARK: - EXIF
@@ -82,6 +91,7 @@ class NCViewerImageDetailView: UIView {
             self.latitude = Double(localFile.exifLatitude) ?? 0
             self.longitude = Double(localFile.exifLongitude) ?? 0
             self.date = localFile.exifDate
+            self.size = localFile.size
             
             if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                 location = locationDB
@@ -95,8 +105,6 @@ class NCViewerImageDetailView: UIView {
     
     func updateContent() {
         
-        let annotation = MKPointAnnotation()
-        
         if let date = self.date {
             let formatter = DateFormatter()
             formatter.dateStyle = .full
@@ -106,12 +114,20 @@ class NCViewerImageDetailView: UIView {
             self.dateLabel.text = dateString + ", " + timeString
         }
         
-        annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        mapView.addAnnotation(annotation)
-        mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
-        locationButton.setTitle(location, for: .normal)
-        
-        mapHeightConstraint.constant = self.heightMap
+        if latitude > 0 && longitude > 0 {
+            
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            mapView.addAnnotation(annotation)
+            mapView.setRegion(MKCoordinateRegion(center: annotation.coordinate, latitudinalMeters: 500, longitudinalMeters: 500), animated: false)
+            locationButton.setTitle(location, for: .normal)
+            mapHeightConstraint.constant = self.heightMap
+            
+        } else {
+            
+            mapHeightConstraint.constant = 0
+            locationButton.setTitle("" , for: .normal)
+        }
     }
     
     //MARK: - Action
