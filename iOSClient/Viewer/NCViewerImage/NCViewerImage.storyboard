@@ -110,16 +110,16 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="562" width="414" height="300"/>
+                                        <rect key="frame" x="0.0" y="462" width="414" height="318"/>
                                         <subviews>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="15" y="97" width="384" height="174"/>
+                                                <rect key="frame" x="15" y="115" width="384" height="174"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="174" id="VRv-eR-bwo"/>
                                                 </constraints>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
-                                                <rect key="frame" x="15" y="271" width="384" height="29"/>
+                                                <rect key="frame" x="15" y="289" width="384" height="29"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <state key="normal" title="location"/>
                                                 <connections>
@@ -127,29 +127,48 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Son-CZ-zFa">
-                                                <rect key="frame" x="15" y="70" width="384" height="17"/>
+                                                <rect key="frame" x="15" y="88" width="384" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRq-3M-yeb" userLabel="Divisor">
+                                                <rect key="frame" x="15" y="50" width="384" height="1"/>
+                                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="1" id="X4S-cr-F2P"/>
+                                                </constraints>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WXS-Lw-DkI">
+                                                <rect key="frame" x="15" y="61" width="384" height="17"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstItem="Son-CZ-zFa" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="70" id="7LC-Ml-lxV"/>
+                                            <constraint firstItem="WXS-Lw-DkI" firstAttribute="top" secondItem="HRq-3M-yeb" secondAttribute="bottom" constant="10" id="2RK-lk-nQe"/>
                                             <constraint firstAttribute="trailing" secondItem="Son-CZ-zFa" secondAttribute="trailing" constant="15" id="8Jj-fx-eQP"/>
+                                            <constraint firstAttribute="trailing" secondItem="HRq-3M-yeb" secondAttribute="trailing" constant="15" id="DIq-e4-T4P"/>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="Son-CZ-zFa" secondAttribute="bottom" constant="10" id="IOL-oZ-F3c"/>
                                             <constraint firstItem="oov-9f-Oeu" firstAttribute="top" secondItem="Typ-A8-XIO" secondAttribute="bottom" id="MUo-UC-1d4"/>
+                                            <constraint firstItem="HRq-3M-yeb" firstAttribute="top" secondItem="P8R-4f-zAl" secondAttribute="top" constant="50" id="UF1-fO-9hX"/>
                                             <constraint firstAttribute="bottom" secondItem="oov-9f-Oeu" secondAttribute="bottom" id="YuK-2v-kzk"/>
+                                            <constraint firstItem="WXS-Lw-DkI" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="bRd-bi-Imh"/>
+                                            <constraint firstAttribute="trailing" secondItem="WXS-Lw-DkI" secondAttribute="trailing" constant="15" id="eOp-0N-ja8"/>
                                             <constraint firstItem="Typ-A8-XIO" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="jre-DM-hm3"/>
                                             <constraint firstItem="oov-9f-Oeu" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="lXY-IM-uQB"/>
                                             <constraint firstAttribute="trailing" secondItem="oov-9f-Oeu" secondAttribute="trailing" constant="15" id="mpQ-4V-Yfc"/>
                                             <constraint firstAttribute="trailing" secondItem="Typ-A8-XIO" secondAttribute="trailing" constant="15" id="nAm-fh-5Px"/>
+                                            <constraint firstItem="HRq-3M-yeb" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="oJB-7U-UpU"/>
                                             <constraint firstItem="Son-CZ-zFa" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="vsg-gX-rNv"/>
+                                            <constraint firstItem="Son-CZ-zFa" firstAttribute="top" secondItem="WXS-Lw-DkI" secondAttribute="bottom" constant="10" id="z9W-ZR-cUN"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="dateLabel" destination="Son-CZ-zFa" id="0Wi-XW-0hw"/>
                                             <outlet property="locationButton" destination="oov-9f-Oeu" id="cGg-Gb-m5S"/>
                                             <outlet property="mapHeightConstraint" destination="VRv-eR-bwo" id="jXn-vm-aJk"/>
                                             <outlet property="mapView" destination="Typ-A8-XIO" id="XCg-a6-NUq"/>
+                                            <outlet property="sizeLabel" destination="WXS-Lw-DkI" id="JG0-G0-oHg"/>
                                         </connections>
                                     </view>
                                 </subviews>
@@ -169,7 +188,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="CdQ-LC-Trx" secondAttribute="bottom" id="4qB-8y-OcG"/>
-                            <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="Yo6-7W-moG" secondAttribute="bottom" constant="-300" id="B4O-kU-vwy"/>
+                            <constraint firstItem="P8R-4f-zAl" firstAttribute="top" secondItem="Yo6-7W-moG" secondAttribute="bottom" constant="-400" id="B4O-kU-vwy"/>
                             <constraint firstAttribute="trailing" secondItem="CdQ-LC-Trx" secondAttribute="trailing" id="IwE-oE-d3Y"/>
                             <constraint firstItem="2AU-85-K8y" firstAttribute="leading" secondItem="Yo6-7W-moG" secondAttribute="leading" constant="10" id="X10-OG-EKg"/>
                             <constraint firstItem="Yo6-7W-moG" firstAttribute="top" secondItem="2AU-85-K8y" secondAttribute="top" constant="-10" id="avO-83-uMQ"/>

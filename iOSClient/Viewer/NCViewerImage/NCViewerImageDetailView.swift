@@ -27,6 +27,7 @@ import MapKit
 class NCViewerImageDetailView: UIView {
     
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var sizeLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
@@ -105,6 +106,7 @@ class NCViewerImageDetailView: UIView {
     
     func updateContent() {
         
+        // Date
         if let date = self.date {
             let formatter = DateFormatter()
             formatter.dateStyle = .full
@@ -114,6 +116,10 @@ class NCViewerImageDetailView: UIView {
             self.dateLabel.text = dateString + ", " + timeString
         }
         
+        // Size
+        self.sizeLabel.text = CCUtility.transformedSize(self.size)
+        
+        // Map
         if latitude > 0 && longitude > 0 {
             
             let annotation = MKPointAnnotation()
