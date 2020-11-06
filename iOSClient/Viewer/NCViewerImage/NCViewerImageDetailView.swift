@@ -38,6 +38,8 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var locationButton: UIButton!
 
     var localFile: tableLocalFile?
+    var metadata: tableMetadata?
+    
     var latitude: Double = 0
     var longitude: Double = 0
     var location: String?
@@ -60,6 +62,7 @@ class NCViewerImageDetailView: UIView {
         dateValue.text = ""
         dimLabel.text = ""
         dimValue.text = ""
+        locationButton.setTitle("" , for: .normal)
     }
     
     func show(textColor: UIColor?) {
@@ -82,6 +85,7 @@ class NCViewerImageDetailView: UIView {
     
     func update(metadata: tableMetadata, image: UIImage?, heightMap:  CGFloat) {
                     
+        self.metadata = metadata
         self.heightMap = heightMap
         self.image = image
         self.size = metadata.size
@@ -134,9 +138,11 @@ class NCViewerImageDetailView: UIView {
         }
         
         // Dimensions
-        if let image = self.image {
-            dimLabel.text = NSLocalizedString("_dim_", comment: "")
-            dimValue.text = "\(image.size.width) x \(image.size.height)"
+        if metadata?.typeFile == k_metadataTypeFile_image {
+            if let image = self.image {
+                dimLabel.text = NSLocalizedString("_dim_", comment: "")
+                dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
+            }
         }
         
         // Map
@@ -152,7 +158,6 @@ class NCViewerImageDetailView: UIView {
         } else {
             
             mapHeightConstraint.constant = 0
-            locationButton.setTitle("" , for: .normal)
         }
     }
     
