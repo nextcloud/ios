@@ -26,9 +26,12 @@ import MapKit
 
 class NCViewerImageDetailView: UIView {
     
-    @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var separator: UIView!
     @IBOutlet weak var sizeLabel: UILabel!
+    @IBOutlet weak var sizeValue: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var dateValue: UILabel!
+    @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
 
@@ -47,9 +50,13 @@ class NCViewerImageDetailView: UIView {
         mapView.isZoomEnabled = false
         mapView.isScrollEnabled = false
         mapView.isUserInteractionEnabled = false
+        
+        separator.backgroundColor = NCBrandColor.sharedInstance.separator
     }
     
-    func show() {
+    func show(textColor: UIColor?) {
+        sizeValue.textColor = textColor
+        dateValue.textColor = textColor
         isHidden = false
     }
     
@@ -63,11 +70,10 @@ class NCViewerImageDetailView: UIView {
     
     //MARK: - EXIF
     
-    func update(metadata: tableMetadata, heightMap:  CGFloat, textColor: UIColor) {
+    func update(metadata: tableMetadata, heightMap:  CGFloat) {
                     
         self.heightMap = heightMap
-        dateLabel.textColor = textColor
-        
+
         self.size = metadata.size
         self.date = metadata.date
         
@@ -102,7 +108,8 @@ class NCViewerImageDetailView: UIView {
     func updateContent() {
         
         // Size
-        self.sizeLabel.text = NSLocalizedString("_size_", comment: "") + " " + CCUtility.transformedSize(self.size)
+        sizeLabel.text = NSLocalizedString("_size_", comment: "")
+        sizeValue.text = CCUtility.transformedSize(self.size)
         
         // Date
         if let date = self.date {
@@ -111,7 +118,9 @@ class NCViewerImageDetailView: UIView {
             let dateString = formatter.string(from: date as Date)
             formatter.dateFormat = "HH:mm"
             let timeString = formatter.string(from: date as Date)
-            self.dateLabel.text = NSLocalizedString("_date_", comment: "") + " " + dateString + ", " + timeString
+            
+            dateLabel.text = NSLocalizedString("_date_", comment: "")
+            dateValue.text = dateString + ", " + timeString
         }
         
         // Map
