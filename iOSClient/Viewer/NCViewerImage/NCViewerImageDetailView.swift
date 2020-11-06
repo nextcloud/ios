@@ -145,7 +145,12 @@ class NCViewerImageDetailView: UIView {
             }
         } else if metadata?.typeFile == k_metadataTypeFile_video {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
-                
+                let player = AVPlayer(url: url)
+                if let duration = player.currentItem?.duration {
+                    let timer = secondsToHoursMinutesSeconds(seconds: Int(CMTimeGetSeconds(duration)))
+                    dimLabel.text = NSLocalizedString("_durations_", comment: "")
+                    dimValue.text = "\(timer.0):\(timer.1):\(timer.2)"
+                }
             }
         }
         
@@ -186,5 +191,10 @@ class NCViewerImageDetailView: UIView {
             mapItem.name = location
             mapItem.openInMaps(launchOptions: options)
         }
+    }
+    
+    //MARK: -
+    func secondsToHoursMinutesSeconds (seconds : Int) -> (Int, Int, Int) {
+      return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
     }
 }
