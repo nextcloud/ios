@@ -740,7 +740,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         toolBar.isHidden = true
         
         if (currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio) {
-            //videoPlay(metadata: metadata)
+            videoPlay(metadata: metadata)
             toolBar.isHidden = false
         }
             
