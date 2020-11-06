@@ -31,6 +31,20 @@ class NCKTVHTTPCache: NSObject {
         return instance
     }()
     
+    func getVideoURL(metadata: tableMetadata) -> URL? {
+        
+        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
+            
+            return URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            
+        } else {
+            
+            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+            
+            return NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
+        }
+    }
+    
     func startProxy(user: String, password: String, metadata: tableMetadata) {
         
         guard let authData = (user + ":" + password).data(using: .utf8) else { return }

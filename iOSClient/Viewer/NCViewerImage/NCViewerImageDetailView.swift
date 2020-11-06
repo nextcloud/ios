@@ -137,11 +137,15 @@ class NCViewerImageDetailView: UIView {
             dateValue.text = dateString + ", " + timeString
         }
         
-        // Dimensions
+        // Dimensions / Durations
         if metadata?.typeFile == k_metadataTypeFile_image {
             if let image = self.image {
                 dimLabel.text = NSLocalizedString("_dim_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
+            }
+        } else if metadata?.typeFile == k_metadataTypeFile_video {
+            if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
+                
             }
         }
         

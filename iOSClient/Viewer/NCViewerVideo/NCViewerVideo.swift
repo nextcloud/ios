@@ -47,25 +47,9 @@ protocol NCViewerVideoDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        var videoURL: URL?
-
         NCKTVHTTPCache.shared.startProxy(user: appDelegate.user, password: appDelegate.password, metadata: metadata)
         
-        if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
-            
-            videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            
-        } else {
-            
-            guard let stringURL = (metadata.serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                return
-            }
-            
-            allowsPictureInPicturePlayback = false
-            videoURL = NCKTVHTTPCache.shared.getProxyURL(stringURL: stringURL)
-        }
-        
-        if let url = videoURL {
+        if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata) {
             
             player = AVPlayer(url: url)
         
