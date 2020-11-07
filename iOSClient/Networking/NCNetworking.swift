@@ -259,7 +259,7 @@ import Queuer
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
-        }) { (account, etag, date, length, error, errorCode, errorDescription) in
+        }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
                        
             if error?.isExplicitlyCancelledError ?? false {
                             
@@ -395,7 +395,7 @@ import Queuer
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
-        }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
+        }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
          
             self.uploadRequest[fileNameLocalPath] = nil
             self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task!, errorCode: errorCode, errorDescription: errorDescription)
