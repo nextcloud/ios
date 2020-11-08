@@ -45,6 +45,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
           
         let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                 
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_favoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
@@ -138,6 +139,18 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     //MARK: - NotificationCenter
    
+    @objc func favoriteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
+        
+        if let userInfo = notification.userInfo as NSDictionary? {
+            if let metadata = userInfo["metadata"] as? tableMetadata {
+                if metadata.ocId == self.metadata.ocId {
+                    self.metadata = metadata
+                }
+            }
+        }
+    }
+    
     @objc func moveFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
