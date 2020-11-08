@@ -26,11 +26,11 @@ import NCCommunication
 
 extension NCViewer {
 
-    @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata) {
+    @objc func toggleMoreMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) {
         
         let mainMenuViewController = UIStoryboard.init(name: "NCMenu", bundle: nil).instantiateViewController(withIdentifier: "NCMainMenuTableViewController") as! NCMainMenuTableViewController
         
-        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata)
+        mainMenuViewController.actions = self.initMoreMenu(viewController: viewController, metadata: metadata, webView: webView)
         
         let menuPanelController = NCMenuPanelController()
         menuPanelController.parentPresenter = viewController
@@ -41,7 +41,7 @@ extension NCViewer {
         viewController.present(menuPanelController, animated: true, completion: nil)
     }
     
-    private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata) -> [NCMenuAction] {
+    private func initMoreMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool) -> [NCMenuAction] {
         
         var actions = [NCMenuAction]()
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
@@ -97,7 +97,7 @@ extension NCViewer {
         //
         // OPEN IN
         //
-        if metadata.session == "" {
+        if metadata.session == "" && !webView {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
                     icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
@@ -111,66 +111,70 @@ extension NCViewer {
         //
         // RENAME
         //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_rename_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+        if !webView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_rename_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
-                    alertController.addTextField { (textField) in textField.text = metadata.fileNameView }
-                    let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
-                    let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
-                        let fileNameNew = alertController.textFields![0].text
-                        NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: viewController) { (errorCode, errorDescription) in
-                            if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        alertController.addTextField { (textField) in textField.text = metadata.fileNameView }
+                        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil)
+                        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { action in
+                            let fileNameNew = alertController.textFields![0].text
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew!, urlBase: self.appDelegate.urlBase, viewController: viewController) { (errorCode, errorDescription) in
+                                if errorCode != 0 {
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                }
                             }
-                        }
-                    })
-                    alertController.addAction(cancelAction)
-                    alertController.addAction(okAction)
+                        })
+                        alertController.addAction(cancelAction)
+                        alertController.addAction(okAction)
 
-                    viewController.present(alertController, animated: true, completion: nil)
-                }
+                        viewController.present(alertController, animated: true, completion: nil)
+                    }
+                )
             )
-        )
+        }
         
         //
         // COPY - MOVE
         //
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_move_or_copy_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    
-                    let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
-                    let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-                    let viewController = navigationController.topViewController as! NCSelect
-                    
-                    viewController.delegate = NCViewer.shared
-                    viewController.hideButtonCreateFolder = false
-                    viewController.items = [metadata]
-                    viewController.selectFile = false
-                    viewController.includeDirectoryE2EEncryption = false
-                    viewController.includeImages = false
-                    viewController.type = ""
-                    viewController.titleButtonDone = NSLocalizedString("_move_", comment: "")
-                    viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
-                    viewController.isButtonDone1Hide = false
-                    viewController.isOverwriteHide = false
-                    
-                    navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
-                    self.appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
-                }
+        if !webView {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_move_or_copy_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        
+                        let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
+                        let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
+                        let viewController = navigationController.topViewController as! NCSelect
+                        
+                        viewController.delegate = NCViewer.shared
+                        viewController.hideButtonCreateFolder = false
+                        viewController.items = [metadata]
+                        viewController.selectFile = false
+                        viewController.includeDirectoryE2EEncryption = false
+                        viewController.includeImages = false
+                        viewController.type = ""
+                        viewController.titleButtonDone = NSLocalizedString("_move_", comment: "")
+                        viewController.titleButtonDone1 = NSLocalizedString("_copy_", comment: "")
+                        viewController.isButtonDone1Hide = false
+                        viewController.isOverwriteHide = false
+                        
+                        navigationController.modalPresentationStyle = UIModalPresentationStyle.fullScreen
+                        self.appDelegate.window?.rootViewController?.present(navigationController, animated: true, completion: nil)
+                    }
+                )
             )
-        )
+        }
         
         //
         // OFFLINE
         //
-        if metadata.session == "" {
+        if metadata.session == "" && !webView {
             actions.append(
                 NCMenuAction(
                     title: titleOffline,
@@ -190,43 +194,47 @@ extension NCViewer {
         //
         // VIEW IN FOLDER
         //
-        if appDelegate.activeFileViewInFolder == nil {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                    action: { menuAction in
-                        NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                    }
+        if !webView {
+            if appDelegate.activeFileViewInFolder == nil {
+                actions.append(
+                    NCMenuAction(
+                        title: NSLocalizedString("_view_in_folder_", comment: ""),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        action: { menuAction in
+                            NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                        }
+                    )
                 )
-            )
+            }
         }
         
         //
         // DELETE
         //
-        actions.append(
-            NCMenuAction(title: titleDelete,
-                         icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    
-                    let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+        if !webView {
+            actions.append(
+                NCMenuAction(title: titleDelete,
+                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
                         
-                        NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
-                            if errorCode != 0 {
-                                NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                        let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
+                        
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+                            
+                            NCNetworking.shared.deleteMetadata(metadata, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, onlyLocal: false) { (errorCode, errorDescription) in
+                                if errorCode != 0 {
+                                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
+                                }
                             }
-                        }
-                    })
-                    
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
-                                        
-                    viewController.present(alertController, animated: true, completion:nil)
-                }
+                        })
+                        
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in })
+                                            
+                        viewController.present(alertController, animated: true, completion:nil)
+                    }
+                )
             )
-        )
+        }
         
         //
         // PDF

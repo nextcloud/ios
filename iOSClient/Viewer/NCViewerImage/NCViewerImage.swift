@@ -136,7 +136,7 @@ class NCViewerImage: UIViewController {
     
     @objc func openMenuMore() {
         
-        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata)
+        NCViewer.shared.toggleMoreMenu(viewController: self, metadata: currentMetadata, webView: false)
     }
     
     //MARK: - NotificationCenter
