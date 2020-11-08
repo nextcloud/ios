@@ -42,9 +42,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidLoad() {
         super.viewDidLoad()
              
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_favoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
@@ -110,39 +108,18 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     
     //MARK: - NotificationCenter
    
-    @objc func moveFile(_ notification: NSNotification) {
+    @objc func favoriteFile(_ notification: NSNotification) {
+        if self.view?.window == nil { return }
         
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
-                if metadata.ocId == self.metadata.ocId {
-                    self.metadata = metadataNew
-                }
-            }
-        }
-    }
-    
-    @objc func deleteFile(_ notification: NSNotification) {
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.ocId == self.metadata.ocId {
-                    viewUnload()
-                }
-            }
-        }
-    }
-    
-    @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata {
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
-                    navigationItem.title = metadata.fileNameView
                 }
             }
         }
     }
-
+    
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
