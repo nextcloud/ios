@@ -30,7 +30,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var webView = WKWebView()
     var bottomConstraint : NSLayoutConstraint?
-    var documentInteractionController: UIDocumentInteractionController!
+    var documentController: UIDocumentInteractionController?
     
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
@@ -237,9 +237,9 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         // end.
                                     })
                                 } else {
-                                    self.documentInteractionController = UIDocumentInteractionController()
-                                    self.documentInteractionController.url = URL(fileURLWithPath: item)
-                                    self.documentInteractionController.presentOptionsMenu(from: self.appDelegate.window.rootViewController!.view.bounds, in: self.appDelegate.window.rootViewController!.view, animated: true)
+                                    self.documentController = UIDocumentInteractionController()
+                                    self.documentController?.url = URL(fileURLWithPath: item)
+                                    self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
                                 }
                             } else {
                                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)

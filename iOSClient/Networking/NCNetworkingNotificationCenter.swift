@@ -68,19 +68,19 @@ import Foundation
                             if metadata.contentType.contains("opendocument") && !NCUtility.shared.isRichDocument(metadata) {
                                 
                                 if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
 
                                 if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
                             } else if metadata.typeFile == k_metadataTypeFile_imagemeter {
                                 
                                 if let view = appDelegate.window?.rootViewController?.view {
-                                    documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                    documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                                 }
                                 
                             } else {
@@ -94,7 +94,7 @@ import Foundation
                         if UIApplication.shared.applicationState == UIApplication.State.active {
                             
                             if let view = appDelegate.window?.rootViewController?.view {
-                                documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                                documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                             }
                         }
                         

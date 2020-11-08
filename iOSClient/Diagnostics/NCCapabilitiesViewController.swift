@@ -199,7 +199,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                 if let view = self.appDelegate.window?.rootViewController?.view {
                     self.documentController = UIDocumentInteractionController(url: fileURL)
                     self.documentController?.delegate = self
-                    self.documentController?.presentOptionsMenu(from: view.frame, in: view, animated: true)
+                    self.documentController?.presentOptionsMenu(from: CGRect.zero, in: view, animated: true)
                 }
             } catch { }
         }
