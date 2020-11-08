@@ -239,10 +239,3 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfView.go(to: pdfSelection)
     }
 }
-
-extension NCViewerPDF : UINavigationControllerDelegate {
-
-    override func willMove(toParent parent: UIViewController?) {
-        super.willMove(toParent: parent)
-     }
-}
