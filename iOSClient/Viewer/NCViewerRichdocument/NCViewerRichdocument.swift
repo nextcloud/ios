@@ -225,7 +225,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                 }
                                 
                                 if type == "print" {
-                                    
                                     let pic = UIPrintInteractionController.shared
                                     let printInfo = UIPrintInfo.printInfo()
                                     printInfo.outputType = UIPrintInfo.OutputType.general
