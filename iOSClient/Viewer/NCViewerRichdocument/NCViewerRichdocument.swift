@@ -159,7 +159,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NCViewer.shared.toggleMoreMenu(viewController: self, metadata: metadata)
     }
    
-    
     //MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -232,15 +231,14 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     printInfo.jobName = "Document"
                                     pic.printInfo = printInfo
                                     pic.printingItem = URL(fileURLWithPath: item)
-                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { (pci, completed, error) in
-                                        // end.
-                                    })
+                                    pic.present(from: CGRect.zero, in: self.view, animated: true, completionHandler: { (pci, completed, error) in })
                                 } else {
                                     self.documentController = UIDocumentInteractionController()
                                     self.documentController?.url = URL(fileURLWithPath: item)
                                     self.documentController?.presentOptionsMenu(from: CGRect.zero, in: self.view, animated: true)
                                 }
                             } else {
+                                
                                 NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
                             }
                         })
