@@ -319,3 +319,14 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NCUtility.shared.stopActivityIndicator()
     }
 }
+
+extension NCViewerRichdocument : UINavigationControllerDelegate {
+
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        
+        if parent == nil {
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSourceNetworkForced, userInfo: ["serverUrl":self.metadata.serverUrl])
+        }
+    }
+}
