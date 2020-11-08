@@ -305,7 +305,7 @@ class NCViewerImage: UIViewController {
                                         
                         self.progressView.progress = Float(progress.fractionCompleted)
                         
-                    }) { (account, etag, date, length, error, errorCode, errorDescription) in
+                    }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
                         
                         self.progressView.progress = 0
                         

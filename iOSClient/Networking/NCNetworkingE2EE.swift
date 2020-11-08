@@ -275,7 +275,7 @@ import Alamofire
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
                     
-                }) { (account, ocId, etag, date, size, error, errorCode, errorDescription) in
+                }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
                 
                     NCNetworking.shared.uploadRequest[fileNameLocalPath] = nil
                     guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }

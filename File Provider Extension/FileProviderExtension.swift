@@ -226,7 +226,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 fileProviderData.shared.fileProviderManager.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             }
             
-        }) { (account, etag, date, length, error, errorCode, errorDescription) in
+        }) { (account, etag, date, length, allHeaderFields, error, errorCode, errorDescription) in
             
             self.outstandingSessionTasks.removeValue(forKey: url)
             guard var metadata = fileProviderUtility.shared.getTableMetadataFromItemIdentifier(identifier) else {

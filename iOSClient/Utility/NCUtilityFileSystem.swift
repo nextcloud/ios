@@ -97,6 +97,17 @@ class NCUtilityFileSystem: NSObject {
         catch {}
     }
     
+    @objc func moveFile(atPath: String, toPath: String) {
+
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            try FileManager.default.removeItem(atPath: atPath)
+        }
+        catch {}
+        
+    }
+    
     @objc func moveFileInBackground(atPath: String, toPath: String) {
         
         DispatchQueue.global().async {

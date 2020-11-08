@@ -388,7 +388,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                 
             }, progressHandler: { (_) in
                 
-            }) { (account, etag, date, lenght, error, errorCode, errorDescription) in
+            }) { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in
                 
                 if account == self.appDelegate.account && errorCode == 0 {
                     
