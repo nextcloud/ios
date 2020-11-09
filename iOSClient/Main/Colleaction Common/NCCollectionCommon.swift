@@ -159,6 +159,30 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         
         navigationController.modalPresentationStyle = .fullScreen
         viewController.present(navigationController, animated: true, completion: nil)
+        
+        /* OLD
+         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
+         let vc = navigationController.topViewController as! NCSelect
+         var copyItems: [Any] = []
+         for item in items {
+             copyItems.append(item)
+         }
+         
+         vc.delegate = self
+         vc.hideButtonCreateFolder = false
+         vc.selectFile = false
+         vc.includeDirectoryE2EEncryption = false
+         vc.includeImages = false
+         vc.type = ""
+         vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
+         vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
+         vc.isButtonDone1Hide = false
+         vc.isOverwriteHide = false
+         vc.items = copyItems
+         
+         navigationController.modalPresentationStyle = .fullScreen
+         viewController.present(navigationController, animated: true, completion: nil)
+         */
     }
     
     @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
