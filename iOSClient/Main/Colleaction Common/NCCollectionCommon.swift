@@ -105,23 +105,57 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     func openSelectView(viewController: UIViewController, items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-        let vc = navigationController.topViewController as! NCSelect
+        let top_vc = navigationController.topViewController as! NCSelect
+        var vc_list = [NCSelect]()
         var copyItems: [Any] = []
         for item in items {
             copyItems.append(item)
         }
         
-        vc.delegate = self
-        vc.hideButtonCreateFolder = false
-        vc.selectFile = false
-        vc.includeDirectoryE2EEncryption = false
-        vc.includeImages = false
-        vc.type = ""
-        vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
-        vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
-        vc.isButtonDone1Hide = false
-        vc.isOverwriteHide = false
-        vc.items = copyItems
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
+        
+        // Setup view controllers such that the current view is of the same directory the items to be copied are in
+        while true {
+            // If not in the topmost directory, create a new view controller and set correct title.
+            // If in the topmost directory, use the default view controller as the base.
+            var viewController: NCSelect?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+            } else {
+                viewController = top_vc
+            }
+            guard let vc = viewController else { return }
+
+            vc.delegate = self
+            vc.hideButtonCreateFolder = false
+            vc.selectFile = false
+            vc.includeDirectoryE2EEncryption = false
+            vc.includeImages = false
+            vc.type = ""
+            vc.titleButtonDone = NSLocalizedString("_move_", comment: "")
+            vc.titleButtonDone1 = NSLocalizedString("_copy_",comment: "")
+            vc.isButtonDone1Hide = false
+            vc.isOverwriteHide = false
+            vc.items = copyItems
+            vc.serverUrl = serverUrl
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            vc_list.insert(vc, at: 0)
+            
+            if serverUrl != homeUrl {
+                serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+            } else {
+                break
+            }
+            
+        }
+        navigationController.setViewControllers(vc_list, animated: false)
         
         navigationController.modalPresentationStyle = .fullScreen
         viewController.present(navigationController, animated: true, completion: nil)
