@@ -213,7 +213,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
-        
+        self.clearTable(tableVideo.self, account: account)
+
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
@@ -2684,6 +2685,39 @@ class NCManageDatabase: NSObject {
         }
         
         return tableTrash.init(value: result)
+    }
+    
+    //MARK: -
+    //MARK: Table Video
+    
+    @objc func addVideo(account: String, ocId: String, time: CMTime) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                let addObject = tableVideo()
+               
+                addObject.account = account
+                addObject.ocId = ocId
+                addObject.sec = Int64(CMTimeGetSeconds(time))
+              
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    @objc func getVideo(account: String, ocId: String) -> tableVideo? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", account, ocId).first else {
+            return nil
+        }
+        
+        return tableVideo.init(value: result)
     }
     
     //MARK: -

@@ -24,9 +24,8 @@
 import Foundation
 
 protocol NCViewerVideoDelegate {
-    func stopPictureInPicture(metadata: tableMetadata, time: CMTime?)
+    func stopPictureInPicture(metadata: tableMetadata)
     func startPictureInPicture(metadata: tableMetadata)
-    func playerCurrentTime(_ time: CMTime?)
 }
 
 @objc class NCViewerVideo: AVPlayerViewController {
@@ -82,7 +81,9 @@ protocol NCViewerVideoDelegate {
                 player?.removeObserver(self, forKeyPath: "rate")
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
                 NCKTVHTTPCache.shared.stopProxy()
-                self.delegateViewerVideo?.playerCurrentTime(player?.currentTime())
+                if let time = player?.currentTime() {
+                    NCManageDatabase.sharedInstance.addVideo(account: metadata.account, ocId: metadata.ocId, time: time)
+                }
                 self.rateObserverToken = nil
             }
         }
@@ -109,12 +110,9 @@ extension NCViewerVideo: AVPlayerViewControllerDelegate {
     
     func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
         pictureInPicture = false
-        if rateObserverToken != nil {
-            player?.removeObserver(self, forKeyPath: "rate")
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-            NCKTVHTTPCache.shared.stopProxy()
-            self.rateObserverToken = nil
+        if let time = player?.currentTime() {
+            NCManageDatabase.sharedInstance.addVideo(account: metadata.account, ocId: metadata.ocId, time: time)
         }
-        delegateViewerVideo?.stopPictureInPicture(metadata: metadata, time: player?.currentTime())
+        delegateViewerVideo?.stopPictureInPicture(metadata: metadata)
     }
 }

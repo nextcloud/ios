@@ -434,3 +434,15 @@ class tableTrash: Object {
         return "fileId"
     }
 }
+
+class tableVideo: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var sec: Int64 = 0
+    
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+

@@ -59,7 +59,6 @@ class NCViewerImage: UIViewController {
     private var videoLayer: AVPlayerLayer?
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
-    var seekTime: CMTime?
     var pictureInPictureOcId: String = ""
     var textColor: UIColor = NCBrandColor.sharedInstance.textView
 
@@ -425,6 +424,16 @@ class NCViewerImage: UIViewController {
                 }
                 */
                 
+                let timeScale = CMTimeScale(NSEC_PER_SEC)
+                let time = CMTime(seconds: 1, preferredTimescale: timeScale)
+                timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
+                    NCManageDatabase.sharedInstance.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
+                }
+                
+//                if let time = player?.currentTime() {
+//                    NCManageDatabase.sharedInstance.addVideo(account: currentMetadata.account, ocId: currentMetadata.ocId, time: time)
+//                }
+                
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
                     self.player?.seek(to: CMTime.zero)
@@ -434,9 +443,9 @@ class NCViewerImage: UIViewController {
                 
                 if pictureInPictureOcId != metadata.ocId {
                     player?.play()
-                    if seekTime != nil {
-                        player?.seek(to: seekTime!)
-                        seekTime = nil
+                    if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: metadata.account, ocId: metadata.ocId) {
+                        let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
+                        player?.seek(to: time)
                     }
                 }
             }
@@ -768,15 +777,7 @@ extension NCViewerImage: NCViewerVideoDelegate {
         pictureInPictureOcId = metadata.ocId
     }
     
-    func stopPictureInPicture(metadata: tableMetadata, time: CMTime?) {
+    func stopPictureInPicture(metadata: tableMetadata) {
         pictureInPictureOcId = ""
-        seekTime = time
-        if currentMetadata.ocId == metadata.ocId {
-            videoPlay(metadata: metadata)
-        }
-    }
-    
-    func playerCurrentTime(_ time: CMTime?) {
-        seekTime = time
     }
 }
