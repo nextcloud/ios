@@ -59,6 +59,10 @@ protocol NCViewerVideoDelegate {
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             
             player?.play()
+            if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.metadata.account, ocId: self.metadata.ocId) {
+                player?.seek(to: time)
+            }
+            player?.isMuted = CCUtility.getAudioMute()
         }
     }
     
@@ -76,9 +80,7 @@ protocol NCViewerVideoDelegate {
                 player?.removeObserver(self, forKeyPath: "rate")
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
                 NCKTVHTTPCache.shared.stopProxy()
-                if let time = player?.currentTime() {
-                    NCManageDatabase.sharedInstance.addVideo(account: metadata.account, ocId: metadata.ocId, time: time)
-                }
+                NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
                 self.rateObserverToken = nil
             }
         }
@@ -87,20 +89,7 @@ protocol NCViewerVideoDelegate {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
-            
             NCKTVHTTPCache.shared.saveCache(metadata: metadata)
-            
-            if ((player?.rate) == 1) {
-                if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.metadata.account, ocId: self.metadata.ocId) {
-                    player?.seek(to: time)
-                    player?.isMuted = CCUtility.getAudioMute()
-                }
-            } else {
-                if let time = player?.currentTime() {
-                    NCManageDatabase.sharedInstance.addVideo(account: self.metadata.account, ocId: self.metadata.ocId, time: time)
-                }
-                print("Pause")
-            }
         }
     }
 }
@@ -117,10 +106,8 @@ extension NCViewerVideo: AVPlayerViewControllerDelegate {
     }
     
     func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+        NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
         pictureInPicture = false
-        if let time = player?.currentTime() {
-            NCManageDatabase.sharedInstance.addVideo(account: metadata.account, ocId: metadata.ocId, time: time)
-        }
         delegateViewerVideo?.stopPictureInPicture(metadata: metadata)
     }
 }

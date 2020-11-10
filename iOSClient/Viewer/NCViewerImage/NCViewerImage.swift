@@ -481,9 +481,7 @@ class NCViewerImage: UIViewController {
                     player?.isMuted = CCUtility.getAudioMute()
                 }
             } else {
-                if let time = player?.currentTime() {
-                    NCManageDatabase.sharedInstance.addVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: time)
-                }
+                NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: player?.currentTime())
                 print("Pause")
             }
         }
