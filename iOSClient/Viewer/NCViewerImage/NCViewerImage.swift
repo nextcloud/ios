@@ -476,8 +476,7 @@ class NCViewerImage: UIViewController {
             setToolBar()
             
             if ((player?.rate) == 1) {
-                if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
-                    let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
+                if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }

@@ -91,8 +91,7 @@ protocol NCViewerVideoDelegate {
             NCKTVHTTPCache.shared.saveCache(metadata: metadata)
             
             if ((player?.rate) == 1) {
-                if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.metadata.account, ocId: self.metadata.ocId) {
-                    let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
+                if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.metadata.account, ocId: self.metadata.ocId) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }

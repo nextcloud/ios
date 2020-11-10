@@ -2690,7 +2690,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    @objc func addVideo(account: String, ocId: String, time: CMTime) {
+    func addVideo(account: String, ocId: String, time: CMTime) {
         
         let realm = try! Realm()
 
@@ -2700,7 +2700,7 @@ class NCManageDatabase: NSObject {
                
                 addObject.account = account
                 addObject.ocId = ocId
-                addObject.sec = Int64(CMTimeGetSeconds(time))
+                addObject.time = Int64(CMTimeGetSeconds(time))
               
                 realm.add(addObject, update: .all)
             }
@@ -2709,7 +2709,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getVideo(account: String, ocId: String) -> tableVideo? {
+    func getVideoTime(account: String, ocId: String) -> CMTime? {
         
         let realm = try! Realm()
         
@@ -2717,7 +2717,8 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return tableVideo.init(value: result)
+        let time = CMTimeMake(value: result.time, timescale: 1)
+        return time
     }
     
     //MARK: -
