@@ -33,6 +33,8 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var dateValue: UILabel!
     @IBOutlet weak var dimLabel: UILabel!
     @IBOutlet weak var dimValue: UILabel!
+    @IBOutlet weak var lensModelLabel: UILabel!
+    @IBOutlet weak var lensModelValue: UILabel!
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
@@ -44,6 +46,7 @@ class NCViewerImageDetailView: UIView {
     var longitude: Double = 0
     var location: String?
     var date: NSDate?
+    var lensModel: String?
     var heightMap: CGFloat = 0
     var size: Double = 0
     var image: UIImage?
@@ -62,6 +65,8 @@ class NCViewerImageDetailView: UIView {
         dateValue.text = ""
         dimLabel.text = ""
         dimValue.text = ""
+        lensModelLabel.text = ""
+        lensModelValue.text = ""
         locationButton.setTitle("" , for: .normal)
     }
     
@@ -69,6 +74,7 @@ class NCViewerImageDetailView: UIView {
         sizeValue.textColor = textColor
         dateValue.textColor = textColor
         dimValue.textColor = textColor
+        lensModelValue.textColor = textColor
         separator.backgroundColor = NCBrandColor.sharedInstance.separator
         isHidden = false
     }
@@ -92,7 +98,7 @@ class NCViewerImageDetailView: UIView {
         self.date = metadata.date
         
         if metadata.typeFile == k_metadataTypeFile_image {
-            CCUtility.setExif(metadata) { (latitude, longitude, location, date) in
+            CCUtility.setExif(metadata) { (latitude, longitude, location, date, lensMode) in
                 self.latitude = latitude
                 self.longitude = longitude
                 self.location = location
@@ -108,6 +114,7 @@ class NCViewerImageDetailView: UIView {
             self.latitude = Double(localFile.exifLatitude) ?? 0
             self.longitude = Double(localFile.exifLongitude) ?? 0
             self.date = localFile.exifDate
+            self.lensModel = localFile.exifLensModel
             
             if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                 location = locationDB
@@ -153,6 +160,12 @@ class NCViewerImageDetailView: UIView {
                     dimValue.text = "\(timer.0):\(timer.1):\(timer.2)"
                 }
             }
+        }
+        
+        // Model
+        if let lensModel = self.lensModel {
+            lensModelLabel.text = NSLocalizedString("_model_", comment: "")
+            lensModelValue.text = lensModel
         }
         
         // Map

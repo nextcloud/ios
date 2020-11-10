@@ -148,6 +148,7 @@
 "_size_"                    = "Size";
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";
+"_model_"                   = "Model";
 
 // App
 

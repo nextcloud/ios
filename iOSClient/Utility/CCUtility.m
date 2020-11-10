@@ -1684,7 +1684,7 @@
 #pragma mark ===== EXIF =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date))completition
++ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date, NSString *lensModel))completition
 {
     NSString *dateTime;
     NSString *latitudeRef;
@@ -1703,20 +1703,20 @@
     NSString *lensModel;
 
     if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
-        completition(latitude, longitude, location, date);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
     
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageOcId:metadata.ocId fileNameView:metadata.fileNameView]];
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource) {
-        completition(latitude, longitude, location, date);
+        completition(latitude, longitude, location, date, lensModel);
         return;
     }
     
     CFDictionaryRef fileProperties = CGImageSourceCopyProperties(originalSource, nil);
     if (!fileProperties) {
-        completition(latitude, longitude, location,date);
+        completition(latitude, longitude, location,date, lensModel);
         return;
     }
     
@@ -1727,7 +1727,7 @@
     
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
-        completition(latitude, longitude, location,date);
+        completition(latitude, longitude, location,date, lensModel);
         return;
     }
 
@@ -1736,25 +1736,19 @@
     CFDictionaryRef exif = CFDictionaryGetValue(imageProperties, kCGImagePropertyExifDictionary);
     
     if (exif) {
+        
         NSString *sPixelX = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelXDimension);
         pixelX = [sPixelX intValue];
         NSString *sPixelY = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelYDimension);
         pixelY = [sPixelY intValue];
-        NSString *sdateTime = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifSubsecTimeOriginal);
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
-        date = [dateFormatter dateFromString:sdateTime];
-        if (!date) date = metadata.date;
         lensModel = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifLensModel);
     }
  
     if (tiff) {
         
         dateTime = (NSString *)CFDictionaryGetValue(tiff, kCGImagePropertyTIFFDateTime);
-        
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
-    
         date = [dateFormatter dateFromString:dateTime];
         if (!date) date = metadata.date;
     }
@@ -1793,13 +1787,13 @@
 
     // Wite data EXIF in DB
     if (tiff || gps) {
-        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude];
+        [[NCManageDatabase sharedInstance] setLocalFileWithOcId:metadata.ocId exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude exifLensModel:lensModel];
         if ([stringLatitude doubleValue] != 0 || [stringLongitude doubleValue] != 0) {
             
             // If exists already geocoder data in TableGPS exit
             location = [[NCManageDatabase sharedInstance] getLocationFromGeoLatitude:stringLatitude longitude:stringLongitude];
             if (location != nil) {
-                completition(latitude, longitude, location, date);
+                completition(latitude, longitude, location, date, lensModel);
                 return;
             }
             
@@ -1833,14 +1827,14 @@
                         [[NCManageDatabase sharedInstance] addGeocoderLocation:location placemarkAdministrativeArea:placemark.administrativeArea placemarkCountry:placemark.country placemarkLocality:placemark.locality placemarkPostalCode:placemark.postalCode placemarkThoroughfare:placemark.thoroughfare latitude:stringLatitude longitude:stringLongitude];
                     }
                     
-                    completition(latitude, longitude, location, date);
+                    completition(latitude, longitude, location, date, lensModel);
                 }
             }];
         } else {
-            completition(latitude, longitude, location, date);
+            completition(latitude, longitude, location, date, lensModel);
         }
     } else {
-        completition(latitude, longitude, location, date);
+        completition(latitude, longitude, location, date, lensModel);
     }
        
     CFRelease(originalSource);

@@ -1536,7 +1536,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String) {
+    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
         
         let realm = try! Realm()
 
@@ -1546,6 +1546,9 @@ class NCManageDatabase: NSObject {
                     result.exifDate = exifDate
                     result.exifLatitude = exifLatitude
                     result.exifLongitude = exifLongitude
+                    if exifLensModel?.count ?? 0 > 0 {
+                        result.exifLensModel = exifLensModel
+                    }
                 }
             }
         } catch let error {
