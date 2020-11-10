@@ -424,12 +424,13 @@ class NCViewerImage: UIViewController {
                 }
                 */
                 
+                /*
                 let timeScale = CMTimeScale(NSEC_PER_SEC)
                 let time = CMTime(seconds: 1, preferredTimescale: timeScale)
                 timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
                     NCManageDatabase.sharedInstance.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
                 }
-                
+                */
 //                if let time = player?.currentTime() {
 //                    NCManageDatabase.sharedInstance.addVideo(account: currentMetadata.account, ocId: currentMetadata.ocId, time: time)
 //                }
@@ -443,10 +444,12 @@ class NCViewerImage: UIViewController {
                 
                 if pictureInPictureOcId != metadata.ocId {
                     player?.play()
+                    /*
                     if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: metadata.account, ocId: metadata.ocId) {
                         let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
                         player?.seek(to: time)
                     }
+                    */
                 }
             }
         }
@@ -476,6 +479,17 @@ class NCViewerImage: UIViewController {
         
         if keyPath != nil && keyPath == "rate" {
            setToolBar()
+            if ((player?.rate) == 1) {
+                if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
+                    let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
+                    player?.seek(to: time)
+                }
+            } else {
+                if let time = player?.currentTime() {
+                    NCManageDatabase.sharedInstance.addVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: time)
+                }
+                print("Pause")
+            }
         }
     }
     
