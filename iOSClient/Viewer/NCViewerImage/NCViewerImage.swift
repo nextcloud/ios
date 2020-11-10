@@ -438,6 +438,7 @@ class NCViewerImage: UIViewController {
                 // At end go back to start
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
                     self.player?.seek(to: CMTime.zero)
+                    NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
                 }
                             
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
