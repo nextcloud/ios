@@ -687,18 +687,17 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentMetadata.typeFile == k_metadataTypeFile_video || currentMetadata.typeFile == k_metadataTypeFile_audio {
             
             if pictureInPictureOcId != currentMetadata.ocId {
-                
-                videoStop()
-                
+                                
                 // Kill PIP
                 appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
-                //
+                // --------
                 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
+                    self.videoStop()
                 }
             }
             

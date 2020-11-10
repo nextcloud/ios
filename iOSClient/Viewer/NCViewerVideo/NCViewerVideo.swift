@@ -69,6 +69,8 @@ protocol NCViewerVideoDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
+        NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
+        
         if let player = self.player {
             CCUtility.setAudioMute(player.isMuted)
         }
@@ -80,7 +82,6 @@ protocol NCViewerVideoDelegate {
                 player?.removeObserver(self, forKeyPath: "rate")
                 NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
                 NCKTVHTTPCache.shared.stopProxy()
-                NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
                 self.rateObserverToken = nil
             }
         }
