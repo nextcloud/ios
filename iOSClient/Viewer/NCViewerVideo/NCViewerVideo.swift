@@ -32,7 +32,6 @@ protocol NCViewerVideoDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var metadata = tableMetadata()
-    var seekTime: CMTime?
     var pictureInPicture: Bool = false
     var delegateViewerVideo: NCViewerVideoDelegate?
     private var rateObserverToken: Any?
@@ -59,10 +58,6 @@ protocol NCViewerVideoDelegate {
         
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             player?.play()
-            if seekTime != nil {
-                player?.seek(to: seekTime!)
-                seekTime = nil
-            }
             player?.isMuted = CCUtility.getAudioMute()
         }
     }
@@ -92,7 +87,20 @@ protocol NCViewerVideoDelegate {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
+            
             NCKTVHTTPCache.shared.saveCache(metadata: metadata)
+            
+            if ((player?.rate) == 1) {
+                if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.metadata.account, ocId: self.metadata.ocId) {
+                    let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
+                    player?.seek(to: time)
+                }
+            } else {
+                if let time = player?.currentTime() {
+                    NCManageDatabase.sharedInstance.addVideo(account: self.metadata.account, ocId: self.metadata.ocId, time: time)
+                }
+                print("Pause")
+            }
         }
     }
 }

@@ -478,7 +478,9 @@ class NCViewerImage: UIViewController {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath != nil && keyPath == "rate" {
-           setToolBar()
+            
+            setToolBar()
+            
             if ((player?.rate) == 1) {
                 if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
                     let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
@@ -690,21 +692,18 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
             
             if pictureInPictureOcId != currentMetadata.ocId {
                 
+                videoStop()
+                
                 // Kill PIP
                 appDelegate.activeViewerVideo?.player?.replaceCurrentItem(with: nil)
                 //
                 
                 appDelegate.activeViewerVideo = NCViewerVideo()
                 appDelegate.activeViewerVideo?.metadata = currentMetadata
-                appDelegate.activeViewerVideo?.seekTime = player?.currentTime()
                 appDelegate.activeViewerVideo?.delegateViewerVideo = self
                 if let currentViewerVideo = appDelegate.activeViewerVideo {
                     present(currentViewerVideo, animated: false) { }
                 }
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.videoStop()
             }
             
         } else {
