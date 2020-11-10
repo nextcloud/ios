@@ -282,6 +282,7 @@ class NCViewerImage: UIViewController {
                 
         if gestureRecognizer.state == .began {
             
+            currentViewerImageZoom?.centreConstraints()
             currentViewerImageZoom?.statusViewImage.isHidden = true
             currentViewerImageZoom?.statusLabel.isHidden = true
             
