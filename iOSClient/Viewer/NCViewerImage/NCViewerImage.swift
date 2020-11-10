@@ -444,12 +444,6 @@ class NCViewerImage: UIViewController {
                 
                 if pictureInPictureOcId != metadata.ocId {
                     player?.play()
-                    /*
-                    if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: metadata.account, ocId: metadata.ocId) {
-                        let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
-                        player?.seek(to: time)
-                    }
-                    */
                 }
             }
         }
@@ -485,6 +479,7 @@ class NCViewerImage: UIViewController {
                 if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
                     let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
                     player?.seek(to: time)
+                    player?.isMuted = CCUtility.getAudioMute()
                 }
             } else {
                 if let time = player?.currentTime() {
@@ -526,8 +521,12 @@ class NCViewerImage: UIViewController {
         toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
     }
 
-    @objc func playerPause() { player?.pause() }
-    @objc func playerPlay() { player?.play() }
+    @objc func playerPause() {
+        player?.pause()
+    }
+    @objc func playerPlay() {
+        player?.play()
+    }
     @objc func SetMute() {
         let mute = CCUtility.getAudioMute()
         CCUtility.setAudioMute(!mute)

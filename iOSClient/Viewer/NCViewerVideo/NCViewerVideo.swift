@@ -57,8 +57,8 @@ protocol NCViewerVideoDelegate {
             }
         
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+            
             player?.play()
-            player?.isMuted = CCUtility.getAudioMute()
         }
     }
     
@@ -94,6 +94,7 @@ protocol NCViewerVideoDelegate {
                 if let tableVideo = NCManageDatabase.sharedInstance.getVideo(account: self.metadata.account, ocId: self.metadata.ocId) {
                     let time = CMTimeMake(value: tableVideo.sec, timescale: 1)
                     player?.seek(to: time)
+                    player?.isMuted = CCUtility.getAudioMute()
                 }
             } else {
                 if let time = player?.currentTime() {
