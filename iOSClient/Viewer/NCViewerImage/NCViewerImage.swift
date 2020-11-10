@@ -545,6 +545,8 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
     func reloadCurrentPage() {
         
         if currentViewerImageZoom?.metadata.ocId == currentMetadata.ocId {
+            // Disable pan gesture for strange gui results
+            panGestureRecognizer.isEnabled = false
             let viewerImageZoom = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerImageZoom") as! NCViewerImageZoom
             
             viewerImageZoom.index = currentIndex
@@ -556,6 +558,7 @@ extension NCViewerImage: UIPageViewControllerDelegate, UIPageViewControllerDataS
             singleTapGestureRecognizer.require(toFail: viewerImageZoom.doubleTapGestureRecognizer)
             
             pageViewController.setViewControllers([viewerImageZoom], direction: .forward, animated: false, completion: nil)
+            panGestureRecognizer.isEnabled = true
         }
     }
     
