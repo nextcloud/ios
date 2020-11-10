@@ -768,8 +768,12 @@ extension NCViewerImage: NCViewerVideoDelegate {
         pictureInPictureOcId = metadata.ocId
     }
     
-    func stopPictureInPicture(metadata: tableMetadata) {
+    func stopPictureInPicture(metadata: tableMetadata, time: CMTime?) {
         pictureInPictureOcId = ""
+        seekTime = time
+        if currentMetadata.ocId == metadata.ocId {
+            videoPlay(metadata: metadata)
+        }
     }
     
     func playerCurrentTime(_ time: CMTime?) {
