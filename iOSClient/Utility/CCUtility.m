@@ -1697,7 +1697,11 @@
     double longitude = 0;
     
     NSDate *date = [NSDate new];
-    
+    long fileSize = 0;
+    int pixelY = 0;
+    int pixelX = 0;
+    NSString *lensModel;
+
     if (![metadata.typeFile isEqualToString:k_metadataTypeFile_image] || ![CCUtility fileProviderStorageExists:metadata.ocId fileNameView:metadata.fileNameView]) {
         completition(latitude, longitude, location, date);
         return;
@@ -1710,15 +1714,40 @@
         return;
     }
     
+    CFDictionaryRef fileProperties = CGImageSourceCopyProperties(originalSource, nil);
+    if (!fileProperties) {
+        completition(latitude, longitude, location,date);
+        return;
+    }
+    
+    // FILES PROPERTIES
+    NSNumber *fileSizeNumber = CFDictionaryGetValue(fileProperties, kCGImagePropertyFileSize);
+    fileSize = [fileSizeNumber longValue];
+    
+    
     CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, NULL);
     if (!imageProperties) {
         completition(latitude, longitude, location,date);
         return;
     }
-    
+
     CFDictionaryRef tiff = CFDictionaryGetValue(imageProperties, kCGImagePropertyTIFFDictionary);
     CFDictionaryRef gps = CFDictionaryGetValue(imageProperties, kCGImagePropertyGPSDictionary);
-
+    CFDictionaryRef exif = CFDictionaryGetValue(imageProperties, kCGImagePropertyExifDictionary);
+    
+    if (exif) {
+        NSString *sPixelX = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelXDimension);
+        pixelX = [sPixelX intValue];
+        NSString *sPixelY = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifPixelYDimension);
+        pixelY = [sPixelY intValue];
+        NSString *sdateTime = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifSubsecTimeOriginal);
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
+        date = [dateFormatter dateFromString:sdateTime];
+        if (!date) date = metadata.date;
+        lensModel = (NSString *)CFDictionaryGetValue(exif, kCGImagePropertyExifLensModel);
+    }
+ 
     if (tiff) {
         
         dateTime = (NSString *)CFDictionaryGetValue(tiff, kCGImagePropertyTIFFDateTime);
