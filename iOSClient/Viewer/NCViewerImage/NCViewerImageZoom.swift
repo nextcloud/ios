@@ -73,7 +73,10 @@ class NCViewerImageZoom: UIViewController {
         view.addGestureRecognizer(doubleTapGestureRecognizer)
         
         if image == nil {
-            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "noPreview"), width: view.frame.width, height: view.frame.width, color: .gray)
+            var named = "noPreview"
+            if metadata.typeFile == k_metadataTypeFile_audio { named = "noPreviewAudio" }
+            if metadata.typeFile == k_metadataTypeFile_video { named = "noPreviewVideo" }
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: view.frame.width, height: view.frame.width, color: .gray)
         }
         
         if let image = image {
