@@ -33,7 +33,7 @@ class NCViewerImage: UIViewController {
     enum ScreenMode {
         case full, normal
     }
-    var currentMode: ScreenMode = .normal
+    var currentMode: ScreenMode = .full
         
     var pageViewController: UIPageViewController {
         return self.children[0] as! UIPageViewController
@@ -107,11 +107,7 @@ class NCViewerImage: UIViewController {
         progressView.progress = 0
         
         setToolBar()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.setNavigationBarHidden(false, animated: true)
@@ -514,6 +510,7 @@ class NCViewerImage: UIViewController {
         
         toolBar.setItems([itemPlay, itemFlexibleSpace, itemFavorite, itemMute], animated: true)
         toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
+        toolBar.barTintColor = view.backgroundColor
     }
 
     @objc func playerPause() {
