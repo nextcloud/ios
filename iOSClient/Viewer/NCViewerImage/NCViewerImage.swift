@@ -696,26 +696,26 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
                 }
             }
             
-        } else {
+            currentMode = .full
+        }
                     
-            if currentMode == .full {
-                
-                navigationController?.setNavigationBarHidden(false, animated: false)
-                view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-                textColor = NCBrandColor.sharedInstance.textView
-                progressView.isHidden = false
-                
-                currentMode = .normal
-                
-            } else {
-                
-                navigationController?.setNavigationBarHidden(true, animated: false)
-                view.backgroundColor = .black
-                textColor = .white
-                progressView.isHidden = true
-                
-                currentMode = .full
-            }
+        if currentMode == .full {
+            
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            textColor = NCBrandColor.sharedInstance.textView
+            progressView.isHidden = false
+            
+            currentMode = .normal
+            
+        } else {
+            
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            view.backgroundColor = .black
+            textColor = .white
+            progressView.isHidden = true
+            
+            currentMode = .full
         }
     }
 }
