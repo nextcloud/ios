@@ -52,8 +52,10 @@ protocol NCViewerVideoDelegate {
             player = AVPlayer(url: url)
         
             // At end go back to start
-            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
-                self.player?.seek(to: CMTime.zero)
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+                if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                    self.player?.seek(to: CMTime.zero)
+                }
             }
         
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)

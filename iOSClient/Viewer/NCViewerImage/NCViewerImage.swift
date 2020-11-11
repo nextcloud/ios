@@ -422,23 +422,20 @@ class NCViewerImage: UIViewController {
                 timeObserverToken = playerVideo?.addPeriodicTimeObserver(forInterval: time, queue: .main) { [weak self] time in
                     print(time)
                 }
-                */
-                
-                /*
+               
                 let timeScale = CMTimeScale(NSEC_PER_SEC)
                 let time = CMTime(seconds: 1, preferredTimescale: timeScale)
                 timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
                     NCManageDatabase.sharedInstance.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
                 }
                 */
-//                if let time = player?.currentTime() {
-//                    NCManageDatabase.sharedInstance.addVideo(account: currentMetadata.account, ocId: currentMetadata.ocId, time: time)
-//                }
                 
                 // At end go back to start
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { (notification) in
-                    self.player?.seek(to: CMTime.zero)
-                    NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
+                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
+                    if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
+                        self.player?.seek(to: CMTime.zero)
+                        NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
+                    }
                 }
                             
                 rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
