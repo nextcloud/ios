@@ -119,9 +119,9 @@ class NCViewerImageDetailView: UIView {
             if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                 location = locationDB
             }
-           
-            self.updateContent()
         }
+        
+        self.updateContent()
     }
     
     //MARK: - Map
@@ -150,7 +150,7 @@ class NCViewerImageDetailView: UIView {
                 dimLabel.text = NSLocalizedString("_dimension_", comment: "")
                 dimValue.text = "\(Int(image.size.width)) x \(Int(image.size.height))"
             }
-        } else if metadata?.typeFile == k_metadataTypeFile_video {
+        } else if metadata?.typeFile == k_metadataTypeFile_video || metadata?.typeFile == k_metadataTypeFile_audio  {
             if let url = NCKTVHTTPCache.shared.getVideoURL(metadata: metadata!) {
                 let playerVideo = AVPlayer(url: url)
                 if let duration = playerVideo.currentItem?.asset.duration {
