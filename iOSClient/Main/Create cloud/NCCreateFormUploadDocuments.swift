@@ -381,14 +381,11 @@ import NCCommunication
         indicator.startAnimating()
         
         if self.editorId == k_editor_text || self.editorId == k_editor_onlyoffice {
-            
-            fileNameExtension = "md"
+                        
             var customUserAgent: String?
-                       
             if self.editorId == k_editor_onlyoffice {
                 customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
             }
-            
             NCCommunication.shared.NCTextGetListOfTemplates(customUserAgent: customUserAgent) { (account, templates, errorCode, errorMessage) in
                 
                 self.indicator.stopAnimating()
