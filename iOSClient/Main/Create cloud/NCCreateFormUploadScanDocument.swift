@@ -661,49 +661,47 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
     func changeCompressionImage(_ image: UIImage) -> UIImage {
         
         var compressionQuality: CGFloat = 0.5
-        var maxHeight: Float = 595.2    // A4
-        var maxWidth: Float = 841.8     // A4
+        var baseHeight: Float = 595.2    // A4
+        var baseWidth: Float = 841.8     // A4
 
         switch quality {
         case .low:
-            maxHeight *= 1
-            maxWidth *= 1
-            compressionQuality = 0.1
+            baseHeight *= 2
+            baseWidth *= 2
+            compressionQuality = 0.4
         case .medium:
-            maxHeight *= 2
-            maxWidth *= 2
-            compressionQuality = 0.5
+            baseHeight *= 3
+            baseWidth *= 3
+            compressionQuality = 0.6
         case .high:
-            maxHeight *= 4
-            maxWidth *= 4
+            baseHeight *= 4
+            baseWidth *= 4
             compressionQuality = 0.9
         }
         
-        var actualHeight = Float(image.size.height)
-        var actualWidth = Float(image.size.width)
-        var imgRatio: Float = actualWidth / actualHeight
-        let maxRatio: Float = maxWidth / maxHeight
+        var newHeight = Float(image.size.height)
+        var newWidth = Float(image.size.width)
+        var imgRatio: Float = newWidth / newHeight
+        let baseRatio: Float = baseWidth / baseHeight
 
-        if actualHeight > maxHeight || actualWidth > maxWidth {
-            if imgRatio < maxRatio {
-                //adjust width according to maxHeight
-                imgRatio = maxHeight / actualHeight
-                actualWidth = imgRatio * actualWidth
-                actualHeight = maxHeight
+        if newHeight > baseHeight || newWidth > baseWidth {
+            if imgRatio < baseRatio {
+                imgRatio = baseHeight / newHeight
+                newWidth = imgRatio * newWidth
+                newHeight = baseHeight
             }
-            else if imgRatio > maxRatio {
-                //adjust height according to maxWidth
-                imgRatio = maxWidth / actualWidth
-                actualHeight = imgRatio * actualHeight
-                actualWidth = maxWidth
+            else if imgRatio > baseRatio {
+                imgRatio = baseWidth / newWidth
+                newHeight = imgRatio * newHeight
+                newWidth = baseWidth
             }
             else {
-                actualHeight = maxHeight
-                actualWidth = maxWidth
+                newHeight = baseHeight
+                newWidth = baseWidth
             }
         }
         
-        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(actualWidth), height: CGFloat(actualHeight))
+        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(newWidth), height: CGFloat(newHeight))
         UIGraphicsBeginImageContext(rect.size)
         image.draw(in: rect)
         let img = UIGraphicsGetImageFromCurrentImageContext()
