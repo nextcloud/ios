@@ -676,7 +676,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         case .high:
             baseHeight *= 4
             baseWidth *= 4
-            compressionQuality = 0.9
+            compressionQuality = 0.8
         }
         
         var newHeight = Float(image.size.height)
