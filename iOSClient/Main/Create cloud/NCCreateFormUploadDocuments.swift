@@ -411,7 +411,8 @@ import NCCommunication
                     }
                 }
                     
-                if templates.count == 0 {
+                if self.listOfTemplate.count == 0 {
+                    
                     let temp = NCCommunicationEditorTemplates()
                     
                     temp.identifier = ""
@@ -450,6 +451,7 @@ import NCCommunication
                     for template in templates! {
                         
                         let temp = NCCommunicationEditorTemplates()
+                        
                         temp.identifier = "\(template.templateId)"
                         temp.delete = template.delete
                         temp.ext = template.ext
@@ -466,14 +468,31 @@ import NCCommunication
                             self.navigationItem.rightBarButtonItem?.isEnabled = true
                         }
                     }
-                    
-                    self.collectionView.reloadData()
-                    
-                } else if errorCode != 0 {
-                    NCContentPresenter.shared.messageNotification("_error_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
-                } else {
-                    print("[LOG] It has been changed user during networking process, error.")
                 }
+                
+                if self.listOfTemplate.count == 0 {
+                    
+                    let temp = NCCommunicationEditorTemplates()
+                    
+                    temp.identifier = ""
+                    if self.typeTemplate == k_template_document {
+                        temp.ext = "docx"
+                    } else if self.typeTemplate == k_template_spreadsheet {
+                        temp.ext = "xlsx"
+                    } else if self.typeTemplate == k_template_presentation {
+                        temp.ext = "pptx"
+                    }
+                    temp.name = "Empty"
+                    temp.preview = ""
+                                                                  
+                    self.listOfTemplate.append(temp)
+                    
+                    self.selectTemplate = temp
+                    self.fileNameExtension = temp.ext
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                }
+                
+                self.collectionView.reloadData()
             }
         }
     }
