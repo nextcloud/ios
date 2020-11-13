@@ -57,7 +57,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var mediaPath = ""
     private var livePhoto: Bool = false
     
-    private var timeIntervalSearchNewMedia: TimeInterval = 3
+    private var timeIntervalSearchNewMedia: TimeInterval = 3.5
     private var timerSearchNewMedia: Timer?
         
     struct cacheImages {
@@ -131,7 +131,8 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         self.reloadDataSourceWithCompletion { (_) in
-            self.searchNewMedia()
+            self.timerSearchNewMedia?.invalidate()
+            self.timerSearchNewMedia = Timer.scheduledTimer(timeInterval: self.timeIntervalSearchNewMedia, target: self, selector: #selector(self.searchNewMediaTimer), userInfo: nil, repeats: false)
         }
     }
     
