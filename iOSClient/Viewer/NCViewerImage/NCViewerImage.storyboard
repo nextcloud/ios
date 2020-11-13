@@ -110,7 +110,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="P8R-4f-zAl" customClass="NCViewerImageDetailView" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="462" width="414" height="375"/>
+                                        <rect key="frame" x="0.0" y="462" width="414" height="365"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HRq-3M-yeb">
                                                 <rect key="frame" x="15" y="50" width="384" height="1"/>
@@ -174,13 +174,13 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Typ-A8-XIO">
-                                                <rect key="frame" x="15" y="173" width="384" height="174"/>
+                                                <rect key="frame" x="15" y="163" width="384" height="174"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="174" id="VRv-eR-bwo"/>
                                                 </constraints>
                                             </mapView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oov-9f-Oeu">
-                                                <rect key="frame" x="15" y="347" width="384" height="28"/>
+                                                <rect key="frame" x="15" y="337" width="384" height="28"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                 <state key="normal" title="location"/>
                                                 <connections>
@@ -235,7 +235,7 @@
                                             <constraint firstItem="uaE-Lv-t0Q" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="tnj-dz-2rk"/>
                                             <constraint firstItem="ix8-uQ-chU" firstAttribute="leading" secondItem="uYI-ic-d8g" secondAttribute="trailing" constant="10" id="vPD-6e-zeT"/>
                                             <constraint firstItem="Son-CZ-zFa" firstAttribute="leading" secondItem="P8R-4f-zAl" secondAttribute="leading" constant="15" id="vsg-gX-rNv"/>
-                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="ix8-uQ-chU" secondAttribute="bottom" constant="20" id="xxu-c5-Lxi"/>
+                                            <constraint firstItem="Typ-A8-XIO" firstAttribute="top" secondItem="ix8-uQ-chU" secondAttribute="bottom" constant="10" id="xxu-c5-Lxi"/>
                                             <constraint firstItem="n1C-OB-gq2" firstAttribute="leading" secondItem="uaE-Lv-t0Q" secondAttribute="trailing" constant="10" id="yAH-Dt-LC5"/>
                                             <constraint firstItem="Son-CZ-zFa" firstAttribute="top" secondItem="WXS-Lw-DkI" secondAttribute="bottom" constant="10" id="z9W-ZR-cUN"/>
                                         </constraints>
