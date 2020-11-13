@@ -255,6 +255,8 @@ import Queuer
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadStartFile, userInfo: ["metadata":metadata])
             
+        }, taskHandler: { (_) in
+            
         }, progressHandler: { (progress) in
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, object: nil, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInDownload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
@@ -376,30 +378,30 @@ import Queuer
         
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
-        var task: URLSessionTask?
+        var uploadTask: URLSessionTask?
         let description = metadata.ocId
         
         NCCommunication.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, customUserAgent: nil, addCustomHeaders: nil, requestHandler: { (request) in
             
             self.uploadRequest[fileNameLocalPath] = request
+        
+        }, taskHandler: { (task) in
+            
+            uploadTask = task
+            NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task.taskIdentifier, status: Int(k_metadataStatusUploading))
+            #if !EXTENSION
+            CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
+            #endif
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
             
         }, progressHandler: { (progress) in
-            
-            if task == nil && self.uploadRequest[fileNameLocalPath]?.task != nil {
-                task = self.uploadRequest[fileNameLocalPath]?.task
-                NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, sessionError: "", sessionTaskIdentifier: task!.taskIdentifier, status: Int(k_metadataStatusUploading))
-                #if !EXTENSION
-                CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
-                #endif
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
-            }
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":metadata.serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])
             
         }) { (account, ocId, etag, date, size, allHeaderFields, error, errorCode, errorDescription) in
          
             self.uploadRequest[fileNameLocalPath] = nil
-            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: task!, errorCode: errorCode, errorDescription: errorDescription)
+            self.uploadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, ocId: ocId, etag: etag, date: date, size: size, description: description, task: uploadTask!, errorCode: errorCode, errorDescription: errorDescription)
             
             completion(errorCode, errorDescription)
         }

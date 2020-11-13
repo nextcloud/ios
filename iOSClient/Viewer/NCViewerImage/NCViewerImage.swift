@@ -296,6 +296,8 @@ class NCViewerImage: UIViewController {
                                     
                     NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                         
+                    }, taskHandler: { (_) in
+                        
                     }, progressHandler: { (progress) in
                                         
                         self.progressView.progress = Float(progress.fractionCompleted)

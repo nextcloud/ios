@@ -270,6 +270,8 @@ import Alamofire
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: nil, sessionSelector: nil, sessionTaskIdentifier: nil, status: Int(k_metadataStatusUploading))
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
+                
+                }, taskHandler: { (_) in
                     
                 }, progressHandler: { (progress) in
                     

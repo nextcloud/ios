@@ -182,6 +182,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         
                         NCCommunication.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                             
+                        }, taskHandler: { (_) in
+                            
                         }, progressHandler: { (_) in
                             
                         }, completionHandler: { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in
