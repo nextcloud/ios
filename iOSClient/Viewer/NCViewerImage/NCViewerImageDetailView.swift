@@ -136,12 +136,11 @@ class NCViewerImageDetailView: UIView {
         if let date = self.date {
             let formatter = DateFormatter()
             formatter.dateStyle = .full
+            formatter.timeStyle = .medium
             let dateString = formatter.string(from: date as Date)
-            formatter.dateFormat = "HH:mm"
-            let timeString = formatter.string(from: date as Date)
             
             dateLabel.text = NSLocalizedString("_date_", comment: "")
-            dateValue.text = dateString + ", " + timeString
+            dateValue.text = dateString
         }
         
         // Dimensions / Durations
