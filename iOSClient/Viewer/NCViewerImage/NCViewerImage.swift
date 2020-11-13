@@ -141,7 +141,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if errorCode == 0 {
+                if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }
                 if self.metadatas.first(where: { $0.ocId == metadata.ocId }) != nil {
@@ -766,7 +766,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
             let fileNameIconLocalPath = CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)!
             
             NCCommunication.shared.downloadPreview(fileNamePathOrFileId: fileNamePath, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: CGFloat(k_sizePreview), heightPreview: CGFloat(k_sizePreview), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: CGFloat(k_sizeIcon)) { (account, imagePreview, imageIcon,  errorCode, errorMessage) in
-                if errorCode == 0 {
+                if errorCode == 0 && metadata.ocId == self.currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }
             }
