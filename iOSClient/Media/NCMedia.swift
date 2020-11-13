@@ -56,6 +56,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
     private var lastContentOffsetY: CGFloat = 0
     private var mediaPath = ""
     private var livePhoto: Bool = false
+    
+    private var timeIntervalSearchNewMedia: TimeInterval = 3
+    private var timerSearchNewMedia: Timer?
         
     struct cacheImages {
         static var cellLivePhotoImage = UIImage()
@@ -128,7 +131,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         navigationController?.setNavigationBarHidden(true, animated: false)
         
         self.reloadDataSourceWithCompletion { (_) in
-            self.searchNewPhotoVideo()
+            self.searchNewMedia()
         }
     }
     
@@ -381,7 +384,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
             let path = CCUtility.returnPathfromServerUrl(serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account) ?? ""
             NCManageDatabase.sharedInstance.setAccountMediaPath(path, account: appDelegate.account)
             reloadDataSourceWithCompletion { (_) in
-                self.searchNewPhotoVideo()
+                self.searchNewMedia()
             }
         }
     }
@@ -683,7 +686,7 @@ extension NCMedia {
         }
     }
     
-    private func searchOldPhotoVideo(value: Int = -30, limit: Int = 300) {
+    private func searchOldMedia(value: Int = -30, limit: Int = 300) {
         
         if oldInProgress { return }
         else { oldInProgress = true }
@@ -723,7 +726,7 @@ extension NCMedia {
                         
                         if metadatasChanged.metadatasUpdate.count == 0 {
                             
-                            self.researchOldPhotoVideo(value: value, limit: limit, withElseReloadDataSource: true)
+                            self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: true)
                             
                         } else {
                             
@@ -733,22 +736,22 @@ extension NCMedia {
 
                 } else {
                     
-                    self.researchOldPhotoVideo(value: value, limit: limit, withElseReloadDataSource: false)
+                    self.researchOldMedia(value: value, limit: limit, withElseReloadDataSource: false)
                 }
             }
         }
     }
     
-    private func researchOldPhotoVideo(value: Int , limit: Int, withElseReloadDataSource: Bool) {
+    private func researchOldMedia(value: Int , limit: Int, withElseReloadDataSource: Bool) {
         
         if value == -30 {
-            searchOldPhotoVideo(value: -90)
+            searchOldMedia(value: -90)
         } else if value == -90 {
-            searchOldPhotoVideo(value: -180)
+            searchOldMedia(value: -180)
         } else if value == -180 {
-            searchOldPhotoVideo(value: -999)
+            searchOldMedia(value: -999)
         } else if value == -999 && limit > 0 {
-            searchOldPhotoVideo(value: -999, limit: 0)
+            searchOldMedia(value: -999, limit: 0)
         } else {
             if withElseReloadDataSource {
                 reloadDataSource()
@@ -756,7 +759,11 @@ extension NCMedia {
         }
     }
     
-    @objc func searchNewPhotoVideo(limit: Int = 300) {
+    @objc func searchNewMediaTimer() {
+        self.searchNewMedia()
+    }
+    
+    @objc func searchNewMedia(limit: Int = 300) {
         
         guard var lessDate = Calendar.current.date(byAdding: .second, value: 1, to: Date()) else { return }
         guard var greaterDate = Calendar.current.date(byAdding: .day, value: -30, to: Date()) else { return }
@@ -793,9 +800,9 @@ extension NCMedia {
                         }
                     }
                 } else if errorCode == 0 && files.count == 0 && limit > 0 {
-                    self.searchNewPhotoVideo(limit: 0)
+                    self.searchNewMedia(limit: 0)
                 } else if errorCode == 0 && files.count == 0 && self.metadatas.count == 0 {
-                    self.searchOldPhotoVideo()
+                    self.searchOldMedia()
                 }
             }
         }
@@ -832,19 +839,21 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         
         if !decelerate {
-            self.searchNewPhotoVideo()
+            timerSearchNewMedia?.invalidate()
+            timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMediaTimer), userInfo: nil, repeats: false)
             
             if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
-                searchOldPhotoVideo()
+                searchOldMedia()
             }
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.searchNewPhotoVideo()
+        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchNewMediaTimer), userInfo: nil, repeats: false)
         
         if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) {
-            searchOldPhotoVideo()
+            searchOldMedia()
         }
     }
 }
