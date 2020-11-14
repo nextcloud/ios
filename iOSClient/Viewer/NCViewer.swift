@@ -43,8 +43,8 @@ class NCViewer: NSObject {
         // IMAGE AUDIO VIDEO
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_audio || metadata.typeFile == k_metadataTypeFile_video {
             
-            if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
-                
+            if let navigationController = viewController.navigationController {
+                            
                 let viewerImagePageContainer:NCViewerImage = UIStoryboard(name: "NCViewerImage", bundle: nil).instantiateInitialViewController() as! NCViewerImage
                 var index = 0
                 for medatasImage in metadatas {
@@ -66,8 +66,9 @@ class NCViewer: NSObject {
                 
             // PDF
             if metadata.contentType == "application/pdf" {
+                                        
+                if let navigationController = viewController.navigationController {
                     
-                if let navigationController = getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                     let viewController:NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as! NCViewerPDF
                 
                     viewController.metadata = metadata
@@ -98,8 +99,9 @@ class NCViewer: NSObject {
                             NCUtility.shared.stopActivityIndicator()
                             
                             if errorCode == 0 && account == self.appDelegate.account && url != nil {
+                                                                
+                                if let navigationController = viewController.navigationController {
                                 
-                                if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                                     let viewController:NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
                                 
                                     viewController.metadata = metadata
@@ -116,8 +118,9 @@ class NCViewer: NSObject {
                         }
                         
                     } else {
+                                                
+                        if let navigationController = viewController.navigationController {
                         
-                        if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
                             let viewController:NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as! NCViewerNextcloudText
                         
                             viewController.metadata = metadata
@@ -147,8 +150,9 @@ class NCViewer: NSObject {
                         NCUtility.shared.stopActivityIndicator()
 
                         if errorCode == 0 && account == self.appDelegate.account && url != nil {
-                            
-                            if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                                                          
+                            if let navigationController = viewController.navigationController {
+                                
                                 let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
                             
                                 viewController.metadata = metadata
@@ -164,8 +168,9 @@ class NCViewer: NSObject {
                     }
                     
                 } else {
-                    
-                    if let navigationController = self.getPushNavigationController(viewController: viewController, serverUrl: metadata.serverUrl) {
+                                            
+                    if let navigationController = viewController.navigationController {
+                        
                         let viewController:NCViewerRichdocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as! NCViewerRichdocument
                     
                         viewController.metadata = metadata
@@ -186,16 +191,6 @@ class NCViewer: NSObject {
 
         viewerQuickLook = NCViewerQuickLook.init()
         viewerQuickLook?.quickLook(url: URL(fileURLWithPath: fileNamePath))
-    }
-    
-    private func getPushNavigationController(viewController: UIViewController, serverUrl: String) -> UINavigationController? {
-        
-        if viewController is NCFiles || viewController is NCFavorite || viewController is NCOffline || viewController is NCRecent || viewController is NCFileViewInFolder || viewController is NCMedia {
-            if serverUrl == appDelegate.activeServerUrl {
-                return viewController.navigationController
-            }
-        }
-        return nil
     }
 }
 
