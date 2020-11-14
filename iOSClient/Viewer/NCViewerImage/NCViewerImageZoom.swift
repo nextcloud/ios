@@ -190,7 +190,7 @@ class NCViewerImageZoom: UIViewController {
             detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
-            if imageView.center.y > view.center.y + 125 {
+            if imageView.center.y > view.center.y + 100 {
                 
                 delegate?.dismissImageZoom()
             }

@@ -754,7 +754,7 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
         // NO PREVIEW
-        if  viewerImageZoom.noPreview {
+        if viewerImageZoom.noPreview {
             
         }
         
