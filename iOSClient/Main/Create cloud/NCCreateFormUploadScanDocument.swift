@@ -759,34 +759,17 @@ class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
     }
     
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-        // save scan
-        //dismiss(animated: true, completion: nil)
-    }
         
-    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
-        controller.dismiss(animated: true, completion: nil)
-    }
-    
-    /*
-    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
-        
-        let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-        let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-        let image: UIImage?
-        
-        if results.doesUserPreferEnhancedScan {
-            image = results.enhancedScan?.image
-        } else {
-            image = results.croppedScan.image
-        }
-        
-        if image != nil {
+        for pageNumber in 0..<scan.pageCount {
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            let image = scan.imageOfPage(at: pageNumber)
             do {
-                try image!.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
+                try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath))
             } catch { }
         }
-
-        scanner.dismiss(animated: true, completion: {
+        
+        controller.dismiss(animated: true) {
             if self.viewController is DragDropViewController {
                 (self.viewController as! DragDropViewController).loadImage()
             } else {
@@ -796,16 +779,11 @@ class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                 self.viewController?.present(controller, animated: true, completion: nil)
             }
-        })
+        }
     }
-    
-    func imageScannerControllerDidCancel(_ scanner: ImageScannerController) {
-        scanner.dismiss(animated: true, completion: nil)
+        
+    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+        controller.dismiss(animated: true, completion: nil)
     }
-    
-    func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
-        NCContentPresenter.shared.messageNotification("_error_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
-    }
-    */
 }
 
