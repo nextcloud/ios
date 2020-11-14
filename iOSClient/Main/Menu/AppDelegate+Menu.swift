@@ -106,16 +106,18 @@ extension AppDelegate: NCAudioRecorderViewControllerDelegate {
             )
         } 
         
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
-                action: { menuAction in
-                    NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.window.rootViewController!)
-                }
+        if #available(iOS 13.0, *) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_scans_document_", comment: ""),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    action: { menuAction in
+                        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.window.rootViewController!)
+                    }
+                )
             )
-        )
-
+        }
+        
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_create_voice_memo_", comment: ""),

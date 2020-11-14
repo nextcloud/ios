@@ -23,6 +23,7 @@
 
 import UIKit
 
+@available(iOS 13.0, *)
 class DragDropViewController: UIViewController {
     
     //Data Source for collectionViewSource
@@ -100,11 +101,7 @@ class DragDropViewController: UIViewController {
         collectionViewDestination.reloadData()
 
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
-        if #available(iOS 13.0, *) {
-            labelTitlePDFzone.backgroundColor = .systemBackground
-        } else {
-            labelTitlePDFzone.backgroundColor = .systemGray
-        }
+        labelTitlePDFzone.backgroundColor = .systemBackground
     }
     
     //MARK: Button Action
@@ -377,6 +374,7 @@ class DragDropViewController: UIViewController {
 
 // MARK: - UICollectionViewDataSource Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -504,6 +502,7 @@ extension UIImage {
 
 // MARK: - UICollectionViewDragDelegate Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDragDelegate
 {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
@@ -565,6 +564,7 @@ extension DragDropViewController : UICollectionViewDragDelegate
 
 // MARK: - UICollectionViewDropDelegate Methods
 
+@available(iOS 13.0, *)
 extension DragDropViewController : UICollectionViewDropDelegate {
     
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {

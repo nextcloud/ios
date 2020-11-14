@@ -21,12 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import Foundation
-import WeScan
 import NCCommunication
 import Vision
+import VisionKit
 
+@available(iOS 13.0, *)
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NCCreateFormUploadConflictDelegate {
     
     enum typeQuality {
@@ -85,10 +85,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         changeTheming()
         
-        if #available(iOS 13.0, *) {
-            let value = CCUtility.getTextRecognitionStatus()
-            SetTextRecognition(newValue: value)
-        }
+        let value = CCUtility.getTextRecognitionStatus()
+        SetTextRecognition(newValue: value)
     }
     
     @objc func changeTheming() {
@@ -166,21 +164,19 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         // Section: Text recognition
         
-        if #available(iOS 13.0, *) {
-            section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
-            form.addFormSection(section)
-                
-            row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
-            row.value = 0
-            row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
-
-            row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_text_recognition_", comment: ""))
+        form.addFormSection(section)
             
-            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row = XLFormRowDescriptor(tag: "textRecognition", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_text_recognition_", comment: ""))
+        row.value = 0
+        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
 
-            section.addFormRow(row)
-        }
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "textRecognition")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+
+        section.addFormRow(row)
         
         // Section: File
         
@@ -467,29 +463,26 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
             var textFile = ""
             for image in self.arrayImages {
                 
-                if #available(iOS 13.0, *) {
-                    
-                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
-                    
-                    let request = VNRecognizeTextRequest { (request, error) in
-                        guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                            NCUtility.shared.stopActivityIndicator()
-                            return
-                        }
-                        for observation in observations {
-                            guard let textLine = observation.topCandidates(1).first else {
-                                continue
-                            }
-                               
-                            textFile += textLine.string
-                            textFile += "\n"
-                        }
+                let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                
+                let request = VNRecognizeTextRequest { (request, error) in
+                    guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                        NCUtility.shared.stopActivityIndicator()
+                        return
                     }
-                    
-                    request.recognitionLevel = .accurate
-                    request.usesLanguageCorrection = true
-                    try? requestHandler.perform([request])
+                    for observation in observations {
+                        guard let textLine = observation.topCandidates(1).first else {
+                            continue
+                        }
+                           
+                        textFile += textLine.string
+                        textFile += "\n"
+                    }
                 }
+                
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                try? requestHandler.perform([request])
             }
             
             do {
@@ -522,47 +515,39 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
                 
                 let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
                 
-                if #available(iOS 13.0, *) {
+                if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
                     
-                    if self.form.formRow(withTag: "textRecognition")!.value as! Int == 1 {
-                        
-                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                        image.draw(in: bounds)
+                    UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                    image.draw(in: bounds)
 
-                        let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
-                        
-                        let request = VNRecognizeTextRequest { (request, error) in
-                            guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                                NCUtility.shared.stopActivityIndicator()
-                                return
-                            }
-                            for observation in observations {
-                                guard let textLine = observation.topCandidates(1).first else {
-                                    continue
-                                }
-                                
-                                var t: CGAffineTransform = CGAffineTransform.identity
-                                t = t.scaledBy(x: image.size.width, y: -image.size.height)
-                                t = t.translatedBy(x: 0, y: -1)
-                                let rect = observation.boundingBox.applying(t)
-                                let text = textLine.string
-
-                                let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                                let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
-                            
-                                text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
-                            }
+                    let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                    
+                    let request = VNRecognizeTextRequest { (request, error) in
+                        guard let observations = request.results as? [VNRecognizedTextObservation] else {
+                            NCUtility.shared.stopActivityIndicator()
+                            return
                         }
+                        for observation in observations {
+                            guard let textLine = observation.topCandidates(1).first else {
+                                continue
+                            }
+                            
+                            var t: CGAffineTransform = CGAffineTransform.identity
+                            t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                            t = t.translatedBy(x: 0, y: -1)
+                            let rect = observation.boundingBox.applying(t)
+                            let text = textLine.string
+
+                            let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                            let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
                         
-                        request.recognitionLevel = .accurate
-                        request.usesLanguageCorrection = true
-                        try? requestHandler.perform([request])
-                        
-                    } else {
-                        
-                        UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-                        image.draw(in: bounds)
+                            text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                        }
                     }
+                    
+                    request.recognitionLevel = .accurate
+                    request.usesLanguageCorrection = true
+                    try? requestHandler.perform([request])
                     
                 } else {
                     
@@ -750,7 +735,8 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
 }
 
-class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
+@available(iOS 13.0, *)
+class NCCreateScanDocument : NSObject, VNDocumentCameraViewControllerDelegate {
     
     @objc static let sharedInstance: NCCreateScanDocument = {
         let instance = NCCreateScanDocument()
@@ -764,12 +750,24 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         self.viewController = viewController
         
-        let scannerVC = ImageScannerController()
-        scannerVC.imageScannerDelegate = self
-        
-        self.viewController?.present(scannerVC, animated: true, completion: nil)
+        guard VNDocumentCameraViewController.isSupported else { return }
+            
+        let controller = VNDocumentCameraViewController()
+        controller.delegate = self
+
+        self.viewController?.present(controller, animated: true)
     }
     
+    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
+        // save scan
+        //dismiss(animated: true, completion: nil)
+    }
+        
+    func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+    
+    /*
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
@@ -808,5 +806,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
         NCContentPresenter.shared.messageNotification("_error_", description: error.localizedDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
     }
+    */
 }
 

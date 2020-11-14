@@ -79,7 +79,6 @@
 		F72A47EC2487B06B005AD489 /* NCOperationQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72A47EB2487B06B005AD489 /* NCOperationQueue.swift */; };
 		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D404823D2082500A97FD0 /* NCViewerNextcloudText.swift */; };
-		F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72E0B9C21AD60BC00898D7B /* WeScan.framework */; };
 		F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F733B65121997CC1001C1FFA /* TLPhotoPicker.framework */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
 		F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381EDA218218C9000B1560 /* NCOffline.swift */; };
@@ -725,7 +724,6 @@
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F710C5F02471A6D1009AD8B7 /* Sentry.framework in Frameworks */,
 				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
-				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
 				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
@@ -1879,7 +1877,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SVGKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjack.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/CocoaLumberjackSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/WeScan.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftRichString.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/QRCodeReader.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZIPFoundation.framework",
