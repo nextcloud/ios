@@ -56,6 +56,7 @@ class NCViewerImageZoom: UIViewController {
     private var startImageViewTopConstraint: CGFloat = 0
     private var startImageViewBottomConstraint: CGFloat = 0
     private var startPoint = CGPoint.zero
+    private var topPoint = CGPoint.zero
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -163,6 +164,8 @@ class NCViewerImageZoom: UIViewController {
         case .began:
             
             startPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
+            topPoint = CGPoint(x: currentLocation.x, y: currentLocation.y)
+            
             // save start
             startImageViewTopConstraint = imageViewTopConstraint.constant
             startImageViewBottomConstraint = imageViewBottomConstraint.constant
@@ -170,20 +173,22 @@ class NCViewerImageZoom: UIViewController {
         case .ended:
             
             if !detailView.isShow() {
-                centreConstraints()
+                UIView.animate(withDuration: 0.2) {
+                    self.centreConstraints()
+                }
             }
             
         case .changed:
             
+            if currentLocation.y < topPoint.y { topPoint = currentLocation }
             let deltaY = startPoint.y - currentLocation.y
-            print(deltaY)
             
             imageViewTopConstraint.constant = startImageViewTopConstraint + currentLocation.y
             imageViewBottomConstraint.constant = startImageViewBottomConstraint - currentLocation.y
             detailViewTopConstraint.constant = -imageViewBottomConstraint.constant
             
             // DISMISS
-            if imageView.center.y > view.center.y + (view.bounds.height / 4) {
+            if imageView.center.y > view.center.y + 125 {
                 
                 delegate?.dismissImageZoom()
             }
@@ -195,10 +200,11 @@ class NCViewerImageZoom: UIViewController {
             }
             
             // CLOSE DETAIL
-            if imageView.center.y > view.center.y + 50 {
+            if (imageView.center.y > view.center.y + 50) || (deltaY < -40) || (topPoint.y + 40 < currentLocation.y) {
                 
                 if detailView.isShow() {
                     detailView.hide()
+                    gestureRecognizer.state = .ended
                 }
             }
             
