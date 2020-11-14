@@ -753,6 +753,11 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
+        // NO PREVIEW
+        if  viewerImageZoom.noPreview {
+            
+        }
+        
         // DOWNLOAD FILE
         if ((metadata.typeFile == k_metadataTypeFile_image && CCUtility.getAutomaticDownloadImage()) || (metadata.contentType == "image/heic" &&  metadata.hasPreview == false) || ext == "GIF" || ext == "SVG" || isFolderEncrypted) && metadata.session == "" && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
             NCOperationQueue.shared.download(metadata: metadata, selector: "", setFavorite: false)

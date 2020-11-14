@@ -50,6 +50,7 @@ class NCViewerImageZoom: UIViewController {
     var metadata: tableMetadata = tableMetadata()
     var index: Int = 0
     var minScale: CGFloat = 0
+    var noPreview: Bool = false
     
     var doubleTapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer()
                 
@@ -78,6 +79,7 @@ class NCViewerImageZoom: UIViewController {
             if metadata.typeFile == k_metadataTypeFile_audio { named = "noPreviewAudio" }
             if metadata.typeFile == k_metadataTypeFile_video { named = "noPreviewVideo" }
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: named), width: view.frame.width, height: view.frame.width, color: .gray)
+            self.noPreview = true
         }
         
         if let image = image {
