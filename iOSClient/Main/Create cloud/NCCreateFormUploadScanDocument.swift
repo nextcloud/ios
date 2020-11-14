@@ -666,17 +666,17 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
 
         switch quality {
         case .low:
+            baseHeight *= 1
+            baseWidth *= 1
+            compressionQuality = 0.3
+        case .medium:
             baseHeight *= 2
             baseWidth *= 2
-            compressionQuality = 0.4
-        case .medium:
-            baseHeight *= 3
-            baseWidth *= 3
             compressionQuality = 0.6
         case .high:
             baseHeight *= 4
             baseWidth *= 4
-            compressionQuality = 0.8
+            compressionQuality = 0.9
         }
         
         var newHeight = Float(image.size.height)
