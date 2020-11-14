@@ -108,7 +108,7 @@ extension NCViewerVideo: AVPlayerViewControllerDelegate {
         delegateViewerVideo?.startPictureInPicture(metadata: metadata)
     }
     
-    func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    func playerViewControllerWillStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
         NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
         pictureInPicture = false
         let playing = player?.timeControlStatus == .playing
