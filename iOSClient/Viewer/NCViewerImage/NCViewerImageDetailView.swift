@@ -156,7 +156,13 @@ class NCViewerImageDetailView: UIView {
                     let durationVideo = Int(CMTimeGetSeconds(duration))
                     let timer = secondsToHoursMinutesSeconds(seconds: durationVideo)
                     dimLabel.text = NSLocalizedString("_duration_", comment: "")
-                    dimValue.text = "\(timer.0):\(timer.1):\(timer.2)"
+                    var hh = "\(timer.0)"
+                    var mm = "\(timer.1)"
+                    var ss = "\(timer.2)"
+                    if hh.count == 1 { hh = "0" + hh }
+                    if mm.count == 1 { mm = "0" + mm }
+                    if ss.count == 1 { ss = "0" + ss }
+                    dimValue.text = hh + ":" + mm + ":" + ss
                 }
             }
         }
