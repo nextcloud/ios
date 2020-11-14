@@ -24,8 +24,8 @@
 import Foundation
 
 protocol NCViewerVideoDelegate {
-    func stopPictureInPicture(metadata: tableMetadata)
     func startPictureInPicture(metadata: tableMetadata)
+    func stopPictureInPicture(metadata: tableMetadata, playing: Bool)
 }
 
 @objc class NCViewerVideo: AVPlayerViewController {
@@ -111,6 +111,7 @@ extension NCViewerVideo: AVPlayerViewControllerDelegate {
     func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
         NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
         pictureInPicture = false
-        delegateViewerVideo?.stopPictureInPicture(metadata: metadata)
+        let playing = player?.timeControlStatus == .playing
+        delegateViewerVideo?.stopPictureInPicture(metadata: metadata, playing: playing)
     }
 }

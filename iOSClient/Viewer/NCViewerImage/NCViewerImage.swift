@@ -782,7 +782,7 @@ extension NCViewerImage: NCViewerVideoDelegate {
         pictureInPictureOcId = metadata.ocId
     }
     
-    func stopPictureInPicture(metadata: tableMetadata) {
+    func stopPictureInPicture(metadata: tableMetadata, playing: Bool) {
         pictureInPictureOcId = ""
     }
 }
