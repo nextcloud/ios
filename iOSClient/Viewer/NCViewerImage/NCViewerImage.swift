@@ -753,9 +753,11 @@ extension NCViewerImage: NCViewerImageZoomDelegate {
         let isFolderEncrypted = CCUtility.isFolderEncrypted(metadata.serverUrl, e2eEncrypted: metadata.e2eEncrypted, account: metadata.account, urlBase: metadata.urlBase)
         let ext = CCUtility.getExtension(metadata.fileNameView)
         
-        // NO PREVIEW
+        // NO PREVIEW [RETRAY]
         if viewerImageZoom.noPreview {
-            
+            if let image = getImageMetadata(metadata) {
+                viewerImageZoom.image = image
+            }
         }
         
         // DOWNLOAD FILE
