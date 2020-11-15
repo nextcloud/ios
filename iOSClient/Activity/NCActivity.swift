@@ -116,7 +116,8 @@ class activityTableViewCell: UITableViewCell {
     var account: String = ""
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
-
+    var viewController: UIViewController? = nil
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -190,6 +191,7 @@ extension NCActivity: UITableViewDataSource {
             cell.subjectTrailingConstraint.constant = 10
             cell.didSelectItemEnable = self.didSelectItemEnable
             cell.subject.textColor = NCBrandColor.sharedInstance.textView
+            cell.viewController = self
             
             // icon
             if activity.icon.count > 0 {
@@ -411,7 +413,9 @@ extension activityTableViewCell: UICollectionViewDelegate {
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
                             NCManageDatabase.sharedInstance.addMetadata(metadata!)
-                            //self.appDelegate.activeFiles.segue(metadata: metadata!)
+                            if let viewController = self.viewController {
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!])
+                            }
                         }
                     }
                     
