@@ -677,7 +677,10 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
     @objc func didSingleTapWith(gestureRecognizer: UITapGestureRecognizer) {
              
         if currentViewerImageZoom?.detailView.isShow() ?? false {
-            currentViewerImageZoom?.centreConstraints()
+            
+            UIView.animate(withDuration: 0.2) {
+                self.currentViewerImageZoom?.centreConstraints()
+            }
             return
         }
         
