@@ -102,8 +102,11 @@ class NCViewerImageZoom: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        updateZoomScale()
-        centreConstraints()
+        if !detailView.isShow() {
+            
+            updateZoomScale()
+            centreConstraints()
+        }
         
         delegate?.willAppearImageZoom(viewerImageZoom: self, metadata: metadata)
     }
@@ -115,15 +118,29 @@ class NCViewerImageZoom: UIViewController {
         if view.bounds.width < view.bounds.height {
             heightMap = (view.bounds.width / 3)
         }
-    
-        detailView.update(metadata: metadata, image: image, heightMap: heightMap)
-        detailViewTopConstraint.constant = 0
-        detailView.hide()
         
-        updateZoomScale()
-        centreConstraints()
+        if !detailView.isShow() {
+            
+            detailView.update(metadata: metadata, image: image, heightMap: heightMap)
+            detailViewTopConstraint.constant = 0
+            detailView.hide()
+            
+            updateZoomScale()
+            centreConstraints()
+        }
         
         delegate?.didAppearImageZoom(viewerImageZoom: self, metadata: metadata)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        if detailView.isShow() {
+            
+            detailView.hide()
+            updateZoomScale()
+            centreConstraints()
+        }
     }
     
     override func viewDidLayoutSubviews() {
