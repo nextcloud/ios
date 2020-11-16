@@ -337,7 +337,7 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                             }
                         }
                         if meradatasSelect.count > 0 {
-                            NCCollectionCommon.shared.openSelectView(viewController: self, items: meradatasSelect)
+                            NCCollectionCommon.shared.openSelectView(items: meradatasSelect)
                         }
                         self.selectOcId.removeAll()
                     }

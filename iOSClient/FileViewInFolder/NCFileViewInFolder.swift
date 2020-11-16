@@ -32,6 +32,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         super.init(coder: aDecoder)
         
         appDelegate.activeFileViewInFolder = self
+        titleCurrentFolder = NCBrandOptions.sharedInstance.brand
         layoutKey = k_layout_view_viewInFolder
         enableSearchBar = false
         emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)

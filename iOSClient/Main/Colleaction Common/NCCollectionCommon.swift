@@ -31,6 +31,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         return instance
     }()
     
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     struct images {
         static var cellFileImage = UIImage()
 
@@ -102,17 +104,17 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         }
     }
 
-    func openSelectView(viewController: UIViewController, items: [Any]) {
+    func openSelectView(items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
         let top_vc = navigationController.topViewController as! NCSelect
         var vc_list = [NCSelect]()
+        
         var copyItems: [Any] = []
         for item in items {
             copyItems.append(item)
         }
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         var serverUrl = (copyItems[0] as! Nextcloud.tableMetadata).serverUrl
         
@@ -158,20 +160,48 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         navigationController.setViewControllers(vc_list, animated: false)
         navigationController.modalPresentationStyle = .fullScreen
         
-        viewController.present(navigationController, animated: true, completion: nil)
+        appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
     
     @objc func openFileViewInFolder(serverUrl: String, fileName: String) {
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
         let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
         let navigationController = UINavigationController.init(rootViewController: viewController)
 
-        viewController.serverUrl = serverUrl
-        viewController.fileName = fileName
-                
-        navigationController.presentationController?.delegate = viewController
+        let top_vc = viewController
+        var vc_list = [NCFileViewInFolder]()
+        var serverUrl = serverUrl
+        let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        
+        while true {
+            
+            var viewController: NCFileViewInFolder?
+            if serverUrl != homeUrl {
+                viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as? NCFileViewInFolder
+                if viewController == nil {
+                    return
+                }
+                viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+            } else {
+                viewController = top_vc
+            }
+            guard let vc = viewController else { return }
+            
+            vc.serverUrl = serverUrl
+            vc.fileName = fileName
+            
+            vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
+            vc_list.insert(vc, at: 0)
+            
+            if serverUrl != homeUrl {
+                serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+            } else {
+                break
+            }
+        }
+        
+        navigationController.setViewControllers(vc_list, animated: false)
+        navigationController.modalPresentationStyle = .fullScreen
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
