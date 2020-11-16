@@ -228,6 +228,7 @@ class NCViewerImageZoom: UIViewController {
                         self.view.layoutIfNeeded()
                     }
                 }
+                
                 detailView.show(textColor: self.viewerImage?.textColor)
             }
             
