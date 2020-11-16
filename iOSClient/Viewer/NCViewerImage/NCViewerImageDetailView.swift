@@ -38,7 +38,6 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
-    @IBOutlet weak var favoriteButton: UIButton!
 
     var localFile: tableLocalFile?
     var metadata: tableMetadata?
@@ -132,13 +131,6 @@ class NCViewerImageDetailView: UIView {
         // Size
         sizeLabel.text = NSLocalizedString("_size_", comment: "")
         sizeValue.text = CCUtility.transformedSize(self.size)
-        
-        // Favorite
-        if metadata?.favorite ?? false {
-            favoriteButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "favoriteSmall"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
-        } else {
-            favoriteButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "favoriteSmall"), width: 50, height: 50, color: .gray), for: .normal)
-        }
         
         // Date
         if let date = self.date {
