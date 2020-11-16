@@ -38,6 +38,7 @@ class NCViewerImageDetailView: UIView {
     @IBOutlet weak var mapHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var locationButton: UIButton!
+    @IBOutlet weak var favoriteButton: UIButton!
 
     var localFile: tableLocalFile?
     var metadata: tableMetadata?
@@ -132,6 +133,13 @@ class NCViewerImageDetailView: UIView {
         sizeLabel.text = NSLocalizedString("_size_", comment: "")
         sizeValue.text = CCUtility.transformedSize(self.size)
         
+        // Favorite
+        if metadata?.favorite ?? false {
+            favoriteButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "favoriteSmall"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite), for: .normal)
+        } else {
+            favoriteButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "favoriteSmall"), width: 50, height: 50, color: .gray), for: .normal)
+        }
+        
         // Date
         if let date = self.date {
             let formatter = DateFormatter()
@@ -210,6 +218,10 @@ class NCViewerImageDetailView: UIView {
             mapItem.name = location
             mapItem.openInMaps(launchOptions: options)
         }
+    }
+    
+    @IBAction func touchFavorite(_ sender: Any) {
+        
     }
     
     //MARK: -
