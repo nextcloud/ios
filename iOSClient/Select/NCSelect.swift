@@ -28,7 +28,7 @@ import NCCommunication
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], buttonType: String, overwrite: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     @IBOutlet fileprivate weak var toolbar: UIView!
@@ -105,6 +105,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.presentationController?.delegate = self
         
         // Cell
         collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -215,6 +216,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, NCListCellDelegat
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         toolbar.backgroundColor = NCBrandColor.sharedInstance.tabBar
         //toolbar.tintColor = .gray
+    }
+    
+    func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
+        delegate?.dismissSelect(serverUrl: nil, metadata: nil, type: type, items: items, buttonType: "cancel", overwrite: overwrite)
     }
     
     // MARK: - Empty

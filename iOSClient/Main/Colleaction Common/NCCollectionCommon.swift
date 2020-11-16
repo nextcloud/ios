@@ -107,8 +107,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
     func openSelectView(items: [Any]) {
         
         let navigationController = UIStoryboard.init(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! UINavigationController
-        let top_vc = navigationController.topViewController as! NCSelect
-        var vc_list = [NCSelect]()
+        let topViewController = navigationController.topViewController as! NCSelect
+        var listViewController = [NCSelect]()
         
         var copyItems: [Any] = []
         for item in items {
@@ -130,7 +130,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                 }
                 viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
             } else {
-                viewController = top_vc
+                viewController = topViewController
             }
             guard let vc = viewController else { return }
 
@@ -148,7 +148,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             vc.serverUrl = serverUrl
             
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
-            vc_list.insert(vc, at: 0)
+            listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
                 serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
@@ -157,8 +157,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             }
         }
         
-        navigationController.setViewControllers(vc_list, animated: false)
-        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.setViewControllers(listViewController, animated: false)
+        navigationController.modalPresentationStyle = .formSheet
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
@@ -168,8 +168,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
         let viewController = UIStoryboard(name: "NCFileViewInFolder", bundle: nil).instantiateInitialViewController() as! NCFileViewInFolder
         let navigationController = UINavigationController.init(rootViewController: viewController)
 
-        let top_vc = viewController
-        var vc_list = [NCFileViewInFolder]()
+        let topViewController = viewController
+        var listViewController = [NCFileViewInFolder]()
         var serverUrl = serverUrl
         let homeUrl = NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
@@ -183,7 +183,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                 }
                 viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
             } else {
-                viewController = top_vc
+                viewController = topViewController
             }
             guard let vc = viewController else { return }
             
@@ -191,7 +191,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             vc.fileName = fileName
             
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
-            vc_list.insert(vc, at: 0)
+            listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
                 serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
@@ -200,8 +200,8 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             }
         }
         
-        navigationController.setViewControllers(vc_list, animated: false)
-        navigationController.modalPresentationStyle = .fullScreen
+        navigationController.setViewControllers(listViewController, animated: false)
+        navigationController.modalPresentationStyle = .formSheet
         
         appDelegate.window.rootViewController?.present(navigationController, animated: true, completion: nil)
     }
