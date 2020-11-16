@@ -192,7 +192,7 @@ class NCViewerImageZoom: UIViewController {
         case .ended:
             
             if !detailView.isShow() {
-                UIView.animate(withDuration: 0.2) {
+                UIView.animate(withDuration: 0.3) {
                     self.centreConstraints()
                 }
             }
@@ -216,6 +216,27 @@ class NCViewerImageZoom: UIViewController {
             if imageView.center.y < view.center.y - 50 {
                 
                 detailView.show(textColor: self.viewerImage?.textColor)
+                
+                /*
+                 if detailView.isHidden {
+                     
+                     let detailHeight = self.detailView.frame.height
+                     let top = (self.startImageViewTopConstraint + currentLocation.y) - detailHeight
+                     let bottom = self.startImageViewBottomConstraint - top
+                     
+                     detailView.show(textColor: self.viewerImage?.textColor)
+                     gestureRecognizer.state = .ended
+                     
+                     UIView.animate(withDuration: 1) {
+                         self.imageViewTopConstraint.constant = top
+                         //self.imageViewBottomConstraint.constant = bottom
+                         self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
+                     }
+                 } else {
+                     
+                     detailView.show(textColor: self.viewerImage?.textColor)
+                 }
+                 */
             }
             
             // CLOSE DETAIL
