@@ -224,11 +224,12 @@ class NCViewerImageZoom: UIViewController {
                     gestureRecognizer.state = .ended
                      
                     UIView.animate(withDuration: 0.3) {
-                        let detailHeight = self.detailView.frame.height
-                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - detailHeight
-                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + detailHeight
-                        self.detailViewTopConstraint.constant = -(self.startImageViewBottomConstraint + detailHeight)
+                        self.imageViewTopConstraint.constant = self.startImageViewTopConstraint - self.detailView.frame.height
+                        self.imageViewBottomConstraint.constant = self.startImageViewBottomConstraint + self.detailView.frame.height
+                        self.detailViewTopConstraint.constant = -self.imageViewBottomConstraint.constant
                         self.view.layoutIfNeeded()
+                    } completion: { (_) in
+                        //end.
                     }
                 }
                 
