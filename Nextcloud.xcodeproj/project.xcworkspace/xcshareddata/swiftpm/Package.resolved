@@ -6,17 +6,17 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire",
         "state": {
           "branch": null,
-          "revision": "becd9a729a37bdbef5bc39dc3c702b99f9e3d046",
-          "version": "5.2.2"
+          "revision": "9e0328127dfb801cefe8ac53a13c0c90a7770448",
+          "version": "5.4.0"
         }
       },
       {
         "package": "NCCommunication",
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
-          "branch": "develop",
-          "revision": "f863e72e40d68c0f7a9045b1d0e70057c8053095",
-          "version": null
+          "branch": null,
+          "revision": "3abaa65cf70f7dfa8a7d0df2277d4eda14d7cfd1",
+          "version": "0.84.0"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/yahoojapan/SwiftyXMLParser",
         "state": {
           "branch": null,
-          "revision": "0ca0e992ce0135169c715a6580b99f3e99c503e7",
-          "version": "5.2.1"
+          "revision": "ec7f183642adf429babd867d1a38c5c6912408ba",
+          "version": "5.3.0"
         }
       }
     ]
