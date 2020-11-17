@@ -47,7 +47,6 @@
 		F70CEF5623E9C7E50007035B /* UIColor+adjust.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */; };
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingAutoUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingAutoUpload.swift */; };
 		F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70F2BA4225F2D8900EBB73E /* ZIPFoundation.framework */; };
-		F710C5F02471A6D1009AD8B7 /* Sentry.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F710C5EF2471A6D1009AD8B7 /* Sentry.framework */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
 		F710D1F724057C9400A6033D /* NCDetailNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F624057C9400A6033D /* NCDetailNavigationController.swift */; };
 		F710D1F924057C9D00A6033D /* NCDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F824057C9D00A6033D /* NCDetailViewController.swift */; };
@@ -186,7 +185,6 @@
 		F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BFCCC11B68C21900548E76 /* CCManageLocation.m */; };
 		F77B0E301D118A16002130FE /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
-		F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */; };
 		F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE4311BAC0268006C0017 /* CCSettings.m */; };
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
@@ -213,7 +211,6 @@
 		F782FDC424E6933900666099 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
-		F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
 		F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
@@ -259,7 +256,6 @@
 		F7B174C822FAC0A8000B7579 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B174C722FAC0A8000B7579 /* AppDelegate.m */; };
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
-		F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -603,8 +599,6 @@
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
-		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
-		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
 		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
 		F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFileViewInFolder.storyboard; sourceTree = "<group>"; };
 		F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileViewInFolder.swift; sourceTree = "<group>"; };
@@ -628,7 +622,6 @@
 		F7B2DEED1F976785007CF4D2 /* english.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F7B2DEEE1F976785007CF4D2 /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NYMnemonic.m; sourceTree = "<group>"; };
-		F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+fixedOrientation.swift"; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -759,7 +752,6 @@
 				F733B65221997CC2001C1FFA /* TLPhotoPicker.framework in Frameworks */,
 				F7AF7633246BEDFE00B86E3C /* TOPasscodeViewController.framework in Frameworks */,
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
-				F710C5F02471A6D1009AD8B7 /* Sentry.framework in Frameworks */,
 				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
@@ -1239,8 +1231,6 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
-				F7A54C351C6267B500E2C8BF /* CCExifGeo.m */,
 				F76C3B831C6388BC00DC4301 /* CCGraphics.h */,
 				F76C3B841C6388BC00DC4301 /* CCGraphics.m */,
 				F7514EDA1C7B1336008F3338 /* CCHud.h */,
@@ -1261,7 +1251,6 @@
 				F70CEF5523E9C7E50007035B /* UIColor+adjust.swift */,
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
-				F7B7504A2397D38E004E13EC /* UIImage+fixedOrientation.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -1915,7 +1904,6 @@
 				"$(SRCROOT)/Carthage/Build/iOS/MarkdownKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/XLForm.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/TOPasscodeViewController.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/Sentry.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Queuer.framework",
 			);
 			outputPaths = (
@@ -1949,7 +1937,6 @@
 			files = (
 				F71459BA1D12E3B700CAFEEC /* NSString+TruncateToWidth.m in Sources */,
 				F73D5E48246DE09200DF6467 /* NCElementsJSON.swift in Sources */,
-				F785EEA32461A23C00B3F945 /* CCExifGeo.m in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
@@ -2050,7 +2037,6 @@
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F77B0E301D118A16002130FE /* CCHud.m in Sources */,
 				F76673ED22C901F6007ED366 /* FileProviderDomain.swift in Sources */,
-				F77B0E311D118A16002130FE /* CCExifGeo.m in Sources */,
 				F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */,
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
@@ -2089,7 +2075,6 @@
 				F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
-				F7B7504B2397D38F004E13EC /* UIImage+fixedOrientation.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F7CA1ED020E7E3FE002CC65E /* UIImage+PKDownloadButton.m in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
