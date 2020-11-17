@@ -283,6 +283,7 @@ class tableLocalFile: Object {
     @objc dynamic var exifDate: NSDate? = nil
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
+    @objc dynamic var exifLensModel: String? = nil
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
@@ -433,3 +434,15 @@ class tableTrash: Object {
         return "fileId"
     }
 }
+
+class tableVideo: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var ocId = ""
+    @objc dynamic var time: Int64 = 0
+    
+    override static func primaryKey() -> String {
+        return "ocId"
+    }
+}
+

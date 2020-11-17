@@ -271,6 +271,8 @@ import Alamofire
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
                     
+                }, taskHandler: { (_) in
+                    
                 }, progressHandler: { (progress) in
                     
                     NotificationCenter.default.postOnMainThread(name: k_notificationCenter_progressTask, userInfo: ["account":metadata.account, "ocId":metadata.ocId, "serverUrl":serverUrl, "status":NSNumber(value: k_metadataStatusInUpload), "progress":NSNumber(value: progress.fractionCompleted), "totalBytes":NSNumber(value: progress.totalUnitCount), "totalBytesExpected":NSNumber(value: progress.completedUnitCount)])

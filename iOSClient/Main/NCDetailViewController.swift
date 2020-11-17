@@ -647,7 +647,9 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
             let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
                         
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
-                                
+                
+            }, taskHandler: { (task) in
+                
             },  progressHandler: { (progress) in
                                 
                 self.progress(Float(progress.fractionCompleted))
@@ -765,6 +767,8 @@ extension NCDetailViewController: NCViewerImageViewControllerDelegate, NCViewerI
                 let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!
                                 
                 NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
+                    
+                }, taskHandler: { (task) in
                     
                 }, progressHandler: { (progress) in
                                     

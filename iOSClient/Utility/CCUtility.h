@@ -173,6 +173,12 @@
 + (NSInteger)getLogLevel;
 + (void)setLogLevel:(NSInteger)value;
 
++ (BOOL)getAudioMute;
++ (void)setAudioMute:(BOOL)set;
+
++ (BOOL)getAutomaticDownloadImage;
++ (void)setAutomaticDownloadImage:(BOOL)set;
+
 // ===== Varius =====
 
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
@@ -258,6 +264,10 @@
 + (BOOL)isAnyPermissionToEdit:(NSInteger) permissionValue;
 + (BOOL)isPermissionToRead:(NSInteger) permissionValue;
 + (BOOL)isPermissionToReadCreateUpdate:(NSInteger) permissionValue;
+
+// ===== EXIF =====
+
++ (void)setExif:(tableMetadata *)metadata withCompletionHandler:(void(^)(double latitude, double longitude, NSString *location, NSDate *date, NSString *lensModel))completition;
 
 // ===== Third parts =====
 

@@ -272,9 +272,14 @@
         NSString *fileNameForUpload = [[NCUtility shared] createFileName:fileName serverUrl:self.serverUrl account:self.account];
         NSString *fileNameServer = [NSString stringWithFormat:@"%@/%@", self.serverUrl, fileNameForUpload];
         
-        [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil progressHandler:^(NSProgress * progress) {
+        [[NCCommunication shared] uploadWithServerUrlFileName:fileNameServer fileNameLocalPath:fileNameLocal dateCreationFile:nil dateModificationFile:nil customUserAgent:nil addCustomHeaders:nil taskHandler:^(NSURLSessionTask *task) {
+                        
+        } progressHandler:^(NSProgress *progress) {
+            
             [self.hud progress:progress.fractionCompleted];
+            
         } completionHandler:^(NSString *account, NSString *ocId, NSString *etag, NSDate *date, int64_t size, NSDictionary *allHeaderFields, NSInteger errorCode, NSString *errorDescription) {
+            
             [self.hud hideHud];
             [self.filesName removeObject:fileName];
            

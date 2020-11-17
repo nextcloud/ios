@@ -213,7 +213,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
-        
+        self.clearTable(tableVideo.self, account: account)
+
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
@@ -1536,6 +1537,26 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
+        
+        let realm = try! Realm()
+
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
+                    result.exifDate = exifDate
+                    result.exifLatitude = exifLatitude
+                    result.exifLongitude = exifLongitude
+                    if exifLensModel?.count ?? 0 > 0 {
+                        result.exifLensModel = exifLensModel
+                    }
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     @objc func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
         
         let realm = try! Realm()
@@ -2664,6 +2685,41 @@ class NCManageDatabase: NSObject {
         }
         
         return tableTrash.init(value: result)
+    }
+    
+    //MARK: -
+    //MARK: Table Video
+    
+    func addVideoTime(account: String, ocId: String, time: CMTime?) {
+        
+        guard let time = time else { return }
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                let addObject = tableVideo()
+               
+                addObject.account = account
+                addObject.ocId = ocId
+                addObject.time = Int64(CMTimeGetSeconds(time) * 1000)
+              
+                realm.add(addObject, update: .all)
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func getVideoTime(account: String, ocId: String) -> CMTime? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", account, ocId).first else {
+            return nil
+        }
+        
+        let time = CMTimeMake(value: result.time, timescale: 1000)
+        return time
     }
     
     //MARK: -

@@ -503,6 +503,8 @@ import NCCommunication
 
         NCCommunication.shared.download(serverUrlFileName: preview, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
             
+        }, taskHandler: { (task) in
+            
         }, progressHandler: { (_) in
             
         }) { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in

@@ -382,6 +382,8 @@ extension activityTableViewCell: UICollectionViewDelegate {
             
             NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { (_) in
                 
+            }, taskHandler: { (_) in
+                
             }, progressHandler: { (_) in
                 
             }) { (account, etag, date, lenght, allHeaderFields, error, errorCode, errorDescription) in
