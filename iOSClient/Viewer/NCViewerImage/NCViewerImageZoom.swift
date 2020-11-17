@@ -194,6 +194,9 @@ class NCViewerImageZoom: UIViewController {
             if !detailView.isShow() {
                 UIView.animate(withDuration: 0.3) {
                     self.centreConstraints()
+                } completion: { (_) in
+                    self.updateZoomScale()
+                    self.centreConstraints()
                 }
             }
             
