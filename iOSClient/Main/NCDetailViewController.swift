@@ -201,29 +201,28 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
-                    if metadata.account != self.metadata?.account { return }
+            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String,  let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
+                
+                if metadata.account != self.metadata?.account { return }
+                
+                // IMAGE
+                if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                    // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                        
-                        viewImage()
-                    }
+                    viewImage()
+                }
+                
+                // OTHER
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadataNew.ocId == self.metadata?.ocId {
                     
-                    // OTHER
-                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadataNew.ocId == self.metadata?.ocId {
-                        
-                        self.metadata = metadataNew
-                        
-                        // update subview
-                        for view in backgroundView.subviews {
-                            if view is NCViewerNextcloudText {
-                                (view as! NCViewerNextcloudText).metadata = self.metadata
-                            }
-                            else if view is NCViewerRichdocument {
-                                (view as! NCViewerRichdocument).metadata = self.metadata
-                            }
+                    self.metadata = metadataNew
+                    
+                    // update subview
+                    for view in backgroundView.subviews {
+                        if view is NCViewerNextcloudText {
+                            (view as! NCViewerNextcloudText).metadata = self.metadata
+                        }
+                        else if view is NCViewerRichdocument {
+                            (view as! NCViewerRichdocument).metadata = self.metadata
                         }
                     }
                 }
@@ -235,30 +234,29 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
-                                        
-                    // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                    
-                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                        if metadatas.count > 0 {
-                            if self.metadata?.ocId == metadata.ocId {
-                                var index = viewerImageViewController!.index - 1
-                                if index < 0 { index = 0}
-                                self.metadata = metadatas[index]
-                            }
-                            viewImage()
-                        } else {
-                            viewUnload()
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
+                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                                    
+                // IMAGE
+                if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                
+                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    if metadatas.count > 0 {
+                        if self.metadata?.ocId == metadata.ocId {
+                            var index = viewerImageViewController!.index - 1
+                            if index < 0 { index = 0}
+                            self.metadata = metadatas[index]
                         }
-                    }
-                    
-                    // OTHER
-                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
+                        viewImage()
+                    } else {
                         viewUnload()
                     }
+                }
+                
+                // OTHER
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
+                    viewUnload()
                 }
             }
         }
@@ -268,25 +266,24 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            
+                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                
+                // IMAGE
+                if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
                     
-                    // IMAGE
-                    if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
-                        
-                        viewImage()
-                    }
+                    viewImage()
+                }
+                
+                // OTHER
+                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
                     
-                    // OTHER
-                    if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
-                        
-                        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
-                            self.metadata = metadata
-                            self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
-                        } else {
-                            viewUnload()
-                        }
+                    if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) {
+                        self.metadata = metadata
+                        self.navigationController?.navigationBar.topItem?.title = metadata.fileNameView
+                    } else {
+                        viewUnload()
                     }
                 }
             }
@@ -297,18 +294,17 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
-                    
-                    // IMAGE
-                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio && errorCode != 0  {
+            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
 
-                        viewerImageViewController?.reloadContentViews()
-                    }
-                    
-                    progress(0)
+            if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                
+                // IMAGE
+                if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio && errorCode != 0  {
+
+                    viewerImageViewController?.reloadContentViews()
                 }
+                
+                progress(0)
             }
         }
     }
@@ -317,11 +313,9 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if metadata.serverUrl != self.metadata?.serverUrl { return }
-                    progress(0)
-                }
+            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                if metadata.serverUrl != self.metadata?.serverUrl { return }
+                progress(0)
             }
         }
     }
