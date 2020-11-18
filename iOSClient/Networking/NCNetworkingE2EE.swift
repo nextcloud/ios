@@ -179,7 +179,7 @@ import Alamofire
                         try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                     } catch { }
                     
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["ocId": metadata.ocId])
                 }
                 
                 // unlock
