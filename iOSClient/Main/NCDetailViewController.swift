@@ -291,16 +291,18 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
-                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
-                
-                // IMAGE
-                if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio && errorCode != 0  {
+            if let ocId = userInfo["ocId"] as? String, let errorCode = userInfo["errorCode"] as? Int {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
+                    
+                    // IMAGE
+                    if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio && errorCode != 0  {
 
-                    viewerImageViewController?.reloadContentViews()
+                        viewerImageViewController?.reloadContentViews()
+                    }
+                    
+                    progress(0)
                 }
-                
-                progress(0)
             }
         }
     }
@@ -309,9 +311,11 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let _ = userInfo["errorCode"] as? Int {
-                if metadata.serverUrl != self.metadata?.serverUrl { return }
+            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    if metadata.serverUrl != self.metadata?.serverUrl { return }
                     progress(0)
+                }
             }
         }
     }

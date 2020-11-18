@@ -230,7 +230,7 @@ import Queuer
         } else {
             if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 NCManageDatabase.sharedInstance.setMetadataSession(ocId: ocId, session: "", sessionError: "", sessionSelector: "", sessionTaskIdentifier: 0, status: Int(k_metadataStatusNormal))
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["metadata":metadata])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["ocId":metadata.ocId])
             }
         }
     }
@@ -253,7 +253,7 @@ import Queuer
             self.downloadRequest[fileNameLocalPath] = request
             
             NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadStartFile, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadStartFile, userInfo: ["ocId":metadata.ocId])
             
         }, taskHandler: { (_) in
             
@@ -293,7 +293,7 @@ import Queuer
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
             
             completion(errorCode)
         }
@@ -391,7 +391,7 @@ import Queuer
             #if !EXTENSION
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
             #endif
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["ocId":metadata.ocId])
             
         }, progressHandler: { (progress) in
             
@@ -427,7 +427,7 @@ import Queuer
             CCGraphics.createNewImage(from: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, typeFile: metadata.typeFile)
             #endif
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["metadata":metadata])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadStartFile, userInfo: ["ocId":metadata.ocId])
             
             completion(0, "")
             
@@ -508,7 +508,7 @@ import Queuer
                 #endif                
                 
                 NCCommunicationCommon.shared.writeLog("Upload complete " + serverUrl + "/" + fileName + ", result: success(\(size) bytes)")
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
                 
             } else {
                 
@@ -525,7 +525,7 @@ import Queuer
                         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     }
                     
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
                 
                 } else if errorCode == 401 || errorCode == 403 {
                     
@@ -550,7 +550,7 @@ import Queuer
                     NCManageDatabase.sharedInstance.setMetadataSession(ocId: metadata.ocId, session: nil, sessionError: errorDescription, sessionTaskIdentifier: 0, status: Int(k_metadataStatusUploadError))
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["metadata":metadata, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":errorCode, "errorDescription":""])
             }
             
             // Delete
@@ -654,7 +654,7 @@ import Queuer
             } else {
                 CCUtility.removeFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
             }
             
             completion()
@@ -684,7 +684,7 @@ import Queuer
                     }
                     catch { }
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["metadata":metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
                 }
             }
             completion()

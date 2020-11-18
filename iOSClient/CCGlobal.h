@@ -319,16 +319,15 @@
 #define k_notificationCenter_closeRichWorkspaceWebView  @"closeRichWorkspaceWebView"
 
 #define k_notificationCenter_reloadDataSource           @"reloadDataSource"                 // userInfo: ocId?, serverUrl?
-#define k_notificationCenter_mediaFileNotFound          @"mediaFileNotFound"                // userInfo: metadata
 #define k_notificationCenter_changeStatusFolderE2EE     @"changeStatusFolderE2EE"           // userInfo: serverUrl
 
-#define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: metadata
-#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: metadata, selector, errorCode, errorDescription
-#define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: metadata
+#define k_notificationCenter_downloadStartFile          @"downloadStartFile"                // userInfo: ocId
+#define k_notificationCenter_downloadedFile             @"downloadedFile"                   // userInfo: ocId, selector, errorCode, errorDescription
+#define k_notificationCenter_downloadCancelFile         @"downloadCancelFile"               // userInfo: ocId
 
-#define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: metadata
-#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: metadata, ocIdTemp, errorCode, errorDescription
-#define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: metadata
+#define k_notificationCenter_uploadStartFile            @"uploadStartFile"                  // userInfo: ocId
+#define k_notificationCenter_uploadedFile               @"uploadedFile"                     // userInfo: ocId, ocIdTemp, errorCode, errorDescription
+#define k_notificationCenter_uploadCancelFile           @"uploadCancelFile"                 // userInfo: ocId
 
 #define k_notificationCenter_progressTask               @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 

@@ -52,7 +52,7 @@ import NCCommunication
     
     @objc func download(metadata: tableMetadata, selector: String, setFavorite: Bool, forceDownload: Bool) {
         if !forceDownload && CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView) > 0 {
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["metadata":metadata, "selector":selector, "errorCode":0, "errorDescription":""])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":0, "errorDescription":""])
             return
         }
         for operation in downloadQueue.operations as! [NCOperationDownload]  {
