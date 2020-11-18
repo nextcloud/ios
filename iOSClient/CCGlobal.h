@@ -331,13 +331,13 @@
 
 #define k_notificationCenter_progressTask                   @"progressTask"                     // userInfo: account, ocId, serverUrl, status, progress, totalBytes, totalBytesExpected
 
-#define k_notificationCenter_createFolder                   @"createFolder"                     // userInfo: metadata
-#define k_notificationCenter_deleteFile                     @"deleteFile"                       // userInfo: metadata, onlyLocal
-#define k_notificationCenter_renameFile                     @"renameFile"                       // userInfo: metadata, errorCode, errorDescription
-#define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: metadata, metadataNew
-#define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: metadata, serverUrlTo
-#define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: metadata
+#define k_notificationCenter_createFolder                   @"createFolder"                     // userInfo: ocId
+#define k_notificationCenter_deleteFile                     @"deleteFile"                       // userInfo: ocId, onlyLocal
+#define k_notificationCenter_renameFile                     @"renameFile"                       // userInfo: ocId, errorCode, errorDescription
+#define k_notificationCenter_moveFile                       @"moveFile"                         // userInfo: ocId, metadataNew
+#define k_notificationCenter_copyFile                       @"copyFile"                         // userInfo: ocId, serverUrlTo
+#define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: ocId
 
 #define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
-#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: metadata, metadataMov
+#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: ocId, metadataMov
 #define k_notificationCenter_menuDetailClose                @"menuDetailClose"

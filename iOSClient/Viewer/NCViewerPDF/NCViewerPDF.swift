@@ -143,7 +143,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                 }
@@ -154,7 +154,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func moveFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataNew = userInfo["metadataNew"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadataNew
                 }
@@ -165,7 +165,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["OcId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.ocId == self.metadata.ocId {
                     viewUnload()
                 }
@@ -175,7 +175,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                     navigationItem.title = metadata.fileNameView

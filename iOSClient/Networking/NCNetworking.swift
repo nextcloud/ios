@@ -853,7 +853,7 @@ import Queuer
                         }
                         
                         if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadataFolder?.ocId) {
-                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["metadata": metadata])
+                            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_createFolder, userInfo: ["ocId": metadata.ocId])
                         }
                     }
                     
@@ -916,7 +916,7 @@ import Queuer
                 NCUtilityFileSystem.shared.deleteFile(filePath: CCUtility.getDirectoryProviderStorageOcId(metadataLivePhoto.ocId))
             }
             
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": true])
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["ocId": metadata.ocId, "onlyLocal": true])
             completion(0, "")
             
             return
@@ -980,7 +980,7 @@ import Queuer
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["metadata": metadata, "onlyLocal": false])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_deleteFile, userInfo: ["ocId": metadata.ocId, "onlyLocal": false])
             }
             
             completion(errorCode, errorDescription)
@@ -1027,7 +1027,7 @@ import Queuer
                 #endif
                 
                 if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["metadata": metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_favoriteFile, userInfo: ["ocId": metadata.ocId])
                 }
             }
             
@@ -1139,7 +1139,7 @@ import Queuer
                 }
                 
                 if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["metadata": metadata])
+                    NotificationCenter.default.postOnMainThread(name: k_notificationCenter_renameFile, userInfo: ["ocId": metadata.ocId])
                 }
             }
                     
@@ -1186,7 +1186,7 @@ import Queuer
                 NCManageDatabase.sharedInstance.moveMetadata(ocId: metadata.ocId, serverUrlTo: serverUrlTo)
                 guard let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(metadata.ocId) else { return }
 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["metadata": metadata, "metadataNew": metadataNew])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_moveFile, userInfo: ["ocId": metadata.ocId, "ocIdNew": metadataNew.ocId])
                 
             }
             
@@ -1226,7 +1226,7 @@ import Queuer
                    
             if errorCode == 0 {
                 
-                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["metadata": metadata, "serverUrlTo": serverUrlTo])
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_copyFile, userInfo: ["ocId": metadata.ocId, "serverUrlTo": serverUrlTo])
             }
             
             completion(errorCode, errorDescription)

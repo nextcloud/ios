@@ -140,7 +140,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let errorCode = userInfo["errorCode"] as? Int {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }
@@ -173,7 +173,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
                 if self.metadatas.count == metadatas.count { return }
                 self.metadatas = metadatas
@@ -191,7 +191,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
                     metadatas[index] = metadata
                     if index == currentIndex {
@@ -208,7 +208,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
                     deleteFile(notification)
                 }
@@ -216,30 +216,11 @@ class NCViewerImage: UIViewController {
         }
     }
     
-    /*
-    @objc func favoriteFile(_ notification: NSNotification) {
-        if self.view?.window == nil { return }
-        
-        if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
-                    metadatas[index] = metadata
-                    if index == currentIndex {
-                        currentViewerImageZoom?.metadata = metadata
-                        self.currentMetadata = metadata
-                        self.setToolBar()
-                    }
-                }
-            }
-        }
-    }
-    */
-    
     @objc func saveLivePhoto(_ notification: NSNotification) {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata, let metadataMov = userInfo["metadataMov"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdMov) {
                 let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
                 let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
                 

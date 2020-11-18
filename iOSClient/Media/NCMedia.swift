@@ -405,21 +405,23 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.account == appDelegate.account {
-                    
-                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                    self.metadatas = metadatas
-                    
-                    if self.metadatas.count == 0 {
-                        collectionView?.reloadData()
-                    } else if let row = indexes.first {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.deleteItems(at: [indexPath])
+            if let ocId = userInfo["ocId"] as? String {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    if metadata.account == appDelegate.account {
+                        
+                        let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
+                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                        self.metadatas = metadatas
+                        
+                        if self.metadatas.count == 0 {
+                            collectionView?.reloadData()
+                        } else if let row = indexes.first {
+                            let indexPath = IndexPath(row: row, section: 0)
+                            collectionView?.deleteItems(at: [indexPath])
+                        }
+                        
+                        self.updateMediaControlVisibility()
                     }
-                    
-                    self.updateMediaControlVisibility()
                 }
             }
         }
@@ -429,21 +431,23 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.account == appDelegate.account {
-                    
-                    let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
-                    self.metadatas = metadatas
-                    
-                    if self.metadatas.count == 0 {
-                        collectionView?.reloadData()
-                    } else if let row = indexes.first {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.deleteItems(at: [indexPath])
+            if let ocId = userInfo["ocId"] as? String {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    if metadata.account == appDelegate.account {
+                        
+                        let indexes = self.metadatas.indices.filter { self.metadatas[$0].ocId == metadata.ocId }
+                        let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                        self.metadatas = metadatas
+                        
+                        if self.metadatas.count == 0 {
+                            collectionView?.reloadData()
+                        } else if let row = indexes.first {
+                            let indexPath = IndexPath(row: row, section: 0)
+                            collectionView?.deleteItems(at: [indexPath])
+                        }
+                        
+                        self.updateMediaControlVisibility()
                     }
-                    
-                    self.updateMediaControlVisibility()
                 }
             }
         }
@@ -453,9 +457,11 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
-                if metadata.account == appDelegate.account {
-                    self.reloadDataSource()
+            if let ocId = userInfo["ocId"] as? String {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                    if metadata.account == appDelegate.account {
+                        self.reloadDataSource()
+                    }
                 }
             }
         }

@@ -273,7 +273,7 @@ extension NCViewer {
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
                             action: { menuAction in
-                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["metadata": metadata, "metadataMov": metadataLive])
+                                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
                             }
                         )
                     )

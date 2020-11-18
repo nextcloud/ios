@@ -112,7 +112,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let metadata = userInfo["metadata"] as? tableMetadata {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                 }
