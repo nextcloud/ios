@@ -28,6 +28,7 @@
 #import "NCPushNotificationEncryption.h"
 #import <QuartzCore/QuartzCore.h>
 
+@import Firebase;
 @class NCViewerRichdocument;
 
 @interface AppDelegate() <TOPasscodeViewControllerDelegate>
@@ -44,11 +45,8 @@
 {
     BOOL isSimulatorOrTestFlight = [[NCUtility shared] isSimulatorOrTestFlight];
     
-    if (isSimulatorOrTestFlight) {
-        NCBrandOptions.sharedInstance.disable_crash_service = false;
-    }
     if (![CCUtility getDisableCrashservice] && NCBrandOptions.sharedInstance.disable_crash_service == false) {
-        
+        [FIRApp configure];
     }
     
     [CCUtility createDirectoryStandard];

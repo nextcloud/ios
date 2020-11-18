@@ -107,6 +107,20 @@
 		F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */; };
 		F74DE14325135B6800917068 /* NCTransfers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74DE14125135B6800917068 /* NCTransfers.swift */; };
 		F74DE14425135B6800917068 /* NCTransfers.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F74DE14225135B6800917068 /* NCTransfers.storyboard */; };
+		F74EAEFB256517D5000C023B /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAEF9256517D5000C023B /* Protobuf.framework */; };
+		F74EAEFD256517D5000C023B /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAEFA256517D5000C023B /* FirebaseCrashlytics.framework */; };
+		F74EAF07256523D9000C023B /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAEF9256517D5000C023B /* Protobuf.framework */; };
+		F74EAF09256523D9000C023B /* FirebaseCrashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAEFA256517D5000C023B /* FirebaseCrashlytics.framework */; };
+		F74EAF17256523DA000C023B /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF0C256523D9000C023B /* FirebaseAnalytics.framework */; };
+		F74EAF19256523DB000C023B /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF0D256523D9000C023B /* GoogleAppMeasurement.framework */; };
+		F74EAF1D256523DB000C023B /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF0F256523DA000C023B /* GoogleUtilities.framework */; };
+		F74EAF1F256523DB000C023B /* GoogleDataTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF10256523DA000C023B /* GoogleDataTransport.framework */; };
+		F74EAF21256523DB000C023B /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF11256523DA000C023B /* FirebaseCoreDiagnostics.framework */; };
+		F74EAF23256523DB000C023B /* FIRAnalyticsConnector.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF12256523DA000C023B /* FIRAnalyticsConnector.framework */; };
+		F74EAF25256523DB000C023B /* FirebaseInstallations.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF13256523DA000C023B /* FirebaseInstallations.framework */; };
+		F74EAF27256523DB000C023B /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF14256523DA000C023B /* FirebaseCore.framework */; };
+		F74EAF29256523DB000C023B /* nanopb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF15256523DA000C023B /* nanopb.framework */; };
+		F74EAF2B256523DB000C023B /* PromisesObjC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F74EAF16256523DA000C023B /* PromisesObjC.framework */; };
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
@@ -449,6 +463,20 @@
 		F74C4FBA2328C3C100A23E25 /* OpenSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenSSL.framework; path = Carthage/Build/iOS/OpenSSL.framework; sourceTree = "<group>"; };
 		F74DE14125135B6800917068 /* NCTransfers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTransfers.swift; sourceTree = "<group>"; };
 		F74DE14225135B6800917068 /* NCTransfers.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCTransfers.storyboard; sourceTree = "<group>"; };
+		F74EAEF82565179B000C023B /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		F74EAEF9256517D5000C023B /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Protobuf.framework; path = Carthage/Build/iOS/Protobuf.framework; sourceTree = "<group>"; };
+		F74EAEFA256517D5000C023B /* FirebaseCrashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCrashlytics.framework; path = Carthage/Build/iOS/FirebaseCrashlytics.framework; sourceTree = "<group>"; };
+		F74EAF0C256523D9000C023B /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Carthage/Build/iOS/FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		F74EAF0D256523D9000C023B /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppMeasurement.framework; path = Carthage/Build/iOS/GoogleAppMeasurement.framework; sourceTree = "<group>"; };
+		F74EAF0E256523D9000C023B /* Firebase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Firebase.framework; path = Carthage/Build/iOS/Firebase.framework; sourceTree = "<group>"; };
+		F74EAF0F256523DA000C023B /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = Carthage/Build/iOS/GoogleUtilities.framework; sourceTree = "<group>"; };
+		F74EAF10256523DA000C023B /* GoogleDataTransport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleDataTransport.framework; path = Carthage/Build/iOS/GoogleDataTransport.framework; sourceTree = "<group>"; };
+		F74EAF11256523DA000C023B /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Carthage/Build/iOS/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		F74EAF12256523DA000C023B /* FIRAnalyticsConnector.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FIRAnalyticsConnector.framework; path = Carthage/Build/iOS/FIRAnalyticsConnector.framework; sourceTree = "<group>"; };
+		F74EAF13256523DA000C023B /* FirebaseInstallations.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstallations.framework; path = Carthage/Build/iOS/FirebaseInstallations.framework; sourceTree = "<group>"; };
+		F74EAF14256523DA000C023B /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Carthage/Build/iOS/FirebaseCore.framework; sourceTree = "<group>"; };
+		F74EAF15256523DA000C023B /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Carthage/Build/iOS/nanopb.framework; sourceTree = "<group>"; };
+		F74EAF16256523DA000C023B /* PromisesObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PromisesObjC.framework; path = Carthage/Build/iOS/PromisesObjC.framework; sourceTree = "<group>"; };
 		F7501C302212E57400FB1415 /* NCMedia.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCMedia.storyboard; sourceTree = "<group>"; };
 		F7501C312212E57400FB1415 /* NCMedia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMedia.swift; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
@@ -743,8 +771,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F74EAF17256523DA000C023B /* FirebaseAnalytics.framework in Frameworks */,
 				F74C4FBB2328C3C200A23E25 /* OpenSSL.framework in Frameworks */,
+				F74EAF19256523DB000C023B /* GoogleAppMeasurement.framework in Frameworks */,
+				F74EAF29256523DB000C023B /* nanopb.framework in Frameworks */,
 				F7421EAF2294044B00C4B7C1 /* Accelerate.framework in Frameworks */,
+				F74EAF21256523DB000C023B /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F7C4D88D2534887E00C142DA /* Parchment in Frameworks */,
 				F7C40BF32199978B0004137E /* MBProgressHUD.framework in Frameworks */,
 				F76FDEAB24859C3D0095B6C2 /* Queuer.framework in Frameworks */,
@@ -754,22 +786,32 @@
 				F745B251222D871800346520 /* QRCodeReader.framework in Frameworks */,
 				F765608723BF806D00765969 /* QuickLayout.framework in Frameworks */,
 				F72E0B9D21AD60BC00898D7B /* WeScan.framework in Frameworks */,
+				F74EAF1D256523DB000C023B /* GoogleUtilities.framework in Frameworks */,
 				F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */,
+				F74EAF25256523DB000C023B /* FirebaseInstallations.framework in Frameworks */,
 				F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */,
+				F74EAF2B256523DB000C023B /* PromisesObjC.framework in Frameworks */,
 				F765608B23BF80A400765969 /* SwiftEntryKit.framework in Frameworks */,
 				F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */,
 				F786D58D253454BF00E3DD7B /* NCCommunication in Frameworks */,
 				F7C40BEF219994ED0004137E /* KTVCocoaHTTPServer.framework in Frameworks */,
+				F74EAF07256523D9000C023B /* Protobuf.framework in Frameworks */,
 				F782A57B25123694007BBABD /* Realm in Frameworks */,
 				F7C40BF1219994F20004137E /* KTVHTTPCache.framework in Frameworks */,
 				F774264122EB3F7300B23912 /* DropDown.framework in Frameworks */,
 				F78AA20621F783E900D0F205 /* SwiftRichString.framework in Frameworks */,
 				F7DBD82C23E46A4700ECB7C6 /* MarkdownKit.framework in Frameworks */,
 				F74AFCE922E8B025003DE61F /* FSCalendar.framework in Frameworks */,
+				F74EAEFB256517D5000C023B /* Protobuf.framework in Frameworks */,
 				F7D2C773246470CA008513AE /* XLForm.framework in Frameworks */,
+				F74EAEFD256517D5000C023B /* FirebaseCrashlytics.framework in Frameworks */,
 				F782A57D25123694007BBABD /* RealmSwift in Frameworks */,
 				371B5A3323D0BD5500FAFAE9 /* FloatingPanel.framework in Frameworks */,
+				F74EAF1F256523DB000C023B /* GoogleDataTransport.framework in Frameworks */,
+				F74EAF27256523DB000C023B /* FirebaseCore.framework in Frameworks */,
+				F74EAF09256523D9000C023B /* FirebaseCrashlytics.framework in Frameworks */,
 				F70F2BA5225F2D8900EBB73E /* ZIPFoundation.framework in Frameworks */,
+				F74EAF23256523DB000C023B /* FIRAnalyticsConnector.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,6 +1519,20 @@
 		F7FC7D541DC1F93700BB2C6A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F74EAF12256523DA000C023B /* FIRAnalyticsConnector.framework */,
+				F74EAF0E256523D9000C023B /* Firebase.framework */,
+				F74EAF0C256523D9000C023B /* FirebaseAnalytics.framework */,
+				F74EAF14256523DA000C023B /* FirebaseCore.framework */,
+				F74EAF11256523DA000C023B /* FirebaseCoreDiagnostics.framework */,
+				F74EAF13256523DA000C023B /* FirebaseInstallations.framework */,
+				F74EAF0D256523D9000C023B /* GoogleAppMeasurement.framework */,
+				F74EAF10256523DA000C023B /* GoogleDataTransport.framework */,
+				F74EAF0F256523DA000C023B /* GoogleUtilities.framework */,
+				F74EAF15256523DA000C023B /* nanopb.framework */,
+				F74EAF16256523DA000C023B /* PromisesObjC.framework */,
+				F74EAEFA256517D5000C023B /* FirebaseCrashlytics.framework */,
+				F74EAEF9256517D5000C023B /* Protobuf.framework */,
+				F74EAEF82565179B000C023B /* libsqlite3.tbd */,
 				F76FDEAA24859C3D0095B6C2 /* Queuer.framework */,
 				F710C5EF2471A6D1009AD8B7 /* Sentry.framework */,
 				F7AF7632246BEDFE00B86E3C /* TOPasscodeViewController.framework */,
@@ -1882,6 +1938,8 @@
 			buildActionMask = 12;
 			files = (
 			);
+			inputFileListPaths = (
+			);
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/TLPhotoPicker.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/UICKeyChainStore.framework",
@@ -2217,7 +2275,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2272,7 +2330,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2319,7 +2377,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2367,7 +2425,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/Share.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2421,7 +2479,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2475,7 +2533,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2521,7 +2579,7 @@
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2570,7 +2628,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
