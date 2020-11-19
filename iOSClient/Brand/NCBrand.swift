@@ -83,7 +83,7 @@ import UIKit
     @objc public var disable_manage_account:            Bool = false
     @objc public var disable_more_external_site:        Bool = false
     @objc public var disable_openin_file:               Bool = false                                                // Don't touch me !!
-    @objc public var disable_crash_service:             Bool = true
+    @objc public var disable_crash_service:             Bool = false
     
     override init() {
         
