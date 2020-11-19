@@ -254,16 +254,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                 
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
             cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else {
-            if metadata.hasPreview {
-                cell.imageItem.backgroundColor = .lightGray
-            } else {
-                if metadata.iconName.count > 0 {
-                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
-                } else {
-                    cell.imageItem.image = NCCollectionCommon.images.cellFileImage
-                }
-            }
+        } else if metadata.typeFile == k_metadataTypeFile_image && FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)) {
+            cell.imageItem.image =  UIImage(contentsOfFile: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        }
+        
+        if cell.imageItem.image == nil {
+            cell.imageItem.image = NCCollectionCommon.images.cellFileImage
         }
         
         cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " · " + CCUtility.transformedSize(metadata.size)
