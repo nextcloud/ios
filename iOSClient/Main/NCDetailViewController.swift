@@ -234,16 +234,14 @@ class NCDetailViewController: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                
-                if metadata.account != self.metadata?.account || metadata.serverUrl != self.metadata?.serverUrl { return }
-                                    
+            if let ocId = userInfo["ocId"] as? String, let typeFile = userInfo["typeFile"] as? String {
+                                                    
                 // IMAGE
-                if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio) {
+                if (typeFile == k_metadataTypeFile_image || typeFile == k_metadataTypeFile_video || typeFile == k_metadataTypeFile_audio) {
                 
-                    let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                    let metadatas = self.metadatas.filter { $0.ocId != ocId }
                     if metadatas.count > 0 {
-                        if self.metadata?.ocId == metadata.ocId {
+                        if self.metadata?.ocId == ocId {
                             var index = viewerImageViewController!.index - 1
                             if index < 0 { index = 0}
                             self.metadata = metadatas[index]
@@ -255,7 +253,7 @@ class NCDetailViewController: UIViewController {
                 }
                 
                 // OTHER
-                if (metadata.typeFile == k_metadataTypeFile_document || metadata.typeFile == k_metadataTypeFile_unknown) && metadata.ocId == self.metadata?.ocId {
+                if (typeFile == k_metadataTypeFile_document || typeFile == k_metadataTypeFile_unknown) && ocId == self.metadata?.ocId {
                     viewUnload()
                 }
             }

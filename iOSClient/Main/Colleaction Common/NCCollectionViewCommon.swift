@@ -279,13 +279,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let onlyLocal = userInfo["onlyLocal"] as? Bool, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId)  {
+            if let ocId = userInfo["ocId"] as? String, let fileNameView = userInfo["fileNameView"] as? String, let onlyLocal = userInfo["onlyLocal"] as? Bool {
                 if onlyLocal {
                     reloadDataSource()
-                } else if metadata.fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
+                } else if fileNameView.lowercased() == k_fileNameRichWorkspace.lowercased() {
                     reloadDataSourceNetwork(forced: true)
                 } else {
-                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
+                    if let row = dataSource.deleteMetadata(ocId: ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
