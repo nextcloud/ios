@@ -37,7 +37,7 @@ class NCService: NSObject {
     
     @objc public func startRequestServicesServer() {
    
-        if (appDelegate.account == nil || appDelegate.account.count == 0) { return }
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         self.requestUserProfile()
         self.requestServerStatus()
@@ -47,7 +47,7 @@ class NCService: NSObject {
     
     private func requestUserProfile() {
         
-        if (appDelegate.account == nil || appDelegate.account.count == 0) { return }
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         NCCommunication.shared.getUserProfile() { (account, userProfile, errorCode, errorDescription) in
                
@@ -138,7 +138,7 @@ class NCService: NSObject {
     
     private func requestServerCapabilities() {
         
-        if (appDelegate.account == nil || appDelegate.account.count == 0) { return }
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
             

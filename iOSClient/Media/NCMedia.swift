@@ -627,7 +627,7 @@ extension NCMedia {
     
     @objc func reloadDataSourceWithCompletion(_ completion: @escaping (_ metadatas: [tableMetadata]) -> Void) {
         
-        if (appDelegate.account == nil || appDelegate.account.count == 0) { return }
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         if account != appDelegate.account {
             self.metadatas = []

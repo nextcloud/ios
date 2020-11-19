@@ -46,12 +46,12 @@ class NCNetworkingAutoUpload: NSObject {
 
     @objc private func process() {
 
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
+        
         var counterUpload: Int = 0
         var sizeUpload = 0
         var maxConcurrentOperationUpload = 5
         let sessionSelectors = [selectorUploadFile, selectorUploadAutoUpload, selectorUploadAutoUploadAll]
-        
-        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         let metadatasUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "status == %d OR status == %d", k_metadataStatusInUpload, k_metadataStatusUploading))
         counterUpload = metadatasUpload.count
