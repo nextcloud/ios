@@ -155,7 +155,9 @@
         if (self.account.length == 0) {
             [self openLoginView:nil selector:k_intro_login openLoginWeb:false];
         }
+        
     } else {
+        
         if ([CCUtility getIntro] == NO) {
             UIViewController *introViewController = [[UIStoryboard storyboardWithName:@"NCIntro" bundle:[NSBundle mainBundle]] instantiateInitialViewController];
             
@@ -186,9 +188,7 @@
 //
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    // Test Maintenance
-    if (self.account.length == 0 || self.maintenanceMode)
-        return;
+    if (self.account.length == 0) { return; }
     
     // Dismiss FileViewInFolder
     if (self.activeFileViewInFolder != nil ) {
@@ -205,7 +205,7 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    if (self.account.length == 0 || self.maintenanceMode) { return; }
+    if (self.account.length == 0) { return; }
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationWillEnterForeground object:nil];
     
@@ -237,7 +237,7 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    if (self.account.length == 0 || self.maintenanceMode) { return; }
+    if (self.account.length == 0) { return; }
         
     // Brand
     #if defined(HC)
@@ -261,7 +261,7 @@
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    if (self.account.length == 0 || self.maintenanceMode) { return; }
+    if (self.account.length == 0) { return; }
 
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_applicationDidEnterBackground object:nil];
     
@@ -326,8 +326,7 @@
 - (void)checkErrorNetworking
 {
     // test
-    if (self.account.length == 0 || self.maintenanceMode)
-        return;
+    if (self.account.length == 0) { return; }
     
     // check unauthorized server (401)
     if ([CCUtility getPassword:self.account].length == 0) {
@@ -526,9 +525,7 @@
 
 - (void)pushNotification
 {
-    // test
-    if (self.account.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
-        return;
+    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
     for (tableAccount *result in [[NCManageDatabase sharedInstance] getAllAccount]) {
         
@@ -547,9 +544,7 @@
 
 - (void)subscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user
 {
-    // test
-    if (self.account.length == 0 || self.maintenanceMode || self.pushKitToken.length == 0)
-        return;
+    if (self.account.length == 0 || self.pushKitToken.length == 0) { return; }
     
     [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair:account];
 
@@ -578,9 +573,7 @@
 
 - (void)unsubscribingNextcloudServerPushNotification:(NSString *)account urlBase:(NSString *)urlBase user:(NSString *)user withSubscribing:(BOOL)subscribing
 {
-    // test
-    if (self.account.length == 0 || self.maintenanceMode)
-        return;
+    if (self.account.length == 0) { return; }
     
     NSString *deviceIdentifier = [CCUtility getPushNotificationDeviceIdentifier:account];
     NSString *signature = [CCUtility getPushNotificationDeviceIdentifierSignature:account];
@@ -782,7 +775,7 @@
 
 - (void)updateApplicationIconBadgeNumber
 {
-    if (self.account.length == 0 || self.maintenanceMode) return;
+    if (self.account.length == 0) { return; }
             
     NSInteger counterDownload = [[NCOperationQueue shared] downloadCount];
     NSInteger counterUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"status == %d OR status == %d OR status == %d", k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading]].count;
@@ -903,10 +896,6 @@
 
 - (void)handleTouchTabbarCenter:(id)sender
 {
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-    
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.account, self.activeServerUrl]];
     
     if ([tableDirectory.permissions containsString:@"CK"]) {
@@ -922,8 +911,7 @@
 
 - (void)settingThemingColorBrand
 {
-    if (self.account.length == 0 || self.maintenanceMode)
-        return;
+    if (self.account.length == 0) { return; }
     
     if ([NCBrandOptions sharedInstance].use_themingColor) {
         
@@ -1015,8 +1003,7 @@
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    // Test Maintenance
-    if (self.account.length == 0 || self.maintenanceMode) {
+    if (self.account.length == 0) {
         completionHandler(UIBackgroundFetchResultNoData);
         return;
     }
@@ -1061,8 +1048,7 @@
 // Method called from iOS system to send a file from other app.
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    if (self.account.length == 0 || self.maintenanceMode)
-        return YES;
+    if (self.account.length == 0) { return YES; }
     
     NSString *scheme = url.scheme;
     NSString *fileName;
@@ -1265,15 +1251,6 @@
             }
         }];
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Maintenance Mode =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)maintenanceMode:(BOOL)mode
-{
-    self.maintenanceMode = mode;
 }
 
 @end

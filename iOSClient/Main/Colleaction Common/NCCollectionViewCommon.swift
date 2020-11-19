@@ -229,7 +229,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func initializeMain() {
-        if appDelegate.account.count == 0 { return }
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         if searchController?.isActive ?? false {
             searchController?.isActive = false
@@ -902,7 +903,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource + NC Endpoint
     
     @objc func reloadDataSource() {
-        if appDelegate.account.count == 0 { return }
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         // Get richWorkspace Text
         let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
@@ -923,7 +925,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSourceNetwork(forced: true)
     }
     @objc func networkSearch() {
-        if appDelegate.account.count == 0 { return }
+        
+        if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         if literalSearch?.count ?? 0 > 1 {
         

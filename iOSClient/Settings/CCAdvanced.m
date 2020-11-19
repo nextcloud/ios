@@ -314,8 +314,6 @@
 
 - (void)clearCache
 {
-    [appDelegate maintenanceMode:YES];
-    
     [[NCNetworking shared] cancelAllTransferWithAccount:appDelegate.account completion:^{ }];
     [[NCOperationQueue shared] cancelAllQueue];
 
@@ -334,8 +332,6 @@
     [CCUtility createDirectoryStandard];
 
     [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-
-    [appDelegate maintenanceMode:NO];
 
     // Inizialized home
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_initializeMain object:nil userInfo:nil];
