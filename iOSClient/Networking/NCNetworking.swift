@@ -663,8 +663,14 @@ import Queuer
         } else if metadata.session == NCNetworking.shared.sessionIdentifierBackgroundWWan {
             session = NCNetworking.shared.sessionManagerBackgroundWWan
         }
+        if session == nil {
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadCancelFile, userInfo: ["ocId":metadata.ocId])
+            completion()
+            return
+        }
         
-        session!.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
+        session?.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
             
             var cancel = false
             if metadata.session.count > 0 && metadata.session.contains("upload") {
