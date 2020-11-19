@@ -567,41 +567,47 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let metadata = metadatas[indexPath.row]
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-        self.cellHeigth = cell.frame.size.height
 
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            cell.imageItem.backgroundColor = nil
-            cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-        } else if(!metadata.hasPreview) {
-            cell.imageItem.backgroundColor = nil
-            if metadata.iconName.count > 0 {
-                cell.imageItem.image = UIImage.init(named: metadata.iconName)
-            } else {
-                cell.imageItem.image = NCCollectionCommon.images.cellFileImage 
-            }
-        }
-        cell.date = metadata.date as Date
-
-        if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            cell.imageStatus.image = cacheImages.cellPlayImage
-        } else if metadata.livePhoto && livePhoto {
-            cell.imageStatus.image = cacheImages.cellLivePhotoImage
-        }
+        if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
         
-        if isEditMode {
-            cell.selectMode(true)
-            if selectOcId.contains(metadata.ocId) {
-                cell.selected(true)
+            let metadata = metadatas[indexPath.row]
+            
+            self.cellHeigth = cell.frame.size.height
+
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
+                cell.imageItem.backgroundColor = nil
+                cell.imageItem.image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            } else if(!metadata.hasPreview) {
+                cell.imageItem.backgroundColor = nil
+                if metadata.iconName.count > 0 {
+                    cell.imageItem.image = UIImage.init(named: metadata.iconName)
+                } else {
+                    cell.imageItem.image = NCCollectionCommon.images.cellFileImage
+                }
+            }
+            cell.date = metadata.date as Date
+
+            if metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
+                cell.imageStatus.image = cacheImages.cellPlayImage
+            } else if metadata.livePhoto && livePhoto {
+                cell.imageStatus.image = cacheImages.cellLivePhotoImage
+            }
+            
+            if isEditMode {
+                cell.selectMode(true)
+                if selectOcId.contains(metadata.ocId) {
+                    cell.selected(true)
+                } else {
+                    cell.selected(false)
+                }
             } else {
-                cell.selected(false)
+                cell.selectMode(false)
             }
         } else {
-            cell.selectMode(false)
+            print("error")
         }
-       
+        
         return cell
     }
 }
