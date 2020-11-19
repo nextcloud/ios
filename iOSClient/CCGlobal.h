@@ -339,5 +339,5 @@
 #define k_notificationCenter_favoriteFile                   @"favoriteFile"                     // userInfo: ocId
 
 #define k_notificationCenter_menuSearchTextPDF              @"menuSearchTextPDF"
-#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: ocId, metadataMov
+#define k_notificationCenter_menuSaveLivePhoto              @"menuSaveLivePhoto"                // userInfo: ocId, ocIdMov
 #define k_notificationCenter_menuDetailClose                @"menuDetailClose"

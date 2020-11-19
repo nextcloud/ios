@@ -144,6 +144,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                 }
@@ -155,6 +156,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
+                
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadataNew
                 }
@@ -176,6 +178,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
                     navigationItem.title = metadata.fileNameView

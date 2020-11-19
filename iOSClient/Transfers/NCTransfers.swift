@@ -85,16 +85,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if let row = dataSource.addMetadata(metadata) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.insertItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.reloadDataSource()
-                        })
-                    }
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            
+                if let row = dataSource.addMetadata(metadata) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.insertItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.reloadDataSource()
+                    })
                 }
             }
         }
@@ -104,33 +103,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let errorCode = userInfo["errorCode"] as? Int {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if  errorCode == 0 {
-                        
-                        if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
-                            let indexPath = IndexPath(row: row, section: 0)
-                            collectionView?.performBatchUpdates({
-                                collectionView?.deleteItems(at: [indexPath])
-                            }, completion: { (_) in
-                                self.collectionView?.reloadData()
-                            })
-                        } else {
-                            reloadDataSource()
-                        }
-                        
-                    } else if errorCode != NSURLErrorCancelled {
-                        
-                        if let row = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
-                            let indexPath = IndexPath(row: row, section: 0)
-                            collectionView?.performBatchUpdates({
-                                collectionView?.reloadItems(at: [indexPath])
-                            }, completion: { (_) in
-                                self.collectionView?.reloadData()
-                            })
-                        } else {
-                            reloadDataSource()
-                        }
+            if let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let errorCode = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
+                if errorCode == 0 {
+                    
+                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    } else {
+                        reloadDataSource()
+                    }
+                    
+                } else if errorCode != NSURLErrorCancelled {
+                    
+                    if let row = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
+                        let indexPath = IndexPath(row: row, section: 0)
+                        collectionView?.performBatchUpdates({
+                            collectionView?.reloadItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
+                    } else {
+                        reloadDataSource()
                     }
                 }
             }
@@ -141,18 +139,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.deleteItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
-                    } else {
-                        self.reloadDataSource()
-                    }
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            
+                if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    collectionView?.performBatchUpdates({
+                        collectionView?.deleteItems(at: [indexPath])
+                    }, completion: { (_) in
+                        self.collectionView?.reloadData()
+                    })
+                } else {
+                    self.reloadDataSource()
                 }
             }
         }

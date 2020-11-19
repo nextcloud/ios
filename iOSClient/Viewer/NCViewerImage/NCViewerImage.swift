@@ -97,7 +97,6 @@ class NCViewerImage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_deleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_renameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_moveFile), object: nil)
-        //NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_favoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(saveLivePhoto(_:)), name: NSNotification.Name(rawValue: k_notificationCenter_menuSaveLivePhoto), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
@@ -174,6 +173,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
                 let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
                 if self.metadatas.count == metadatas.count { return }
                 self.metadatas = metadatas
@@ -192,6 +192,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
                 if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
                     metadatas[index] = metadata
                     if index == currentIndex {
@@ -209,6 +210,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                
                 if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
                     deleteFile(notification)
                 }
@@ -221,6 +223,7 @@ class NCViewerImage: UIViewController {
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdMov) {
+                
                 let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
                 let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
                 
