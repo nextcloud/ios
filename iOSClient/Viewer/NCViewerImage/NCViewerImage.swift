@@ -172,13 +172,13 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String {
                 
-                let metadatas = self.metadatas.filter { $0.ocId != metadata.ocId }
+                let metadatas = self.metadatas.filter { $0.ocId != ocId }
                 if self.metadatas.count == metadatas.count { return }
                 self.metadatas = metadatas
                 
-                if metadata.ocId == currentViewerImageZoom?.metadata.ocId {
+                if ocId == currentViewerImageZoom?.metadata.ocId {
                     if !shiftCurrentPage() {
                         self.viewUnload()
                     }

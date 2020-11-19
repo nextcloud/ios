@@ -167,8 +167,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func deleteFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["OcId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-                if metadata.ocId == self.metadata.ocId {
+            if let ocId = userInfo["OcId"] as? String {
+                if ocId == self.metadata.ocId {
                     viewUnload()
                 }
             }
