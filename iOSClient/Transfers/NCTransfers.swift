@@ -89,15 +89,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                     if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
-                        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                            collectionView?.performBatchUpdates({
-                                collectionView?.insertItems(at: [indexPath])
-                            }, completion: { (_) in
-                                self.reloadDataSource()
-                            })
-                        } else {
-                            reloadDataSource()
-                        }
+                        collectionView?.performBatchUpdates({
+                            collectionView?.insertItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.reloadDataSource()
+                        })
                     }
                 }
             }
@@ -114,15 +110,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                         
                         if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                             let indexPath = IndexPath(row: row, section: 0)
-                            if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                                collectionView?.performBatchUpdates({
-                                    collectionView?.deleteItems(at: [indexPath])
-                                }, completion: { (_) in
-                                    self.collectionView?.reloadData()
-                                })
-                            } else {
-                                reloadDataSource()
-                            }
+                            collectionView?.performBatchUpdates({
+                                collectionView?.deleteItems(at: [indexPath])
+                            }, completion: { (_) in
+                                self.collectionView?.reloadData()
+                            })
                         } else {
                             reloadDataSource()
                         }
@@ -131,15 +123,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                         
                         if let row = dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp) {
                             let indexPath = IndexPath(row: row, section: 0)
-                            if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                                collectionView?.performBatchUpdates({
-                                    collectionView?.reloadItems(at: [indexPath])
-                                }, completion: { (_) in
-                                    self.collectionView?.reloadData()
-                                })
-                            } else {
-                                reloadDataSource()
-                            }
+                            collectionView?.performBatchUpdates({
+                                collectionView?.reloadItems(at: [indexPath])
+                            }, completion: { (_) in
+                                self.collectionView?.reloadData()
+                            })
                         } else {
                             reloadDataSource()
                         }
@@ -157,17 +145,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                     if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
-                        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                            collectionView?.performBatchUpdates({
-                                collectionView?.deleteItems(at: [indexPath])
-                            }, completion: { (_) in
-                                self.collectionView?.reloadData()
-                            })
-                        } else {
-                            reloadDataSource()
-                        }
+                        collectionView?.performBatchUpdates({
+                            collectionView?.deleteItems(at: [indexPath])
+                        }, completion: { (_) in
+                            self.collectionView?.reloadData()
+                        })
                     } else {
-                        reloadDataSource()
+                        self.reloadDataSource()
                     }
                 }
             }
