@@ -415,7 +415,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                     collectionView?.reloadData()
                 } else if let row = indexes.first {
                     let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.deleteItems(at: [indexPath])
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                        collectionView?.deleteItems(at: [indexPath])
+                    }
                 }
                 
                 self.updateMediaControlVisibility()
@@ -439,7 +441,9 @@ class NCMedia: UIViewController, NCEmptyDataSetDelegate, NCSelectDelegate {
                         collectionView?.reloadData()
                     } else if let row = indexes.first {
                         let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.deleteItems(at: [indexPath])
+                        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                            collectionView?.deleteItems(at: [indexPath])
+                        }
                     }
                     
                     self.updateMediaControlVisibility()
