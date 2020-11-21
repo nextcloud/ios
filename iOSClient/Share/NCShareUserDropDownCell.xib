@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -31,7 +29,7 @@
                     </userDefinedRuntimeAttributes>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VIB-Xt-ckX">
-                    <rect key="frame" x="50" y="9" width="397" height="31"/>
+                    <rect key="frame" x="50" y="15" width="397" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
@@ -43,28 +41,43 @@
                         <constraint firstAttribute="height" constant="20" id="pRc-Ln-wNF"/>
                     </constraints>
                 </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="O" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MbC-vF-eyT">
+                    <rect key="frame" x="33" y="36" width="434" height="12"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="VIB-Xt-ckX" secondAttribute="bottom" constant="10" id="0zj-tF-bzC"/>
+                <constraint firstItem="VIB-Xt-ckX" firstAttribute="centerY" secondItem="wwI-k5-kbU" secondAttribute="centerY" id="1sO-cd-mlA"/>
                 <constraint firstAttribute="trailing" secondItem="PlH-LZ-AzK" secondAttribute="trailing" constant="10" id="K4R-2t-kFs"/>
                 <constraint firstItem="PlH-LZ-AzK" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="KFn-uE-DTl"/>
                 <constraint firstItem="PlH-LZ-AzK" firstAttribute="leading" secondItem="VIB-Xt-ckX" secondAttribute="trailing" constant="10" id="Lxn-FE-sOF"/>
+                <constraint firstAttribute="trailing" secondItem="MbC-vF-eyT" secondAttribute="trailing" constant="20" id="Uiy-Jt-UwV"/>
                 <constraint firstItem="VIB-Xt-ckX" firstAttribute="leading" secondItem="wwI-k5-kbU" secondAttribute="trailing" constant="10" id="aUx-ZS-D4Q"/>
-                <constraint firstItem="VIB-Xt-ckX" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="9" id="fWz-fu-Ghl"/>
+                <constraint firstItem="MbC-vF-eyT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="33" id="h2J-no-YpB"/>
+                <constraint firstAttribute="bottom" secondItem="MbC-vF-eyT" secondAttribute="bottom" constant="2" id="kEt-vm-fFo"/>
                 <constraint firstItem="wwI-k5-kbU" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="oNR-Ox-93x"/>
                 <constraint firstItem="wwI-k5-kbU" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="xPu-SG-9dw"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="centerTitle" destination="1sO-cd-mlA" id="mM0-m8-353"/>
                 <outlet property="imageItem" destination="wwI-k5-kbU" id="SMZ-ie-2Ak"/>
                 <outlet property="imageShareeType" destination="PlH-LZ-AzK" id="rxA-rl-7xs"/>
                 <outlet property="optionLabel" destination="VIB-Xt-ckX" id="swX-Pi-eTf"/>
+                <outlet property="status" destination="MbC-vF-eyT" id="V34-4z-IQk"/>
             </connections>
             <point key="canvasLocation" x="735.20000000000005" y="412.89355322338832"/>
         </view>
     </objects>
+    <designables>
+        <designable name="wwI-k5-kbU">
+            <size key="intrinsicContentSize" width="25" height="25"/>
+        </designable>
+    </designables>
     <resources>
         <image name="avatar" width="25" height="25"/>
     </resources>
