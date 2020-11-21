@@ -46,6 +46,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var imageDeletedFiles: UIImageView!
     @IBOutlet weak var statusDeletedFiles: UILabel!
     
+    @IBOutlet weak var imageUserStatus: UIImageView!
+    @IBOutlet weak var statusUserStatus: UILabel!
+    
     @IBOutlet weak var imageText: UIImageView!
     @IBOutlet weak var statusText: UILabel!
     
@@ -287,6 +290,8 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusOnlyOffice.text = NSLocalizedString("_not_available_", comment: "")
         }
         
+        let userStatus = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
+       
         print("end.")
     }
 }

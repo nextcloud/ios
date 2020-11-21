@@ -264,6 +264,7 @@
 		F7B2DEF01F976854007CF4D2 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */; };
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
 		F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -633,6 +634,7 @@
 		F7B2DEEE1F976785007CF4D2 /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F7B2DEEF1F976785007CF4D2 /* NYMnemonic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NYMnemonic.m; sourceTree = "<group>"; };
 		F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		F7B8B82F25681C3400967775 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1314,6 +1316,7 @@
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F710E80C1EF95C9C00DC2427 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
+				F7B8B82F25681C3400967775 /* GoogleService-Info.plist */,
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
@@ -1865,6 +1868,7 @@
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F76032A0252F0F8E0015A421 /* NCTransferCell.xib in Resources */,
 				F74C0437253F1CDC009762AB /* NCShares.storyboard in Resources */,
+				F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */,
 				F7381EE5218218C9000B1560 /* NCOffline.storyboard in Resources */,
 				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
 				F769453E22E9E97E000A798A /* NCShareUserMenuView.xib in Resources */,
@@ -2812,8 +2816,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/ios-communication-library/";
 			requirement = {
-				kind = exactVersion;
-				version = 0.84.0;
+				kind = revision;
+				revision = cd9331426e0625d466766da7415d22173d8dca78;
 			};
 		};
 		F7C4D88B2534887E00C142DA /* XCRemoteSwiftPackageReference "Parchment" */ = {

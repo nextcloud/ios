@@ -396,6 +396,10 @@ class tableShare: Object {
     @objc dynamic var uidFileOwner = ""
     @objc dynamic var uidOwner = ""
     @objc dynamic var url = ""
+    @objc dynamic var userClearAt: NSDate? = nil
+    @objc dynamic var userIcon = ""
+    @objc dynamic var userMessage = ""
+    @objc dynamic var userStatus = ""
 
     override static func primaryKey() -> String {
         return "idShare"

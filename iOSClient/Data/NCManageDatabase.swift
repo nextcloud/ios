@@ -2428,6 +2428,10 @@ class NCManageDatabase: NSObject {
             addObject.uidOwner = share.uidOwner
             addObject.uidFileOwner = share.uidFileOwner
             addObject.url = share.url
+            addObject.userClearAt = share.userClearAt
+            addObject.userIcon = share.userIcon
+            addObject.userMessage = share.userMessage
+            addObject.userStatus = share.userStatus
 
             realm.add(addObject, update: .all)
         }

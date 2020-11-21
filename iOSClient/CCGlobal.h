@@ -80,7 +80,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         149
+#define k_databaseSchemaVersion                         150
 
 // Database JSON
 #define k_databaseDefaultJSON                           @"nextcloud.json"
