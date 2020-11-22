@@ -393,6 +393,10 @@ extension NCShare: UITableViewDataSource {
                 cell.buttonMenu.isHidden = false
                 cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: tableShare.shareType)
                 
+                let status = NCUtility.shared.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
+                cell.imageStatus.image = status.onlineStatus
+                cell.status.text = status.statusMessage
+                
                 let fileNameLocalPath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + tableShare.shareWith + ".png"
                 if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                     if let image = UIImage(contentsOfFile: fileNameLocalPath) { cell.imageItem.image = image }
@@ -475,6 +479,8 @@ class NCShareUserCell: UITableViewCell {
     @IBOutlet weak var labelCanEdit: UILabel!
     @IBOutlet weak var switchCanEdit: UISwitch!
     @IBOutlet weak var buttonMenu: UIButton!
+    @IBOutlet weak var imageStatus: UIImageView!
+    @IBOutlet weak var status: UILabel!
     
     var tableShare: tableShare?
     var delegate: NCShareUserCellDelegate?
