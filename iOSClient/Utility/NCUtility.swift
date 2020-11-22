@@ -591,14 +591,22 @@ class NCUtility: NSObject {
         return String(intFileId)
     }
     
-    func getImageStausUserIcon(_ userIcon: String) -> UIImage? {
+    func getUserStatus(userIcon: String, userStatus: String, userMessage: String) -> (onlineStatus: UIImage?, statusMessage: String) {
         
-        if userIcon == "" { return nil }
-        else if userIcon.lowercased() == "away" {
-            return CCGraphics.changeThemingColorImage(UIImage.init(named: "away"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
-        } else {
-            return userIcon.textToImage(size: 100)
+        // Printing description of sharee.userIcon: "🏡"
+        // Printing description of sharee.userMessage: "Working remotely"
+        // Printing description of sharee.userStatus: "away"
+        
+        var onlineStatus: UIImage?
+        var statusMessage: String = ""
+        
+        if userStatus.lowercased() == "away" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "away"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
         }
+        
+        statusMessage = userIcon + " " + userMessage
+        
+        return(onlineStatus, statusMessage)
     }
 }
 

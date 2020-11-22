@@ -296,8 +296,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
             cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
-            cell.imageStatus.image = NCUtility.shared.getImageStausUserIcon(sharee.userIcon)
-            cell.status.text = sharee.userIcon + " " + sharee.userMessage
+            let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
+            cell.imageStatus.image = status.onlineStatus
+            cell.status.text = status.statusMessage
             if cell.status.text?.count ?? 0 > 0 {
                 cell.centerTitle.constant = -5
             } else {
