@@ -590,5 +590,15 @@ class NCUtility: NSObject {
         guard let intFileId = Int(items[0]) else { return nil }
         return String(intFileId)
     }
+    
+    func getImageStausUserIcon(_ userIcon: String) -> UIImage? {
+        
+        if userIcon == "" { return nil }
+        else if userIcon.lowercased() == "away" {
+            return CCGraphics.changeThemingColorImage(UIImage.init(named: "away"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
+        } else {
+            return userIcon.textToImage(size: 100)
+        }
+    }
 }
 
