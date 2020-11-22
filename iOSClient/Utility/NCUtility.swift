@@ -593,18 +593,23 @@ class NCUtility: NSObject {
     
     func getUserStatus(userIcon: String, userStatus: String, userMessage: String) -> (onlineStatus: UIImage?, statusMessage: String) {
         
-        // Printing description of sharee.userIcon: "🏡"
-        // Printing description of sharee.userMessage: "Working remotely"
-        // Printing description of sharee.userStatus: "away"
-        
         var onlineStatus: UIImage?
         var statusMessage: String = ""
         
+        if userStatus.lowercased() == "online" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOnline"), width: 100, height: 100, color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0))
+        }
         if userStatus.lowercased() == "away" {
-            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "away"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
+        }
+        if userStatus.lowercased() == "dnd" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusDnd"), width: 100, height: 100, color: .red)
+        }
+        if userStatus.lowercased() == "offline" {
+            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
         }
         
-        statusMessage = userIcon + " " + userMessage
+        statusMessage = (userIcon + " " + userMessage).trimmingCharacters(in: .whitespaces)
         
         return(onlineStatus, statusMessage)
     }
