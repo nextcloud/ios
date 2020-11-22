@@ -253,6 +253,7 @@
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
+		F7A76DAA256A607100119AB3 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A76DA9256A607100119AB3 /* String+Extensions.swift */; };
 		F7A80BCA252624C100C7CD01 /* NCFileViewInFolder.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */; };
 		F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
@@ -611,6 +612,7 @@
 		F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAdvanced.h; sourceTree = "<group>"; };
 		F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAdvanced.m; sourceTree = "<group>"; };
 		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
+		F7A76DA9256A607100119AB3 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCFileViewInFolder.storyboard; sourceTree = "<group>"; };
 		F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCFileViewInFolder.swift; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
@@ -1288,6 +1290,7 @@
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */,
+				F7A76DA9256A607100119AB3 /* String+Extensions.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -2052,6 +2055,7 @@
 				F70753F12542A9A200972D44 /* NCViewerImageZoom.swift in Sources */,
 				F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */,
 				F78A18B823CDE2B300F681F3 /* NCViewerRichWorkspace.swift in Sources */,
+				F7A76DAA256A607100119AB3 /* String+Extensions.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,

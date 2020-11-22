@@ -291,6 +291,10 @@
 #define k_template_spreadsheet                          @"spreadsheet"
 #define k_template_presentation                         @"presentation"
 
+// Status Icon Image
+
+
+
 // Nextcloud unsupported
 #define k_nextcloud_unsupported                         13
 

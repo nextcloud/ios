@@ -296,6 +296,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
             cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
+            cell.imageStatus.image = sharee.userIcon.textToImage(size: 100)
             cell.status.text = sharee.userIcon + " " + sharee.userMessage
             if cell.status.text?.count ?? 0 > 0 {
                 cell.centerTitle.constant = -5
@@ -504,6 +505,7 @@ protocol NCShareUserCellDelegate {
 class NCShareUserDropDownCell: DropDownCell {
     
     @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var status: UILabel!
     @IBOutlet weak var imageShareeType: UIImageView!
     @IBOutlet weak var centerTitle: NSLayoutConstraint!
