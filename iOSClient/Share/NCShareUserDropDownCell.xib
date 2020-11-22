@@ -42,7 +42,7 @@
                     </constraints>
                 </imageView>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GxZ-7K-Vqz">
-                    <rect key="frame" x="26" y="26" width="17" height="17"/>
+                    <rect key="frame" x="28" y="28" width="17" height="17"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="17" id="WpI-Fs-Mnp"/>
                         <constraint firstAttribute="width" constant="17" id="ogx-W9-DYC"/>
@@ -61,13 +61,13 @@
                 <constraint firstAttribute="trailing" secondItem="PlH-LZ-AzK" secondAttribute="trailing" constant="10" id="K4R-2t-kFs"/>
                 <constraint firstItem="PlH-LZ-AzK" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="KFn-uE-DTl"/>
                 <constraint firstItem="PlH-LZ-AzK" firstAttribute="leading" secondItem="VIB-Xt-ckX" secondAttribute="trailing" constant="10" id="Lxn-FE-sOF"/>
-                <constraint firstItem="GxZ-7K-Vqz" firstAttribute="leading" secondItem="wwI-k5-kbU" secondAttribute="trailing" constant="-14" id="TcT-5G-EYO"/>
+                <constraint firstItem="GxZ-7K-Vqz" firstAttribute="leading" secondItem="wwI-k5-kbU" secondAttribute="trailing" constant="-12" id="TcT-5G-EYO"/>
                 <constraint firstAttribute="trailing" secondItem="MbC-vF-eyT" secondAttribute="trailing" constant="20" id="Uiy-Jt-UwV"/>
                 <constraint firstItem="VIB-Xt-ckX" firstAttribute="leading" secondItem="wwI-k5-kbU" secondAttribute="trailing" constant="10" id="aUx-ZS-D4Q"/>
                 <constraint firstItem="MbC-vF-eyT" firstAttribute="leading" secondItem="wwI-k5-kbU" secondAttribute="trailing" constant="10" id="gjC-iK-c9X"/>
                 <constraint firstAttribute="bottom" secondItem="MbC-vF-eyT" secondAttribute="bottom" constant="2" id="kEt-vm-fFo"/>
                 <constraint firstItem="wwI-k5-kbU" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="oNR-Ox-93x"/>
-                <constraint firstItem="GxZ-7K-Vqz" firstAttribute="top" secondItem="wwI-k5-kbU" secondAttribute="bottom" constant="-14" id="tAT-7P-dsr"/>
+                <constraint firstItem="GxZ-7K-Vqz" firstAttribute="top" secondItem="wwI-k5-kbU" secondAttribute="bottom" constant="-12" id="tAT-7P-dsr"/>
                 <constraint firstItem="wwI-k5-kbU" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="xPu-SG-9dw"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>

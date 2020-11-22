@@ -259,6 +259,9 @@
 		F7A76DB9256A654E00119AB3 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A76DA9256A607100119AB3 /* String+Extensions.swift */; };
 		F7A76DBE256A679400119AB3 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7A76DC3256A679400119AB3 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
+		F7A76DC8256A71CD00119AB3 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F7A76DCD256A71CE00119AB3 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
+		F7A76DCE256A71CF00119AB3 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B7504A2397D38E004E13EC /* UIImage+Extensions.swift */; };
 		F7A80BCA252624C100C7CD01 /* NCFileViewInFolder.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7A80BC8252624C100C7CD01 /* NCFileViewInFolder.storyboard */; };
 		F7A80BCB252624C100C7CD01 /* NCFileViewInFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A80BC9252624C100C7CD01 /* NCFileViewInFolder.swift */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginWeb.swift */; };
@@ -1969,6 +1972,7 @@
 				F7A76DB9256A654E00119AB3 /* String+Extensions.swift in Sources */,
 				F785EEA52461A4CF00B3F945 /* CCUtility.m in Sources */,
 				2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */,
+				F7A76DCE256A71CF00119AB3 /* UIImage+Extensions.swift in Sources */,
 				2C1D5D7523E2DE3300334ABB /* NCDatabase.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
 				2C33C48223E2C475005F963B /* NotificationService.swift in Sources */,
@@ -1999,6 +2003,7 @@
 				F765609023BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
+				F7A76DC8256A71CD00119AB3 /* UIImage+Extensions.swift in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F78B9685234F785300F54315 /* NCSelectDestination.m in Sources */,
@@ -2028,6 +2033,7 @@
 				F7A76DB4256A654E00119AB3 /* String+Extensions.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
+				F7A76DCD256A71CE00119AB3 /* UIImage+Extensions.swift in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
 				F785EEA62461A4FB00B3F945 /* CCUtility.m in Sources */,
 			);

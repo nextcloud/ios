@@ -603,7 +603,7 @@ class NCUtility: NSObject {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
         }
         if userStatus.lowercased() == "dnd" {
-            onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusDnd"), width: 100, height: 100, color: .red)
+            onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
         }
         if userStatus.lowercased() == "offline" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
