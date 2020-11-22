@@ -38,6 +38,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBOutlet weak var shareLinkLabel: UILabel!
     @IBOutlet weak var shareInternalLinkImage: UIImageView!
     @IBOutlet weak var shareInternalLinkLabel: UILabel!
+    @IBOutlet weak var shareInternalLinkDescription: UILabel!
     @IBOutlet weak var buttonInternalCopy: UIButton!
     @IBOutlet weak var buttonCopy: UIButton!
     @IBOutlet weak var buttonMenu: UIButton!
@@ -67,6 +68,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
 
         shareInternalLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
         shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
+        shareInternalLinkDescription.text = NSLocalizedString("_share_internal_link_des_", comment: "")
         buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
 
         tableView.dataSource = self
