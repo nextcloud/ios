@@ -114,6 +114,20 @@
         row.action.formSelector = @selector(deleteAccount:);
         if (accounts.count == 0) row.disabled = @YES;
         [section addFormRow:row];
+        
+        // Set user status
+        BOOL userStatus = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:accountActive.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];        
+        if (userStatus) {
+            row = [XLFormRowDescriptor formRowDescriptorWithTag:@"setUserStatus" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_set_user_status_", nil)];
+            row.cellConfigAtConfigure[@"backgroundColor"] = NCBrandColor.sharedInstance.backgroundCell;
+            [row.cellConfig setObject:NCBrandColor.sharedInstance.textView forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:[UIFont systemFontOfSize:15.0] forKey:@"textLabel.font"];
+            [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"userStatusAway"] width:50 height:50 color: NCBrandColor.sharedInstance.icon] forKey:@"imageView.image"];
+            [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+            row.action.formSelector = @selector(setUserStatus:);
+            if (accounts.count == 0) row.disabled = @YES;
+            [section addFormRow:row];
+        }
     }
     
     // Section : USER INFORMATION -------------------------------------------
@@ -400,6 +414,15 @@
     alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
         
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Set User Status  ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)setUserStatus:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
 }
 
 #pragma --------------------------------------------------------------------------------------------
