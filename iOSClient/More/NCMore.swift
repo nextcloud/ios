@@ -322,6 +322,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                     let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
+                    cell.status.textColor = NCBrandColor.sharedInstance.textView
                 }
             }
             

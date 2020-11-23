@@ -149,6 +149,7 @@
 "_dimension_"               = "Dimension";
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
+"_set_user_status_"         = "Set user status";
 
 // App
 
