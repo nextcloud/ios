@@ -17,29 +17,27 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="display name" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="20" y="70" width="560" height="18"/>
+                        <rect key="frame" x="20" y="75" width="560" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="status" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="330" y="35.5" width="250" height="14.5"/>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="status" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
+                        <rect key="frame" x="335" y="48" width="245" height="14.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                        <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
-                        <rect key="frame" x="280" y="10" width="40" height="40"/>
+                        <rect key="frame" x="275" y="10" width="50" height="50"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
-                            <constraint firstAttribute="height" constant="40" id="l9C-BW-ogy"/>
+                            <constraint firstAttribute="width" constant="50" id="kM5-Uf-S8Z"/>
+                            <constraint firstAttribute="height" constant="50" id="l9C-BW-ogy"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jy6-cx-LK4">
-                        <rect key="frame" x="300" y="30" width="25" height="25"/>
+                        <rect key="frame" x="310" y="45" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="25" id="3xZ-lf-n4v"/>
-                            <constraint firstAttribute="height" constant="25" id="l81-IO-fzK"/>
+                            <constraint firstAttribute="width" constant="20" id="3xZ-lf-n4v"/>
+                            <constraint firstAttribute="height" constant="20" id="l81-IO-fzK"/>
                         </constraints>
                     </imageView>
                 </subviews>
@@ -53,7 +51,7 @@
                     <constraint firstItem="jy6-cx-LK4" firstAttribute="trailing" secondItem="5" secondAttribute="trailing" constant="5" id="Ooq-nL-VC8"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="10" id="a8p-7g-2Em"/>
                     <constraint firstAttribute="trailing" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="20" id="bQd-pS-6a6"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="20" id="gDU-yC-ZfX"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="15" id="gDU-yC-ZfX"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="centerY" secondItem="jy6-cx-LK4" secondAttribute="centerY" id="m7R-Q5-0AI"/>
                 </constraints>
             </tableViewCellContentView>
