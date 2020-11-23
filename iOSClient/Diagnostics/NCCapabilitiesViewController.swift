@@ -127,6 +127,11 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusOnlyOffice.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
         statusOnlyOffice.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
         
+        statusUserStatus.layer.cornerRadius = 12.5
+        statusUserStatus.layer.borderWidth = 0.5
+        statusUserStatus.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
+        statusUserStatus.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
@@ -136,6 +141,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageText.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "text"), width: 100, height: 100, color: .gray)
         imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
         imageOnlyOffice.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "onlyoffice"), width: 100, height: 100, color: .gray)
+        imageUserStatus.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -291,7 +297,12 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         }
         
         let userStatus = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
-       
+        if userStatus {
+            statusUserStatus.text = "✓ " + NSLocalizedString("_available_", comment: "")
+        } else {
+            statusUserStatus.text = NSLocalizedString("_not_available_", comment: "")
+        }
+        
         print("end.")
     }
 }
