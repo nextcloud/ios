@@ -178,6 +178,7 @@ class NCService: NSObject {
                     }
                 }
                 
+                // External Site
                 let isExternalSitesServerEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true)
                 if (isExternalSitesServerEnabled) {
                     NCCommunication.shared.getExternalSite() { (account, externalSites, errorCode, errorDescription) in
@@ -190,6 +191,12 @@ class NCService: NSObject {
                     }
                 } else {
                     NCManageDatabase.sharedInstance.deleteExternalSites(account: account)
+                }
+                
+                // User Status
+                let userStatus = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
+                if userStatus {
+                    
                 }
             
                 // Handwerkcloud

@@ -494,12 +494,12 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OO4-N7-9vp" userLabel="View JSON">
-                                        <rect key="frame" x="0.0" y="600" width="414" height="43"/>
+                                        <rect key="frame" x="0.0" y="600" width="414" height="40.5"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="RIO-6X-GG1">
-                                                <rect key="frame" x="5" y="5" width="404" height="33"/>
+                                                <rect key="frame" x="5" y="5" width="404" height="30.5"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
                                         </subviews>
