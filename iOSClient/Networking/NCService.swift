@@ -196,7 +196,11 @@ class NCService: NSObject {
                 // User Status
                 let userStatus = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
                 if userStatus {
-                    
+                    NCCommunication.shared.getUserStatus { (account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, errorCode, errorDescription) in
+                        if errorCode == 0 && account == self.appDelegate.account && userId == self.appDelegate.userID {
+                            NCManageDatabase.sharedInstance.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                        }
+                    }
                 }
             
                 // Handwerkcloud

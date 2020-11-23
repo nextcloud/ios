@@ -69,6 +69,13 @@ class tableAccount: Object {
     @objc dynamic var urlBase = ""
     @objc dynamic var user = ""
     @objc dynamic var userID = ""
+    @objc dynamic var userStatusClearAt: NSDate? = nil
+    @objc dynamic var userStatusIcon: String?
+    @objc dynamic var userStatusMessage: String?
+    @objc dynamic var userStatusMessageId: String?
+    @objc dynamic var userStatusMessageIsPredefined: Bool = false
+    @objc dynamic var userStatusStatus: String?
+    @objc dynamic var userStatusStatusIsUserDefined: Bool = false
     @objc dynamic var webpage = ""
     @objc dynamic var zip = ""
     // HC

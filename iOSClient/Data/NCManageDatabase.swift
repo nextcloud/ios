@@ -658,6 +658,26 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setAccountUserStatus(userStatusClearAt: NSDate?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
+        
+        let realm = try! Realm()
+        do {
+            try realm.safeWrite {
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    result.userStatusClearAt = userStatusClearAt
+                    result.userStatusIcon = userStatusIcon
+                    result.userStatusMessage = userStatusMessage
+                    result.userStatusMessageId = userStatusMessageId
+                    result.userStatusMessageIsPredefined = userStatusMessageIsPredefined
+                    result.userStatusStatus = userStatusStatus
+                    result.userStatusStatusIsUserDefined = userStatusStatusIsUserDefined
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
     //MARK: -
     //MARK: Table Activity
 

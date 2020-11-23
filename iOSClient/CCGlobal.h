@@ -80,7 +80,7 @@
 
 // Database Realm
 #define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         150
+#define k_databaseSchemaVersion                         151
 
 // Database JSON
 #define k_databaseDefaultJSON                           @"nextcloud.json"
@@ -290,10 +290,6 @@
 #define k_template_document                             @"document"
 #define k_template_spreadsheet                          @"spreadsheet"
 #define k_template_presentation                         @"presentation"
-
-// Status Icon Image
-
-
 
 // Nextcloud unsupported
 #define k_nextcloud_unsupported                         13
