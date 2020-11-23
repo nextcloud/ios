@@ -302,6 +302,7 @@
 		F7E0E1DE22327DBA006B0911 /* NCAudioRecorderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7E0E1DD22327DBA006B0911 /* NCAudioRecorderViewController.storyboard */; };
 		F7E4D9C422ED929B003675FD /* NCShareComments.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4D9C322ED929B003675FD /* NCShareComments.swift */; };
 		F7EFC0C6256BC77700461AAD /* NCMoreUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EFC0C5256BC77700461AAD /* NCMoreUserCell.xib */; };
+		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
 		F7F1E54C2492369A00E42386 /* NCMediaCommandView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */; };
 		F7F4B1D823C74B3E00D82A6E /* NCRichWorkspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */; };
 		F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */; };
@@ -700,6 +701,7 @@
 		F7E4D9C322ED929B003675FD /* NCShareComments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareComments.swift; sourceTree = "<group>"; };
 		F7E856182351D7BE009A3330 /* SwiftyXMLParser.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyXMLParser.framework; path = Carthage/Build/iOS/SwiftyXMLParser.framework; sourceTree = "<group>"; };
 		F7EFC0C5256BC77700461AAD /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
+		F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserStatus.swift; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F1E54B2492369A00E42386 /* NCMediaCommandView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMediaCommandView.xib; sourceTree = "<group>"; };
 		F7F4B1D723C74B3E00D82A6E /* NCRichWorkspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCRichWorkspace.swift; sourceTree = "<group>"; };
@@ -1432,6 +1434,14 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
+		F7EFC0CB256BF89300461AAD /* UserStatus */ = {
+			isa = PBXGroup;
+			children = (
+				F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */,
+			);
+			path = UserStatus;
+			sourceTree = "<group>";
+		};
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
@@ -1486,6 +1496,7 @@
 				F7E9C41320F4CA870040CF18 /* Transfers */,
 				F78F74322163753B00C2ADAD /* Trash */,
 				F70784811A2C8A0D00AC9FFF /* UploadFromOtherUpp */,
+				F7EFC0CB256BF89300461AAD /* UserStatus */,
 				F7BFFA991A24D7BB0044ED85 /* Utility */,
 				F79630EC215526B60015EEA5 /* Viewer */,
 			);
@@ -2134,6 +2145,7 @@
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extensions.swift in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
+				F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */,
 				F7DFB7F4219C5CA800680748 /* NCCreateFormUploadScanDocument.swift in Sources */,
 				F710D1FF24057E5E00A6033D /* NCActionSheetHeaderView.swift in Sources */,
 				F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */,
