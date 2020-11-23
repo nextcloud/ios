@@ -605,7 +605,7 @@ class NCUtility: NSObject {
         if userStatus?.lowercased() == "dnd" {
             onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
         }
-        if userStatus?.lowercased() == "offline" {
+        if userStatus?.lowercased() == "offline" ||  userStatus?.lowercased() == "invisible"  {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
         }
         
