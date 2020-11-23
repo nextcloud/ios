@@ -591,27 +591,32 @@ class NCUtility: NSObject {
         return String(intFileId)
     }
     
-    func getUserStatus(userIcon: String, userStatus: String, userMessage: String) -> (onlineStatus: UIImage?, statusMessage: String) {
+    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String) {
         
         var onlineStatus: UIImage?
         var statusMessage: String = ""
         
-        if userStatus.lowercased() == "online" {
+        if userStatus?.lowercased() == "online" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOnline"), width: 100, height: 100, color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0))
         }
-        if userStatus.lowercased() == "away" {
+        if userStatus?.lowercased() == "away" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
         }
-        if userStatus.lowercased() == "dnd" {
+        if userStatus?.lowercased() == "dnd" {
             onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
         }
-        if userStatus.lowercased() == "offline" {
+        if userStatus?.lowercased() == "offline" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
         }
         
-        statusMessage = (userIcon + " " + userMessage).trimmingCharacters(in: .whitespaces)
-        
-        return(onlineStatus, statusMessage)
+        if let userIcon = userIcon {
+            statusMessage = userIcon + " "
+        }
+        if let userMessage = userMessage {
+            statusMessage = statusMessage + userMessage
+        }
+                
+        return(onlineStatus, statusMessage.trimmingCharacters(in: .whitespaces))
     }
 }
 

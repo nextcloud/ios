@@ -56,6 +56,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
 
+        //
+        tableView.register(UINib.init(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
+        
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
         labelQuotaExternalSite.isUserInteractionEnabled = true
@@ -228,6 +231,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
     }
 
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return 100
+        } else {
+            return 50
+        }
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
 
         if (externalSiteMenu.count == 0) {
@@ -272,33 +283,52 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+        
         var item = NCCommunicationExternalSite()
 
         // change color selection and disclosure indicator
         let selectionColor: UIView = UIView()
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
-        cell.selectedBackgroundView = selectionColor
-        cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
-        cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
         if (indexPath.section == 0) {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as! NCMoreUserCell
+            
+            cell.avatar.image = nil
+            cell.icon.image = nil
+            cell.status.text = ""
+            cell.displayName.text = ""
+            
             let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.user, urlBase: appDelegate.urlBase) + "-" + appDelegate.user + ".png"
 
             if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
-                cell.imageIcon?.image = themingAvatarFile
+                cell.avatar?.image = themingAvatarFile
             } else {
-                cell.imageIcon?.image = UIImage.init(named: "moreAvatar")
+                cell.avatar?.image = UIImage.init(named: "moreAvatar")
             }
-            cell.imageIcon?.layer.masksToBounds = true
-            cell.imageIcon?.layer.cornerRadius = cell.imageIcon.frame.size.width / 2
+            cell.avatar?.layer.masksToBounds = true
+            cell.avatar?.layer.cornerRadius = cell.avatar.frame.size.width / 2
             if let account = tabAccount {
-                cell.labelText?.text = account.displayName
-                cell.labelText.textColor = NCBrandColor.sharedInstance.textView
+                cell.displayName?.text = account.displayName
+                cell.displayName.textColor = NCBrandColor.sharedInstance.textView
             }
 
+            cell.selectedBackgroundView = selectionColor
+            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
+            cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
+            
+            if let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
+                let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
+                cell.icon.image = status.onlineStatus
+                cell.status.text = status.statusMessage
+            }
+            
             return cell
+            
         } else {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+            
             // Menu Normal
             if (indexPath.section == 1) {
 
@@ -316,8 +346,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.sharedInstance.textView
+            
+            cell.selectedBackgroundView = selectionColor
+            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
+            cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
+            
+            return cell
         }
-        return cell
     }
 
     // method to run when table view cell is tapped
@@ -415,4 +450,13 @@ class CCCellMore: UITableViewCell {
 
     @IBOutlet weak var labelText: UILabel!
     @IBOutlet weak var imageIcon: UIImageView!
+}
+
+class NCMoreUserCell: UITableViewCell {
+
+    @IBOutlet weak var displayName: UILabel!
+    @IBOutlet weak var avatar: UIImageView!
+    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var status: UILabel!
+
 }
