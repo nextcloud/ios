@@ -567,10 +567,9 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
-
-        if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
         
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
             let metadata = metadatas[indexPath.row]
             
             self.cellHeigth = cell.frame.size.height
@@ -604,11 +603,13 @@ extension NCMedia: UICollectionViewDataSource {
             } else {
                 cell.selectMode(false)
             }
+            
+            return cell
+            
         } else {
-            print("error")
+            
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridMediaCell
         }
-        
-        return cell
     }
 }
 

@@ -407,10 +407,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String , let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.reloadItems(at: [indexPath])
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                        collectionView?.reloadItems(at: [indexPath])
+                    }
                 }
             }
         }
@@ -448,13 +450,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                    
                     if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
-                        collectionView?.performBatchUpdates({
-                            collectionView?.insertItems(at: [indexPath])
-                        }, completion: { (_) in
-                            self.collectionView?.reloadData()
-                        })
+                        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                            collectionView?.performBatchUpdates({
+                                collectionView?.insertItems(at: [indexPath])
+                            }, completion: { (_) in
+                                self.collectionView?.reloadData()
+                            })
+                        }
                     }
                 }
             }
@@ -1305,7 +1310,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
                 
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return UICollectionViewCell()
+            if layout == k_layout_list {
+                return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            } else {
+                return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+            }
         }
         
         var tableShare: tableShare?
@@ -1619,7 +1628,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             return cell
         }
         
-        return UICollectionViewCell()
+        return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
     }
 }
 

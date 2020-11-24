@@ -450,7 +450,11 @@ extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
-            return UICollectionViewCell()
+            if layout == k_layout_list {
+                return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
+            } else {
+                return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
+            }
         }
         
         var tableShare: tableShare?
@@ -692,7 +696,7 @@ extension NCSelect: UICollectionViewDataSource {
             return cell
         }
         
-        return UICollectionViewCell()
+        return collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
     }
 }
 
