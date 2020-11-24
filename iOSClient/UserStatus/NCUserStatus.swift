@@ -11,9 +11,21 @@ import SwiftUI
 @available(iOS 13.0, *)
 struct NCUserStatus: View {
     var body: some View {
-        //Text("Hello, World24!")
-        VStack {
+        
+        VStack(alignment: .leading) {
+            
+            HStack {
+                Image("userStatusAway")
+                    .resizable()
+                    .frame(width: 100.0, height: 100.0)
+                    .clipShape(Circle())
+            }
+            
             Text("Hello World44,2")
+                .font(.headline)
+                .foregroundColor(Color.red)
+                .lineLimit(0)
+            Text("test")
         }
     }
 }
