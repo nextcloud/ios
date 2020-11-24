@@ -432,15 +432,31 @@ extension activityTableViewCell: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? activityCollectionViewCell {
+        let cell: activityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as! activityCollectionViewCell
             
-            cell.imageView.image = nil
+        cell.imageView.image = nil
+        
+        let activityPreview = activityPreviews[indexPath.row]
+        let fileId = String(activityPreview.fileId)
+        
+        // Trashbin
+        if activityPreview.view == "trashbin" {
             
-            let activityPreview = activityPreviews[indexPath.row]
-            let fileId = String(activityPreview.fileId)
+            let source = activityPreview.source
             
-            // Trashbin
-            if activityPreview.view == "trashbin" {
+            NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
+                if imageNamePath != nil {
+                    if let image = UIImage(contentsOfFile: imageNamePath!) {
+                        cell.imageView.image = image
+                    }
+                } else {
+                     cell.imageView.image = UIImage.init(named: "file")
+                }
+            }
+            
+        } else {
+            
+            if activityPreview.isMimeTypeIcon {
                 
                 let source = activityPreview.source
                 
@@ -450,54 +466,35 @@ extension activityTableViewCell: UICollectionViewDataSource {
                             cell.imageView.image = image
                         }
                     } else {
-                         cell.imageView.image = UIImage.init(named: "file")
+                        cell.imageView.image = UIImage.init(named: "file")
                     }
                 }
                 
             } else {
                 
-                if activityPreview.isMimeTypeIcon {
+                if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
                     
-                    let source = activityPreview.source
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
                     
-                    NCUtility.shared.convertSVGtoPNGWriteToUserData(svgUrlString: source, fileName: nil, width: 100, rewrite: false, account: appDelegate.account) { (imageNamePath) in
-                        if imageNamePath != nil {
-                            if let image = UIImage(contentsOfFile: imageNamePath!) {
-                                cell.imageView.image = image
-                            }
-                        } else {
-                            cell.imageView.image = UIImage.init(named: "file")
+                    if FileManager.default.fileExists(atPath: fileNamePath) {
+                        
+                        if let image = UIImage(contentsOfFile: fileNamePath) {
+                            cell.imageView.image = image
                         }
-                    }
-                    
-                } else {
-                    
-                    if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
                         
-                        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
+                    } else {
                         
-                        if FileManager.default.fileExists(atPath: fileNamePath) {
-                            
-                            if let image = UIImage(contentsOfFile: fileNamePath) {
-                                cell.imageView.image = image
-                            }
-                            
-                        } else {
-                            
-                            NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, useInternalEndpoint: false) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
-                                if errorCode == 0 && imagePreview != nil {
-                                    cell.imageView.image = imagePreview
-                                }
+                        NCCommunication.shared.downloadPreview(fileNamePathOrFileId: activityPreview.source, fileNamePreviewLocalPath: fileNamePath, widthPreview: 0, heightPreview: 0, useInternalEndpoint: false) { (account, imagePreview, imageIcon, errorCode, errorDescription) in
+                            if errorCode == 0 && imagePreview != nil {
+                                cell.imageView.image = imagePreview
                             }
                         }
                     }
                 }
             }
-            
-            return cell
         }
-        
-        return UICollectionViewCell()
+            
+        return cell
     }
     
 }
