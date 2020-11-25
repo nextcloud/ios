@@ -128,7 +128,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                 if viewController == nil {
                     return
                 }
-                viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
             } else {
                 viewController = topViewController
             }
@@ -181,7 +181,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
                 if viewController == nil {
                     return
                 }
-                viewController!.titleCurrentFolder = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+                viewController!.titleCurrentFolder = (serverUrl as NSString).lastPathComponent
             } else {
                 viewController = topViewController
             }
