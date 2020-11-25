@@ -45,7 +45,7 @@ class NCFileViewInFolder: NCCollectionViewCommon  {
         if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             self.navigationItem.title = NCBrandOptions.sharedInstance.brand
         } else {
-            self.navigationItem.title = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: appDelegate.urlBase)
+            self.navigationItem.title = (serverUrl as NSString).lastPathComponent
         }
         
         presentationController?.delegate = self

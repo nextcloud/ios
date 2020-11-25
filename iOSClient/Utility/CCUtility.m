@@ -1277,17 +1277,6 @@
     return [pather substringToIndex: [pather length] - 1];
 }
 
-+ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase
-{
-    if ([serverUrl isEqualToString:urlBase])
-        return @"";
-    
-    NSURL *serverUrlURL = [NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    NSString *fileName = [serverUrlURL lastPathComponent];
-
-    return fileName;
-}
-
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
     NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];

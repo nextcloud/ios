@@ -231,7 +231,6 @@
 + (void)createDirectoryAtPath:(NSString *)atPath;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
-+ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase;
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account;
 + (NSArray *)createNameSubFolder:(NSArray *)assets;
