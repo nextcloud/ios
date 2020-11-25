@@ -2161,7 +2161,7 @@ class NCManageDatabase: NSObject {
             fileName = "."
             serverUrl = ".."
         } else {
-            fileName = CCUtility.getLastPath(fromServerUrl: serverUrl, urlBase: urlBase)
+            fileName = (serverUrl as NSString).lastPathComponent
             serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
         }
         

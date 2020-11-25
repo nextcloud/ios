@@ -492,7 +492,7 @@
         }
         
         // Settings new folder Automatatic upload
-        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:[CCUtility getLastPathFromServerUrl:serverUrl urlBase:appDelegate.urlBase]];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:serverUrl.lastPathComponent];
         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:[CCUtility deletingLastPathComponentFromServerUrl:serverUrl] urlBase:appDelegate.urlBase account:appDelegate.account];
     }
 }
