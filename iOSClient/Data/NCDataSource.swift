@@ -198,6 +198,7 @@ class NCDataSource: NSObject {
         return index
     }
     
+    @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> Int? {
         
         var index: Int = 0

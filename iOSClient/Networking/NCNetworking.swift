@@ -295,7 +295,11 @@ import Queuer
             }
             
             self.downloadRequest[fileNameLocalPath] = nil
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+            if error?.isExplicitlyCancelledError ?? false {
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadCancelFile, userInfo: ["ocId":metadata.ocId])
+            } else {
+                NotificationCenter.default.postOnMainThread(name: k_notificationCenter_downloadedFile, userInfo: ["ocId":metadata.ocId, "selector":selector, "errorCode":errorCode, "errorDescription":errorDescription])
+            }
             
             completion(errorCode)
         }
