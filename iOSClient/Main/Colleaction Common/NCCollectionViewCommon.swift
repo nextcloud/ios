@@ -398,10 +398,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
-               if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
-                   let indexPath = IndexPath(row: row, section: 0)
-                   collectionView?.reloadItems(at: [indexPath])
-               }
+                if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
+                    let indexPath = IndexPath(row: row, section: 0)
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                        collectionView?.reloadItems(at: [indexPath])
+                    }
+                }
             }
         }
     }
@@ -413,7 +415,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
-                    collectionView?.reloadItems(at: [indexPath])
+                    if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
+                        collectionView?.reloadItems(at: [indexPath])
+                    }
                 }
             }
         }
@@ -425,17 +429,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if let userInfo = notification.userInfo as NSDictionary? {
             if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    
-                    if let row = dataSource.addMetadata(metadata) {
-                        let indexPath = IndexPath(row: row, section: 0)
-                        if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
-                            collectionView?.performBatchUpdates({
-                                collectionView?.insertItems(at: [indexPath])
-                            }, completion: { (_) in
-                                self.collectionView?.reloadData()
-                            })
-                        }
-                    }
+                    dataSource.addMetadata(metadata)
+                    self.collectionView?.reloadData()
                 }
             }
         }
