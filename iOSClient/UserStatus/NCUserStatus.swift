@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 @available(iOS 13.0, *)
 struct NCUserStatus: View {
@@ -36,5 +37,15 @@ struct NCUserStatus_Previews: PreviewProvider {
         Group {
             NCUserStatus()
         }
+    }
+}
+
+@available(iOS 13.0, *)
+@objc class NCUserStatusViewController: NSObject {
+ 
+    @objc func makeUserStatusUI() -> UIViewController{
+        let userStatus = NCUserStatus()
+        //details.shipName = name
+        return UIHostingController(rootView: userStatus)
     }
 }

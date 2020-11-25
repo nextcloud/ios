@@ -425,6 +425,11 @@
 - (void)setUserStatus:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
+    
+    if (@available(iOS 13.0, *)) {
+        UIViewController *userStatusViewController = [[NCUserStatusViewController new] makeUserStatusUI];
+        [self presentViewController:userStatusViewController animated:YES completion:nil];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
