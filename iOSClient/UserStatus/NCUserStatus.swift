@@ -46,12 +46,20 @@ struct NCUserStatus_Previews: PreviewProvider {
  
     @objc func makeUserStatusUI() -> UIViewController{
         
-        NCCommunication.shared.getUserStatusPredefinedStatuses { (account, status, errorCode, errorDescription) in
-            
+        NCCommunication.shared.getUserStatusPredefinedStatuses { (account, userStatuses, errorCode, errorDescription) in
+            if errorCode == 0 {
+                if let userStatuses = userStatuses {
+                    NCManageDatabase.sharedInstance.addUserStatus(userStatuses, account: account, predefined: true)
+                }
+            }
         }
         
-        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 1000, offset: 0, customUserAgent: nil, addCustomHeaders: nil) { (a, b, c, d) in
-            
+        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 1000, offset: 0, customUserAgent: nil, addCustomHeaders: nil) { (account, userStatuses, errorCode, errorDescription) in
+            if errorCode == 0 {
+                if let userStatuses = userStatuses {
+                    NCManageDatabase.sharedInstance.addUserStatus(userStatuses, account: account, predefined: false)
+                }
+            }
         }
         
         let userStatus = NCUserStatus()

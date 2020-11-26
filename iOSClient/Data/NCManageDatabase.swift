@@ -2712,6 +2712,41 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table UserStatus
+    
+    @objc func addUserStatus(_ userStatuses: [NCCommunicationUserStatus], account: String, predefined: Bool) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                
+                let results = realm.objects(tableUserStatus.self).filter("account == %@ AND predefined == %@", account, predefined)
+                realm.delete(results)
+                
+                for userStatus in userStatuses {
+                    
+                    let object = tableUserStatus()
+                    
+                    object.account = account
+                    object.clearAt = userStatus.clearAt
+                    object.clearAtTime = userStatus.clearAtTime
+                    object.clearAtType = userStatus.clearAtType
+                    object.icon = userStatus.icon
+                    object.id = userStatus.id
+                    object.message = userStatus.message
+                    object.predefined = userStatus.predefined
+                    object.status = userStatus.status
+                    object.userId = userStatus.userId
+                    
+                    realm.add(object, update: .all)
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    //MARK: -
     //MARK: Table Video
     
     func addVideoTime(account: String, ocId: String, time: CMTime?) {

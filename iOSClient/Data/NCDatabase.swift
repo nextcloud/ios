@@ -446,6 +446,20 @@ class tableTrash: Object {
     }
 }
 
+class tableUserStatus: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var clearAt: NSDate?
+    @objc dynamic var clearAtTime: String?
+    @objc dynamic var clearAtType: String?
+    @objc dynamic var icon: String?
+    @objc dynamic var id: String?
+    @objc dynamic var message: String?
+    @objc dynamic var predefined: Bool = false
+    @objc dynamic var status: String?
+    @objc dynamic var userId: String?
+}
+
 class tableVideo: Object {
     
     @objc dynamic var account = ""
