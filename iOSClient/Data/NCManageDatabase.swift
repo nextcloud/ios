@@ -2739,7 +2739,7 @@ class NCManageDatabase: NSObject {
                     object.status = userStatus.status
                     object.userId = userStatus.userId
                     
-                    realm.add(object, update: .all)
+                    realm.add(object)
                 }
             }
         } catch let error {
