@@ -225,9 +225,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_richdocumentGrabFocus object:nil];
     
     // Request Service Server Nextcloud
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [[NCService shared] startRequestServicesServer];
-    });
+    [[NCService shared] startRequestServicesServer];
     
     [[NCCommunicationCommon shared] writeLog:@"The application Will enter in foreground"];
 }
