@@ -162,7 +162,7 @@ class NCService: NSObject {
                     self.appDelegate.settingSetupCommunication(account)
                 
                     // Theming
-                    NCBrandColor.sharedInstance.settingThemingColor()
+                    NCBrandColor.sharedInstance.settingThemingColor(account: account)
                 
                     // File Sharing
                     let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
@@ -244,14 +244,14 @@ class NCService: NSObject {
                 
             } else if errorCode != 0 {
                 
-                NCBrandColor.sharedInstance.settingThemingColor()
+                NCBrandColor.sharedInstance.settingThemingColor(account: account)
                 
                 if errorCode == 401 || errorCode == 403 {
                     NCNetworkingCheckRemoteUser.shared.checkRemoteUser(account: account)
                 }
                 
             } else {
-                NCBrandColor.sharedInstance.settingThemingColor()
+                NCBrandColor.sharedInstance.settingThemingColor(account: account)
             }
         }
     }

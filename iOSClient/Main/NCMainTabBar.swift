@@ -52,7 +52,7 @@ class NCMainTabBar: UITabBar {
                     CCUtility.setDarkMode(false)
                 }
             }
-            NCBrandColor.sharedInstance.settingThemingColor()
+            NCBrandColor.sharedInstance.settingThemingColor(account: appDelegate.account)
         }
     }
     

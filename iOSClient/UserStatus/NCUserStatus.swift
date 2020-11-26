@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Foundation
+import NCCommunication
 
 @available(iOS 13.0, *)
 struct NCUserStatus: View {
@@ -44,6 +45,15 @@ struct NCUserStatus_Previews: PreviewProvider {
 @objc class NCUserStatusViewController: NSObject {
  
     @objc func makeUserStatusUI() -> UIViewController{
+        
+        NCCommunication.shared.getUserStatusPredefinedStatuses { (account, status, errorCode, errorDescription) in
+            
+        }
+        
+        NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 1000, offset: 0, customUserAgent: nil, addCustomHeaders: nil) { (a, b, c, d) in
+            
+        }
+        
         let userStatus = NCUserStatus()
         //details.shipName = name
         return UIHostingController(rootView: userStatus)

@@ -155,19 +155,18 @@ class NCBrandColor: NSObject {
     }
     
 #if !EXTENSION
-    @objc public func settingThemingColor() {
+    @objc public func settingThemingColor(account: String) {
         
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
 
         if NCBrandOptions.sharedInstance.use_themingColor {
             
-            let themingColor = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
+            let themingColor = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
             
-            let themingColorElement = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
+            let themingColorElement = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
             
-            let themingColorText = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
+            let themingColorText = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             
             CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
                         

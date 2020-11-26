@@ -263,7 +263,7 @@
     [CCUtility setCertificateError:self.account error:NO];
     
     // Setting Theming
-    [[NCBrandColor sharedInstance] settingThemingColor];
+    [[NCBrandColor sharedInstance] settingThemingColorWithAccount:self.account];
     
     // close detail
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_menuDetailClose object:nil];

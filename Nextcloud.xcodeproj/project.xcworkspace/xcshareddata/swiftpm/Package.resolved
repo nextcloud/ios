@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/nextcloud/ios-communication-library/",
         "state": {
           "branch": null,
-          "revision": "15c91936f386a5054e79eb803d75f6e383f142ae",
+          "revision": "4bac6345e840b0cf1dc52fdbfb8a2132e15f4758",
           "version": null
         }
       },
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/realm/realm-cocoa",
         "state": {
           "branch": null,
-          "revision": "96d5d28f9fd35bd5b109da376bfdc3194cd2794a",
-          "version": "5.4.8"
+          "revision": "a4c647a5b2705591bf9472aed46786d00b71ea2b",
+          "version": "10.1.4"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/realm/realm-core",
         "state": {
           "branch": null,
-          "revision": "612057010f5521d41559970306054f4c5b12632a",
-          "version": "6.1.4"
+          "revision": "596fe8985a2bcdf3c6ecb0a7a8712b9ac5480c79",
+          "version": "10.1.3"
         }
       },
       {
