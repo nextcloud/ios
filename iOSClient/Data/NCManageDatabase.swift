@@ -1253,6 +1253,30 @@ class NCManageDatabase: NSObject {
             NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
         }
     }
+    
+    @objc func setDirectory(synchronized: Bool, serverUrl: String, account: String) {
+        
+        let realm = try! Realm()
+                
+        do {
+            try realm.safeWrite {
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
+                result?.synchronized = synchronized
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
+    
+    func removeDirectoriesSynchronized(serverUrl: String, account: String) {
+        
+        setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
+        for metadata in metadatas {
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
+        }
+    }
 
     //MARK: -
     //MARK: Table e2e Encryption
@@ -1848,7 +1872,7 @@ class NCManageDatabase: NSObject {
     }
 
     @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
+    func updateMetadatas(_ metadatas: [tableMetadata], metadatasResult: [tableMetadata], addCompareLivePhoto: Bool = true, addExistsInLocal: Bool = false, addCompareEtagLocal: Bool = false, addDirectorySynchronized: Bool = false) -> (metadatasUpdate: [tableMetadata], metadatasLocalUpdate: [tableMetadata]) {
         
         let realm = try! Realm()
         var ocIdsUdate : [String] = []
@@ -1891,6 +1915,8 @@ class NCManageDatabase: NSObject {
                     if metadata.directory && !ocIdsUdate.contains(metadata.ocId) {
                         let table = realm.objects(tableDirectory.self).filter(NSPredicate(format: "ocId == %@", metadata.ocId)).first
                         if table?.etag != metadata.etag {
+                            ocIdsUdate.append(metadata.ocId)
+                        } else if addDirectorySynchronized && table?.synchronized == false {
                             ocIdsUdate.append(metadata.ocId)
                         }
                     }
