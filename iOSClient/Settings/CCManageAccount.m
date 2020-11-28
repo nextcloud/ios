@@ -115,6 +115,7 @@
         if (accounts.count == 0) row.disabled = @YES;
         [section addFormRow:row];
         
+#if TARGET_OS_SIMULATOR
         // Set user status
         if (@available(iOS 13.0, *)) {
             BOOL userStatus = [[NCManageDatabase sharedInstance] getCapabilitiesServerBoolWithAccount:accountActive.account elements:NCElementsJSON.shared.capabilitiesUserStatusEnabled exists:false];
@@ -130,6 +131,7 @@
                 [section addFormRow:row];
             }
         }
+#endif
     }
     
     // Section : USER INFORMATION -------------------------------------------
