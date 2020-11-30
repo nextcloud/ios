@@ -47,6 +47,13 @@ class NCUtility: NSObject {
         return urlBase + "/" + self.getWebDAV(account: account)
     }
     
+    @objc func deletingLastPathComponent(serverUrl: String, urlBase: String, account: String) -> String {
+        if getHomeServer(urlBase: urlBase, account: account) == serverUrl { return serverUrl }
+        let fileName = (serverUrl as NSString).lastPathComponent
+        let serverUrl = serverUrl.replacingOccurrences(of: "/"+fileName, with: "", options: String.CompareOptions.backwards, range: nil)
+        return serverUrl
+    }
+    
     @objc func createFileName(_ fileName: String, serverUrl: String, account: String) -> String {
         
         var resultFileName = fileName

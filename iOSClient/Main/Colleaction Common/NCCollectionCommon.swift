@@ -151,7 +151,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
             } else {
                 break
             }
@@ -194,7 +194,7 @@ class NCCollectionCommon: NSObject, NCSelectDelegate {
             listViewController.insert(vc, at: 0)
             
             if serverUrl != homeUrl {
-                serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+                serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: appDelegate.urlBase, account: appDelegate.account)
             } else {
                 break
             }

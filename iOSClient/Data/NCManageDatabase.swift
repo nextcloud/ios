@@ -2208,7 +2208,7 @@ class NCManageDatabase: NSObject {
             serverUrl = ".."
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: serverUrl)
+            serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl: serverUrl, urlBase: urlBase, account: account)
         }
         
         guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
@@ -2436,7 +2436,7 @@ class NCManageDatabase: NSObject {
             
             let addObject = tableShare()
             let fullPath = NCUtility.shared.getHomeServer(urlBase: urlBase, account: account) + share.path
-            let serverUrl = CCUtility.deletingLastPathComponent(fromServerUrl: fullPath)!
+            let serverUrl = NCUtility.shared.deletingLastPathComponent(serverUrl:fullPath, urlBase: urlBase, account: account)
             let fileName = NSString(string: fullPath).lastPathComponent
                         
             addObject.account = account

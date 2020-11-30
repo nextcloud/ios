@@ -1269,14 +1269,6 @@
     [[NSFileManager defaultManager] createDirectoryAtPath:atPath withIntermediateDirectories:true attributes:nil error:nil];
 }
 
-+ (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
-{
-    NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
-    NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
-    
-    return [pather substringToIndex: [pather length] - 1];
-}
-
 + (NSString *)returnPathfromServerUrl:(NSString *)serverUrl urlBase:(NSString *)urlBase account:(NSString *)account
 {
     NSString *homeServer = [[NCUtility shared] getHomeServerWithUrlBase:urlBase account:account];
@@ -1579,11 +1571,11 @@
        
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         
-        while (directory != nil) {
+        while (![directory.serverUrl isEqualToString:home]) {
             if (directory.e2eEncrypted == true) {
                 return true;
             }
-            serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrl];
+            serverUrl = [[NCUtility shared] deletingLastPathComponentWithServerUrl:serverUrl urlBase:urlBase account:account];
             directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         }
         
