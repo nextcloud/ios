@@ -368,7 +368,9 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
                         let fileSize = attr[FileAttributeKey.size] as! UInt64
                         if fileSize > 0 {
-                            //self.appDelegate.activeFiles.segue(metadata: metadata)
+                            if let viewController = self.viewController {
+                                NCViewer.shared.view(viewController: viewController, metadata: metadata, metadatas: [metadata])
+                            }
                             return
                         }
                     } catch {
