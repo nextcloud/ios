@@ -1571,7 +1571,7 @@
        
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
         
-        while (![directory.serverUrl isEqualToString:home]) {
+        while (directory != nil && ![directory.serverUrl isEqualToString:home]) {
             if (directory.e2eEncrypted == true) {
                 return true;
             }
