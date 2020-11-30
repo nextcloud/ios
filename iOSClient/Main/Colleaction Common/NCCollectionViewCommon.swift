@@ -324,10 +324,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
+            if let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
                 
-                if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
+                // DEL
+                if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
+                    if let row = dataSource.deleteMetadata(ocId: ocId) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.deleteItems(at: [indexPath])
@@ -335,8 +336,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                             self.collectionView?.reloadData()
                         })
                     }
-                } else if metadataNew.serverUrl == serverUrl && metadata.account == appDelegate.account {
-                    if let row = dataSource.addMetadata(metadataNew) {
+                    // ADD
+                } else if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
+                    if let row = dataSource.addMetadata(metadata) {
                         let indexPath = IndexPath(row: row, section: 0)
                         collectionView?.performBatchUpdates({
                             collectionView?.insertItems(at: [indexPath])
