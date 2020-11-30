@@ -1277,6 +1277,22 @@ class NCManageDatabase: NSObject {
             setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
         }
     }
+    
+    @objc func removeAllDirectoriesSynchronized(account: String) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.safeWrite {
+                let results = realm.objects(tableDirectory.self).filter("account == %@ AND synchronized == true", account)
+                for result in results {
+                    result.synchronized = false
+                }
+            }
+        } catch let error {
+            NCCommunicationCommon.shared.writeLog("Could not write to database: \(error)")
+        }
+    }
 
     //MARK: -
     //MARK: Table e2e Encryption

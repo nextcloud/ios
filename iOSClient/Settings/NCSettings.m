@@ -289,6 +289,7 @@
             
             [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                 [CCUtility setFavoriteOffline:true];
+                [[NCManageDatabase sharedInstance] removeAllDirectoriesSynchronizedWithAccount:appDelegate.account];
                 [[NCNetworking shared] listingFavoritescompletionWithSelector:(selectorDownloadAllFile) completion:^(NSString *account, NSArray *metadatas, NSInteger errorCode, NSString *errorDescription) { }];                    
             }]];
             
