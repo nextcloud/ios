@@ -38,6 +38,14 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Verify Comments enabled
+        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+        if serverVersionMajor >= k_files_comments && comments == false {
+            commentsEnabled = false
+        }
+        
+        pagingViewController.commentsEnabled = commentsEnabled
         pagingViewController.metadata = metadata
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
@@ -48,14 +56,7 @@ class NCSharePaging: UIViewController {
         addChild(pagingViewController)
         view.addSubview(pagingViewController.view)
         pagingViewController.didMove(toParent: self)
-        
-        // Verify Comments enabled
-        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
-        if serverVersionMajor >= k_files_comments && comments == false {
-            commentsEnabled = false
-        }
-        
+                
         // Customization
         pagingViewController.indicatorOptions = .visible(
             height: 1,
@@ -120,7 +121,12 @@ extension NCSharePaging: PagingViewControllerDelegate {
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
-        self.title = item.title
+        
+        if  item.index == 1 && !commentsEnabled {
+            pagingViewController.contentInteraction = .none
+        } else {
+            self.title = item.title
+        }
     }
 }
 
@@ -181,6 +187,7 @@ class NCShareHeaderViewController: PagingViewController {
     
     public var image: UIImage?
     public var metadata: tableMetadata?
+    public var commentsEnabled = true
     
     override func loadView() {
         view = NCSharePagingView(
@@ -189,6 +196,13 @@ class NCShareHeaderViewController: PagingViewController {
             pageView: pageViewController.view,
             metadata: metadata
         )
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item == 1 && !commentsEnabled {
+            return
+        }
+        super.collectionView(collectionView, didSelectItemAt: indexPath)
     }
 }
 
