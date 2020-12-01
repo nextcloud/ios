@@ -216,7 +216,7 @@ class NCViewerImageZoom: UIViewController {
             }
 
             // OPEN DETAIL
-            if imageView.center.y < view.center.y - 50 {
+            if imageView.center.y < view.center.y - 30 {
                   
                 if detailView.isHidden {
                     
@@ -237,7 +237,7 @@ class NCViewerImageZoom: UIViewController {
             }
             
             // CLOSE DETAIL
-            if (imageView.center.y > view.center.y + 50) || (deltaY < -50) || (topPoint.y + 50 < currentLocation.y) {
+            if (imageView.center.y > view.center.y + 30) || (deltaY < -30) || (topPoint.y + 30 < currentLocation.y) {
                 
                 if detailView.isShow() {
                     detailView.hide()
