@@ -602,18 +602,23 @@ class NCUtility: NSObject {
         
         var onlineStatus: UIImage?
         var statusMessage: String = ""
+        var messageUserDefined: String = ""
         
         if userStatus?.lowercased() == "online" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOnline"), width: 100, height: 100, color: UIColor(red: 103.0/255.0, green: 176.0/255.0, blue: 134.0/255.0, alpha: 1.0))
+            messageUserDefined = NSLocalizedString("_online_", comment: "")
         }
         if userStatus?.lowercased() == "away" {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: UIColor(red: 233.0/255.0, green: 166.0/255.0, blue: 75.0/255.0, alpha: 1.0))
+            messageUserDefined = NSLocalizedString("_away_", comment: "")
         }
         if userStatus?.lowercased() == "dnd" {
             onlineStatus = UIImage.init(named: "userStatusDnd")?.resizeImageUsingVImage(size: CGSize(width: 100, height: 100))
+            messageUserDefined = NSLocalizedString("_dnd_", comment: "")
         }
         if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible"  {
             onlineStatus = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusOffline"), width: 100, height: 100, color: .black)
+            messageUserDefined = NSLocalizedString("_invisible_", comment: "")
         }
         
         if let userIcon = userIcon {
@@ -622,8 +627,12 @@ class NCUtility: NSObject {
         if let userMessage = userMessage {
             statusMessage = statusMessage + userMessage
         }
+        statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
+        if statusMessage == "" {
+            statusMessage = messageUserDefined
+        }
                 
-        return(onlineStatus, statusMessage.trimmingCharacters(in: .whitespaces))
+        return(onlineStatus, statusMessage)
     }
 }
 

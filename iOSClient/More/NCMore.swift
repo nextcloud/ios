@@ -56,7 +56,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
 
-        //
         tableView.register(UINib.init(nibName: "NCMoreUserCell", bundle: nil), forCellReuseIdentifier: "userCell")
         
         // create tap gesture recognizer
@@ -229,6 +228,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let quotaUsed: String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.tableView.reloadData()
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

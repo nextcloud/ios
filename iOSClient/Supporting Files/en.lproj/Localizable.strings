@@ -150,6 +150,12 @@
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
 "_set_user_status_"         = "Set user status";
+"_online_"                  = "Online";
+"_away_"                    = "Away";
+"_dnd_"                     = "Do not disturb";
+"_dnd_description_"         = "Mute all notifications";
+"_invisible_"               = "Invidible";
+"_invisible_description_"   = "Apper offline";
 
 // App
 
