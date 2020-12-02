@@ -111,7 +111,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Shares
-        let isFilesSharingEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        let isFilesSharingEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
         if isFilesSharingEnabled {
             item = NCCommunicationExternalSite()
             item.name = "_list_shares_"
@@ -137,7 +137,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         
         // ITEM : Trash
-        let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+        let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         if serverVersionMajor >= Int(k_trash_version_available) {
 
             item = NCCommunicationExternalSite()
@@ -162,8 +162,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         changeUserProfile()
 
         // ITEM : External
-        if NCBrandOptions.sharedInstance.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.sharedInstance.getAllExternalSites(account: appDelegate.account) {
+        if NCBrandOptions.shared.disable_more_external_site == false {
+            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
                 for externalSite in externalSites {
                     if (externalSite.type == "link" && externalSite.name != "" && externalSite.url != "") {
                         item = NCCommunicationExternalSite()
@@ -190,20 +190,20 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.separatorColor = NCBrandColor.shared.separator
         tableView.reloadData()
         
-        viewQuota.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
+        viewQuota.backgroundColor = NCBrandColor.shared.backgroundForm
+        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
     }
 
     @objc func changeUserProfile() {
         // Display Name user & Quota
         var quota: String = ""
 
-        guard let tabAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+        guard let tabAccount = NCManageDatabase.shared.getAccountActive() else {
             return
         }
         self.tabAccount = tabAccount
@@ -291,7 +291,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // change color selection and disclosure indicator
         let selectionColor: UIView = UIView()
-        selectionColor.backgroundColor = NCBrandColor.sharedInstance.select
+        selectionColor.backgroundColor = NCBrandColor.shared.select
 
         if (indexPath.section == 0) {
             
@@ -313,19 +313,19 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             cell.avatar?.layer.cornerRadius = cell.avatar.frame.size.width / 2
             if let account = tabAccount {
                 cell.displayName?.text = account.displayName
-                cell.displayName.textColor = NCBrandColor.sharedInstance.textView
+                cell.displayName.textColor = NCBrandColor.shared.textView
             }
 
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
+            cell.backgroundColor = NCBrandColor.shared.backgroundCell
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
-            if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
-                if let account = NCManageDatabase.sharedInstance.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
+            if NCManageDatabase.shared.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false) {
+                if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
                     let status = NCUtility.shared.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
                     cell.icon.image = status.onlineStatus
                     cell.status.text = status.statusMessage
-                    cell.status.textColor = NCBrandColor.sharedInstance.textView
+                    cell.status.textColor = NCBrandColor.shared.textView
                 }
             }
             
@@ -349,12 +349,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
                 item = settingsMenu[indexPath.row]
             }
 
-            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon)
+            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), width: 50, height: 50, color: NCBrandColor.shared.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelText.textColor = NCBrandColor.shared.textView
             
             cell.selectedBackgroundView = selectionColor
-            cell.backgroundColor = NCBrandColor.sharedInstance.backgroundCell
+            cell.backgroundColor = NCBrandColor.shared.backgroundCell
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
             
             return cell

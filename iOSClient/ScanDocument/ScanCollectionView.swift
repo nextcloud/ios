@@ -78,8 +78,8 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 2)
 
-        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
-        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement), for: .normal)
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
+        transferDown.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "transferDown"), multiplier:2, color: NCBrandColor.shared.brandElement), for: .normal)
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
@@ -93,14 +93,14 @@ class DragDropViewController: UIViewController {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
 
-        collectionViewSource.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        collectionViewDestination.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        collectionViewSource.backgroundColor = NCBrandColor.shared.backgroundForm
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.backgroundForm
         collectionViewSource.reloadData()
         collectionViewDestination.reloadData()
 
-        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.textView
+        labelTitlePDFzone.textColor = NCBrandColor.shared.textView
         labelTitlePDFzone.backgroundColor = .systemBackground
     }
     
@@ -132,7 +132,7 @@ class DragDropViewController: UIViewController {
     
     @IBAction func add(sender: UIButton) {
         
-        NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self)
+        NCCreateScanDocument.shared.openScannerDocument(viewController: self)
     }
     
     @IBAction func transferDown(sender: UIButton) {

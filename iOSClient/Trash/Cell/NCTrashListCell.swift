@@ -49,13 +49,13 @@ class NCTrashListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        imageRestore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
-        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.optionItem)
+        imageRestore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), width: 50, height: 50, color: NCBrandColor.shared.optionItem)
+        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.optionItem)
         
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
         
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        separator.backgroundColor = NCBrandColor.shared.separator
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {

@@ -64,11 +64,11 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         
-        shareLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.sharedInstance.brandElement)
+        shareLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         shareLinkLabel.text = NSLocalizedString("_share_link_", comment: "")
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
 
-        shareInternalLinkImage.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
+        shareInternalLinkImage.image = NCShareCommon.shared.createLinkAvatar(imageName: "shareInternalLink", colorCircle: .gray)
         shareInternalLinkLabel.text = NSLocalizedString("_share_internal_link_", comment: "")
         shareInternalLinkDescription.text = NSLocalizedString("_share_internal_link_des_", comment: "")
         buttonInternalCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width: 100, height: 100, color: .gray), for: .normal)
@@ -119,14 +119,14 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
-        shareLinkLabel.textColor = NCBrandColor.sharedInstance.textView
+        shareLinkLabel.textColor = NCBrandColor.shared.textView
     }
         
     @objc func reloadData() {
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         if shares.firstShareLink == nil {
             buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareAdd"), width: 100, height: 100, color: UIColor.gray), for: .normal)
             buttonCopy.isHidden = true
@@ -150,7 +150,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         guard let metadata = self.metadata else { return }
 
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
         tapCopy(with: shares.firstShareLink, sender: sender)
     }
     
@@ -162,7 +162,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { (account, metadata, errorCode, errorDescription) in
             if errorCode == 0 && metadata != nil {
                 let internalLink = self.appDelegate.urlBase + "/index.php/f/" + metadata!.fileId
-                NCShareCommon.sharedInstance.copyLink(link: internalLink, viewController: self, sender: sender)
+                NCShareCommon.shared.copyLink(link: internalLink, viewController: self, sender: sender)
             } else {
                 NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: errorCode)
             }
@@ -172,8 +172,8 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
 
         guard let metadata = self.metadata else { return }
-        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata)
+        let isFilesSharingPublicPasswordEnforced = NCManageDatabase.shared.getCapabilitiesServerBool(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesFileSharingPubPasswdEnforced, exists: false)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
 
         if isFilesSharingPublicPasswordEnforced && shares.firstShareLink == nil {
             let alertController = UIAlertController(title: NSLocalizedString("_enforce_password_protection_", comment: ""), message: "", preferredStyle: .alert)
@@ -210,7 +210,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     func tapCopy(with tableShare: tableShare?, sender: Any) {
         
         if let link = tableShare?.url {
-            NCShareCommon.sharedInstance.copyLink(link: link, viewController: self, sender: sender)
+            NCShareCommon.shared.copyLink(link: link, viewController: self, sender: sender)
         }
     }
     
@@ -236,7 +236,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         guard let tableShare = tableShare else { return }
 
         if tableShare.shareType == 3 {
-            let views = NCShareCommon.sharedInstance.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
+            let views = NCShareCommon.shared.openViewMenuShareLink(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareLinkMenuView = views.shareLinkMenuView
             shareMenuViewWindow = views.viewWindow
             
@@ -244,7 +244,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
             tap.delegate = self
             shareMenuViewWindow?.addGestureRecognizer(tap)
         } else {
-            let views = NCShareCommon.sharedInstance.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
+            let views = NCShareCommon.shared.openViewMenuUser(shareViewController: self, tableShare: tableShare, metadata: metadata!)
             shareUserMenuView = views.shareUserMenuView
             shareMenuViewWindow = views.viewWindow
             
@@ -286,7 +286,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         
         for sharee in sharees {
             var label = sharee.label
-            if sharee.shareType == NCShareCommon.sharedInstance.SHARE_TYPE_CIRCLE {
+            if sharee.shareType == NCShareCommon.shared.SHARE_TYPE_CIRCLE {
                 label = label + " (" + sharee.circleInfo + ", " +  sharee.circleOwner + ")"
             }
             dropDown.dataSource.append(label)
@@ -301,7 +301,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         dropDown.customCellConfiguration = { (index: Index, item: String, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCShareUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
+            cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
             let status = NCUtility.shared.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
             cell.imageStatus.image = status.onlineStatus
             cell.status.text = status.statusMessage
@@ -328,7 +328,7 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
                 }
             }
 
-            cell.imageShareeType.image = NCShareCommon.sharedInstance.getImageShareType(shareType: sharee.shareType)
+            cell.imageShareeType.image = NCShareCommon.shared.getImageShareType(shareType: sharee.shareType)
         }
         
         dropDown.selectionAction = { [weak self] (index, item) in
@@ -360,7 +360,7 @@ extension NCShare: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         var numOfRows = 0
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         
         if shares.share != nil {
             numOfRows = shares.share!.count
@@ -371,7 +371,7 @@ extension NCShare: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let shares = NCManageDatabase.sharedInstance.getTableShares(metadata: metadata!)
+        let shares = NCManageDatabase.shared.getTableShares(metadata: metadata!)
         let tableShare = shares.share![indexPath.row]
         
         // LINK
@@ -380,7 +380,7 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = NSLocalizedString("_share_link_", comment: "")
-                cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+                cell.labelTitle.textColor = NCBrandColor.shared.textView
                 return cell
             }
         } else {
@@ -390,14 +390,14 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.labelTitle.text = tableShare.shareWithDisplayname
-                cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+                cell.labelTitle.textColor = NCBrandColor.shared.textView
                 cell.labelCanEdit.text = NSLocalizedString("_share_permission_edit_", comment: "")
-                cell.labelCanEdit.textColor = NCBrandColor.sharedInstance.textView
+                cell.labelCanEdit.textColor = NCBrandColor.shared.textView
                 cell.isUserInteractionEnabled = true
                 cell.switchCanEdit.isHidden = false
                 cell.labelCanEdit.isHidden = false
                 cell.buttonMenu.isHidden = false
-                cell.imageItem.image = NCShareCommon.sharedInstance.getImageShareType(shareType: tableShare.shareType)
+                cell.imageItem.image = NCShareCommon.shared.getImageShareType(shareType: tableShare.shareType)
                 
                 let status = NCUtility.shared.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
                 cell.imageStatus.image = status.onlineStatus
@@ -457,7 +457,7 @@ class NCShareLinkCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        imageItem.image = NCShareCommon.sharedInstance.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.sharedInstance.brandElement)
+        imageItem.image = NCShareCommon.shared.createLinkAvatar(imageName: "sharebylink", colorCircle: NCBrandColor.shared.brandElement)
         buttonCopy.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareCopy"), width:100, height: 100, color: UIColor.gray), for: .normal)
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
@@ -495,7 +495,7 @@ class NCShareUserCell: UITableViewCell {
         super.awakeFromNib()
         
         switchCanEdit.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
-        switchCanEdit.onTintColor = NCBrandColor.sharedInstance.brandElement
+        switchCanEdit.onTintColor = NCBrandColor.shared.brandElement
         buttonMenu.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMenu"), width:100, height: 100, color: UIColor.gray), for: .normal)
     }
     

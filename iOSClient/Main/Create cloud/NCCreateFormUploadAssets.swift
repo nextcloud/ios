@@ -49,8 +49,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
             titleServerUrl = "/"
         } else {
-            if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(tableDirectory.ocId) {
+            if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(tableDirectory.ocId) {
                     titleServerUrl = metadata.fileNameView
                 } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
             } else { titleServerUrl = (serverUrl as NSString).lastPathComponent }
@@ -99,8 +99,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
         initializeForm()
         self.reloadForm()
@@ -123,28 +123,28 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["imageView.image"] = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, width: 50, height: 50, color: NCBrandColor.shared.brandElement) as UIImage
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
         // User folder Autoupload
         row = XLFormRowDescriptor(tag: "useFolderAutoUpload", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_auto_upload_", comment: ""))
         row.value = 0
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
         // Use Sub folder
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-        let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
+        let tableAccount = NCManageDatabase.shared.getAccountActive()
         if tableAccount?.autoUploadCreateSubfolder == true {
             row.value = 1
         } else {
@@ -153,7 +153,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row.hidden = "$\("useFolderAutoUpload") == 0"
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
 
@@ -166,10 +166,10 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
@@ -178,10 +178,10 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.value = CCUtility.getFileNameType(k_keyFileNameType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         section.addFormRow(row)
         
@@ -196,14 +196,14 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -212,11 +212,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.disabled = true
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundForm
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundForm
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.backgroundForm
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textView.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textView.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -312,9 +312,9 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             if serverUrl == NCUtility.shared.getHomeServer(urlBase: appDelegate.urlBase, account: appDelegate.account) {
                 self.titleServerUrl = "/"
             } else {
-                if let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account
+                if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account
                     , self.serverUrl)) {
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(tableDirectory.ocId) {
+                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(tableDirectory.ocId) {
                         titleServerUrl = metadata.fileNameView
                     } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }
                 } else { titleServerUrl = (self.serverUrl as NSString).lastPathComponent }                
@@ -338,7 +338,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
                 
-                self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+                self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
@@ -359,11 +359,11 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
             var metadatasUploadInConflict: [tableMetadata] = []
 
             if (useFolderPhotoRow.value! as AnyObject).boolValue == true {
-                self.serverUrl = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+                self.serverUrl = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            let autoUploadPath = NCManageDatabase.sharedInstance.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
+            let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: self.appDelegate.urlBase, account: self.appDelegate.account)
             if autoUploadPath == self.serverUrl {
                 if NCNetworking.shared.createFolder(assets: self.assets, selector: selectorUploadFile, useSubFolder: useSubFolder, account: self.appDelegate.account, urlBase: self.appDelegate.urlBase) {
                     NCContentPresenter.shared.messageNotification("_error_", description: "_error_createsubfolders_upload_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
@@ -397,12 +397,12 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 }
                 
                 // Check if is in upload
-                let isRecordInSessions = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
+                let isRecordInSessions = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", self.appDelegate.account, serverUrl, fileName), sorted: "fileName", ascending: false)
                 if isRecordInSessions.count > 0 {
                     continue
                 }
                 
-                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
                 
                 metadataForUpload.assetLocalIdentifier = asset.localIdentifier
                 metadataForUpload.session = self.session
@@ -420,7 +420,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                     CCUtility.extractLivePhotoAsset(asset, filePath: filePath) { (url) in
                         if let url = url {
                             let fileSize = NCUtilityFileSystem.shared.getFileSize(filePath: url.path)
-                            let metadataMOVForUpload = NCManageDatabase.sharedInstance.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, ocId:ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
+                            let metadataMOVForUpload = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, fileName: fileNameMove, ocId:ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "", livePhoto: livePhoto)
 
                             metadataForUpload.livePhoto = true
                             metadataMOVForUpload.livePhoto = true
@@ -462,8 +462,8 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 
             } else {
                 
-                NCManageDatabase.sharedInstance.addMetadatas(metadatasNOConflict)
-                NCManageDatabase.sharedInstance.addMetadatas(metadatasMOV)
+                NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
+                NCManageDatabase.shared.addMetadatas(metadatasMOV)
                 
                 self.appDelegate.networkingAutoUpload.startProcess()
             }

@@ -56,8 +56,8 @@
 
 - (void)changeTheming
 {
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
-    self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm;
+    self.view.backgroundColor = NCBrandColor.shared.backgroundForm;
+    self.tableView.backgroundColor = NCBrandColor.shared.backgroundForm;
     [self.tableView reloadData];
 }
 
@@ -175,7 +175,7 @@
 {
     NSString *fileName = [[NCUtility shared] createFileName:self.fileNameTextfield.text serverUrl:serverUrlLocal account:appDelegate.account];
     
-    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
+    tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrlLocal urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:false];
     
     metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground;
     metadataForUpload.sessionSelector = selectorUploadFile;
@@ -185,7 +185,7 @@
     [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];
     
     // Add Medtadata for upload
-    [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    [[NCManageDatabase shared] addMetadata:metadataForUpload];
 
     [[appDelegate networkingAutoUpload] startProcess];
     

@@ -80,12 +80,12 @@ class NCActivity: UIViewController, NCEmptyDataSetDelegate {
     @objc func changeTheming() {
         
         if filterFileId == nil {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            view.backgroundColor = NCBrandColor.shared.backgroundView
+            tableView.backgroundColor = NCBrandColor.shared.backgroundView
             tableView.reloadData()
         } else {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-            tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+            view.backgroundColor = NCBrandColor.shared.backgroundForm
+            tableView.backgroundColor = NCBrandColor.shared.backgroundForm
             tableView.reloadData()
         }
     }
@@ -149,7 +149,7 @@ extension NCActivity: UITableViewDelegate {
         
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 13)
-        label.textColor = NCBrandColor.sharedInstance.textView
+        label.textColor = NCBrandColor.shared.textView
         label.text = CCUtility.getTitleSectionDate(sectionDate[section])
         label.textAlignment = .center
         label.layer.cornerRadius = 11
@@ -190,7 +190,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = true
             cell.subjectTrailingConstraint.constant = 10
             cell.didSelectItemEnable = self.didSelectItemEnable
-            cell.subject.textColor = NCBrandColor.sharedInstance.textView
+            cell.subject.textColor = NCBrandColor.shared.textView
             cell.viewController = self
             
             // icon
@@ -251,7 +251,7 @@ extension NCActivity: UITableViewDataSource {
                 }
                 
                 for key in keys {
-                    if let result = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
+                    if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
                         orderKeysId.append(result.id)
                         subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                     }
@@ -271,7 +271,7 @@ extension NCActivity: UITableViewDataSource {
             }
             
             // CollectionView
-            cell.activityPreviews = NCManageDatabase.sharedInstance.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
+            cell.activityPreviews = NCManageDatabase.shared.getActivityPreview(account: activity.account, idActivity: activity.idActivity, orderKeysId: orderKeysId)
             if cell.activityPreviews.count == 0 {
                 cell.collectionViewHeightConstraint.constant = 0
             } else {
@@ -343,7 +343,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
             }
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard.init(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-                    if let result = NCManageDatabase.sharedInstance.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
+                    if let result = NCManageDatabase.shared.getTrashItem(fileId: String(activityPreview.fileId), account: activityPreview.account) {
                         viewController.blinkFileId = result.fileId
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
@@ -358,11 +358,11 @@ extension activityTableViewCell: UICollectionViewDelegate {
         
         if activityPreview.view == "files" && activityPreview.mimeType != "dir" {
             
-            guard let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
+            guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileId == %@", activitySubjectRich.id)) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileId == %@", activitySubjectRich.id)) {
                 if let filePath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView) {
                     do {
                         let attr = try FileManager.default.attributesOfItem(atPath: filePath)
@@ -414,7 +414,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                                                        
                             CCUtility.moveFile(atPath: atPath, toPath: toPath)
                                                        
-                            NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                            NCManageDatabase.shared.addMetadata(metadata!)
                             if let viewController = self.viewController {
                                 NCViewer.shared.view(viewController: viewController, metadata: metadata!, metadatas: [metadata!])
                             }
@@ -482,7 +482,7 @@ extension activityTableViewCell: UICollectionViewDataSource {
                 
             } else {
                 
-                if let activitySubjectRich = NCManageDatabase.sharedInstance.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
+                if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: account, idActivity: idActivity, id: fileId) {
                     
                     let fileNamePath = CCUtility.getDirectoryUserData() + "/" + activitySubjectRich.name
                     
@@ -541,7 +541,7 @@ extension NCActivity {
         
         sectionDate.removeAll()
         
-        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.account), filterFileId: filterFileId)
+        let activities = NCManageDatabase.shared.getActivity(predicate: NSPredicate(format: "account == %@", appDelegate.account), filterFileId: filterFileId)
         allActivities = activities.all
         filterActivities = activities.filter
         for tableActivity in filterActivities {
@@ -563,7 +563,7 @@ extension NCActivity {
             return Calendar.current.date(byAdding: components, to: startDate)!
         }()
         
-        let activities = NCManageDatabase.sharedInstance.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.account, [startDate, endDate]), filterFileId: filterFileId)
+        let activities = NCManageDatabase.shared.getActivity(predicate: NSPredicate(format: "account == %@ && date BETWEEN %@", appDelegate.account, [startDate, endDate]), filterFileId: filterFileId)
         return activities.filter
     }
     
@@ -579,7 +579,7 @@ extension NCActivity {
         NCCommunication.shared.getActivity(since: idActivity, limit: 200, objectId: filterFileId, objectType: objectType, previews: true) { (account, activities, errorCode, errorDescription) in
             
            if errorCode == 0 && account == self.appDelegate.account {
-                NCManageDatabase.sharedInstance.addActivity(activities , account: account)
+                NCManageDatabase.shared.addActivity(activities , account: account)
             }
             
             NCUtility.shared.stopActivityIndicator()

@@ -152,8 +152,8 @@ class NCEndToEndInitialize : NSObject  {
                             CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                             
                             // Clear Table
-                            NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: account)
-                            NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
+                            NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
                             
                             self.delegate?.endToEndInitializeSuccess()
                             
@@ -232,8 +232,8 @@ class NCEndToEndInitialize : NSObject  {
                                         CCUtility.setEndToEndPublicKeyServer(account, publicKey: publicKey)
                                         
                                         // Clear Table
-                                        NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: account)
-                                        NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: account)
+                                        NCManageDatabase.shared.clearTable(tableDirectory.self, account: account)
+                                        NCManageDatabase.shared.clearTable(tableE2eEncryption.self, account: account)
                                         
                                         self.delegate?.endToEndInitializeSuccess()
                                         

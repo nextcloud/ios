@@ -261,8 +261,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        collectionView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        view.backgroundColor = NCBrandColor.shared.backgroundView
+        collectionView.backgroundColor = NCBrandColor.shared.backgroundView
         collectionView.reloadData()
     }
     
@@ -324,7 +324,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let serverUrlFrom = userInfo["serverUrlFrom"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 // DEL
                 if serverUrlFrom == serverUrl && metadata.account == appDelegate.account {
@@ -374,7 +374,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     if let row = dataSource.addMetadata(metadata) {
@@ -396,7 +396,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if dataSource.getIndexMetadata(ocId: metadata.ocId) != nil {
                     reloadDataSource()
@@ -409,7 +409,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
@@ -424,7 +424,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
@@ -439,7 +439,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 if let row = dataSource.reloadMetadata(ocId: metadata.ocId) {
                     let indexPath = IndexPath(row: row, section: 0)
                     if indexPath.section < collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section) {
@@ -454,7 +454,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     dataSource.addMetadata(metadata)
                     self.collectionView?.reloadData()
@@ -467,7 +467,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-        if let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+        if let ocId = userInfo["ocId"] as? String, let ocIdTemp = userInfo["ocIdTemp"] as? String, let _ = userInfo["errorCode"] as? Int, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     dataSource.reloadMetadata(ocId: metadata.ocId, ocIdTemp: ocIdTemp)
                     collectionView?.reloadData()
@@ -480,7 +480,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadata.serverUrl == serverUrl && metadata.account == appDelegate.account {
                     if let row = dataSource.deleteMetadata(ocId: metadata.ocId) {
@@ -660,7 +660,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapShareListItem(with objectId: String, sender: Any) {
         
         if isEditMode { return }
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
         
         NCNetworkingNotificationCenter.shared.openShare(ViewController: self, metadata: metadata, indexPage: 2)
     }
@@ -669,7 +669,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if isEditMode { return }
 
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
 
         if namedButtonMore == k_buttonMoreMore {
             toggleMoreMenu(viewController: self, metadata: metadata)
@@ -714,7 +714,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if gestureRecognizer.state != .began { return }
         if serverUrl == "" { return }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(objectId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
             metadataTouch = metadata
         } else {
             metadataTouch = nil
@@ -733,7 +733,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if metadataTouch != nil {
             listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_quicklook_", comment: ""), action: #selector(openQuickLookMenu(_:))))
-            if !NCBrandOptions.sharedInstance.disable_openin_file {
+            if !NCBrandOptions.shared.disable_openin_file {
                 listMenuItems.append(UIMenuItem.init(title: NSLocalizedString("_open_in_", comment: ""), action: #selector(openInMenu(_:))))
             }
         }
@@ -771,7 +771,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
             for ocId in selectOcId {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                     metadatas.append(metadata)
                 }
             }
@@ -850,33 +850,33 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return
             }
             
-            let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: contentType, livePhoto: false)
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(filePath: filePath))
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             
-            NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+            NCManageDatabase.shared.addMetadata(metadataForUpload)
             
         } catch { }
     }
     
     private func uploadPasteOcId(_ ocId: String) {
-        if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                 let fileNameView = NCUtility.shared.createFileName(metadata.fileNameView, serverUrl: serverUrl, account: appDelegate.account)
                 let ocId = NSUUID().uuidString
                 
                 CCUtility.copyFile(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView), toPath: CCUtility.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView))
-                let metadataForUpload = NCManageDatabase.sharedInstance.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, fileName: fileNameView, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "", livePhoto: false)
                 
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.size = metadata.size
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
-                NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                NCManageDatabase.shared.addMetadata(metadataForUpload)
             }
         }
     }
@@ -908,15 +908,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if appDelegate.account == nil || appDelegate.account.count == 0 { return }
         
         // Get richWorkspace Text
-        let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
         
         // E2EE
         isEncryptedFolder = CCUtility.isFolderEncrypted(serverUrl, e2eEncrypted: metadataFolder?.e2eEncrypted ?? false, account: appDelegate.account, urlBase: appDelegate.urlBase)
 
         // get auto upload folder
-        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
+        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, account: appDelegate.account)
         
         // get layout for view
         (layout, sort, ascending, groupBy, directoryOnTop, titleButton, itemForLine) = NCUtility.shared.getLayoutForView(key: layoutKey, serverUrl: serverUrl)
@@ -954,7 +954,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             if errorCode == 0 {
                 
-                let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+                let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
                 
                 if forced || directory?.etag != metadata?.etag || directory?.e2eEncrypted ?? false {
                     
@@ -970,7 +970,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                     NCCommunication.shared.getE2EEMetadata(fileId: metadataFolder.ocId, e2eToken: nil) { (account, e2eMetadata, errorCode, errorDescription) in
                                         if errorCode == 0 && e2eMetadata != nil {
                                             
-                                            if !NCEndToEndMetadata.sharedInstance.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
+                                            if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase) {
                                                 
                                                 NCContentPresenter.shared.messageNotification("_error_e2ee_", description: "_e2e_error_decode_metadata_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorDecodeMetadata), forced: true)
                                             } else {
@@ -1270,9 +1270,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 100, height: 100, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 100, height: 100, color: NCBrandColor.shared.icon), for: .normal)
             } else {
-                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), width: 100, height: 100, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), width: 100, height: 100, color: NCBrandColor.shared.icon), for: .normal)
             }
             
             header.delegate = self
@@ -1338,8 +1338,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
-            cell.separator.backgroundColor = NCBrandColor.sharedInstance.separator
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
+            cell.separator.backgroundColor = NCBrandColor.shared.separator
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -1376,7 +1376,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
                 
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
+                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
@@ -1531,7 +1531,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.objectId = metadata.ocId
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelTitle.textColor = NCBrandColor.shared.textView
             
             cell.imageSelect.image = nil
             cell.imageStatus.image = nil
@@ -1564,7 +1564,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
     
                 let lockServerUrl = CCUtility.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)!
-                let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
+                let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, lockServerUrl))
                                 
                 // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {

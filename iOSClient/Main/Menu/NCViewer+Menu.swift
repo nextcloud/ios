@@ -46,7 +46,7 @@ extension NCViewer {
         var actions = [NCMenuAction]()
         var titleFavorite = NSLocalizedString("_add_favorites_", comment: "")
         if metadata.favorite { titleFavorite = NSLocalizedString("_remove_favorites_", comment: "") }
-        let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         
         var titleOffline = ""
         if (localFile == nil || localFile!.offline == false) {
@@ -56,7 +56,7 @@ extension NCViewer {
         }
         
         var titleDelete = NSLocalizedString("_delete_", comment: "")
-        if NCManageDatabase.sharedInstance.isMetadataShareOrMounted(metadata: metadata, metadataFolder: nil) {
+        if NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: nil) {
             titleDelete = NSLocalizedString("_leave_share_", comment: "")
         } else if metadata.directory {
             titleDelete = NSLocalizedString("_delete_folder_", comment: "")
@@ -70,7 +70,7 @@ extension NCViewer {
         actions.append(
             NCMenuAction(
                 title: titleFavorite,
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.yellowFavorite),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.yellowFavorite),
                 action: { menuAction in
                     NCNetworking.shared.favoriteMetadata(metadata, urlBase: self.appDelegate.urlBase) { (errorCode, errorDescription) in
                         if errorCode != 0 {
@@ -88,7 +88,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "details"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.openShare(ViewController: viewController, metadata: metadata, indexPage: 0)
                     }
@@ -102,7 +102,7 @@ extension NCViewer {
         if metadata.session == "" && !webView {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_open_in_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "openFile"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         NCNetworkingNotificationCenter.shared.downloadOpen(metadata: metadata, selector: selectorOpenIn)
                     }
@@ -117,7 +117,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "rename"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
@@ -147,7 +147,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_move_or_copy_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "move"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         
                         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
@@ -180,13 +180,13 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: titleOffline,
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "offline"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         if ((localFile == nil || !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView)) && metadata.session == "") {
                             
                             NCNetworking.shared.download(metadata: metadata, selector: selectorLoadOffline) { (_) in }
                         } else {
-                            NCManageDatabase.sharedInstance.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
+                            NCManageDatabase.shared.setLocalFile(ocId: metadata.ocId, offline: !localFile!.offline)
                         }
                     }
                 )
@@ -201,7 +201,7 @@ extension NCViewer {
                 actions.append(
                     NCMenuAction(
                         title: NSLocalizedString("_view_in_folder_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "viewInFolder"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                         action: { menuAction in
                             NCCollectionCommon.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         }
@@ -216,7 +216,7 @@ extension NCViewer {
         if !webView {
             actions.append(
                 NCMenuAction(title: titleDelete,
-                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                             icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         
                         let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
@@ -244,7 +244,7 @@ extension NCViewer {
         if (metadata.typeFile == k_metadataTypeFile_document && metadata.contentType == "application/pdf" ) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_search_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "search"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     action: { menuAction in
                         NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSearchTextPDF)
                     }
@@ -259,7 +259,7 @@ extension NCViewer {
             if metadata.typeFile == k_metadataTypeFile_image && !CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && metadata.session == "" {
                 actions.append(
                     NCMenuAction(title: NSLocalizedString("_download_image_max_", comment: ""),
-                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                        icon: CCGraphics.changeThemingColorImage(UIImage(named: "downloadImageFullRes"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                         action: { menuAction in
                             NCNetworking.shared.download(metadata: metadata, selector: "") { (_) in }
                         }
@@ -269,11 +269,11 @@ extension NCViewer {
         }
         
         if metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video || metadata.typeFile == k_metadataTypeFile_audio {
-            if let metadataLive = NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) {
+            if let metadataLive = NCManageDatabase.shared.isLivePhoto(metadata: metadata) {
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) && CCUtility.fileProviderStorageExists(metadataLive.ocId, fileNameView: metadataLive.fileNameView) {
                     actions.append(
                         NCMenuAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                            icon: CCGraphics.changeThemingColorImage(UIImage(named: "livePhoto"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                             action: { menuAction in
                                 NotificationCenter.default.postOnMainThread(name: k_notificationCenter_menuSaveLivePhoto, userInfo: ["ocId": metadata.ocId, "ocIdMov": metadataLive.ocId])
                             }

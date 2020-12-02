@@ -54,8 +54,8 @@ class NCManageAutoUploadFileName: XLFormViewController {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
         initializeForm()
         self.reloadForm()
@@ -80,10 +80,10 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginalAutoUpload)
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundView
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -92,10 +92,10 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.value = CCUtility.getFileNameType(k_keyFileNameAutoUploadType)
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundView
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
                 
@@ -110,14 +110,14 @@ class NCManageAutoUploadFileName: XLFormViewController {
             row.value = fileNameMask
         }
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundView
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textLabel.textColor"] = NCBrandColor.shared.textView
 
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textField.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         
@@ -126,11 +126,11 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.disabled = true
-        row.cellConfig["backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["backgroundColor"] = NCBrandColor.shared.backgroundView
 
-        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.shared.backgroundView
         row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textView.textColor"] = NCBrandColor.sharedInstance.textView
+        row.cellConfig["textView.textColor"] = NCBrandColor.shared.textView
 
         section.addFormRow(row)
         

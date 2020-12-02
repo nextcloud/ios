@@ -26,14 +26,14 @@ import NCCommunication
 import SwiftyJSON
 
 class NCManageDatabase: NSObject {
-    @objc static let sharedInstance: NCManageDatabase = {
+    @objc static let shared: NCManageDatabase = {
         let instance = NCManageDatabase()
         return instance
     }()
     
     override init() {
         
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
         let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
 
         let bundleUrl: URL = Bundle.main.bundleURL
@@ -240,13 +240,13 @@ class NCManageDatabase: NSObject {
     
     @objc func getThreadConfined(_ object: Object) -> Any {
      
-        // id tradeReference = [[NCManageDatabase sharedInstance] getThreadConfined:metadata];
+        // id tradeReference = [[NCManageDatabase shared] getThreadConfined:metadata];
         return ThreadSafeReference(to: object)
     }
     
     @objc func putThreadConfined(_ tableRef: Any) -> Object? {
         
-        //tableMetadata *metadataThread = (tableMetadata *)[[NCManageDatabase sharedInstance] putThreadConfined:tradeReference];
+        //tableMetadata *metadataThread = (tableMetadata *)[[NCManageDatabase shared] putThreadConfined:tradeReference];
         let realm = try! Realm()
         
         return realm.resolve(tableRef as! ThreadSafeReference<Object>)
@@ -275,7 +275,7 @@ class NCManageDatabase: NSObject {
                 addObject.account = account
                 
                 // Brand
-                if NCBrandOptions.sharedInstance.use_default_auto_upload {
+                if NCBrandOptions.shared.use_default_auto_upload {
                         
                     addObject.autoUpload = true
                     addObject.autoUploadImage = true
@@ -379,7 +379,7 @@ class NCManageDatabase: NSObject {
         if result.autoUploadFileName.count > 0 {
             return result.autoUploadFileName
         } else {
-            return NCBrandOptions.sharedInstance.folderDefaultAutoUpload
+            return NCBrandOptions.shared.folderDefaultAutoUpload
         }
     }
     
@@ -1271,7 +1271,7 @@ class NCManageDatabase: NSObject {
     func removeDirectoriesSynchronized(serverUrl: String, account: String) {
         
         setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", account, serverUrl))
         for metadata in metadatas {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             setDirectory(synchronized: false, serverUrl: serverUrl, account: account)
@@ -1703,7 +1703,7 @@ class NCManageDatabase: NSObject {
         
         // E2EE find the fileName for fileNameView
         if isEncrypted || metadata.e2eEncrypted {
-            if let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
+            if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
                 let results = NCCommunicationCommon.shared.getInternalContenType(fileName: metadata.fileNameView, contentType: file.contentType, directory: file.directory)
                 metadata.contentType = results.contentType
@@ -2349,7 +2349,7 @@ class NCManageDatabase: NSObject {
             isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
             isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
             
-        } else if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
+        } else if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
                 
             isShare = metadata.permissions.contains(k_permission_shared) && !directory.permissions.contains(k_permission_shared)
             isMounted = metadata.permissions.contains(k_permission_mounted) && !directory.permissions.contains(k_permission_mounted)

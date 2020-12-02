@@ -58,11 +58,11 @@
     Ivar ivar =  class_getInstanceVariable([UITextField class], "_placeholderLabel");
 
     // Background color
-    self.view.backgroundColor = NCBrandColor.sharedInstance.customer;
+    self.view.backgroundColor = NCBrandColor.shared.customer;
     
     // Text Color
-    BOOL isTooLight = NCBrandColor.sharedInstance.customer.isTooLight;
-    BOOL isTooDark = NCBrandColor.sharedInstance.customer.isTooDark;
+    BOOL isTooLight = NCBrandColor.shared.customer.isTooLight;
+    BOOL isTooDark = NCBrandColor.shared.customer.isTooDark;
     if (isTooLight) {
         textColor = [UIColor blackColor];
         textColorOpponent = [UIColor whiteColor];
@@ -126,8 +126,8 @@
     [self.loginTypeView setTitleColor:[textColor colorWithAlphaComponent:0.5] forState:UIControlStateNormal];
 
     // Brand
-    if ([NCBrandOptions sharedInstance].disable_request_login_url) {
-        _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
+    if ([NCBrandOptions shared].disable_request_login_url) {
+        _baseUrl.text = [NCBrandOptions shared].loginBaseUrl;
         _imageBaseUrl.hidden = YES;
         _baseUrl.hidden = YES;
     }
@@ -135,7 +135,7 @@
     // QrCode image
     [self.qrCode setImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"qrcode"] width:100 height:100 color:textColor] forState:UIControlStateNormal];
     
-    NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+    NSArray *listAccount = [[NCManageDatabase shared] getAccounts];
     if ([listAccount count] == 0) {
         _imageUser.hidden = YES;
         _user.hidden = YES;
@@ -201,7 +201,7 @@
             [[NCCommunication shared] getLoginFlowV2WithServerUrl:self.baseUrl.text completionHandler:^(NSString *token, NSString *endpoint, NSString *login, NSInteger errorCode, NSString *errorDescription) {
                 
                 // Login Flow V2
-                if (errorCode == 0 && [[NCBrandOptions sharedInstance] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {
+                if (errorCode == 0 && [[NCBrandOptions shared] use_loginflowv2] && token != nil && endpoint != nil && login != nil) {
                     
                     NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                     
@@ -297,7 +297,7 @@
 
 - (void)dismissQRCode:(NSString *)value metadataType:(NSString *)metadataType
 {
-    NSString *protocolLogin = [[NCBrandOptions sharedInstance].webLoginAutenticationProtocol stringByAppendingString:@"login/"];
+    NSString *protocolLogin = [[NCBrandOptions shared].webLoginAutenticationProtocol stringByAppendingString:@"login/"];
     
     if (value != nil && [value hasPrefix:protocolLogin] && [value containsString:@"user:"] && [value containsString:@"password:"] && [value containsString:@"server:"]) {
         
@@ -391,12 +391,12 @@
         NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
         
         // NO account found, clear
-        if ([NCManageDatabase.sharedInstance getAccounts] == nil) { [NCUtility.shared removeAllSettings]; }
+        if ([NCManageDatabase.shared getAccounts] == nil) { [NCUtility.shared removeAllSettings]; }
         
-        [[NCManageDatabase sharedInstance] deleteAccount:account];
-        [[NCManageDatabase sharedInstance] addAccount:account urlBase:url user:user password:token];
+        [[NCManageDatabase shared] deleteAccount:account];
+        [[NCManageDatabase shared] addAccount:account urlBase:url user:user password:token];
         
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+        tableAccount *tableAccount = [[NCManageDatabase shared] setAccountActive:account];
         
         // Setting appDelegate active account
         [appDelegate settingAccount:tableAccount.account urlBase:tableAccount.urlBase user:tableAccount.user userID:tableAccount.userID password:[CCUtility getPassword:tableAccount.account]];

@@ -61,7 +61,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
         
         pdfView.document = pdfDocument
-        pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        pdfView.backgroundColor = NCBrandColor.shared.backgroundView
         pdfView.displayMode = .singlePageContinuous
         pdfView.autoScales = true
         pdfView.displayDirection = .horizontal
@@ -124,7 +124,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = metadata.fileNameView
@@ -143,7 +143,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
@@ -155,7 +155,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func moveFile(_ notification: NSNotification) {
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdNew) {
+            if let ocId = userInfo["ocId"] as? String, let ocIdNew = userInfo["ocIdNew"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocIdNew) {
                 
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadataNew
@@ -177,7 +177,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     
     @objc func renameFile(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadata.ocId == self.metadata.ocId {
                     self.metadata = metadata
@@ -190,7 +190,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     @objc func changeTheming() {
         
         if navigationController?.isNavigationBarHidden == false {
-            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
         }
     }
     
@@ -222,7 +222,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
             pdfThumbnailView.isHidden = false
-            pdfView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            pdfView.backgroundColor = NCBrandColor.shared.backgroundView
 
         } else {
             

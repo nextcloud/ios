@@ -55,7 +55,7 @@ class NCMainMenuTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
-        cell.tintColor = NCBrandColor.sharedInstance.customer
+        cell.tintColor = NCBrandColor.shared.customer
         let action = actions[indexPath.row]
         let actionIconView = cell.viewWithTag(1) as! UIImageView
         let actionNameLabel = cell.viewWithTag(2) as! UILabel

@@ -48,15 +48,15 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = tableView.bounds.height
         tableView.allowsSelection = false
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.separatorColor = NCBrandColor.sharedInstance.separator
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.separatorColor = NCBrandColor.shared.separator
         
         tableView.register(UINib.init(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
 
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         
         // Display Name user & Quota
-        guard let tabAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+        guard let tabAccount = NCManageDatabase.shared.getAccountActive() else {
             return
         }
         
@@ -78,7 +78,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         if metadata != nil && metadata!.commentsUnread {
             NCCommunication.shared.markAsReadComments(fileId: metadata!.fileId) { (account, errorCode, errorDescription) in
                 if errorCode == 0 {
-                    NCManageDatabase.sharedInstance.readMarkerMetadata(account: account, fileId: self.metadata!.fileId)
+                    NCManageDatabase.shared.readMarkerMetadata(account: account, fileId: self.metadata!.fileId)
                 }
             }
         }
@@ -96,10 +96,10 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
     }
     
     @objc func changeTheming() {
-        view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
-        tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        view.backgroundColor = NCBrandColor.shared.backgroundForm
+        tableView.backgroundColor = NCBrandColor.shared.backgroundForm
         tableView.reloadData()
-        labelUser.textColor = NCBrandColor.sharedInstance.textView
+        labelUser.textColor = NCBrandColor.shared.textView
     }
     
     @objc func reloadData() {
@@ -108,7 +108,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
 
         NCCommunication.shared.getComments(fileId: metadata.fileId) { (account, comments, errorCode, errorDescription) in
             if errorCode == 0 && comments != nil {
-                NCManageDatabase.sharedInstance.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
+                NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
                 if errorCode != k_CCErrorResourceNotFound {
@@ -146,7 +146,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "edit"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -180,7 +180,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_comment_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "trash"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 action: { menuAction in
                     guard let metadata = self.metadata else { return }
                     guard let tableComments = tableComments else { return }
@@ -199,7 +199,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_cancel_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "cancel"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 action: { menuAction in
                 }
             )
@@ -235,13 +235,13 @@ extension NCShareComments: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, objectId: metadata!.fileId)
+        let comments = NCManageDatabase.shared.getComments(account: metadata!.account, objectId: metadata!.fileId)
         return comments.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let comments = NCManageDatabase.sharedInstance.getComments(account: metadata!.account, objectId: metadata!.fileId)
+        let comments = NCManageDatabase.shared.getComments(account: metadata!.account, objectId: metadata!.fileId)
         let tableComments = comments[indexPath.row]
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell {
@@ -279,13 +279,13 @@ extension NCShareComments: UITableViewDataSource {
             }
             // Username
             cell.labelUser.text = tableComments.actorDisplayName
-            cell.labelUser.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelUser.textColor = NCBrandColor.shared.textView
             // Date
             cell.labelDate.text = CCUtility.dateDiff(tableComments.creationDateTime as Date)
-            cell.labelDate.textColor = NCBrandColor.sharedInstance.graySoft
+            cell.labelDate.textColor = NCBrandColor.shared.graySoft
             // Message
             cell.labelMessage.text = tableComments.message
-            cell.labelMessage.textColor = NCBrandColor.sharedInstance.textView
+            cell.labelMessage.textColor = NCBrandColor.shared.textView
             // Button Menu
             if tableComments.actorId == appDelegate.userID {
                 cell.buttonMenu.isHidden = false

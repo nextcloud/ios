@@ -36,7 +36,7 @@ class NCUtility: NSObject {
     let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
     
     @objc func getWebDAV(account: String) -> String {
-        return NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
+        return NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesWebDavRoot) ?? "remote.php/webdav"
     }
     
     @objc func getDAV() -> String {
@@ -61,7 +61,7 @@ class NCUtility: NSObject {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
@@ -149,7 +149,7 @@ class NCUtility: NSObject {
         
         blurEffectView.frame = frame
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brandElement.withAlphaComponent(0.2)
+        blurEffectView.backgroundColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
         
         return blurEffectView
     }
@@ -364,7 +364,7 @@ class NCUtility: NSObject {
             return false
         }
         
-        guard let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
+        guard let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: metadata.account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes) else {
             return false
         }
         
@@ -387,7 +387,7 @@ class NCUtility: NSObject {
         
         var editor: String?
         
-        guard let results = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) else {
+        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else {
             return editor
         }
         
@@ -423,7 +423,7 @@ class NCUtility: NSObject {
         URLCache.shared.diskCapacity = 0
         KTVHTTPCache.cacheDeleteAllCaches()
         
-        NCManageDatabase.sharedInstance.clearDatabase(account: nil, removeAccount: true)
+        NCManageDatabase.shared.clearDatabase(account: nil, removeAccount: true)
         
         CCUtility.removeGroupDirectoryProviderStorage()
         CCUtility.removeGroupLibraryDirectory()
@@ -538,7 +538,7 @@ class NCUtility: NSObject {
         if fileNameExtension == "heic" && CCUtility.getFormatCompatibility() {
             fileNameConflict = fileNameWithoutExtension + ".jpg"
         }
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileNameConflict))
     }
     
     @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
@@ -566,12 +566,12 @@ class NCUtility: NSObject {
             completition()
             return
         }
-        let metadatasSessionUpload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
+        let metadatasSessionUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session CONTAINS[cd] %@", account, "upload"))
         if metadatasSessionUpload.count > 0 {
             completition()
             return
         }
-        let localIdentifiers = NCManageDatabase.sharedInstance.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
+        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account, sessionSelector: sessionSelector)
         if localIdentifiers.count == 0 {
             completition()
             return
@@ -582,7 +582,7 @@ class NCUtility: NSObject {
             PHAssetChangeRequest.deleteAssets(assets as NSFastEnumeration)
         }, completionHandler: { success, error in
             DispatchQueue.main.async {
-                NCManageDatabase.sharedInstance.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
                 completition()
             }
         })

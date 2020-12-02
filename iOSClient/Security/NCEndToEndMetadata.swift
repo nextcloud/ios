@@ -60,7 +60,7 @@ class NCEndToEndMetadata : NSObject  {
         let sharing: sharingCodable?
     }
 
-    @objc static let sharedInstance: NCEndToEndMetadata = {
+    @objc static let shared: NCEndToEndMetadata = {
         let instance = NCEndToEndMetadata()
         return instance
     }()
@@ -190,7 +190,7 @@ class NCEndToEndMetadata : NSObject  {
                 
                 do {
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
-                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
                         let metadata = tableMetadata.init(value: metadata)
                     
                         let object = tableE2eEncryption()
@@ -209,11 +209,11 @@ class NCEndToEndMetadata : NSObject  {
                         object.version = encryptedFileAttributes.version
                     
                         // If exists remove records
-                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
-                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
+                        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNamePath == %@", object.account, object.fileNamePath))
+                        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", object.account, object.fileNameIdentifier))
                         
                         // Write file parameter for decrypted on DB
-                        NCManageDatabase.sharedInstance.addE2eEncryption(object)
+                        NCManageDatabase.shared.addE2eEncryption(object)
                         
                         // Update metadata on tableMetadata
                         metadata.fileNameView = encryptedFileAttributes.filename
@@ -224,7 +224,7 @@ class NCEndToEndMetadata : NSObject  {
                         metadata.iconName = results.iconName
                         metadata.typeFile = results.typeFile
                                                 
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.shared.addMetadata(metadata)
                     }
                     
                 } catch let error {

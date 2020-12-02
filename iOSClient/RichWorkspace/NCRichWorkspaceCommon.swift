@@ -35,7 +35,7 @@ import NCCommunication
             return;
         }
         
-        guard let directEditingCreator = NCManageDatabase.sharedInstance.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
+        guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
         
         NCUtility.shared.startActivityIndicator(view: viewController.view)
         
@@ -68,7 +68,7 @@ import NCCommunication
             return;
         }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, k_fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, k_fileNameRichWorkspace.lowercased())) {
             
             if metadata.url == "" {
                 

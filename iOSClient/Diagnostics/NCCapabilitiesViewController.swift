@@ -83,62 +83,62 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(close))
 
         textView.layer.cornerRadius = 15
-        textView.backgroundColor = NCBrandColor.sharedInstance.graySoft
+        textView.backgroundColor = NCBrandColor.shared.graySoft
         
         statusFileSharing.layer.cornerRadius = 12.5
         statusFileSharing.layer.borderWidth = 0.5
-        statusFileSharing.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusFileSharing.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusFileSharing.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusFileSharing.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusExternalSite.layer.cornerRadius = 12.5
         statusExternalSite.layer.borderWidth = 0.5
-        statusExternalSite.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusExternalSite.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusExternalSite.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusExternalSite.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusEndToEndEncryption.layer.cornerRadius = 12.5
         statusEndToEndEncryption.layer.borderWidth = 0.5
-        statusEndToEndEncryption.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusEndToEndEncryption.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusEndToEndEncryption.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusEndToEndEncryption.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusActivity.layer.cornerRadius = 12.5
         statusActivity.layer.borderWidth = 0.5
-        statusActivity.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusActivity.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusActivity.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusActivity.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusNotification.layer.cornerRadius = 12.5
         statusNotification.layer.borderWidth = 0.5
-        statusNotification.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusNotification.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusNotification.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusNotification.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusDeletedFiles.layer.cornerRadius = 12.5
         statusDeletedFiles.layer.borderWidth = 0.5
-        statusDeletedFiles.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusDeletedFiles.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusDeletedFiles.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusDeletedFiles.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusText.layer.cornerRadius = 12.5
         statusText.layer.borderWidth = 0.5
-        statusText.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusText.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusText.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusText.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
 
         statusCollabora.layer.cornerRadius = 12.5
         statusCollabora.layer.borderWidth = 0.5
-        statusCollabora.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusCollabora.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusCollabora.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusCollabora.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
  
         statusOnlyOffice.layer.cornerRadius = 12.5
         statusOnlyOffice.layer.borderWidth = 0.5
-        statusOnlyOffice.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusOnlyOffice.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusOnlyOffice.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusOnlyOffice.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusUserStatus.layer.cornerRadius = 12.5
         statusUserStatus.layer.borderWidth = 0.5
-        statusUserStatus.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusUserStatus.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusUserStatus.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusUserStatus.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         statusComments.layer.cornerRadius = 12.5
         statusComments.layer.borderWidth = 0.5
-        statusComments.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
-        statusComments.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        statusComments.layer.borderColor = NCBrandColor.shared.textView.cgColor
+        statusComments.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.3).cgColor
         
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
@@ -152,10 +152,10 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageUserStatus.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: .gray)
         imageComments.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "comments"), width: 100, height: 100, color: .gray)
 
-        guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
+        guard let account = NCManageDatabase.shared.getAccountActive() else { return }
         self.account = account.account
         
-        if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account.account) {
+        if let text = NCManageDatabase.shared.getCapabilities(account: account.account) {
             capabilitiesText = text
             updateCapabilities()
         } else {
@@ -177,14 +177,14 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         NCCommunication.shared.getCapabilities() { (account, data, errorCode, errorDescription) in
             if errorCode == 0 && data != nil {
-                NCManageDatabase.sharedInstance.addCapabilitiesJSon(data!, account: account)
+                NCManageDatabase.shared.addCapabilitiesJSon(data!, account: account)
                 
                 // EDITORS
-                let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
+                let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
                 if serverVersionMajor >= k_nextcloud_version_18_0 {
                     NCCommunication.shared.NCTextObtainEditorDetails() { (account, editors, creators, errorCode, errorMessage) in
                         if errorCode == 0 && account == self.appDelegate.account {
-                            NCManageDatabase.sharedInstance.addDirectEditing(account: account, editors: editors, creators: creators)
+                            NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                             self.readCapabilities()
                         }
                         if self.view.window != nil {
@@ -197,7 +197,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
                     }
                 }
                 
-                if let text = NCManageDatabase.sharedInstance.getCapabilities(account: account) {
+                if let text = NCManageDatabase.shared.getCapabilities(account: account) {
                     self.capabilitiesText = text
                 }
                 self.readCapabilities()
@@ -232,20 +232,20 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         textView.text = capabilitiesText
         
-        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
+        if NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false) {
             statusFileSharing.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusFileSharing.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        if NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true) {
+        if NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesExternalSitesExists, exists: true) {
             statusExternalSite.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusExternalSite.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let isE2EEEnabled = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
-        //let versionE2EE = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
+        let isE2EEEnabled = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEEnabled, exists: false)
+        //let versionE2EE = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesE2EEApiVersion)
         
         if isE2EEEnabled {
             statusEndToEndEncryption.text = "✓ " + NSLocalizedString("_available_", comment: "")
@@ -253,21 +253,21 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusEndToEndEncryption.text = NSLocalizedString("_not_available_", comment: "")
         }
       
-        let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
+        let activity = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
         if activity != nil {
             statusActivity.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusActivity.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let notification = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification)
+        let notification = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesNotification)
         if notification != nil {
             statusNotification.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusNotification.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let deleteFiles = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
+        let deleteFiles = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesUndelete, exists: false)
         if deleteFiles {
             statusDeletedFiles.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
@@ -276,7 +276,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         
         var textEditor = false
         var onlyofficeEditors = false
-        if let editors = NCManageDatabase.sharedInstance.getDirectEditingEditors(account: account) {
+        if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: account) {
             for editor in editors {
                 if editor.editor == k_editor_text {
                     textEditor = true
@@ -292,7 +292,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusText.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let richdocumentsMimetypes = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
+        let richdocumentsMimetypes = NCManageDatabase.shared.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesRichdocumentsMimetypes)
         if richdocumentsMimetypes != nil {
             statusCollabora.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
@@ -305,14 +305,14 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusOnlyOffice.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let userStatus = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
+        let userStatus = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesUserStatusEnabled, exists: false)
         if userStatus {
             statusUserStatus.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusUserStatus.text = NSLocalizedString("_not_available_", comment: "")
         }
         
-        let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+        let comments = NCManageDatabase.shared.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
         if comments {
             statusComments.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {

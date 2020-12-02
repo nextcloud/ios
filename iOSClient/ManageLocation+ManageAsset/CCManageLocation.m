@@ -27,16 +27,16 @@
 
 @implementation CCManageLocation
 
-+ (CCManageLocation *)sharedInstance
++ (CCManageLocation *)shared
 {
-    static CCManageLocation *sharedInstance;
+    static CCManageLocation *shared;
 
     @synchronized(self)
     {
-        if (!sharedInstance){
-            sharedInstance = [CCManageLocation new];
+        if (!shared){
+            shared = [CCManageLocation new];
         }
-        return sharedInstance;
+        return shared;
     }
 }
 

@@ -33,7 +33,7 @@ class NCRecent: NCCollectionViewCommon  {
         titleCurrentFolder = NSLocalizedString("_recent_", comment: "")
         layoutKey = k_layout_view_recent
         enableSearchBar = false
-        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.sharedInstance.brandElement)
+        emptyImage = CCGraphics.changeThemingColorImage(UIImage.init(named: "recent"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
@@ -51,7 +51,7 @@ class NCRecent: NCCollectionViewCommon  {
         
         DispatchQueue.global().async {
             
-            self.metadatasSource = NCManageDatabase.sharedInstance.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
+            self.metadatasSource = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
             self.dataSource = NCDataSource.init(metadatasSource: self.metadatasSource)
             
             DispatchQueue.main.async {
@@ -146,15 +146,15 @@ class NCRecent: NCCollectionViewCommon  {
             self.isReloadDataSourceNetworkInProgress = false
             
             if errorCode == 0 {
-                NCManageDatabase.sharedInstance.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
+                NCManageDatabase.shared.convertNCCommunicationFilesToMetadatas(files, useMetadataFolder: false, account: account) { (metadataFolder, metadatasFolder, metadatas) in
                     
                     // Update sub directories
                     for metadata in metadatasFolder {
                         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                        NCManageDatabase.shared.addDirectory(encrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, etag: nil, permissions: metadata.permissions, serverUrl: serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                     }
                     // Add metadatas
-                    NCManageDatabase.sharedInstance.addMetadatas(metadatas)
+                    NCManageDatabase.shared.addMetadatas(metadatas)
                     
                     self.reloadDataSource()
                 }

@@ -52,16 +52,16 @@ class NCMainTabBar: UITabBar {
                     CCUtility.setDarkMode(false)
                 }
             }
-            NCBrandColor.sharedInstance.settingThemingColor(account: appDelegate.account)
+            NCBrandColor.shared.settingThemingColor(account: appDelegate.account)
         }
     }
     
     @objc func changeTheming() {
-        barTintColor = NCBrandColor.sharedInstance.backgroundView
-        backgroundColor = NCBrandColor.sharedInstance.tabBar
-        tintColor = NCBrandColor.sharedInstance.brandElement
+        barTintColor = NCBrandColor.shared.backgroundView
+        backgroundColor = NCBrandColor.shared.tabBar
+        tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.sharedInstance.brandElement
+            centerButton.backgroundColor = NCBrandColor.shared.brandElement
         }
     }
     
@@ -139,14 +139,14 @@ class NCMainTabBar: UITabBar {
         // File
         if let item = items?[Int(k_tabBarApplicationIndexFile)] {
             item.title = NSLocalizedString("_home_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarFiles"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarFiles"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
         // Favorite
         if let item = items?[Int(k_tabBarApplicationIndexFavorite)] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "favorite"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
@@ -160,14 +160,14 @@ class NCMainTabBar: UITabBar {
         // Media
         if let item = items?[Int(k_tabBarApplicationIndexMedia)] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "media"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "media"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
         // More
         if let item = items?[Int(k_tabBarApplicationIndexMore)] {
             item.title = NSLocalizedString("_more_", comment: "")
-            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarMore"), width: 50, height: 50, color: NCBrandColor.sharedInstance.brandElement)
+            item.image = CCGraphics.changeThemingColorImage(UIImage(named: "tabBarMore"), width: 50, height: 50, color: NCBrandColor.shared.brandElement)
             item.selectedImage = item.image
         }
         
@@ -183,7 +183,7 @@ class NCMainTabBar: UITabBar {
         
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "tabBarPlus"), width: 100, height: 100, color: .white), for: .normal)
-        centerButton.backgroundColor = NCBrandColor.sharedInstance.brandElement
+        centerButton.backgroundColor = NCBrandColor.shared.brandElement
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
@@ -201,7 +201,7 @@ class NCMainTabBar: UITabBar {
     // Menu Button Touch Action
     @objc func centerButtonAction(sender: UIButton) {
         
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, appDelegate.activeServerUrl)) {
             
             if !directory.permissions.contains("CK") {
                 NCContentPresenter.shared.messageNotification("_warning_", description: "_no_permission_add_file_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))

@@ -60,7 +60,7 @@ class NCViewerImage: UIViewController {
     private var timeObserverToken: Any?
     private var rateObserverToken: Any?
     var pictureInPictureOcId: String = ""
-    var textColor: UIColor = NCBrandColor.sharedInstance.textView
+    var textColor: UIColor = NCBrandColor.shared.textView
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,13 +101,13 @@ class NCViewerImage: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: k_notificationCenter_menuDetailClose), object: nil)
         
-        progressView.tintColor = NCBrandColor.sharedInstance.brandElement
+        progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
         
         setToolBar()
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
+        navigationItem.rightBarButtonItem = UIBarButtonItem.init(image: CCGraphics.changeThemingColorImage(UIImage(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.textView), style: .plain, target: self, action: #selector(self.openMenuMore))
         
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -139,7 +139,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let errorCode = userInfo["errorCode"] as? Int {
                 if errorCode == 0  && metadata.ocId == currentMetadata.ocId {
                     self.reloadCurrentPage()
                 }
@@ -191,7 +191,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if let index = metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
                     metadatas[index] = metadata
@@ -209,7 +209,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let ocId = userInfo["ocId"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 
                 if metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) != nil {
                     deleteFile(notification)
@@ -222,7 +222,7 @@ class NCViewerImage: UIViewController {
         if self.view?.window == nil { return }
         
         if let userInfo = notification.userInfo as NSDictionary? {
-            if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdMov) {
+            if let ocId = userInfo["ocId"] as? String, let ocIdMov = userInfo["ocIdMov"] as? String, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), let metadataMov = NCManageDatabase.shared.getMetadataFromOcId(ocIdMov) {
                 
                 let fileNameImage = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)!)
                 let fileNameMov = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView)!)
@@ -250,10 +250,10 @@ class NCViewerImage: UIViewController {
     @objc func changeTheming() {
         
         if currentMode == .normal {
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            textColor = NCBrandColor.sharedInstance.textView
+            view.backgroundColor = NCBrandColor.shared.backgroundView
+            textColor = NCBrandColor.shared.textView
         }
-        toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
+        toolBar.tintColor = NCBrandColor.shared.brandElement
     }
     
     //
@@ -268,7 +268,7 @@ class NCViewerImage: UIViewController {
             currentViewerImageZoom?.statusLabel.isHidden = true
             
             let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) {
                 
                 if CCUtility.fileProviderStorageExists(metadata.ocId, fileNameView: metadata.fileNameView) {
                     
@@ -294,7 +294,7 @@ class NCViewerImage: UIViewController {
                         
                         if errorCode == 0 && account == metadata.account {
                             
-                            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
                             
                             if gestureRecognizer.state == .changed || gestureRecognizer.state == .began {
                                 AudioServicesPlaySystemSound(1519) // peek feedback
@@ -410,7 +410,7 @@ class NCViewerImage: UIViewController {
                 let timeScale = CMTimeScale(NSEC_PER_SEC)
                 let time = CMTime(seconds: 1, preferredTimescale: timeScale)
                 timeObserverToken = player?.addPeriodicTimeObserver(forInterval: time, queue: .main) { time in
-                    NCManageDatabase.sharedInstance.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
+                    NCManageDatabase.shared.addVideo(account:metadata.account, ocId: metadata.ocId, time: time)
                 }
                 */
                 
@@ -418,7 +418,7 @@ class NCViewerImage: UIViewController {
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                         self.player?.seek(to: CMTime.zero)
-                        NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
+                        NCManageDatabase.shared.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
                     }
                 }
                             
@@ -458,12 +458,12 @@ class NCViewerImage: UIViewController {
             setToolBar()
             
             if ((player?.rate) == 1) {
-                if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
+                if let time = NCManageDatabase.shared.getVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }
             } else {
-                NCManageDatabase.sharedInstance.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: player?.currentTime())
+                NCManageDatabase.shared.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: player?.currentTime())
                 print("Pause")
             }
         }
@@ -498,7 +498,7 @@ class NCViewerImage: UIViewController {
         }
         
         toolBar.setItems([itemPlay, itemFlexibleSpace, itemMute], animated: true)
-        toolBar.tintColor = NCBrandColor.sharedInstance.brandElement
+        toolBar.tintColor = NCBrandColor.shared.brandElement
         toolBar.barTintColor = view.backgroundColor
     }
 
@@ -696,8 +696,8 @@ extension NCViewerImage: UIGestureRecognizerDelegate {
         if currentMode == .full {
             
             navigationController?.setNavigationBarHidden(false, animated: false)
-            view.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-            textColor = NCBrandColor.sharedInstance.textView
+            view.backgroundColor = NCBrandColor.shared.backgroundView
+            textColor = NCBrandColor.shared.textView
             progressView.isHidden = false
             
             currentMode = .normal

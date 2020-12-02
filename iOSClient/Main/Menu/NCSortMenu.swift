@@ -86,9 +86,9 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_name_a_z_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameAZ"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameAZ"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 onTitle: NSLocalizedString("_order_by_name_z_a_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameZA"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortFileNameZA"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 selected: self.sort == "fileName",
                 on: self.sort == "fileName",
                 action: { menuAction in
@@ -105,9 +105,9 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_date_more_recent_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateMoreRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateMoreRecent"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 onTitle: NSLocalizedString("_order_by_date_less_recent_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateLessRecent"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortDateLessRecent"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 selected: self.sort == "date",
                 on: self.sort == "date",
                 action: { menuAction in
@@ -124,9 +124,9 @@ class NCSortMenu: NSObject {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_order_by_size_smallest_", comment: ""),
-                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortSmallest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                icon: CCGraphics.changeThemingColorImage(UIImage(named: "sortSmallest"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 onTitle: NSLocalizedString("_order_by_size_largest_", comment: ""),
-                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortLargest"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                onIcon: CCGraphics.changeThemingColorImage(UIImage(named: "sortLargest"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                 selected: self.sort == "size",
                 on: self.sort == "size",
                 action: { menuAction in
@@ -144,7 +144,7 @@ class NCSortMenu: NSObject {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_directory_on_top_no_", comment: ""),
-                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "foldersOnTop"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon),
+                    icon: CCGraphics.changeThemingColorImage(UIImage(named: "foldersOnTop"), width: 50, height: 50, color: NCBrandColor.shared.icon),
                     selected: self.directoryOnTop,
                     on: self.directoryOnTop,
                     action: { menuAction in

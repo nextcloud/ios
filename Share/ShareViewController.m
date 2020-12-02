@@ -50,7 +50,7 @@
 
 -(void)viewDidLoad
 {
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    tableAccount *tableAccount = [[NCManageDatabase shared] getAccountActive];
     
     if (tableAccount == nil) {
         
@@ -61,7 +61,7 @@
         
     } else {
         
-        NSInteger serverVersionMajor = [[NCManageDatabase sharedInstance] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
+        NSInteger serverVersionMajor = [[NCManageDatabase shared] getCapabilitiesServerIntWithAccount:tableAccount.account elements:NCElementsJSON.shared.capabilitiesVersionMajor];
         NSString *webDav = [[NCUtility shared] getWebDAVWithAccount:tableAccount.account];
         
         // Networking
@@ -107,8 +107,8 @@
 {
     [super viewWillAppear:animated];
         
-    self.view.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
-    self.shareTable.backgroundColor = NCBrandColor.sharedInstance.backgroundView;
+    self.view.backgroundColor = NCBrandColor.shared.backgroundView;
+    self.shareTable.backgroundColor = NCBrandColor.shared.backgroundView;
 }
 
 - (void)closeShareViewController
@@ -176,16 +176,16 @@
 - (void)navigationBarToolBar
 {
     // Theming
-    if ([NCBrandOptions sharedInstance].use_themingColor) {
-        NSString *themingColor = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
-        NSString *themingColorElement = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
-        NSString *themingColorText = [[NCManageDatabase sharedInstance] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
+    if ([NCBrandOptions shared].use_themingColor) {
+        NSString *themingColor = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColor];
+        NSString *themingColorElement = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorElement];
+        NSString *themingColorText = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:self.account elements:NCElementsJSON.shared.capabilitiesThemingColorText];
         [CCGraphics settingThemingColor:themingColor themingColorElement:themingColorElement themingColorText:themingColorText];
     }
-    self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
+    self.navigationController.navigationBar.barTintColor = NCBrandColor.shared.brand;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.shared.brandText;
     
-    self.toolBar.barTintColor = NCBrandColor.sharedInstance.tabBar;
+    self.toolBar.barTintColor = NCBrandColor.shared.tabBar;
     self.toolBar.tintColor = [UIColor grayColor];
     
     // Upload
@@ -197,7 +197,7 @@
     // Title
     [self.navigationController.navigationBar setTitleTextAttributes: @{NSForegroundColorAttributeName:self.navigationController.navigationBar.tintColor}];
     
-    self.navigationItem.title = [NCBrandOptions sharedInstance].brand;
+    self.navigationItem.title = [NCBrandOptions shared].brand;
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, nil];
     self.navigationItem.hidesBackButton = YES;
@@ -247,7 +247,7 @@
 {
     if ([self.filesName count] > 0) {
     
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.sharedInstance.brandElement];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:NCBrandColor.shared.brandElement];
         
         NSString *fileName = [self.filesName objectAtIndex:0];
         NSString *fileNameLocal = [NSTemporaryDirectory() stringByAppendingString:fileName];
@@ -287,15 +287,15 @@
                
                 [CCUtility copyFileAtPath:fileNameLocal toPath:[CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameForUpload]];
                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] createMetadataWithAccount:self.account fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.urlBase url:@"" contentType:@"" livePhoto:false];
+                tableMetadata *metadata = [[NCManageDatabase shared] createMetadataWithAccount:self.account fileName:fileNameForUpload ocId:ocId serverUrl:self.serverUrl urlBase:self.urlBase url:@"" contentType:@"" livePhoto:false];
                                
                 metadata.date = date;
                 metadata.etag = etag;
                 metadata.serverUrl = self.serverUrl;
                 metadata.size = size;
                 
-                [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+                [[NCManageDatabase shared] addMetadata:metadata];
+                [[NCManageDatabase shared] addLocalFileWithMetadata:metadata];
                
                 [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
                 [self performSelector:@selector(selectPost) withObject:nil];
@@ -433,11 +433,11 @@
     cell.fileImageView.image = image;
 
     cell.fileName.text = fileName;
-    cell.fileName.textColor = NCBrandColor.sharedInstance.textView;
+    cell.fileName.textColor = NCBrandColor.shared.textView;
     cell.fileName.delegate = self;
     
     cell.info.text = [CCUtility transformedSize:fileSize];
-    cell.info.textColor = NCBrandColor.sharedInstance.textView;
+    cell.info.textColor = NCBrandColor.shared.textView;
     
     return cell;
 }

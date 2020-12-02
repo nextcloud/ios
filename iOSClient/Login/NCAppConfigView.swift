@@ -38,19 +38,19 @@ class NCAppConfigView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = NCBrandColor.sharedInstance.brandElement
-        titleLabel.textColor = NCBrandColor.sharedInstance.brandText
+        self.view.backgroundColor = NCBrandColor.shared.brandElement
+        titleLabel.textColor = NCBrandColor.shared.brandText
         
         titleLabel.text = NSLocalizedString("_appconfig_view_title_", comment: "")
         
-        if let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.sharedInstance.configuration_bundleId) {
-            serverUrl = serverConfig[NCBrandConfiguration.sharedInstance.configuration_serverUrl] as? String
-            username = serverConfig[NCBrandConfiguration.sharedInstance.configuration_username] as? String
-            password = serverConfig[NCBrandConfiguration.sharedInstance.configuration_password] as? String
+        if let serverConfig = UserDefaults.standard.dictionary(forKey: NCBrandConfiguration.shared.configuration_bundleId) {
+            serverUrl = serverConfig[NCBrandConfiguration.shared.configuration_serverUrl] as? String
+            username = serverConfig[NCBrandConfiguration.shared.configuration_username] as? String
+            password = serverConfig[NCBrandConfiguration.shared.configuration_password] as? String
         } else {
-            serverUrl = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_serverUrl)
-            username = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_username)
-            password = UserDefaults.standard.string(forKey: NCBrandConfiguration.sharedInstance.configuration_password)
+            serverUrl = UserDefaults.standard.string(forKey: NCBrandConfiguration.shared.configuration_serverUrl)
+            username = UserDefaults.standard.string(forKey: NCBrandConfiguration.shared.configuration_username)
+            password = UserDefaults.standard.string(forKey: NCBrandConfiguration.shared.configuration_password)
         }
     }
     
@@ -79,13 +79,13 @@ class NCAppConfigView: UIViewController {
                     let account: String = "\(username) \(serverUrl)"
                     
                     // NO account found, clear
-                    if NCManageDatabase.sharedInstance.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
+                    if NCManageDatabase.shared.getAccounts() == nil { NCUtility.shared.removeAllSettings() }
                     
                     // Add new account
-                    NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, urlBase: serverUrl, user: username, password: token!)
+                    NCManageDatabase.shared.deleteAccount(account)
+                    NCManageDatabase.shared.addAccount(account, urlBase: serverUrl, user: username, password: token!)
                     
-                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                    guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
                         NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
                         self.dismiss(animated: true, completion: nil)
                         return

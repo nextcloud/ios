@@ -87,7 +87,7 @@ class NCViewerImageZoom: UIViewController {
             imageView.frame = CGRect(x: imageView.frame.origin.x, y: imageView.frame.origin.y, width: image.size.width, height: image.size.height)
         }
         
-        if NCManageDatabase.sharedInstance.isLivePhoto(metadata: metadata) != nil {
+        if NCManageDatabase.shared.isLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "livePhoto"), width: 100, height: 100, color: .gray)
             statusLabel.text = "LIVE"
         }  else {

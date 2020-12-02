@@ -53,13 +53,13 @@ import MarkdownKit
     }
 
     @objc func changeTheming() {
-        if textViewColor != NCBrandColor.sharedInstance.textView {
-            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.sharedInstance.textView)
+        if textViewColor != NCBrandColor.shared.textView {
+            markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textView)
             markdownParser.header.font = UIFont.systemFont(ofSize: 25)
             if let richWorkspaceText = richWorkspaceText {
                 textView.attributedText = markdownParser.parse(richWorkspaceText)
             }
-            textViewColor = NCBrandColor.sharedInstance.textView
+            textViewColor = NCBrandColor.shared.textView
             
             if CCUtility.getDarkMode() {
                 gradient.colors = [UIColor.init(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]

@@ -40,14 +40,14 @@ class NCMainNavigationController: UINavigationController {
             var navBarAppearance = UINavigationBarAppearance()
             
             navBarAppearance.configureWithOpaqueBackground()
-            navBarAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
-            navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+            navBarAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
+            navBarAppearance.backgroundColor = NCBrandColor.shared.backgroundView
             
             navBarAppearance = UINavigationBarAppearance()
             
             navBarAppearance.configureWithOpaqueBackground()
-            navBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.sharedInstance.textView]
-            navBarAppearance.backgroundColor = NCBrandColor.sharedInstance.tabBar
+            navBarAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : NCBrandColor.shared.textView]
+            navBarAppearance.backgroundColor = NCBrandColor.shared.tabBar
 
             navigationBar.scrollEdgeAppearance = navBarAppearance
             navigationBar.standardAppearance = navBarAppearance
@@ -55,12 +55,12 @@ class NCMainNavigationController: UINavigationController {
         } else {
             
             navigationBar.barStyle = .default
-            navigationBar.barTintColor = NCBrandColor.sharedInstance.backgroundView
-            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
-            navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.sharedInstance.textView]
+            navigationBar.barTintColor = NCBrandColor.shared.backgroundView
+            navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.textView]
+            navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor:NCBrandColor.shared.textView]
         }
         
-        navigationBar.tintColor = NCBrandColor.sharedInstance.brandElement
+        navigationBar.tintColor = NCBrandColor.shared.brandElement
         navigationBar.setNeedsLayout()
     }
 }

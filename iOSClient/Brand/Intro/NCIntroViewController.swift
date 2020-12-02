@@ -43,8 +43,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let isTooLight = NCBrandColor.sharedInstance.customer.isTooLight()
-        let isTooDark = NCBrandColor.sharedInstance.customer.isTooDark()
+        let isTooLight = NCBrandColor.shared.customer.isTooLight()
+        let isTooDark = NCBrandColor.shared.customer.isTooDark()
         
         if isTooLight {
             textColor = .black
@@ -68,13 +68,13 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
             self.navigationController?.navigationBar.shadowImage = UIImage()
             self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
             self.navigationController?.navigationBar.backgroundColor = .clear
-            self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.customer
+            self.navigationController?.navigationBar.barTintColor = NCBrandColor.shared.customer
         }
         self.navigationController?.navigationBar.tintColor = textColor
 
         
         self.pageControl.currentPageIndicatorTintColor = textColor
-        self.pageControl.pageIndicatorTintColor = NCBrandColor.sharedInstance.nextcloudSoft
+        self.pageControl.pageIndicatorTintColor = NCBrandColor.shared.nextcloudSoft
 
         self.buttonLogin.layer.cornerRadius = 20
         self.buttonLogin.setTitleColor(textColorOpponent, for: .normal)
@@ -93,9 +93,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.introCollectionView.register(UINib(nibName: "NCIntroCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "introCell")
         self.introCollectionView.dataSource = self
         self.introCollectionView.delegate = self
-        self.introCollectionView.backgroundColor = NCBrandColor.sharedInstance.customer
+        self.introCollectionView.backgroundColor = NCBrandColor.shared.customer
         self.pageControl.numberOfPages = self.titles.count
-        self.view.backgroundColor = NCBrandColor.sharedInstance.customer
+        self.view.backgroundColor = NCBrandColor.shared.customer
         self.timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
     }
     
@@ -141,7 +141,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "introCell", for: indexPath) as! NCIntroCollectionViewCell
-        cell.backgroundColor = NCBrandColor.sharedInstance.customer
+        cell.backgroundColor = NCBrandColor.shared.customer
 
         cell.titleLabel.textColor = textColor
         cell.titleLabel.text = titles[indexPath.row]
@@ -175,7 +175,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb
 
-        browserWebVC?.urlBase = NCBrandOptions.sharedInstance.linkLoginHost
+        browserWebVC?.urlBase = NCBrandOptions.shared.linkLoginHost
 
         if let browserWebVC = browserWebVC {
             appDelegate?.window.rootViewController?.present(browserWebVC, animated: true)

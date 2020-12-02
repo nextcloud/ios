@@ -26,7 +26,7 @@ import UIKit
 //MARK: - Configuration
 
 @objc class NCBrandConfiguration: NSObject {
-    @objc static let sharedInstance: NCBrandConfiguration = {
+    @objc static let shared: NCBrandConfiguration = {
         let instance = NCBrandConfiguration()
         return instance
     }()
@@ -40,7 +40,7 @@ import UIKit
 //MARK: - Options
 
 @objc class NCBrandOptions: NSObject {
-    @objc static let sharedInstance: NCBrandOptions = {
+    @objc static let shared: NCBrandOptions = {
         let instance = NCBrandOptions()
         return instance
     }()
@@ -96,7 +96,7 @@ import UIKit
 //MARK: - Color
 
 class NCBrandColor: NSObject {
-    @objc static let sharedInstance: NCBrandColor = {
+    @objc static let shared: NCBrandColor = {
         let instance = NCBrandColor()
         instance.setDarkMode()
         return instance
@@ -160,42 +160,42 @@ class NCBrandColor: NSObject {
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
 
-        if NCBrandOptions.sharedInstance.use_themingColor {
+        if NCBrandOptions.shared.use_themingColor {
             
-            let themingColor = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
+            let themingColor = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColor)
             
-            let themingColorElement = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
+            let themingColorElement = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorElement)
             
-            let themingColorText = NCManageDatabase.sharedInstance.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
+            let themingColorText = NCManageDatabase.shared.getCapabilitiesServerString(account: account, elements: NCElementsJSON.shared.capabilitiesThemingColorText)
             
             CCGraphics.settingThemingColor(themingColor, themingColorElement: themingColorElement, themingColorText: themingColorText)
                         
-            if NCBrandColor.sharedInstance.brandElement.isTooLight() {
-                if let color = NCBrandColor.sharedInstance.brandElement.darker(by: darker) {
-                    NCBrandColor.sharedInstance.brandElement = color
+            if NCBrandColor.shared.brandElement.isTooLight() {
+                if let color = NCBrandColor.shared.brandElement.darker(by: darker) {
+                    NCBrandColor.shared.brandElement = color
                 }
-            } else if NCBrandColor.sharedInstance.brandElement.isTooDark() {
-                if let color = NCBrandColor.sharedInstance.brandElement.lighter(by: lighter) {
-                    NCBrandColor.sharedInstance.brandElement = color
+            } else if NCBrandColor.shared.brandElement.isTooDark() {
+                if let color = NCBrandColor.shared.brandElement.lighter(by: lighter) {
+                    NCBrandColor.shared.brandElement = color
                 }
             }           
             
         } else {
             
-            if NCBrandColor.sharedInstance.customer.isTooLight() {
-                if let color = NCBrandColor.sharedInstance.customer.darker(by: darker) {
-                    NCBrandColor.sharedInstance.brandElement = color
+            if NCBrandColor.shared.customer.isTooLight() {
+                if let color = NCBrandColor.shared.customer.darker(by: darker) {
+                    NCBrandColor.shared.brandElement = color
                 }
-            } else if NCBrandColor.sharedInstance.customer.isTooDark() {
-                if let color = NCBrandColor.sharedInstance.customer.lighter(by: lighter) {
-                    NCBrandColor.sharedInstance.brandElement = color
+            } else if NCBrandColor.shared.customer.isTooDark() {
+                if let color = NCBrandColor.shared.customer.lighter(by: lighter) {
+                    NCBrandColor.shared.brandElement = color
                 }
             } else {
-                NCBrandColor.sharedInstance.brandElement = NCBrandColor.sharedInstance.customer
+                NCBrandColor.shared.brandElement = NCBrandColor.shared.customer
             }
             
-            NCBrandColor.sharedInstance.brand = NCBrandColor.sharedInstance.customer
-            NCBrandColor.sharedInstance.brandText = NCBrandColor.sharedInstance.customerText
+            NCBrandColor.shared.brand = NCBrandColor.shared.customer
+            NCBrandColor.shared.brandText = NCBrandColor.shared.customerText
         }
         
         setDarkMode()

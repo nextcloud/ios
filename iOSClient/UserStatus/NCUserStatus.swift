@@ -49,7 +49,7 @@ struct NCUserStatus_Previews: PreviewProvider {
         NCCommunication.shared.getUserStatusPredefinedStatuses { (account, userStatuses, errorCode, errorDescription) in
             if errorCode == 0 {
                 if let userStatuses = userStatuses {
-                    NCManageDatabase.sharedInstance.addUserStatus(userStatuses, account: account, predefined: true)
+                    NCManageDatabase.shared.addUserStatus(userStatuses, account: account, predefined: true)
                 }
             }
         }
@@ -57,7 +57,7 @@ struct NCUserStatus_Previews: PreviewProvider {
         NCCommunication.shared.getUserStatusRetrieveStatuses(limit: 1000, offset: 0, customUserAgent: nil, addCustomHeaders: nil) { (account, userStatuses, errorCode, errorDescription) in
             if errorCode == 0 {
                 if let userStatuses = userStatuses {
-                    NCManageDatabase.sharedInstance.addUserStatus(userStatuses, account: account, predefined: false)
+                    NCManageDatabase.shared.addUserStatus(userStatuses, account: account, predefined: false)
                 }
             }
         }

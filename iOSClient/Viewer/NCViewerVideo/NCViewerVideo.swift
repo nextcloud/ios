@@ -61,7 +61,7 @@ protocol NCViewerVideoDelegate {
             rateObserverToken = player?.addObserver(self, forKeyPath: "rate", options: [], context: nil)
             
             player?.play()
-            if let time = NCManageDatabase.sharedInstance.getVideoTime(account: self.metadata.account, ocId: self.metadata.ocId) {
+            if let time = NCManageDatabase.shared.getVideoTime(account: self.metadata.account, ocId: self.metadata.ocId) {
                 player?.seek(to: time)
             }
             player?.isMuted = CCUtility.getAudioMute()
@@ -71,7 +71,7 @@ protocol NCViewerVideoDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
+        NCManageDatabase.shared.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
         
         if let player = self.player {
             CCUtility.setAudioMute(player.isMuted)
@@ -109,7 +109,7 @@ extension NCViewerVideo: AVPlayerViewControllerDelegate {
     }
     
     func playerViewControllerWillStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
-        NCManageDatabase.sharedInstance.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
+        NCManageDatabase.shared.addVideoTime(account: metadata.account, ocId: metadata.ocId, time: player?.currentTime())
         pictureInPicture = false
         let playing = player?.timeControlStatus == .playing
         delegateViewerVideo?.stopPictureInPicture(metadata: metadata, playing: playing)

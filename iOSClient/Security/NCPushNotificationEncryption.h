@@ -27,7 +27,7 @@
 
 @interface NCPushNotificationEncryption : NSObject
 
-+ (NCPushNotificationEncryption *)sharedInstance;
++ (NCPushNotificationEncryption *)shared;
 - (BOOL)generatePushNotificationsKeyPair:(NSString *)account;
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey;
 

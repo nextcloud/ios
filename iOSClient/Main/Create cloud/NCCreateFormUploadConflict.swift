@@ -98,14 +98,14 @@ extension NCCreateFormUploadConflictDelegate {
         buttonCancel.layer.cornerRadius = 20
         buttonCancel.layer.masksToBounds = true
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonCancel.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
         
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
         buttonContinue.setTitleColor(.lightGray, for: .normal)
-        buttonContinue.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.5).cgColor
+        buttonContinue.layer.backgroundColor = NCBrandColor.shared.graySoft.withAlphaComponent(0.5).cgColor
     }
     
     // MARK: - Action
@@ -227,7 +227,7 @@ extension NCCreateFormUploadConflictDelegate {
             
         } else {
             
-            NCManageDatabase.sharedInstance.addMetadatas(metadatasNOConflict)
+            NCManageDatabase.shared.addMetadatas(metadatasNOConflict)
             
             appDelegate.networkingAutoUpload.startProcess()
         }

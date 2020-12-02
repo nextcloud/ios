@@ -108,7 +108,7 @@ class NCDataSource: NSObject {
             }
             
             // share
-            let shares = NCManageDatabase.sharedInstance.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            let shares = NCManageDatabase.shared.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             if shares.count > 0 {
                 metadataShare[metadata.ocId] = shares.first
             }
@@ -117,9 +117,9 @@ class NCDataSource: NSObject {
             if !metadata.directory {
                 let size = CCUtility.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
                 if size > 0 {
-                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                     if tableLocalFile == nil && size == metadata.size {
-                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                        NCManageDatabase.shared.addLocalFile(metadata: metadata)
                     }
                     if tableLocalFile?.offline ?? false {
                         metadataOffLine.append(metadata.ocId)
@@ -190,7 +190,7 @@ class NCDataSource: NSObject {
         }
         
         if index != nil {
-            if let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) {
+            if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                 metadatas[index!] = metadata
             } 
         }

@@ -45,12 +45,12 @@ extension FileProviderExtension {
                     if errorCode == 0 && files.count > 0 {
                         
                         let file = files.first!
-                        let metadata = NCManageDatabase.sharedInstance.convertNCFileToMetadata(file, isEncrypted: false, account: fileProviderData.shared.account)
+                        let metadata = NCManageDatabase.shared.convertNCFileToMetadata(file, isEncrypted: false, account: fileProviderData.shared.account)
             
-                        NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, richWorkspace: metadata.richWorkspace, account: metadata.account)
-                        NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        NCManageDatabase.shared.addDirectory(encrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, richWorkspace: metadata.richWorkspace, account: metadata.account)
+                        NCManageDatabase.shared.addMetadata(metadata)
                         
-                        guard let metadataInsert = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId!) else {
+                        guard let metadataInsert = NCManageDatabase.shared.getMetadataFromOcId(ocId!) else {
                             completionHandler(nil, NSFileProviderError(.noSuchItem))
                             return
                         }
@@ -100,11 +100,11 @@ extension FileProviderExtension {
                 
                 if isDirectory {
                     let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: fileName)
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
+                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!, account: account)
                 }
                 
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
                 
                 completionHandler(nil)
 
@@ -142,13 +142,13 @@ extension FileProviderExtension {
             if errorCode == 0 {
                 
                 if metadataFrom.directory {
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
-                    NCManageDatabase.sharedInstance.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)                    
+                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
+                    NCManageDatabase.shared.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)                    
                 }
                 
-                NCManageDatabase.sharedInstance.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
+                NCManageDatabase.shared.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocIdFrom) else {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdFrom) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -169,7 +169,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let directoryTable = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -184,16 +184,16 @@ extension FileProviderExtension {
             if errorCode == 0 {
                 
                 // Rename metadata
-                NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, ocId: ocId)
+                NCManageDatabase.shared.renameMetadata(fileNameTo: itemName, ocId: ocId)
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else {
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
                 if metadata.directory {
                     
-                    NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, fileId: nil, encrypted: directoryTable.e2eEncrypted, richWorkspace: nil, account: account)
+                    NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, ocId: nil, fileId: nil, encrypted: directoryTable.e2eEncrypted, richWorkspace: nil, account: account)
                     
                 } else {
                     
@@ -206,7 +206,7 @@ extension FileProviderExtension {
                     
                     _ = fileProviderUtility.shared.moveFile(CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: CCUtility.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     
-                    NCManageDatabase.sharedInstance.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
+                    NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName, etag: nil)
                 }
                 
                 guard let parentItemIdentifier = fileProviderUtility.shared.getParentItemIdentifier(metadata: metadata) else {
@@ -250,7 +250,7 @@ extension FileProviderExtension {
                 
                 if errorCode == 0 {
                     
-                    guard let metadataTemp = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else {
+                    guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }
@@ -258,14 +258,14 @@ extension FileProviderExtension {
                     
                     // Change DB
                     metadata.favorite = favorite
-                    NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    NCManageDatabase.shared.addMetadata(metadata)
                     
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
                     
                 } else {
                     
-                    guard let metadata = NCManageDatabase.sharedInstance.getMetadataFromOcId(ocId) else {
+                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }
@@ -290,7 +290,7 @@ extension FileProviderExtension {
         let account = metadataForTag.account
         
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(ocId, tagIOS: tagData, account: account)
+        NCManageDatabase.shared.addTag(ocId, tagIOS: tagData, account: account)
         
         let item = fileProviderData.shared.signalEnumerator(ocId: ocId)
         completionHandler(item, nil)

@@ -75,7 +75,7 @@ class NCViewerImageDetailView: UIView {
         dateValue.textColor = textColor
         dimValue.textColor = textColor
         lensModelValue.textColor = textColor
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
+        separator.backgroundColor = NCBrandColor.shared.separator
         isHidden = false
     }
     
@@ -107,7 +107,7 @@ class NCViewerImageDetailView: UIView {
             };
         }
     
-        if let localFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             
             let latitudeString = localFile.exifLatitude
             let longitudeString = localFile.exifLongitude
@@ -116,7 +116,7 @@ class NCViewerImageDetailView: UIView {
             self.date = localFile.exifDate
             self.lensModel = localFile.exifLensModel
             
-            if let locationDB = NCManageDatabase.sharedInstance.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
+            if let locationDB = NCManageDatabase.shared.getLocationFromGeoLatitude(latitudeString, longitude: longitudeString) {
                 location = locationDB
             }
         }

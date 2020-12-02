@@ -36,15 +36,15 @@ class NCTrashSectionHeaderMenu: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
-        buttonOrder.setTitleColor(NCBrandColor.sharedInstance.brandElement, for: .normal)
+        buttonOrder.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
         
-        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), width: 50, height: 50, color: NCBrandColor.shared.icon), for: .normal)
         
-        separator.backgroundColor = NCBrandColor.sharedInstance.separator
-        backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        separator.backgroundColor = NCBrandColor.shared.separator
+        backgroundColor = NCBrandColor.shared.backgroundView
     }
     
     func setTitleSorted(datasourceTitleButton: String) {
@@ -95,7 +95,7 @@ class NCTrashSectionFooter: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        labelFooter.textColor = NCBrandColor.sharedInstance.icon
+        labelFooter.textColor = NCBrandColor.shared.icon
     }
     
     func setTitleLabelFooter(datasource: [tableTrash]) {

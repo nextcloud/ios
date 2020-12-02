@@ -95,7 +95,7 @@ class NCKTVHTTPCache: NSObject {
             guard let url = KTVHTTPCache.cacheCompleteFileURL(with: videoURL) else { return }
             
             CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+            NCManageDatabase.shared.addLocalFile(metadata: metadata)
             KTVHTTPCache.cacheDelete(with: videoURL)
             
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_reloadDataSource, userInfo: ["ocId":metadata.ocId, "serverUrl":metadata.serverUrl])

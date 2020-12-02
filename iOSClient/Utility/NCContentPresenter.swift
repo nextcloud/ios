@@ -203,7 +203,7 @@ class NCContentPresenter: NSObject {
     private func getBackgroundColorFromType(_ type: messageType) -> UIColor {
         switch type {
         case .info:
-            return NCBrandColor.sharedInstance.brandElement
+            return NCBrandColor.shared.brandElement
         case .error:
             return UIColor(red: 1, green: 0, blue: 0, alpha: 0.9)
         case .success:
