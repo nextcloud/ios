@@ -30,11 +30,17 @@ class NCSharePaging: UIViewController {
     
     private let pagingViewController = NCShareHeaderViewController()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    private var activityEnabled = true
     private var commentsEnabled = true
     private var sharingEnabled = true
     
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
+    
+    let indexPageActivity = 0
+    let indexPageComments = 1
+    let indexPageSharing = 2
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,15 +55,28 @@ class NCSharePaging: UIViewController {
         if sharing == false {
             sharingEnabled = false
         }
-        if indexPage == 1 && !commentsEnabled {
-            indexPage = 0
+        let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesActivity)
+        if activity == nil {
+            activityEnabled = false
         }
-        if indexPage == 2 && !sharingEnabled {
-            indexPage = 0
+        if indexPage == indexPageComments && !commentsEnabled {
+            indexPage = indexPageActivity
+        }
+        if indexPage == indexPageSharing && !sharingEnabled {
+            indexPage = indexPageActivity
+        }
+        if indexPage == indexPageActivity && !activityEnabled {
+            if sharingEnabled {
+                indexPage = indexPageSharing
+            } else if commentsEnabled {
+                indexPage = indexPageComments
+            }
         }
         
-        pagingViewController.sharingEnabled = sharingEnabled
+        pagingViewController.activityEnabled = activityEnabled
         pagingViewController.commentsEnabled = commentsEnabled
+        pagingViewController.sharingEnabled = sharingEnabled
+       
         pagingViewController.metadata = metadata
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)
@@ -98,6 +117,10 @@ class NCSharePaging: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        if appDelegate.disableSharesView {
+            self.dismiss(animated: false, completion: nil)
+        }
+        
         pagingViewController.menuItemSize = .fixed(width: self.view.bounds.width/3, height: 40)
     }
     
@@ -134,10 +157,12 @@ extension NCSharePaging: PagingViewControllerDelegate {
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
-        
-        if item.index == 1 && !commentsEnabled {
+         
+        if item.index == indexPageActivity && !activityEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == 2 && !sharingEnabled {
+        } else if item.index == indexPageComments && !commentsEnabled {
+            pagingViewController.contentInteraction = .none
+        } else if item.index == indexPageSharing && !sharingEnabled {
             pagingViewController.contentInteraction = .none
         } else {
             self.title = item.title
@@ -155,19 +180,19 @@ extension NCSharePaging: PagingViewControllerDataSource {
         let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
         switch index {
-        case 0:
+        case indexPageActivity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata.fileId
             viewController.objectType = "files"
             return viewController
-        case 1:
+        case indexPageComments:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
             viewController.metadata = metadata
             viewController.height = height
             return viewController
-        case 2:
+        case indexPageSharing:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
             viewController.sharingEnabled = sharingEnabled
             viewController.metadata = metadata
@@ -181,11 +206,11 @@ extension NCSharePaging: PagingViewControllerDataSource {
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
         
         switch index {
-        case 0:
+        case indexPageActivity:
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case 1:
+        case indexPageComments:
             return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: ""))
-        case 2:
+        case indexPageSharing:
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         default:
             return PagingIndexItem(index: index, title: "")
@@ -203,6 +228,8 @@ class NCShareHeaderViewController: PagingViewController {
     
     public var image: UIImage?
     public var metadata: tableMetadata?
+    
+    public var activityEnabled = true
     public var commentsEnabled = true
     public var sharingEnabled = true
 
@@ -216,6 +243,9 @@ class NCShareHeaderViewController: PagingViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.item == 0 && !activityEnabled {
+            return
+        }
         if indexPath.item == 1 && !commentsEnabled {
             return
         }
