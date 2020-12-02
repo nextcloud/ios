@@ -207,3 +207,17 @@ class NCBrandColor: NSObject {
     }
 #endif
 }
+
+//MARK: - Global
+
+@objc class NCBrandGlobal: NSObject {
+    @objc static let shared: NCBrandGlobal = {
+        let instance = NCBrandGlobal()
+        return instance
+    }()
+
+    
+    @objc public let indexPageActivity:     Int = 0
+    @objc public let indexPageComments:     Int = 1
+    @objc public let indexPageSharing:      Int = 2
+}

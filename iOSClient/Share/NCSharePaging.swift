@@ -37,11 +37,7 @@ class NCSharePaging: UIViewController {
     
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
-    
-    let indexPageActivity = 0
-    let indexPageComments = 1
-    let indexPageSharing = 2
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,17 +55,17 @@ class NCSharePaging: UIViewController {
         if activity == nil {
             activityEnabled = false
         }
-        if indexPage == indexPageComments && !commentsEnabled {
-            indexPage = indexPageActivity
+        if indexPage == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
+            indexPage = NCBrandGlobal.shared.indexPageActivity
         }
-        if indexPage == indexPageSharing && !sharingEnabled {
-            indexPage = indexPageActivity
+        if indexPage == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
+            indexPage = NCBrandGlobal.shared.indexPageActivity
         }
-        if indexPage == indexPageActivity && !activityEnabled {
+        if indexPage == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
             if sharingEnabled {
-                indexPage = indexPageSharing
+                indexPage = NCBrandGlobal.shared.indexPageSharing
             } else if commentsEnabled {
-                indexPage = indexPageComments
+                indexPage = NCBrandGlobal.shared.indexPageComments
             }
         }
         
@@ -158,11 +154,11 @@ extension NCSharePaging: PagingViewControllerDelegate {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
          
-        if item.index == indexPageActivity && !activityEnabled {
+        if item.index == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == indexPageComments && !commentsEnabled {
+        } else if item.index == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
             pagingViewController.contentInteraction = .none
-        } else if item.index == indexPageSharing && !sharingEnabled {
+        } else if item.index == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
             pagingViewController.contentInteraction = .none
         } else {
             self.title = item.title
@@ -180,19 +176,19 @@ extension NCSharePaging: PagingViewControllerDataSource {
         let topSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
         
         switch index {
-        case indexPageActivity:
+        case NCBrandGlobal.shared.indexPageActivity:
             let viewController = UIStoryboard(name: "NCActivity", bundle: nil).instantiateInitialViewController() as! NCActivity
             viewController.insets = UIEdgeInsets(top: height - topSafeArea, left: 0, bottom: 0, right: 0)
             viewController.didSelectItemEnable = false
             viewController.filterFileId = metadata.fileId
             viewController.objectType = "files"
             return viewController
-        case indexPageComments:
+        case NCBrandGlobal.shared.indexPageComments:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "comments") as! NCShareComments
             viewController.metadata = metadata
             viewController.height = height
             return viewController
-        case indexPageSharing:
+        case NCBrandGlobal.shared.indexPageSharing:
             let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as! NCShare
             viewController.sharingEnabled = sharingEnabled
             viewController.metadata = metadata
@@ -206,11 +202,11 @@ extension NCSharePaging: PagingViewControllerDataSource {
     func pagingViewController(_: PagingViewController, pagingItemAt index: Int) -> PagingItem {
         
         switch index {
-        case indexPageActivity:
+        case NCBrandGlobal.shared.indexPageActivity:
             return PagingIndexItem(index: index, title: NSLocalizedString("_activity_", comment: ""))
-        case indexPageComments:
+        case NCBrandGlobal.shared.indexPageComments:
             return PagingIndexItem(index: index, title: NSLocalizedString("_comments_", comment: ""))
-        case indexPageSharing:
+        case NCBrandGlobal.shared.indexPageSharing:
             return PagingIndexItem(index: index, title: NSLocalizedString("_sharing_", comment: ""))
         default:
             return PagingIndexItem(index: index, title: "")
@@ -243,13 +239,13 @@ class NCShareHeaderViewController: PagingViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.item == 0 && !activityEnabled {
+        if indexPath.item == NCBrandGlobal.shared.indexPageActivity && !activityEnabled {
             return
         }
-        if indexPath.item == 1 && !commentsEnabled {
+        if indexPath.item == NCBrandGlobal.shared.indexPageComments && !commentsEnabled {
             return
         }
-        if indexPath.item == 2 && !sharingEnabled {
+        if indexPath.item == NCBrandGlobal.shared.indexPageSharing && !sharingEnabled {
             return
         }
         super.collectionView(collectionView, didSelectItemAt: indexPath)
