@@ -31,6 +31,7 @@ class NCSharePaging: UIViewController {
     private let pagingViewController = NCShareHeaderViewController()
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     private var commentsEnabled = true
+    private var sharingEnabled = true
     
     @objc var metadata = tableMetadata()
     @objc var indexPage: Int = 0
@@ -38,13 +39,24 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Verify Comments enabled
+        // Verify Comments & Sharing enabled
         let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
         let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
         if serverVersionMajor >= k_files_comments && comments == false {
             commentsEnabled = false
         }
+        let sharing = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesFileSharingApiEnabled, exists: false)
+        if sharing == false {
+            sharingEnabled = false
+        }
+        if indexPage == 1 && !commentsEnabled {
+            indexPage = 0
+        }
+        if indexPage == 2 && !sharingEnabled {
+            indexPage = 0
+        }
         
+        pagingViewController.sharingEnabled = sharingEnabled
         pagingViewController.commentsEnabled = commentsEnabled
         pagingViewController.metadata = metadata
         
@@ -105,6 +117,7 @@ class NCSharePaging: UIViewController {
         view.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
         
         pagingViewController.backgroundColor = NCBrandColor.sharedInstance.backgroundForm
+        pagingViewController.menuBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.selectedBackgroundColor = NCBrandColor.sharedInstance.backgroundForm
         pagingViewController.textColor = NCBrandColor.sharedInstance.textView
         pagingViewController.selectedTextColor = NCBrandColor.sharedInstance.textView
@@ -122,7 +135,9 @@ extension NCSharePaging: PagingViewControllerDelegate {
         
         guard let item = pagingItem as? PagingIndexItem else { return }
         
-        if  item.index == 1 && !commentsEnabled {
+        if item.index == 1 && !commentsEnabled {
+            pagingViewController.contentInteraction = .none
+        } else if item.index == 2 && !sharingEnabled {
             pagingViewController.contentInteraction = .none
         } else {
             self.title = item.title
@@ -188,7 +203,8 @@ class NCShareHeaderViewController: PagingViewController {
     public var image: UIImage?
     public var metadata: tableMetadata?
     public var commentsEnabled = true
-    
+    public var sharingEnabled = true
+
     override func loadView() {
         view = NCSharePagingView(
             options: options,
@@ -200,6 +216,9 @@ class NCShareHeaderViewController: PagingViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.item == 1 && !commentsEnabled {
+            return
+        }
+        if indexPath.item == 2 && !sharingEnabled {
             return
         }
         super.collectionView(collectionView, didSelectItemAt: indexPath)
