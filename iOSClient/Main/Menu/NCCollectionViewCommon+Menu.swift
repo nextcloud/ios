@@ -124,7 +124,7 @@ extension NCCollectionViewCommon {
         //
         // DETAIL
         //
-        if !isFolderEncrypted {
+        if !isFolderEncrypted && !appDelegate.disableSharesView {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),

@@ -184,6 +184,15 @@ class NCService: NSObject {
                             }
                         }
                     }
+                    
+                    let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+                    let activity = NCManageDatabase.sharedInstance.getCapabilitiesServerArray(account: account, elements: NCElementsJSON.shared.capabilitiesActivity)
+                    
+                    if !isFilesSharingEnabled && !comments && activity == nil {
+                        self.appDelegate.disableSharesView = true
+                    } else {
+                        self.appDelegate.disableSharesView = false
+                    }
                 
                     // Text direct editor detail
                     let serverVersionMajor = NCManageDatabase.sharedInstance.getCapabilitiesServerInt(account: account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
@@ -239,7 +248,6 @@ class NCService: NSObject {
                     if (isHandwerkcloudEnabled) {
                         self.requestHC()
                     }
-                    
                 }
                 
             } else if errorCode != 0 {

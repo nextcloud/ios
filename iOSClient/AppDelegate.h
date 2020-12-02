@@ -106,6 +106,7 @@
 
 // Shares
 @property (nonatomic, strong) NSArray *shares;
+@property BOOL disableSharesView;
 
 // UserDefaults
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;

@@ -46,8 +46,10 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    var metadata: tableMetadata?
+    public var metadata: tableMetadata?
+    public var sharingEnabled = true
     public var height: CGFloat = 0
+    
     private var shareLinkMenuView: NCShareLinkMenuView?
     private var shareUserMenuView: NCShareUserMenuView?
     private var shareMenuViewWindow: UIView?
@@ -106,7 +108,9 @@ class NCShare: UIViewController, UIGestureRecognizerDelegate, NCShareLinkCellDel
         reloadData()
         
         networking = NCShareNetworking.init(metadata: metadata!, urlBase: appDelegate.urlBase, view: self.view, delegate: self)
-        networking?.readShare()
+        if sharingEnabled {
+            networking?.readShare()
+        }
         
         // changeTheming
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: k_notificationCenter_changeTheming), object: nil)

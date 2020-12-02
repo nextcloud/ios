@@ -1512,6 +1512,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.selectMode(false)
             }
             
+            // Disable Share Button
+            if appDelegate.disableSharesView {
+                cell.hideButtonShare(true)
+            }
+            
             return cell
         }
         
