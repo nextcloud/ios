@@ -34,7 +34,7 @@ class NCManageDatabase: NSObject {
     override init() {
         
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
-        let databaseFilePath = dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)")
+        let databaseFilePath = dirGroup?.appendingPathComponent(NCBrandGlobal.shared.appDatabaseNextcloud + "/" + NCBrandGlobal.shared.databaseDefault)
 
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
@@ -45,8 +45,8 @@ class NCManageDatabase: NSObject {
             // App Extension config
             
             let config = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-                schemaVersion: UInt64(k_databaseSchemaVersion),
+                fileURL: dirGroup?.appendingPathComponent(NCBrandGlobal.shared.appDatabaseNextcloud + "/" + NCBrandGlobal.shared.databaseDefault),
+                schemaVersion: NCBrandGlobal.shared.databaseSchemaVersion,
                 objectTypes: [tableMetadata.self, tableLocalFile.self, tableDirectory.self, tableTag.self, tableAccount.self, tableCapabilities.self, tableE2eEncryption.self]
             )
             
@@ -59,7 +59,7 @@ class NCManageDatabase: NSObject {
             let configCompact = Realm.Configuration(
                 
                 fileURL: databaseFilePath,
-                schemaVersion: UInt64(k_databaseSchemaVersion),
+                schemaVersion: NCBrandGlobal.shared.databaseSchemaVersion,
                 
                 migrationBlock: { migration, oldSchemaVersion in
                                         
@@ -144,8 +144,8 @@ class NCManageDatabase: NSObject {
             }
                         
             let config = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-                schemaVersion: UInt64(k_databaseSchemaVersion)
+                fileURL: dirGroup?.appendingPathComponent(NCBrandGlobal.shared.appDatabaseNextcloud + "/" + NCBrandGlobal.shared.databaseDefault),
+                schemaVersion: NCBrandGlobal.shared.databaseSchemaVersion
             )
             
             Realm.Configuration.defaultConfiguration = config

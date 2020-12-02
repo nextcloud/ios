@@ -216,8 +216,16 @@ class NCBrandColor: NSObject {
         return instance
     }()
 
+    // Directory on Group
+    @objc public let appDatabaseNextcloud: String   = "Library/Application Support/Nextcloud"
+
     
-    @objc public let indexPageActivity:     Int = 0
-    @objc public let indexPageComments:     Int = 1
-    @objc public let indexPageSharing:      Int = 2
+    // Database Realm
+    public let databaseDefault: String              = "nextcloud.realm"
+    public let databaseSchemaVersion: UInt64        = 153
+    
+    // NCSharePaging
+    public let indexPageActivity: Int               = 0
+    public let indexPageComments: Int               = 1
+    public let indexPageSharing: Int                = 2
 }

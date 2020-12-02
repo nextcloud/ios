@@ -52,7 +52,6 @@
 
 // Directory on Group
 #define k_appApplicationSupport                         @"Library/Application Support"
-#define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
 #define k_appScan                                       @"Library/Application Support/Scan"
@@ -77,10 +76,6 @@
 
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
-
-// Database Realm
-#define k_databaseDefault                               @"nextcloud.realm"
-#define k_databaseSchemaVersion                         153
 
 // Database JSON
 #define k_databaseDefaultJSON                           @"nextcloud.json"
