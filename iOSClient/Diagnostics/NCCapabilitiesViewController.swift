@@ -49,6 +49,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
     @IBOutlet weak var imageUserStatus: UIImageView!
     @IBOutlet weak var statusUserStatus: UILabel!
     
+    @IBOutlet weak var imageComments: UIImageView!
+    @IBOutlet weak var statusComments: UILabel!
+    
     @IBOutlet weak var imageText: UIImageView!
     @IBOutlet weak var statusText: UILabel!
     
@@ -132,6 +135,11 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         statusUserStatus.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
         statusUserStatus.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
         
+        statusComments.layer.cornerRadius = 12.5
+        statusComments.layer.borderWidth = 0.5
+        statusComments.layer.borderColor = NCBrandColor.sharedInstance.textView.cgColor
+        statusComments.layer.backgroundColor = NCBrandColor.sharedInstance.graySoft.withAlphaComponent(0.3).cgColor
+        
         imageFileSharing.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), width: 100, height: 100, color: .gray)
         imageExternalSite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "externalsites"), width: 100, height: 100, color: .gray)
         imageEndToEndEncryption.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "lock"), width: 100, height: 100, color: .gray)        
@@ -142,6 +150,7 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         imageCollabora.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "collabora"), width: 100, height: 100, color: .gray)
         imageOnlyOffice.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "onlyoffice"), width: 100, height: 100, color: .gray)
         imageUserStatus.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "userStatusAway"), width: 100, height: 100, color: .gray)
+        imageComments.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "comments"), width: 100, height: 100, color: .gray)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else { return }
         self.account = account.account
@@ -301,6 +310,13 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
             statusUserStatus.text = "✓ " + NSLocalizedString("_available_", comment: "")
         } else {
             statusUserStatus.text = NSLocalizedString("_not_available_", comment: "")
+        }
+        
+        let comments = NCManageDatabase.sharedInstance.getCapabilitiesServerBool(account: account, elements: NCElementsJSON.shared.capabilitiesFilesComments, exists: false)
+        if comments {
+            statusComments.text = "✓ " + NSLocalizedString("_available_", comment: "")
+        } else {
+            statusComments.text = NSLocalizedString("_not_available_", comment: "")
         }
         
         print("end.")
