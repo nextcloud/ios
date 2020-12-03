@@ -219,7 +219,6 @@ class NCBrandColor: NSObject {
     // Directory on Group
     @objc public let appDatabaseNextcloud: String   = "Library/Application Support/Nextcloud"
 
-    
     // Database Realm
     public let databaseDefault: String              = "nextcloud.realm"
     public let databaseSchemaVersion: UInt64        = 153
@@ -228,4 +227,7 @@ class NCBrandColor: NSObject {
     public let indexPageActivity: Int               = 0
     public let indexPageComments: Int               = 1
     public let indexPageSharing: Int                = 2
+    
+    // Nextcloud unsupported
+    public let nextcloud_unsupported_version: Int   = 13
 }

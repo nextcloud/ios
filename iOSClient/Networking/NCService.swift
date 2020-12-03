@@ -137,7 +137,7 @@ class NCService: NSObject {
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
                             NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
-                        } else if versionMajor <= k_nextcloud_unsupported {
+                        } else if versionMajor <=  NCBrandGlobal.shared.nextcloud_unsupported_version {
                             NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: TimeInterval(k_dismissAfterSecond), type: NCContentPresenter.messageType.info, errorCode: Int(k_dismissAfterSecondLong))
                         }
                     }

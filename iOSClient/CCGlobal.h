@@ -286,9 +286,6 @@
 #define k_template_spreadsheet                          @"spreadsheet"
 #define k_template_presentation                         @"presentation"
 
-// Nextcloud unsupported
-#define k_nextcloud_unsupported                         13
-
 // Nextcloud version
 #define k_nextcloud_version_12_0                        12
 #define k_nextcloud_version_13_0                        13
