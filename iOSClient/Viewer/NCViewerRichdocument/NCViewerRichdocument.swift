@@ -67,7 +67,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
         
-        keyboardManager = CollaboraOnlineWebViewKeyboardManager(for: webView)
+        //keyboardManager = CollaboraOnlineWebViewKeyboardManager(for: webView)
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
