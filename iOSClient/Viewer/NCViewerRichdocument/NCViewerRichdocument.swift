@@ -24,6 +24,7 @@
 import Foundation
 import WebKit
 import NCCommunication
+import CollaboraOnlineWebViewKeyboardManager
 
 class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     
@@ -31,6 +32,7 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var webView = WKWebView()
     var bottomConstraint : NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
+    var keyboardManager: CollaboraOnlineWebViewKeyboardManager!
     
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
@@ -64,6 +66,8 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
+        
+        keyboardManager = CollaboraOnlineWebViewKeyboardManager(for: webView)
         
         var request = URLRequest(url: URL(string: link)!)
         request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
