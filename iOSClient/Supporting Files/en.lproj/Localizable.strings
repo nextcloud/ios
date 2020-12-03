@@ -154,7 +154,11 @@
 "_away_"                    = "Away";
 "_dnd_"                     = "Do not disturb";
 "_dnd_description_"         = "Mute all notifications";
-"_invisible_"               = "Invidible";
+
+/* Please add context. What is invisible= */
+"_invisible_"               = "Invisible";
+
+/* Please add context. What does apper mean? */
 "_invisible_description_"   = "Apper offline";
 
 // App
