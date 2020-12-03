@@ -571,9 +571,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             view.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
             view.emptyDescription.text = ""
         } else {
-            view.emptyImage.image = emptyImage
-            view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-            view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
+            if serverUrl == "" {
+                view.emptyImage.image = emptyImage
+                view.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
+                view.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
+            } else {
+                view.emptyImage.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), width: 300, height: 300, color: NCBrandColor.shared.brandElement)
+                view.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
+                view.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
+            }
         }
     }
     
