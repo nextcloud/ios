@@ -213,6 +213,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
+        self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
 
         if removeAccount {
