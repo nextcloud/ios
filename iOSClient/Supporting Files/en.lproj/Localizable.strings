@@ -154,11 +154,7 @@
 "_away_"                    = "Away";
 "_dnd_"                     = "Do not disturb";
 "_dnd_description_"         = "Mute all notifications";
-
-/* User status: Invisible= */
 "_invisible_"               = "Invisible";
-
-/* User status: Appear offline */
 "_invisible_description_"   = "Appear offline";
 
 // App
