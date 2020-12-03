@@ -12,22 +12,15 @@ import NCCommunication
 
 @available(iOS 13.0, *)
 struct NCUserStatus: View {
+    @State var counter = 0
     var body: some View {
-        
-        VStack(alignment: .leading) {
-            
-            HStack {
-                Image("userStatusAway")
-                    .resizable()
-                    .frame(width: 100.0, height: 100.0)
-                    .clipShape(Circle())
+        VStack {
+            Button("Tap me") {
+                self.counter += 1
             }
-            
-            Text("Hello World44,2")
-                .font(.headline)
-                .foregroundColor(Color.red)
-                .lineLimit(0)
-            Text("test")
+            if counter > 0 {
+                Text("tapped \(counter) time")
+            }
         }
     }
 }

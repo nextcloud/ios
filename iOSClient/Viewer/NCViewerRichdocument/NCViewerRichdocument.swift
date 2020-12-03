@@ -109,7 +109,6 @@ class NCViewerRichdocument: UIViewController, WKNavigationDelegate, WKScriptMess
         navigationController?.popViewController(animated: true)
     }
     
-    
     //MARK: - NotificationCenter
    
     @objc func favoriteFile(_ notification: NSNotification) {
