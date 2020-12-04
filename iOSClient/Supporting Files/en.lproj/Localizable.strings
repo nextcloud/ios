@@ -150,11 +150,23 @@
 "_duration_"                = "Duration";
 "_model_"                   = "Model";
 "_set_user_status_"         = "Set user status";
+
+/* User status */
 "_online_"                  = "Online";
+
+/* User status */
 "_away_"                    = "Away";
+/* User status */
+
 "_dnd_"                     = "Do not disturb";
+
+/* User status */
 "_dnd_description_"         = "Mute all notifications";
+
+/* User status */
 "_invisible_"               = "Invisible";
+
+/* User status */
 "_invisible_description_"   = "Appear offline";
 
 // App
