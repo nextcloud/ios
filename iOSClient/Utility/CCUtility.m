@@ -861,7 +861,7 @@
 + (NSString *)createFileNameDate:(NSString *)fileName extension:(NSString *)extension
 {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:[NSDate date]];
     NSString *returnFileName;
     
@@ -898,7 +898,7 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:fileDate];
     
     NSString *fileNameType = @"";
