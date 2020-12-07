@@ -32,6 +32,7 @@
 {
     AppDelegate *appDelegate;
     CCHud *_hud;
+    BOOL endForAssetToUpload;
 }
 @end
 
@@ -343,7 +344,8 @@
     NSMutableArray *metadataFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase shared] getAccountAutoUploadPathWithUrlBase:appDelegate.urlBase account:appDelegate.account];
     NSString *serverUrl;
-    
+    __block NSInteger counterLivePhoto = 0;
+
     // Check Asset : NEW or FULL
     NSArray *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
@@ -380,6 +382,7 @@
         return;
     }
     
+    endForAssetToUpload = false;
     for (PHAsset *asset in newAssetToUpload) {
         
         BOOL livePhoto = false;
@@ -394,7 +397,6 @@
         }
         
         // Select type of session
-        
         if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
             session = NCCommunicationCommon.shared.sessionIdentifierUpload;
         } else {
@@ -421,9 +423,11 @@
         tableMetadata *metadata = [[NCManageDatabase shared] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.account, serverUrl, fileName]];
         if (!metadata) {
         
+            /* INSERT METADATA FOR UPLOAD */
             tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
             
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+            metadataForUpload.livePhoto = livePhoto;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
@@ -433,82 +437,72 @@
             } else if (assetMediaType == PHAssetMediaTypeImage) {
                 metadataForUpload.typeFile = k_metadataTypeFile_image;
             }
+            
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+               
+                [[NCManageDatabase shared] addMetadataForAutoUpload:metadataForUpload];
+                [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
+                        
+                // Add asset in table Photo Library
+                if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
+                    (void)[[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
+                }
+                
+            } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                
+                [metadataFull addObject:metadataForUpload];
+            }
 
-            // Add Medtadata MOV LIVE PHOTO for upload
+            /* INSERT METADATA MOV LIVE PHOTO FOR UPLOAD */
             if (livePhoto) {
                 
+                counterLivePhoto++;
                 NSString *fileNameMove = [NSString stringWithFormat:@"%@.mov", fileName.stringByDeletingPathExtension];
                 NSString *ocId = [[NSUUID UUID] UUIDString];
                 NSString *filePath = [CCUtility getDirectoryProviderStorageOcId:ocId fileNameView:fileNameMove];
-                
-                dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-                
+                                
                 [CCUtility extractLivePhotoAsset:asset filePath:filePath withCompletion:^(NSURL *url) {
                     if (url != nil) {
+                        
                         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:nil] fileSize];
-                        
                         tableMetadata *metadataMOVForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileNameMove ocId:ocId serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
-                        
-                        metadataForUpload.livePhoto = true;
+                       
                         metadataMOVForUpload.livePhoto = true;
-                        
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;
                         metadataMOVForUpload.status = k_metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
-                        [metadataFull addObject:metadataMOVForUpload];
-                                                
-                        // Update database Auto Upload
                         if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                            
                             [[NCManageDatabase shared] addMetadataForAutoUpload:metadataMOVForUpload];
                             [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added Live Photo %@ (%llu bytes)", fileNameMove, fileSize]];
+                            
+                        } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
+                            
+                            [metadataFull addObject:metadataMOVForUpload];
                         }
                     }
-                    
-                    dispatch_semaphore_signal(semaphore);
+                    counterLivePhoto--;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (endForAssetToUpload && counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
+                            [[NCManageDatabase shared] addMetadatas:metadataFull];
+                            [_hud hideHud];
+                        }
+                    });
                 }];
-                
-                while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
-                       [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:30]];
-            }
-            
-            [metadataFull addObject:metadataForUpload];
-                       
-            // Update database Auto Upload
-            if ([selector isEqualToString:selectorUploadAutoUpload]) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
-                });
             }
         }
     }
+    endForAssetToUpload = true;
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        // Insert all assets (Full) in tableQueueUpload
-        if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (counterLivePhoto == 0 && [selector isEqualToString:selectorUploadAutoUploadAll]) {
             [[NCManageDatabase shared] addMetadatas:metadataFull];
+            [_hud hideHud];
         }
-        // end loadingcand reload
-        [_hud hideHud];
-        // START
-        [[appDelegate networkingAutoUpload] startProcess];
     });
-}
-
-- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
-{
-    @synchronized(self) {
-        
-        [[NCManageDatabase shared] addMetadataForAutoUpload:metadata];
-        [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
-        
-        // Add asset in table Photo Library
-        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-            (void)[[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

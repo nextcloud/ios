@@ -174,7 +174,7 @@ class NCViewerImageDetailView: UIView {
         }
         
         // Map
-        if latitude > 0 && longitude > 0 {
+        if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -193,7 +193,7 @@ class NCViewerImageDetailView: UIView {
 
     @IBAction func touchLocation(_ sender: Any) {
         
-        if self.latitude > 0 && self.longitude > 0 {
+        if latitude != -1 && latitude != 0 && longitude != -1 && longitude != 0 {
             
             let latitude: CLLocationDegrees = self.latitude
             let longitude: CLLocationDegrees = self.longitude
