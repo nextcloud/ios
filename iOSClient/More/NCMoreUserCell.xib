@@ -43,9 +43,9 @@
                 </subviews>
                 <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
-                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="4Xt-42-ra7"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" constant="20" id="Gpf-ni-W0A"/>
                     <constraint firstAttribute="trailing" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="20" id="ICD-Fn-jbL"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="jy6-cx-LK4" secondAttribute="trailing" constant="5" id="JtQ-Rf-ngA"/>
                     <constraint firstItem="jy6-cx-LK4" firstAttribute="bottom" secondItem="5" secondAttribute="bottom" constant="5" id="MNe-PS-i7m"/>
                     <constraint firstItem="5" firstAttribute="centerX" secondItem="sQq-jC-UEV" secondAttribute="centerX" id="MQs-0w-slX"/>
                     <constraint firstItem="jy6-cx-LK4" firstAttribute="trailing" secondItem="5" secondAttribute="trailing" constant="5" id="Ooq-nL-VC8"/>
