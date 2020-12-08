@@ -12,7 +12,6 @@ github "ivanbruel/MarkdownKit"
 github "FabrizioBrancati/Queuer"
 github "xmartlabs/XLForm" ~> 4.1
 github "AssistoLab/DropDown" "v2.3.13"
-github "CollaboraOnline/SampleCode" "master"
 
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseCrashlyticsBinary.json"
