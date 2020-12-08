@@ -2366,6 +2366,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Photo Library
     
+    @discardableResult
     @objc func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
         
         let realm = try! Realm()

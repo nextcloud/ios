@@ -421,7 +421,13 @@
             serverUrl = autoUploadPath;
         
         tableMetadata *metadata = [[NCManageDatabase shared] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameView == %@", appDelegate.account, serverUrl, fileName]];
-        if (!metadata) {
+        if (metadata) {
+            
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
+                [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
+            }
+            
+        } else {
         
             /* INSERT METADATA FOR UPLOAD */
             tableMetadata *metadataForUpload = [[NCManageDatabase shared] createMetadataWithAccount:appDelegate.account fileName:fileName ocId:[[NSUUID UUID] UUIDString] serverUrl:serverUrl urlBase:appDelegate.urlBase url:@"" contentType:@"" livePhoto:livePhoto];
@@ -442,11 +448,7 @@
                
                 [[NCManageDatabase shared] addMetadataForAutoUpload:metadataForUpload];
                 [[NCCommunicationCommon shared] writeLog:[NSString stringWithFormat:@"Automatic upload added %@ (%lu bytes) with Identifier %@", metadata.fileNameView, (unsigned long)metadata.size, metadata.assetLocalIdentifier]];
-                        
-                // Add asset in table Photo Library
-                if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
-                    (void)[[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
-                }
+                [[NCManageDatabase shared] addPhotoLibrary:@[asset] account:appDelegate.account];
                 
             } else if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
                 
