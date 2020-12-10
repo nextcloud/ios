@@ -2793,8 +2793,9 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Video
     
-    func addVideoTime(account: String, ocId: String, time: CMTime?) {
+    func addVideoTime(metadata: tableMetadata, time: CMTime?) {
         
+        if metadata.livePhoto { return }
         guard let time = time else { return }
         let realm = try! Realm()
         
@@ -2802,8 +2803,8 @@ class NCManageDatabase: NSObject {
             try realm.safeWrite {
                 let addObject = tableVideo()
                
-                addObject.account = account
-                addObject.ocId = ocId
+                addObject.account = metadata.account
+                addObject.ocId = metadata.ocId
                 addObject.time = Int64(CMTimeGetSeconds(time) * 1000)
               
                 realm.add(addObject, update: .all)
@@ -2813,11 +2814,12 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func getVideoTime(account: String, ocId: String) -> CMTime? {
+    func getVideoTime(metadata: tableMetadata) -> CMTime? {
         
+        if metadata.livePhoto { return CMTime.zero }
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", account, ocId).first else {
+        guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else {
             return nil
         }
         

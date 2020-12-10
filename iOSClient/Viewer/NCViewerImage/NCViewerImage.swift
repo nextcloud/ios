@@ -309,7 +309,11 @@ class NCViewerImage: UIViewController {
             
             currentViewerImageZoom?.statusViewImage.isHidden = false
             currentViewerImageZoom?.statusLabel.isHidden = false
-            videoStop()
+            
+            let fileName = (currentMetadata.fileNameView as NSString).deletingPathExtension + ".mov"
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", currentMetadata.account, currentMetadata.serverUrl, fileName)) != nil {
+                videoStop()
+            }
         }
     }
     
@@ -418,7 +422,7 @@ class NCViewerImage: UIViewController {
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { (notification) in
                     if let item = notification.object as? AVPlayerItem, let currentItem = self.player?.currentItem, item == currentItem {
                         self.player?.seek(to: CMTime.zero)
-                        NCManageDatabase.shared.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: CMTime.zero)
+                        NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: CMTime.zero)
                     }
                 }
                             
@@ -458,12 +462,12 @@ class NCViewerImage: UIViewController {
             setToolBar()
             
             if ((player?.rate) == 1) {
-                if let time = NCManageDatabase.shared.getVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId) {
+                if let time = NCManageDatabase.shared.getVideoTime(metadata: self.currentMetadata) {
                     player?.seek(to: time)
                     player?.isMuted = CCUtility.getAudioMute()
                 }
             } else {
-                NCManageDatabase.shared.addVideoTime(account: self.currentMetadata.account, ocId: self.currentMetadata.ocId, time: player?.currentTime())
+                NCManageDatabase.shared.addVideoTime(metadata: self.currentMetadata, time: player?.currentTime())
                 print("Pause")
             }
         }
