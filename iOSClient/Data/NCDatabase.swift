@@ -59,7 +59,7 @@ class tableAccount: Object {
     @objc dynamic var phone = ""
     @objc dynamic var quota: Int64 = 0
     @objc dynamic var quotaFree: Int64 = 0
-    @objc dynamic var quotaRelative: Int64 = 0
+    @objc dynamic var quotaRelative: Double = 0
     @objc dynamic var quotaTotal: Int64 = 0
     @objc dynamic var quotaUsed: Int64 = 0
     @objc dynamic var role = ""
@@ -296,7 +296,6 @@ class tableLocalFile: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
-    @objc dynamic var size: Int64 = 0
     
     override static func primaryKey() -> String {
         return "ocId"

@@ -119,7 +119,7 @@ class NCManageDatabase: NSObject {
                         }
                     }
                     
-                    if oldSchemaVersion < 156 {
+                    if oldSchemaVersion < 160 {
                         migration.deleteData(forType: tableDirectory.className())
                         migration.deleteData(forType: tableMetadata.className())
                     }
@@ -1561,7 +1561,6 @@ class NCManageDatabase: NSObject {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
-                addObject.size = metadata.size
             
                 realm.add(addObject, update: .all)
             }

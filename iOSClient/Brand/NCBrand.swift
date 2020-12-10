@@ -221,7 +221,7 @@ class NCBrandColor: NSObject {
 
     // Database Realm
     public let databaseDefault: String              = "nextcloud.realm"
-    public let databaseSchemaVersion: UInt64        = 156
+    public let databaseSchemaVersion: UInt64        = 160
     
     // NCSharePaging
     public let indexPageActivity: Int               = 0
