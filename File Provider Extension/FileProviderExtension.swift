@@ -316,7 +316,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             
             autoreleasepool {
             
-                var size = 0 as Double
+                var size = 0 as Int64
                 var error: NSError?
                 
                 guard let tableDirectory = fileProviderUtility.shared.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
@@ -329,7 +329,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 // typefile directory ? (NOT PERMITTED)
                 do {
                     let attributes = try fileProviderUtility.shared.fileManager.attributesOfItem(atPath: fileURL.path)
-                    size = attributes[FileAttributeKey.size] as! Double
+                    size = attributes[FileAttributeKey.size] as! Int64
                     let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -400,7 +400,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             if let date = date { metadata.date = date }
             metadata.permissions = "RGDNVW"
             metadata.session = ""
-            metadata.size = Double(size)
+            metadata.size = size
             metadata.status = Int(k_metadataStatusNormal)
                   
             NCManageDatabase.shared.addMetadata(metadata)

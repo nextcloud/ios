@@ -102,7 +102,7 @@ class NCTrashSectionFooter: UICollectionReusableView {
         
         var folders: Int = 0, foldersText = ""
         var files: Int = 0, filesText = ""
-        var size: Double = 0
+        var size: Int64 = 0
         
         for record: tableTrash in datasource {
             if record.directory {

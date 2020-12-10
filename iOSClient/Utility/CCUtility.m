@@ -803,7 +803,7 @@
     return date;
 }
 
-+ (NSString *)transformedSize:(double)value
++ (NSString *)transformedSize:(int64_t)value
 {
     NSString *string = [NSByteCountFormatter stringFromByteCount:value countStyle:NSByteCountFormatterCountStyleBinary];
     return string;
@@ -1164,11 +1164,11 @@
     else return false;
 }
 
-+ (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
++ (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView
 {
     NSString *fileNamePath = [self getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView];
     
-    double fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    int64_t fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
     
     return fileSize;
 }

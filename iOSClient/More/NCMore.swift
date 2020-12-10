@@ -214,18 +214,18 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             progressQuota.progress = 0
         }
 
-        switch Double(tabAccount.quotaTotal) {
-        case Double(-1):
+        switch tabAccount.quotaTotal {
+        case -1:
             quota = "0"
-        case Double(-2):
+        case -2:
             quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-        case Double(-3):
+        case -3:
             quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
         default:
-            quota = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+            quota = CCUtility.transformedSize(tabAccount.quotaTotal)
         }
 
-        let quotaUsed: String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
+        let quotaUsed: String = CCUtility.transformedSize(tabAccount.quotaUsed)
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
         

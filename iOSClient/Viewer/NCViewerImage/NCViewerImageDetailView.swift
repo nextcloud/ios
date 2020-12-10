@@ -48,7 +48,7 @@ class NCViewerImageDetailView: UIView {
     var date: NSDate?
     var lensModel: String?
     var heightMap: CGFloat = 0
-    var size: Double = 0
+    var size: Int64 = 0
     var image: UIImage?
     
     override func awakeFromNib() {

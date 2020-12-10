@@ -158,7 +158,7 @@ class NCSectionFooter: UICollectionReusableView {
         labelSection.textColor = NCBrandColor.shared.icon
     }
     
-    func setTitleLabel(directories: Int, files: Int, size: Double) {
+    func setTitleLabel(directories: Int, files: Int, size: Int64) {
         
         var foldersText = ""
         var filesText = ""

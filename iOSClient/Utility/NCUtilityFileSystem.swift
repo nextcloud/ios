@@ -46,11 +46,11 @@ class NCUtilityFileSystem: NSObject {
         return 0
     }
     
-    @objc func getFileSize(filePath: String) -> Double {
+    @objc func getFileSize(filePath: String) -> Int64 {
         
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
-            return attributes[FileAttributeKey.size] as? Double ?? 0
+            return attributes[FileAttributeKey.size] as? Int64 ?? 0
         } catch { }
         return 0
     }

@@ -52,16 +52,16 @@ class tableAccount: Object {
     @objc dynamic var enabled: Bool = false
     @objc dynamic var groups = ""
     @objc dynamic var language = ""
-    @objc dynamic var lastLogin: Double = 0
+    @objc dynamic var lastLogin: Int64 = 0
     @objc dynamic var locale = ""
     @objc dynamic var mediaPath = ""
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
-    @objc dynamic var quota: Double = 0
-    @objc dynamic var quotaFree: Double = 0
-    @objc dynamic var quotaRelative: Double = 0
-    @objc dynamic var quotaTotal: Double = 0
-    @objc dynamic var quotaUsed: Double = 0
+    @objc dynamic var quota: Int64 = 0
+    @objc dynamic var quotaFree: Int64 = 0
+    @objc dynamic var quotaRelative: Int64 = 0
+    @objc dynamic var quotaTotal: Int64 = 0
+    @objc dynamic var quotaUsed: Int64 = 0
     @objc dynamic var role = ""
     @objc dynamic var storageLocation = ""
     @objc dynamic var subadmin = ""
@@ -81,10 +81,10 @@ class tableAccount: Object {
     // HC
     @objc dynamic var hcIsTrial: Bool = false
     @objc dynamic var hcTrialExpired: Bool = false
-    @objc dynamic var hcTrialRemainingSec: Double = 0
+    @objc dynamic var hcTrialRemainingSec: Int64 = 0
     @objc dynamic var hcTrialEndTime: NSDate? = nil
     @objc dynamic var hcAccountRemoveExpired: Bool = false
-    @objc dynamic var hcAccountRemoveRemainingSec: Double = 0
+    @objc dynamic var hcAccountRemoveRemainingSec: Int64 = 0
     @objc dynamic var hcAccountRemoveTime: NSDate? = nil
     @objc dynamic var hcNextGroupExpirationGroup = ""
     @objc dynamic var hcNextGroupExpirationGroupExpired: Bool = false
@@ -296,7 +296,7 @@ class tableLocalFile: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
-    @objc dynamic var size: Double = 0
+    @objc dynamic var size: Int64 = 0
     
     override static func primaryKey() -> String {
         return "ocId"
@@ -330,8 +330,8 @@ class tableMetadata: Object {
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc dynamic var permissions = ""
-    @objc dynamic var quotaUsedBytes: Double = 0
-    @objc dynamic var quotaAvailableBytes: Double = 0
+    @objc dynamic var quotaUsedBytes: Int64 = 0
+    @objc dynamic var quotaAvailableBytes: Int64 = 0
     @objc dynamic var resourceType = ""
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
@@ -339,7 +339,7 @@ class tableMetadata: Object {
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
-    @objc dynamic var size: Double = 0
+    @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""
@@ -436,7 +436,7 @@ class tableTrash: Object {
     @objc dynamic var filePath = ""
     @objc dynamic var hasPreview: Bool = false
     @objc dynamic var iconName = ""
-    @objc dynamic var size: Double = 0
+    @objc dynamic var size: Int64 = 0
     @objc dynamic var typeFile = ""
     @objc dynamic var trashbinFileName = ""
     @objc dynamic var trashbinOriginalLocation = ""

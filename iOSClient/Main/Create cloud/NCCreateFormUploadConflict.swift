@@ -331,7 +331,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                         }
                         
                         let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
-                        let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                        let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                         
                         cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
                         
@@ -360,7 +360,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                     }
                                     
                                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
-                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                                     
                                     cell.labelDetailNewFile.text = CCUtility.dateDiff(date) + "\n" + CCUtility.transformedSize(fileSize)
                                     
@@ -381,7 +381,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                     }
                     
                     let fileDictionary = try FileManager.default.attributesOfItem(atPath: filePathNewFile)
-                    let fileSize = fileDictionary[FileAttributeKey.size] as! Double
+                    let fileSize = fileDictionary[FileAttributeKey.size] as! Int64
                     
                     cell.labelDetailNewFile.text = CCUtility.dateDiff(metadataNewFile.date as Date) + "\n" + CCUtility.transformedSize(fileSize)
                     

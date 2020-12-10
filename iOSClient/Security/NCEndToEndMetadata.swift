@@ -80,7 +80,7 @@ class NCEndToEndMetadata : NSObject  {
             
             // *** metadataKey ***
             
-            // Double Encode64 for Android compatibility
+            // Encode64 for Android compatibility
             let metadatakey = (recordE2eEncryption.metadataKey.data(using: .utf8)?.base64EncodedString())!
             
             guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadatakey, publicKey: nil, privateKey: privateKey) else {

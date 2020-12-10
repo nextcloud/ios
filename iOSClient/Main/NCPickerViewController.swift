@@ -158,7 +158,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                         
                         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                         metadataForUpload.sessionSelector = selectorUploadFile
-                        metadataForUpload.size = Double(data?.count ?? 0)
+                        metadataForUpload.size = Int64(data?.count ?? 0)
                         metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                         
                         if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileName) != nil {

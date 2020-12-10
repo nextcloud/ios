@@ -509,8 +509,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
                 let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
-                let totalBytes = userInfo["totalBytes"] as? Double ?? 0
-                let totalBytesExpected = userInfo["totalBytesExpected"] as? Double ?? 0
+                let totalBytes = userInfo["totalBytes"] as? Int64 ?? 0
+                let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 ?? 0
                 
                 appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: userInfo["ocId"] as? NSString ?? "")
                 
@@ -860,7 +860,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
-            metadataForUpload.size = Double(NCUtilityFileSystem.shared.getFileSize(filePath: filePath))
+            metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
             metadataForUpload.status = Int(k_metadataStatusWaitUpload)
             
             NCManageDatabase.shared.addMetadata(metadataForUpload)
@@ -1449,11 +1449,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             
             // Transfer
             var progress: Float = 0.0
-            var totalBytes: Double = 0.0
+            var totalBytes: Int64 = 0
             let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.ocId) as? NSArray
             if progressArray != nil && progressArray?.count == 3 {
                 progress = progressArray?.object(at: 0) as? Float ?? 0
-                totalBytes = progressArray?.object(at: 1) as? Double ?? 0
+                totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
             }
             if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
                 cell.progressView.isHidden = false

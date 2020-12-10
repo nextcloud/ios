@@ -187,7 +187,7 @@
 
 + (NSString *)dateDiff:(NSDate *) convertedDate;
 + (NSDate *)dateEnUsPosixFromCloud:(NSString *)dateString;
-+ (NSString *)transformedSize:(double)value;
++ (NSString *)transformedSize:(int64_t)value;
 
 + (NSString *)removeForbiddenCharactersServer:(NSString *)fileName;
 + (NSString *)removeForbiddenCharactersFileSystem:(NSString *)fileName;
@@ -213,7 +213,7 @@
 + (NSString *)getDirectoryProviderStorageIconOcId:(NSString *)ocId etag:(NSString *)etag;
 + (NSString *)getDirectoryProviderStoragePreviewOcId:(NSString *)ocId etag:(NSString *)etag;
 + (BOOL)fileProviderStorageExists:(NSString *)ocId fileNameView:(NSString *)fileNameView;
-+ (double)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
++ (int64_t)fileProviderStorageSize:(NSString *)ocId fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStoragePreviewIconExists:(NSString *)ocId etag:(NSString *)etag;
 
 + (void)removeGroupApplicationSupport;
