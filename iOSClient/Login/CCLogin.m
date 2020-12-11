@@ -215,7 +215,7 @@
                 }
                 
                 // Login Flow
-                else if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
+                else if (_user.hidden && _password.hidden && versionMajor >= [[NCBrandGlobal shared] nextcloudVersion12]) {
                     
                     NCLoginWeb *activeLoginWeb = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"NCLoginWeb"];
                     activeLoginWeb.urlBase = self.baseUrl.text;
@@ -224,7 +224,7 @@
                 }
                 
                 // NO Login Flow available
-                else if (versionMajor < k_flow_version_available) {
+                else if (versionMajor < [[NCBrandGlobal shared] nextcloudVersion12]) {
                     
                     [self.loginTypeView setHidden:YES];
                     

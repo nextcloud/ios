@@ -138,7 +138,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         // ITEM : Trash
         let serverVersionMajor = NCManageDatabase.shared.getCapabilitiesServerInt(account: appDelegate.account, elements: NCElementsJSON.shared.capabilitiesVersionMajor)
-        if serverVersionMajor >= Int(k_trash_version_available) {
+        if serverVersionMajor >= NCBrandGlobal.shared.nextcloudVersion15 {
 
             item = NCCommunicationExternalSite()
             item.name = "_trash_view_"

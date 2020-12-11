@@ -220,9 +220,12 @@ class NCBrandColor: NSObject {
     @objc let appDatabaseNextcloud                  = "Library/Application Support/Nextcloud"
 
     // Nextcloud version
+    @objc let nextcloudVersion12: Int               =  12
+    let nextcloudVersion15: Int                     =  15
     let nextcloudVersion17: Int                     =  17
     let nextcloudVersion18: Int                     =  18
-    
+    let nextcloudVersion20: Int                     =  20
+
     // Database Realm
     let databaseDefault                             = "nextcloud.realm"
     let databaseSchemaVersion: UInt64               = 160

@@ -64,11 +64,6 @@
 #define k_intro_login                                   0
 #define k_intro_signup                                  1
 
-// Login
-#define k_login_Add                                     0
-#define k_login_Add_Forced                              1
-#define k_login_Add_SignUp                              2
-
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
 #define k_permission_can_share                          @"R"
@@ -179,14 +174,6 @@
 #define k_activityDebugActionUnsubscribingPushProxy     @"Unsubscribing Push Proxy"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
-
-// Flow Version
-#define k_flow_version_available                        12
-
-// New capabilities version
-#define k_trash_version_available                       14
-#define k_trash_version_available_more_fix              15
-#define k_files_comments                                20
 
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
