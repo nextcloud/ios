@@ -85,20 +85,6 @@
 #define k_metadataStatusUploadError                     10
 #define k_metadataStatusUploadForcedStart               11
 
-// Error
-#define k_CCErrorBadRequest                             400
-#define k_CCErrorResourceNotFound                       404
-#define k_CCErrorConflict                               409
-#define k_CCErrorBadServerResponse                      -1011
-#define k_CCErrorInternalError                          -99999
-#define k_CCErrorFileNotSaved                           -99998
-#define k_CCErrorDecodeMetadata                         -99997
-#define k_CCErrorE2EENotEnabled                         -99996
-#define k_CCErrorE2EENotMove                            -99995
-#define k_CCErrorOffline                                -99994
-#define k_CCErrorCharactersForbidden                    -99993
-#define k_CCErrorCreationFile                           -99992
-
 // Selector
 #define selectorDownloadFile                            @"downloadFile"
 #define selectorDownloadAllFile                         @"downloadAllFile"

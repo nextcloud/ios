@@ -111,7 +111,7 @@ class NCShareComments: UIViewController, NCShareCommentsCellDelegate {
                 NCManageDatabase.shared.addComments(comments!, account: metadata.account, objectId: metadata.fileId)
                 self.tableView.reloadData()
             } else {
-                if errorCode != k_CCErrorResourceNotFound {
+                if errorCode != NCBrandGlobal.shared.ErrorResourceNotFound {
                     NCContentPresenter.shared.messageNotification("_share_", description: errorDescription, delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: errorCode)
                 }
             }

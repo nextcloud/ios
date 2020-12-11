@@ -236,11 +236,11 @@ class NCViewerImage: UIViewController {
                     if resources != nil {
                         NCLivePhoto.saveToLibrary(resources!) { (result) in
                             if !result {
-                                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                                NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                             }
                         }
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_livephoto_save_error_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                     }
                 })
             }

@@ -373,7 +373,7 @@
     // Create the folder for auto upload & if request the subfolders
     if ([[NCNetworking shared] createFolderWithAssets:newAssetToUpload selector:selector useSubFolder:tableAccount.autoUploadCreateSubfolder account:appDelegate.account urlBase:appDelegate.urlBase]) {
         if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_hud hideHud];
             });

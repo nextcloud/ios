@@ -133,7 +133,7 @@ class NCViewer: NSObject {
                     
                 } else {
                     
-                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification("_error_", description: "_editor_unknown_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                 }
                 
                 return

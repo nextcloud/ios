@@ -172,7 +172,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
                     
                     self.reloadFormRow(formRow)
                     
-                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorCharactersForbidden), forced: true)
+                    NCContentPresenter.shared.messageNotification("_info_", description: "_forbidden_characters_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorCharactersForbidden, forced: true)
                 }
             }
             

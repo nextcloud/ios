@@ -312,7 +312,7 @@ class NCOperationSynchronization: ConcurrentOperation {
                                     NCManageDatabase.shared.setDirectory(synchronized: true, serverUrl: serverUrl, account: account)
                                 }
                             
-                            } else if errorCode == k_CCErrorResourceNotFound && self.metadata.directory {
+                            } else if errorCode == NCBrandGlobal.shared.ErrorResourceNotFound && self.metadata.directory {
                                 NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: self.metadata.serverUrl, account: self.metadata.account)
                             }
                             

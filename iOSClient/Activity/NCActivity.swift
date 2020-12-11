@@ -348,7 +348,7 @@ extension activityTableViewCell: UICollectionViewDelegate {
                         viewController.trashPath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
                     } else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("_error_", description: "_trash_file_not_found_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                     }
                 }
             }

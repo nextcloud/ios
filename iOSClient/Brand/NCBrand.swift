@@ -304,4 +304,17 @@ class NCBrandColor: NSObject {
     
     @objc let dismissAfterSecond: TimeInterval      = 4
     @objc let dismissAfterSecondLong: TimeInterval  = 10
+    
+    // Error
+    @objc let ErrorBadRequest: Int                  = 400
+    @objc let ErrorResourceNotFound: Int            = 404
+    @objc let ErrorConflict: Int                    = 409
+    @objc let ErrorBadServerResponse: Int           = -1011
+    @objc let ErrorInternalError: Int               = -99999
+    @objc let ErrorFileNotSaved: Int                = -99998
+    @objc let ErrorDecodeMetadata: Int              = -99997
+    @objc let ErrorE2EENotEnabled: Int              = -99996
+    @objc let ErrorOffline: Int                     = -99994
+    @objc let ErrorCharactersForbidden: Int         = -99993
+    @objc let ErrorCreationFile: Int                = -99992
 }

@@ -314,7 +314,7 @@ import Queuer
 
         guard let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", metadata.account)) else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(Int(k_CCErrorInternalError), "Internal error")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "Internal error")
             return
         }
         
@@ -357,7 +357,7 @@ import Queuer
                    
                 guard let extractMetadata = extractMetadata else {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                    completion(Int(k_CCErrorInternalError), "Internal error")
+                    completion(NCBrandGlobal.shared.ErrorInternalError, "Internal error")
                     return
                 }
                        
@@ -433,7 +433,7 @@ import Queuer
         } else {
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            completion(Int(k_CCErrorInternalError), "task null")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "task null")
         }
     }
     
@@ -963,14 +963,14 @@ import Queuer
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_delete)
         if metadata.permissions != "" && permission == false {
             
-            completion(Int(k_CCErrorInternalError), "_no_permission_delete_file_")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_delete_file_")
             return
         }
                 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCCommunication.shared.deleteFileOrFolder(serverUrlFileName, customUserAgent: nil, addCustomHeaders: addCustomHeaders) { (account, errorCode, errorDescription) in
         
-            if errorCode == 0 || errorCode == k_CCErrorResourceNotFound {
+            if errorCode == 0 || errorCode == NCBrandGlobal.shared.ErrorResourceNotFound {
                 
                 do {
                     try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -1103,7 +1103,7 @@ import Queuer
         
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
         }
         guard let fileNameNew = CCUtility.removeForbiddenCharactersServer(fileNameNew) else {
@@ -1175,7 +1175,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
         }
         
@@ -1221,7 +1221,7 @@ import Queuer
     
         let permission = NCUtility.shared.permissionsContainsString(metadata.permissions, permissions: k_permission_can_rename)
         if !(metadata.permissions == "") && !permission {
-            completion(Int(k_CCErrorInternalError), "_no_permission_modify_file_")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_no_permission_modify_file_")
             return
         }
         

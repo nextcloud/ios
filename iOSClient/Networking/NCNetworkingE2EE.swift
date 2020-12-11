@@ -59,7 +59,7 @@ import Alamofire
                             if let tableLock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: serverUrl) {
                                 NCCommunication.shared.lockE2EEFolder(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, method: "DELETE") { (_, _, _, _) in }
                             }
-                            completion(Int(k_CCErrorInternalError), "Error convert ocId")
+                            completion(NCBrandGlobal.shared.ErrorInternalError, "Error convert ocId")
                             return
                         }
                         NCCommunication.shared.markE2EEFolder(fileId: fileId, delete: false) { (account, errorCode, errorDescription) in
@@ -163,7 +163,7 @@ import Alamofire
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             
-            completion(Int(k_CCErrorInternalError), "_file_already_exists_")
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_file_already_exists_")
 
         } else {
             
@@ -205,8 +205,8 @@ import Alamofire
         if metadata.size > NCBrandGlobal.shared.e2eeMaxFileSize {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
-            completion(Int(k_CCErrorInternalError), "E2E Error file too big")
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":NCBrandGlobal.shared.ErrorInternalError, "errorDescription":"E2E Error file too big"])
+            completion(NCBrandGlobal.shared.ErrorInternalError, "E2E Error file too big")
             return
         }
         
@@ -225,8 +225,8 @@ import Alamofire
         if NCEndToEndEncryption.sharedManager()?.encryptFileName(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
             
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":k_CCErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
-            completion(Int(k_CCErrorInternalError), "_e2e_error_create_encrypted_")
+            NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":NCBrandGlobal.shared.ErrorInternalError, "errorDescription":"_e2e_error_create_encrypted_"])
+            completion(NCBrandGlobal.shared.ErrorInternalError, "_e2e_error_create_encrypted_")
             return
         }
         
@@ -405,7 +405,7 @@ import Alamofire
                     
                     if errorCode == 0 && e2eMetadata != nil {
                         if !NCEndToEndMetadata.shared.decoderMetadata(e2eMetadata!, privateKey: CCUtility.getEndToEndPrivateKey(account), serverUrl: serverUrl, account: account, urlBase: urlBase) {
-                            completion(e2eToken, Int(k_CCErrorInternalError), NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
+                            completion(e2eToken, NCBrandGlobal.shared.ErrorInternalError, NSLocalizedString("_e2e_error_encode_metadata_", comment: ""))
                             return
                         }
                         method = "PUT"

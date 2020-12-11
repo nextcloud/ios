@@ -148,7 +148,7 @@ extension NCCreateFormUploadConflictDelegate {
             }
             
             switchAlreadyExistingFiles.isOn = true
-            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_info_", description: "_file_not_rewite_doc_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
         }
         
         tableView.reloadData()

@@ -1385,7 +1385,7 @@
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
     if (!result.count) {
         if (notification) {
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(k_CCErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_notificationCenter_uploadedFile object:nil userInfo:@{@"ocId": metadata.ocId, @"errorCode": @(NCBrandGlobal.shared.ErrorInternalError), @"errorDescription": @"_err_asset_not_found_"}];
         }
         
         completion(nil, nil);

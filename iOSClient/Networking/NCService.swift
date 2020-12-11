@@ -57,7 +57,7 @@ class NCService: NSObject {
                 
                     // Update User (+ userProfile.id) & active account & account network
                     guard let tableAccount = NCManageDatabase.shared.setAccountUserProfile(userProfile!) else {
-                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                        NCContentPresenter.shared.messageNotification("Account", description: "Internal error : account not found on DB",  delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         return
                     }
                 
@@ -136,9 +136,9 @@ class NCService: NSObject {
                     
                     if extendedSupport == false {
                         if serverProductName == "owncloud" {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_owncloud_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         } else if versionMajor <=  NCBrandGlobal.shared.nextcloud_unsupported_version {
-                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: Int(k_CCErrorInternalError))
+                            NCContentPresenter.shared.messageNotification("_warning_", description: "_warning_unsupported_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                         }
                     }
                 }

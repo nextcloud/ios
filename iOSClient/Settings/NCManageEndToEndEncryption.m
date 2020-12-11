@@ -47,7 +47,7 @@
     NSString *versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
     if (![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]] && isE2EEEnabled) {
-        [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
+        [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
     }
     
     if (isE2EEEnabled == NO || ![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]]) {
@@ -372,7 +372,7 @@
     
     [[NCCommunication shared] deleteE2EEPublicKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
        if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
         } else {
             [[NCContentPresenter shared] messageNotification:@"E2E delete publicKey" description:errorDescription  delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
         }
@@ -385,7 +385,7 @@
     
     [[NCCommunication shared] deleteE2EEPrivateKeyWithCustomUserAgent:nil addCustomHeaders:nil completionHandler:^(NSString *account, NSInteger errorCode, NSString *errorDescription) {
         if (errorCode == 0 && [account isEqualToString:appDelegate.account]) {
-            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:k_CCErrorInternalError forced:true];
+            [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:@"Success" delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeSuccess errorCode:NCBrandGlobal.shared.ErrorInternalError forced:true];
         } else {
             [[NCContentPresenter shared] messageNotification:@"E2E delete privateKey" description:errorDescription delay:[[NCBrandGlobal shared] dismissAfterSecond] type:messageTypeError errorCode:errorCode forced:true];
         }

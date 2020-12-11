@@ -125,7 +125,7 @@ import Foundation
                             if let image = UIImage.init(contentsOfFile: fileNamePath) {
                                 UIImageWriteToSavedPhotosAlbum(image, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
                             } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
                             }
                             
                         } else if metadata.typeFile == k_metadataTypeFile_video && status == PHAuthorizationStatus.authorized {
@@ -133,12 +133,12 @@ import Foundation
                             if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath) {
                                 UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, #selector(SaveAlbum(_:didFinishSavingWithError:contextInfo:)), nil)
                             } else {
-                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                                NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
                             }
                             
                         } else if status != PHAuthorizationStatus.authorized {
                             
-                            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+                            NCContentPresenter.shared.messageNotification("_access_photo_not_enabled_", description: "_access_photo_not_enabled_msg_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
                         }
                         
                     default:
@@ -149,7 +149,7 @@ import Foundation
                 } else {
                     
                     // File do not exists on server, remove in local
-                    if (errorCode == k_CCErrorResourceNotFound || errorCode == k_CCErrorBadServerResponse) {
+                    if (errorCode == NCBrandGlobal.shared.ErrorResourceNotFound || errorCode == NCBrandGlobal.shared.ErrorBadServerResponse) {
                         
                         do {
                             try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -194,7 +194,7 @@ import Foundation
     @objc func SaveAlbum(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         
         if error != nil {
-            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorFileNotSaved))
+            NCContentPresenter.shared.messageNotification("_save_selected_files_", description: "_file_not_saved_cameraroll_", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorFileNotSaved)
         }
     }
     

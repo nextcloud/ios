@@ -52,7 +52,7 @@ import NCCommunication
                 if wipe {
                     
                     self.appDelegate.deleteAccount(account, wipe: true)
-                    NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError))
+                    NCContentPresenter.shared.messageNotification(tableAccount.user, description: "_wipe_account_", delay: NCBrandGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError)
                     NCCommunication.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token) { (account, errorCode, errorDescription) in
                         print("wipe");
                     }

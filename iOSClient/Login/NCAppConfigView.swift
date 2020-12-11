@@ -61,15 +61,15 @@ class NCAppConfigView: UIViewController {
         appDelegate.timerErrorNetworking.invalidate()
         
         guard let serverUrl = self.serverUrl else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, serverUrl not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
             return
         }
         guard let username = self.username else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, username not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
             return
         }
         guard let password = self.password else {
-            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+            NCContentPresenter.shared.messageNotification("_error_", description: "User Default, password not found", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
             return
         }
         
@@ -86,7 +86,7 @@ class NCAppConfigView: UIViewController {
                     NCManageDatabase.shared.addAccount(account, urlBase: serverUrl, user: username, password: token!)
                     
                     guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: Int(k_CCErrorInternalError), forced: true)
+                        NCContentPresenter.shared.messageNotification("_error_", description: "setAccountActive error", delay: NCBrandGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, errorCode: NCBrandGlobal.shared.ErrorInternalError, forced: true)
                         self.dismiss(animated: true, completion: nil)
                         return
                     }
