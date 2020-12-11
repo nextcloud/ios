@@ -270,6 +270,20 @@ class NCBrandColor: NSObject {
     let buttonMoreMore                              = "more"
     let buttonMoreStop                              = "stop"
     
+    // Text -  OnlyOffice - Collabora
+    let editorText                                  = "text"
+    let editorOnlyoffice                            = "onlyoffice"
+    let editorCollabora                             = "collabora"
+
+    let onlyofficeDocx                              = "onlyoffice_docx"
+    let onlyofficeXlsx                              = "onlyoffice_xlsx"
+    let onlyofficePptx                              = "onlyoffice_pptx"
+
+    // Template
+    let templateDocument                            = "document"
+    let templateSpreadsheet                         = "spreadsheet"
+    let templatePresentation                        = "presentation"
+    
     // Rich Workspace
     let fileNameRichWorkspace                       = "Readme.md"
     

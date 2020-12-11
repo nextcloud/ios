@@ -1035,10 +1035,10 @@ class NCManageDatabase: NSObject {
                         addObject.mimetypes.append(mimeType)
                     }
                     addObject.name = editor.name
-                    if editor.name.lowercased() == k_editor_onlyoffice {
-                        addObject.editor = k_editor_onlyoffice
+                    if editor.name.lowercased() == NCBrandGlobal.shared.editorOnlyoffice {
+                        addObject.editor = NCBrandGlobal.shared.editorOnlyoffice
                     } else {
-                        addObject.editor = k_editor_text
+                        addObject.editor = NCBrandGlobal.shared.editorText
                     }
                     for mimeType in editor.optionalMimetypes {
                         addObject.optionalMimetypes.append(mimeType)

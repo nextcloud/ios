@@ -82,14 +82,14 @@ class NCViewer: NSObject {
             if NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) != nil &&  NCCommunication.shared.isNetworkReachable() {
                 
                 guard let editor = NCUtility.shared.isDirectEditing(account: metadata.account, contentType: metadata.contentType) else { return }
-                if editor == k_editor_text || editor == k_editor_onlyoffice {
+                if editor == NCBrandGlobal.shared.editorText || editor == NCBrandGlobal.shared.editorOnlyoffice {
                     
                     if metadata.url == "" {
                         
                         var customUserAgent: String?
                         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, account: metadata.account)!
                         
-                        if editor == k_editor_onlyoffice {
+                        if editor == NCBrandGlobal.shared.editorOnlyoffice {
                             customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
                         }
                         

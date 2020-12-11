@@ -68,7 +68,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         let language = NSLocale.preferredLanguages[0] as String
         request.addValue(language, forHTTPHeaderField: "Accept-Language")
                 
-        if editor == k_editor_onlyoffice {
+        if editor == NCBrandGlobal.shared.editorOnlyoffice {
             webView.customUserAgent = NCUtility.shared.getCustomUserAgentOnlyOffice()
         } else {
             webView.customUserAgent = CCUtility.getUserAgent()

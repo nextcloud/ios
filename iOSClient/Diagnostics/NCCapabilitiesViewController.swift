@@ -278,9 +278,9 @@ class NCCapabilitiesViewController: UIViewController, UIDocumentInteractionContr
         var onlyofficeEditors = false
         if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: account) {
             for editor in editors {
-                if editor.editor == k_editor_text {
+                if editor.editor == NCBrandGlobal.shared.editorText {
                     textEditor = true
-                } else if editor.editor == k_editor_onlyoffice {
+                } else if editor.editor == NCBrandGlobal.shared.editorOnlyoffice {
                     onlyofficeEditors = true
                 }
             }

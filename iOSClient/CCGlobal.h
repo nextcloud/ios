@@ -190,20 +190,6 @@
 #define k_default_file_remote_share_permission_no_support_share_option      3
 #define k_default_folder_remote_share_permission_no_support_share_option    15
 
-// Text -  OnlyOffice - Collabora
-#define k_editor_text                                   @"text"
-#define k_editor_onlyoffice                             @"onlyoffice"
-#define k_editor_collabora                              @"collabora"
-
-#define k_onlyoffice_docx                               @"onlyoffice_docx"
-#define k_onlyoffice_xlsx                               @"onlyoffice_xlsx"
-#define k_onlyoffice_pptx                               @"onlyoffice_pptx"
-
-// Template
-#define k_template_document                             @"document"
-#define k_template_spreadsheet                          @"spreadsheet"
-#define k_template_presentation                         @"presentation"
-
 // Notification Center
 
 #define k_notificationCenter_applicationDidEnterBackground  @"applicationDidEnterBackground"

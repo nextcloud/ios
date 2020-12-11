@@ -411,7 +411,7 @@ class NCUtility: NSObject {
         
         // HARDCODE
         if editor == "" {
-            editor = k_editor_text
+            editor = NCBrandGlobal.shared.editorText
         }
         
         return editor
