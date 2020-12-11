@@ -23,10 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef EXTENSION
-
-//AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-//#define app ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //dispatch_async(dispatch_get_main_queue(), ^{
 //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
@@ -35,20 +31,11 @@
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
 
-//NSString *language = [[NSLocale preferredLanguages] objectAtIndex:0];
-//NSDictionary *languageDic = [NSLocale componentsFromLocaleIdentifier:language];
-//NSString *languageCode = [languageDic objectForKey:@"kCFLocaleLanguageCodeKey"];
-
 //#if targetEnvironment(simulator)
 //#endif
 
 //#if TARGET_OS_SIMULATOR
 //#endif
-
-//if indexPath.section <  collectionView.numberOfSections && indexPath.row < collectionView.numberOfItems(inSection: indexPath.section)
-
-#define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
-#endif
 
 // Constants to identify the different permissions of a file
 #define k_permission_shared                             @"S"
@@ -60,14 +47,6 @@
 #define k_permission_can_delete                         @"D"
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
-
-// Metadata : Status
-//
-// 1) wait download/upload
-// 2) in download/upload
-// 3) downloading/uploading
-// 4) done or error
-//
 
 // Selector
 #define selectorDownloadFile                            @"downloadFile"
@@ -102,15 +81,7 @@
 #define k_keyFileNameOriginal                           @"fileNameOriginal"
 #define k_keyFileNameOriginalAutoUpload                 @"fileNameOriginalAutoUpload"
 
-// Activity
-#define k_activityVerboseDefault                        0
-#define k_activityVerboseHigh                           1
-#define k_activityTypeInfo                              @"info"
-#define k_activityTypeSuccess                           @"success"
-#define k_activityTypeFailure                           @"error"
-
-#define k_activityDebugActionDownload                   @"Download"
-#define k_activityDebugActionDownloadPicker             @"Download Picker"
+/*
 #define k_activityDebugActionUpload                     @"Upload"
 #define k_activityDebugActionUploadPicker               @"Upload Picker"
 #define k_activityDebugActionUploadShare                @"Upload Share"
@@ -126,6 +97,7 @@
 #define k_activityDebugActionUnsubscribingPushProxy     @"Unsubscribing Push Proxy"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
+*/
 
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)
