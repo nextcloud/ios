@@ -135,7 +135,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         
         guard let metadata = metadataTemp else { return }
             
-        metadata.status = Int(k_metadataStatusInUpload)
+        metadata.status = NCBrandGlobal.shared.metadataStatusInUpload
         metadata.session = NCCommunicationCommon.shared.sessionIdentifierUpload
         
         NCManageDatabase.shared.addMetadata(metadata)
@@ -148,7 +148,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
         guard let metadata = metadataTemp else { return false }
         if metadata.e2eEncrypted { return false }
         
-        if metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusWaitUpload || metadata.status == NCBrandGlobal.shared.metadataStatusInUpload || metadata.status == NCBrandGlobal.shared.metadataStatusUploading {
             return true
         }
         
@@ -214,7 +214,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
             totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
         }
         
-        if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+        if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
             cell.progressView.isHidden = false
         } else {
             cell.progressView.isHidden = true
@@ -223,27 +223,27 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate  {
 
         // Write status on Label Info
         switch metadata.status {
-        case Int(k_metadataStatusWaitDownload):
+        case NCBrandGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusInDownload):
+        case NCBrandGlobal.shared.metadataStatusInDownload:
             cell.labelStatus.text = NSLocalizedString("_status_in_download_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusDownloading):
+        case NCBrandGlobal.shared.metadataStatusDownloading:
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
             break
-        case Int(k_metadataStatusWaitUpload):
+        case NCBrandGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusInUpload):
+        case NCBrandGlobal.shared.metadataStatusInUpload:
             cell.labelStatus.text = NSLocalizedString("_status_in_upload_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size)
             break
-        case Int(k_metadataStatusUploading):
+        case NCBrandGlobal.shared.metadataStatusUploading:
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
             cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
             break

@@ -508,7 +508,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 let _ = userInfo["serverUrl"] as? String ?? ""
                 let progressNumber = userInfo["progress"] as? NSNumber ?? 0
                 let progress = progressNumber.floatValue
-                let status = userInfo["status"] as? Int ?? Int(k_metadataStatusNormal)
+                let status = userInfo["status"] as? Int ?? NCBrandGlobal.shared.metadataStatusNormal
                 let totalBytes = userInfo["totalBytes"] as? Int64 ?? 0
                 let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64 ?? 0
                 
@@ -522,9 +522,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
                                 cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
-                                if status == k_metadataStatusInDownload {
+                                if status == NCBrandGlobal.shared.metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                                } else if status == k_metadataStatusInUpload {
+                                } else if status == NCBrandGlobal.shared.metadataStatusInUpload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                                 }
                             }
@@ -534,9 +534,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                 cell.progressView?.isHidden = false
                                 cell.progressView?.progress = progress
                                 cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
-                                if status == k_metadataStatusInDownload {
+                                if status == NCBrandGlobal.shared.metadataStatusInDownload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓ " + CCUtility.transformedSize(totalBytes)
-                                } else if status == k_metadataStatusInUpload {
+                                } else if status == NCBrandGlobal.shared.metadataStatusInUpload {
                                     cell.labelInfo.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                                 }
                             }
@@ -763,7 +763,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         
         if (#selector(openQuickLookMenu(_:)) == action || #selector(openInMenu(_:)) == action || #selector(copyFileMenu(_:)) == action) {
             guard let metadata = metadataTouch else { return false }
-            if !metadata.directory && metadata.status == k_metadataStatusNormal {
+            if !metadata.directory && metadata.status == NCBrandGlobal.shared.metadataStatusNormal {
                 return true
             }
         }
@@ -861,7 +861,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
             metadataForUpload.sessionSelector = selectorUploadFile
             metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(filePath: filePath)
-            metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+            metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
             
             NCManageDatabase.shared.addMetadata(metadataForUpload)
             
@@ -880,7 +880,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.size = metadata.size
-                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
                 NCManageDatabase.shared.addMetadata(metadataForUpload)
             }
@@ -1455,7 +1455,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 progress = progressArray?.object(at: 0) as? Float ?? 0
                 totalBytes = progressArray?.object(at: 1) as? Int64 ?? 0
             }
-            if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+            if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
                 cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
             } else {
@@ -1465,22 +1465,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             // Write status on Label Info
             switch metadata.status {
-            case Int(k_metadataStatusWaitDownload):
+            case NCBrandGlobal.shared.metadataStatusWaitDownload:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
                 break
-            case Int(k_metadataStatusInDownload):
+            case NCBrandGlobal.shared.metadataStatusInDownload:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
                 break
-            case Int(k_metadataStatusDownloading):
+            case NCBrandGlobal.shared.metadataStatusDownloading:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↓ " + CCUtility.transformedSize(totalBytes)
                 break
-            case Int(k_metadataStatusWaitUpload):
+            case NCBrandGlobal.shared.metadataStatusWaitUpload:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
                 break
-            case Int(k_metadataStatusInUpload):
+            case NCBrandGlobal.shared.metadataStatusInUpload:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
                 break
-            case Int(k_metadataStatusUploading):
+            case NCBrandGlobal.shared.metadataStatusUploading:
                 cell.labelInfo.text = CCUtility.transformedSize(metadata.size) + " - ↑ " + CCUtility.transformedSize(totalBytes)
                 break
             default:
@@ -1607,7 +1607,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             
             // Transfer
-            if metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading ||  metadata.status >= k_metadataStatusTypeUpload {
+            if metadata.status == NCBrandGlobal.shared.metadataStatusInDownload || metadata.status == NCBrandGlobal.shared.metadataStatusDownloading ||  metadata.status >= NCBrandGlobal.shared.metadataStatusTypeUpload {
                 cell.progressView.isHidden = false
                 cell.setButtonMore(named: NCBrandGlobal.shared.buttonMoreStop, image: NCCollectionCommon.images.cellButtonStop)
             } else {

@@ -179,7 +179,7 @@
     
     metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground;
     metadataForUpload.sessionSelector = selectorUploadFile;
-    metadataForUpload.status = k_metadataStatusWaitUpload;
+    metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
     
     // Prepare file and directory
     [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageOcId:metadataForUpload.ocId fileNameView:fileName]];

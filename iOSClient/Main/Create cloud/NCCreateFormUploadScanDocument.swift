@@ -415,7 +415,7 @@ class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate, NC
         
         metadataForUpload.session = NCNetworking.shared.sessionIdentifierBackground
         metadataForUpload.sessionSelector = selectorUploadFile
-        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+        metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
         if NCUtility.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileName: fileNameSave) != nil {
                         

@@ -408,7 +408,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                 metadataForUpload.session = self.session
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.size = NCUtilityFileSystem.shared.getFileSize(asset: asset)
-                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                 
                 if livePhoto {
                     
@@ -428,7 +428,7 @@ class NCCreateFormUploadAssets: XLFormViewController, NCSelectDelegate {
                             metadataMOVForUpload.session = self.session
                             metadataMOVForUpload.sessionSelector = selectorUploadFile
                             metadataMOVForUpload.size = fileSize
-                            metadataMOVForUpload.status = Int(k_metadataStatusWaitUpload)
+                            metadataMOVForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload
                             metadataMOVForUpload.typeFile = k_metadataTypeFile_video
 
                             metadatasMOV.append(metadataMOVForUpload)

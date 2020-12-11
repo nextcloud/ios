@@ -208,7 +208,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
         let fileNameLocalPath = CCUtility.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)!
         
         // Update status
-        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusDownloading))
+        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusDownloading)
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         
         NCCommunication.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath,  requestHandler: { (request) in
@@ -231,7 +231,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             
             if errorCode == 0  {
                 
-                metadata.status = Int(k_metadataStatusNormal)
+                metadata.status = NCBrandGlobal.shared.metadataStatusNormal
                 metadata.date = date ?? NSDate()
                 metadata.etag = etag ?? ""
                 
@@ -242,13 +242,13 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 
             } else if errorCode == 200 {
                 
-                NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: Int(k_metadataStatusNormal))
+                NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCBrandGlobal.shared.metadataStatusNormal)
                 
                 completionHandler(nil)
 
             } else {
                 
-                metadata.status = Int(k_metadataStatusDownloadError)
+                metadata.status = NCBrandGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = errorDescription
                 NCManageDatabase.shared.addMetadata(metadata)
 
@@ -352,7 +352,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
                 let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, fileName: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "", livePhoto: false)
                 metadata.session = NCNetworking.shared.sessionIdentifierBackgroundExtension
                 metadata.size = size
-                metadata.status = Int(k_metadataStatusUploading)
+                metadata.status = NCBrandGlobal.shared.metadataStatusUploading
                 
                 NCManageDatabase.shared.addMetadata(metadata)
                 
@@ -401,7 +401,7 @@ class FileProviderExtension: NSFileProviderExtension, NCNetworkingDelegate {
             metadata.permissions = "RGDNVW"
             metadata.session = ""
             metadata.size = size
-            metadata.status = Int(k_metadataStatusNormal)
+            metadata.status = NCBrandGlobal.shared.metadataStatusNormal
                   
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)

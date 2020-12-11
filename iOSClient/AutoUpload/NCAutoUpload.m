@@ -437,7 +437,7 @@
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
             metadataForUpload.size = [[NCUtilityFileSystem shared] getFileSizeWithAsset:asset];
-            metadataForUpload.status = k_metadataStatusWaitUpload;
+            metadataForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
             if (assetMediaType == PHAssetMediaTypeVideo) {
                 metadataForUpload.typeFile = k_metadataTypeFile_video;
             } else if (assetMediaType == PHAssetMediaTypeImage) {
@@ -473,7 +473,7 @@
                         metadataMOVForUpload.session = session;
                         metadataMOVForUpload.sessionSelector = selector;
                         metadataMOVForUpload.size = fileSize;
-                        metadataMOVForUpload.status = k_metadataStatusWaitUpload;
+                        metadataMOVForUpload.status = NCBrandGlobal.shared.metadataStatusWaitUpload;
                         metadataMOVForUpload.typeFile = k_metadataTypeFile_video;
 
                         if ([selector isEqualToString:selectorUploadAutoUpload]) {

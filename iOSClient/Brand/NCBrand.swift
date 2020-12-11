@@ -317,4 +317,29 @@ class NCBrandColor: NSObject {
     @objc let ErrorOffline: Int                     = -99994
     @objc let ErrorCharactersForbidden: Int         = -99993
     @objc let ErrorCreationFile: Int                = -99992
+    
+    // Metadata : Status
+    //
+    // 1) wait download/upload
+    // 2) in download/upload
+    // 3) downloading/uploading
+    // 4) done or error
+    //
+    @objc let metadataStatusNormal: Int             = 0
+
+    @objc let metadataStatustypeDownload: Int       = 1
+
+    @objc let metadataStatusWaitDownload: Int       = 2
+    @objc let metadataStatusInDownload: Int         = 3
+    @objc let metadataStatusDownloading: Int        = 4
+    @objc let metadataStatusDownloadError: Int      = 5
+
+    @objc let metadataStatusTypeUpload: Int         = 6
+
+    @objc let metadataStatusWaitUpload: Int         = 7
+    @objc let metadataStatusInUpload: Int           = 8
+    @objc let metadataStatusUploading: Int          = 9
+    @objc let metadataStatusUploadError: Int        = 10
+    @objc let metadataStatusUploadForcedStart: Int  = 11
+
 }
