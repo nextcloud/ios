@@ -46,11 +46,11 @@
     BOOL isE2EEEnabled = [[NCManageDatabase shared] getCapabilitiesServerBoolWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEEnabled exists:false];
     NSString *versionE2EE = [[NCManageDatabase shared] getCapabilitiesServerStringWithAccount:appDelegate.account elements:NCElementsJSON.shared.capabilitiesE2EEApiVersion];
     
-    if (![versionE2EE isEqual:k_E2EE_API] && isE2EEEnabled) {
+    if (![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]] && isE2EEEnabled) {
         [[NCContentPresenter shared] messageNotification:@"_error_e2ee_" description:@"_err_e2ee_app_version_" delay:k_dismissAfterSecond type:messageTypeError errorCode:k_CCErrorInternalError forced:true];
     }
     
-    if (isE2EEEnabled == NO || ![versionE2EE isEqual:k_E2EE_API]) {
+    if (isE2EEEnabled == NO || ![versionE2EE isEqual:[[NCBrandGlobal shared] e2eeVersion]]) {
         
         // Section SERVICE NOT AVAILABLE -------------------------------------------------
         

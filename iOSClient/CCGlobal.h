@@ -72,8 +72,6 @@
 #define k_dismissAfterSecond                            4
 #define k_dismissAfterSecondLong                        10
 
-#define k_daysOfActivity                                7
-
 #define k_sizePreview                                   1024
 #define k_sizeIcon                                      512
 
@@ -218,10 +216,6 @@
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
-// E2EE
-#define k_max_filesize_E2EE                             524288000   // 500 MB
-#define k_E2EE_API                                      @"1.1"
-
 // Flow Version
 #define k_flow_version_available                        12
 
@@ -229,10 +223,6 @@
 #define k_trash_version_available                       14
 #define k_trash_version_available_more_fix              15
 #define k_files_comments                                20
-
-// Toolbar Detail
-#define k_detail_Toolbar_Height                         49
-
 
 //Share permission
 //permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all (default: 31, for public shares: 1)

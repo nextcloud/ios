@@ -202,7 +202,7 @@ import Alamofire
         let serverUrl = metadata.serverUrl
         
         // Verify max size
-        if metadata.size > Int64(k_max_filesize_E2EE) {
+        if metadata.size > NCBrandGlobal.shared.e2eeMaxFileSize {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
             NotificationCenter.default.postOnMainThread(name: k_notificationCenter_uploadedFile, userInfo: ["ocId":metadata.ocId, "ocIdTemp":ocIdTemp, "errorCode":k_CCErrorInternalError, "errorDescription":"E2E Error file too big"])
